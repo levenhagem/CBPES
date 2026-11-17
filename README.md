@@ -16,7 +16,7 @@ Site estático (HTML/CSS/JS) + Supabase (banco e login). Tudo no plano gratuito.
 5. **Project Settings → API**: copie a *Project URL* e a chave *anon public* para o `config.js`.
 6. **GitHub**: crie um repositório e envie estes arquivos. **Vercel** (vercel.com) → Add New Project → importe o repositório → Framework: *Other* → Deploy.
 7. Acesse `seu-site.vercel.app/admin.html`, entre e siga a ordem:
-   **Campeonato** (escolha o formato e salve) → **Participantes** → **Jogadores** (só quem faz gol/assistência) → **Campeonato > Gerar calendário** → **Resultados** (placar, data e, em "GOLS", autor e assistência).
+   **Campeonato** (escolha o formato e salve) → **Times** (participantes e, dentro de cada um, os jogadores que fazem gol/assistência) → **Campeonato > Gerar calendário** → **Jogos** (rodadas, placares, datas, gols e confrontos numa tela só).
 
 ## Formatos disponíveis
 Pontos corridos (turno único ou turno e returno) · Mata-mata (jogo único ou ida e volta, final opcional em jogo único, pênaltis) · Fase de grupos + mata-mata (nº de grupos, classificados por grupo, jogos de ida ou ida e volta). Pontos por vitória/empate são configuráveis. No mata-mata, use "Avançar fase" após definir todos os confrontos.
@@ -27,3 +27,6 @@ Pontos corridos (turno único ou turno e returno) · Mata-mata (jogo único ou i
 - Todo cadastro, edição ou exclusão fica registrado na aba **Histórico**.
 - O plano gratuito do Supabase pausa o projeto após ~7 dias sem nenhuma atividade; visitas ao portal contam como atividade, e um projeto pausado se reativa com um clique no painel.
 - Para novos administradores: crie o usuário e repita o passo 4 com o e-mail dele.
+
+## Atualizando o site depois
+Suba os arquivos novos no GitHub (Add file > Upload files) e o Vercel republica sozinho. **Não substitua o seu `config.js` já preenchido.**

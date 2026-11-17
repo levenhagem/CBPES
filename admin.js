@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let D, tab = 'camp', selRound = null, openPart = null, openGoals = null, draft = null;
+let D, tab = 'camp', selRound = null, openPart = null, openGoals = null, draft = null, firstLoad = true;
 const today = () => new Date().toISOString().slice(0, 10);
 
 function say(t, ok) { const m = $('msg'); m.textContent = t || ''; m.className = 'msg ' + (ok ? 'ok' : 'err'); if (t && ok) setTimeout(() => { if (m.textContent === t) m.textContent = ''; }, 3500); }
@@ -29,11 +29,11 @@ $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 $('tabs').onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; draft = null; render(); } };
 
-async function refresh() { try { D = await load(); } catch (e) { return say(traduz(e), false); } render(); }
+async function refresh() { const y = window.scrollY; try { D = await load(); } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
-  $('view').onclick = null; $('view').onchange = null;
-  ({ camp: vCamp, part: vPart, jog: vJog, rod: vRod, res: vRes, est: vEst, his: vHis })[tab]();
+  $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
+  ({ camp: vCamp, times: vTimes, jogos: vJogos, est: vEst, his: vHis })[tab]();
 }
 const pname = id => (D.participants.find(p => p.id === id) || {}).name || '?';
 const plname = id => (D.players.find(p => p.id === id) || {}).name || '?';
@@ -143,93 +143,104 @@ function advance() {
   createRounds([koSpec(ties.map(t => t.winner.id), cfgOf())]);
 }
 
-// ---------- Participantes ----------
-function vPart() {
-  const st = Object.fromEntries(standings(D.participants, D.matches).map(x => [x.p.id, x]));
-  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO PARTICIPANTE</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>NOME</label><input id="pn" maxlength="60"></div><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
-  <div class="card"><div class="cardhead"><h2>PARTICIPANTES (${D.participants.length})</h2></div><div class="cardbody scroll">${D.participants.length ? `<table class="table"><thead><tr><th>NOME</th><th>J</th><th>PTS</th><th></th></tr></thead><tbody>${D.participants.map(p => `<tr><td class="club">${esc(p.name)}</td><td>${st[p.id].j}</td><td>${st[p.id].pts}</td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-h="${p.id}">HISTÓRICO</button> <button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>${openPart === p.id ? `<tr><td colspan="4">${histPart(p)}</td></tr>` : ''}`).join('')}</tbody></table>` : '<div class="empty">Cadastre o primeiro participante.</div>'}</div></div>`;
-  $('pAdd').onclick = () => { const n = $('pn').value.trim(); if (n) run(sb.from('participants').insert({ name: n }), 'Participante cadastrado.'); };
-  $('view').onclick = e => {
-    const t = e.target;
-    if (t.dataset.h) { openPart = openPart === t.dataset.h ? null : t.dataset.h; vPart(); }
-    if (t.dataset.e) { const p = D.participants.find(x => x.id === t.dataset.e), n = prompt('Novo nome:', p.name); if (n && n.trim() && n.trim() !== p.name) run(sb.from('participants').update({ name: n.trim() }).eq('id', p.id), 'Nome atualizado.'); }
-    if (t.dataset.d && confirm('Excluir este participante? Só é possível se ele não tiver partidas nem jogadores.')) run(sb.from('participants').delete().eq('id', t.dataset.d), 'Participante excluído.');
-  };
+// ---------- Jogos: rodadas, placares, gols e confrontos numa tela só ----------
+let showNew = false;
+const curMatches = () => D.matches.filter(m => m.round_id === selRound).sort((a, b) => a.seq - b.seq);
+function rowPayload(id) {
+  const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
+  if (h === '' && a === '') return { skip: true };
+  if (h === '' || a === '') return { err: 'Informe os dois placares.' };
+  if (!dt) return { err: 'Informe a data da partida.' };
+  let pen = { home_pen: null, away_pen: null }; const ph = $('ph' + id), pa = $('pa' + id);
+  if (ph && (ph.value !== '' || pa.value !== '')) { if (ph.value === '' || pa.value === '') return { err: 'Informe os dois valores de pênaltis.' }; pen = { home_pen: +ph.value, away_pen: +pa.value }; }
+  return { data: { home_score: +h, away_score: +a, played_on: dt, ...pen } };
 }
-function histPart(p) {
-  const ms = D.matches.filter(m => m.played && (m.home_id === p.id || m.away_id === p.id)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  if (!ms.length) return '<div class="empty">Sem partidas disputadas.</div>';
-  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label">${pad(m.round.number)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(roundLabel(m.round))} • ${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
+function saveOne(id) {
+  const r = rowPayload(id); if (r.skip) return say('Informe o placar.', false); if (r.err) return say(r.err, false);
+  run(sb.from('matches').update(r.data).eq('id', id), 'Resultado salvo. Tabela, destaque e estatísticas atualizados.');
 }
-
-// ---------- Jogadores ----------
-function vJog() {
-  const g = {}, a = {}; D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
-  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO JOGADOR</h2></div><div class="cardbody"><div class="admin-help" style="margin-bottom:8px">Cadastre só quem faz gol ou assistência.</div><div class="inline"><div class="field"><label>NOME DO JOGADOR</label><input id="jn" maxlength="60"></div><div class="field"><label>PARTICIPANTE / TIME</label><select id="jp">${opts(D.participants, null, p => p.name)}</select></div><button class="btn primary" id="jAdd">CADASTRAR</button></div></div></div>
-  <div class="card"><div class="cardhead"><h2>JOGADORES (${D.players.length})</h2></div><div class="cardbody scroll">${D.players.length ? `<table class="table"><thead><tr><th>JOGADOR</th><th>TIME</th><th>GOLS</th><th>ASSIST.</th><th></th></tr></thead><tbody>${D.players.map(p => `<tr><td class="club">${esc(p.name)}</td><td>${esc(p.team.name)}</td><td>${g[p.id] || 0}</td><td>${a[p.id] || 0}</td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nenhum jogador cadastrado.</div>'}</div></div>`;
-  $('jAdd').onclick = () => { const n = $('jn').value.trim(), p = $('jp').value; if (!p) return say('Cadastre os participantes primeiro.', false); if (n) run(sb.from('players').insert({ name: n, participant_id: p }), 'Jogador cadastrado.'); };
-  $('view').onclick = e => {
-    const t = e.target;
-    if (t.dataset.e) { const p = D.players.find(x => x.id === t.dataset.e), n = prompt('Novo nome:', p.name); if (n && n.trim() && n.trim() !== p.name) run(sb.from('players').update({ name: n.trim() }).eq('id', p.id), 'Nome atualizado.'); }
-    if (t.dataset.d && confirm('Excluir este jogador? Só é possível se ele não tiver gols/assistências.')) run(sb.from('players').delete().eq('id', t.dataset.d), 'Jogador excluído.');
-  };
+async function saveAll() {
+  const ups = [];
+  for (const m of curMatches()) {
+    const r = rowPayload(m.id); if (r.err) return say(`${m.home.name} x ${m.away.name}: ${r.err}`, false);
+    if (!r.data) continue; const d = r.data;
+    if (m.played && m.home_score === d.home_score && m.away_score === d.away_score && m.played_on === d.played_on && m.home_pen === d.home_pen && m.away_pen === d.away_pen) continue;
+    ups.push(sb.from('matches').update(d).eq('id', m.id));
+  }
+  if (!ups.length) return say('Nada para salvar: preencha ou altere algum placar.', false);
+  const e = (await Promise.all(ups)).find(x => x.error); if (e) return say(traduz(e.error), false);
+  say(ups.length + ' resultado(s) salvo(s).', true); refresh();
 }
-
-// ---------- Rodadas (ajustes manuais) ----------
-function vRod() {
-  const next = D.rounds.length ? Math.max(...D.rounds.map(r => r.number)) + 1 : 1, ST = { liga: 'Liga', grupos: 'Grupos', mata: 'Mata-mata' };
-  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVA RODADA (MANUAL)</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>NÚMERO</label><input id="rn" type="number" min="1" value="${next}" style="width:80px"></div><div class="field"><label>FASE</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>NOME (OPCIONAL)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>DATA</label><input id="rd" type="date"></div><button class="btn primary" id="rAdd">CRIAR</button></div><p class="admin-help">Dica: para gerar tudo automaticamente, use a aba Campeonato.</p></div></div>
-  ${D.rounds.slice().reverse().map(r => { const ms = D.matches.filter(m => m.round_id === r.id).sort((a, b) => a.seq - b.seq); return `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>${esc(roundLabel(r).toUpperCase())} • ${ST[r.stage]} ${r.date ? '• ' + fd(r.date) : ''}</h2><span><button class="btn sm" data-rd="${r.id}">DATA</button> <button class="btn sm danger" data-rx="${r.id}">EXCLUIR</button></span></div><div class="cardbody">
-   ${ms.length ? ms.map(m => `<div class="result-row"><div class="round-label">${m.played ? 'ENC.' : 'AGEND.'}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${[m.group_name ? 'Grupo ' + esc(m.group_name) : '', r.stage === 'mata' ? 'Jogo ' + m.leg : '', m.date ? fd(m.date) : 'data a definir'].filter(Boolean).join(' • ')}</small></div><div class="result-score">${m.played ? m.home_score + ' – ' + m.away_score : '–'} <button class="btn sm" data-md="${m.id}">DATA</button> <button class="btn sm danger" data-mx="${m.id}">✕</button></div></div>`).join('') : '<div class="empty">Sem confrontos.</div>'}
-   <div class="inline" style="margin-top:10px"><select data-mh="${r.id}">${opts(D.participants, null, p => p.name)}</select><span>x</span><select data-ma="${r.id}">${opts(D.participants, null, p => p.name)}</select>${r.stage === 'grupos' ? `<input data-mg="${r.id}" placeholder="Grupo" style="width:70px" maxlength="2">` : ''}${r.stage === 'mata' ? `<select data-ml="${r.id}"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select>` : ''}<input type="date" data-mdt="${r.id}" value="${r.date || ''}"><button class="btn sm primary" data-add="${r.id}">ADICIONAR CONFRONTO</button></div>
-  </div></div>`; }).join('') || '<div class="empty">Nenhuma rodada criada.</div>'}`;
-  $('rAdd').onclick = () => { const n = +$('rn').value; if (n > 0) run(sb.from('rounds').insert({ number: n, stage: $('rst').value, name: $('rnm').value.trim() || null, date: $('rd').value || null }), 'Rodada criada.'); };
-  $('view').onclick = e => {
-    const t = e.target, q = k => document.querySelector(`[data-${k}="${t.dataset.add}"]`);
-    if (t.dataset.rd) { const r = D.rounds.find(x => x.id === t.dataset.rd), v = prompt('Data da rodada (AAAA-MM-DD), vazio para limpar:', r.date || ''); if (v !== null) run(sb.from('rounds').update({ date: v.trim() || null }).eq('id', r.id), 'Data atualizada.'); }
-    if (t.dataset.md) { const m = D.matches.find(x => x.id === t.dataset.md), v = prompt('Data da partida (AAAA-MM-DD), vazio para limpar:', m.played_on || ''); if (v !== null) run(sb.from('matches').update({ played_on: v.trim() || null }).eq('id', m.id), 'Data atualizada.'); }
-    if (t.dataset.rx && confirm('Excluir a rodada e todas as suas partidas?')) run(sb.from('rounds').delete().eq('id', t.dataset.rx), 'Rodada excluída.');
-    if (t.dataset.mx && confirm('Excluir esta partida?')) run(sb.from('matches').delete().eq('id', t.dataset.mx), 'Partida excluída.');
-    if (t.dataset.add) {
-      const h = q('mh').value, a = q('ma').value; if (!h || !a) return say('Cadastre os participantes primeiro.', false); if (h === a) return say('Escolha participantes diferentes.', false);
-      const g = q('mg'), l = q('ml');
-      run(sb.from('matches').insert({ round_id: t.dataset.add, home_id: h, away_id: a, played_on: q('mdt').value || null, group_name: g ? g.value.trim().toUpperCase() || null : null, leg: l ? +l.value : 1 }), 'Confronto adicionado.');
-    }
-  };
+function rowHTML(m) {
+  const ko = m.round.stage === 'mata', id = m.id;
+  return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${id}" data-m="${id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${id}" data-m="${id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
+   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${ko ? `<span class="admin-help">Jogo ${m.leg} • Pênaltis:</span><input class="scoreinput" type="number" min="0" id="ph${id}" data-m="${id}" value="${m.home_pen ?? ''}"> x <input class="scoreinput" type="number" min="0" id="pa${id}" data-m="${id}" value="${m.away_pen ?? ''}">` : ''}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
 }
-
-// ---------- Resultados + gols ----------
 function goalsPanel(m) {
   const ev = D.events.filter(e => e.match_id === m.id), pls = D.players.filter(p => [m.home_id, m.away_id].includes(p.participant_id));
   const cnt = id => ev.filter(e => (D.players.find(p => p.id === e.scorer_id) || {}).participant_id === id).length;
   const optsP = first => (first ? '<option value="">— sem assistência —</option>' : '') + [m.home, m.away].map(t => `<optgroup label="${esc(t.name)}">${pls.filter(p => p.participant_id === t.id).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</optgroup>`).join('');
   const chk = (t, sc, n) => `<span class="${n === sc ? 'res-w' : 'res-d'}">${esc(t.name)}: ${n}/${sc}</span>`;
-  return `<div style="grid-column:1/-1;background:#f6f8f9;padding:10px;border:1px solid #e1e5e7">
-   <div class="admin-help" style="margin-bottom:6px"><b>Gols lançados / placar:</b> ${chk(m.home, m.home_score, cnt(m.home_id))} • ${chk(m.away, m.away_score, cnt(m.away_id))} (o lançamento de autores é opcional)</div>
-   ${ev.map(e => `<div class="result-row"><div class="round-label">⚽</div><div class="result-teams">${esc(plname(e.scorer_id))} <small>${esc(pname((D.players.find(p => p.id === e.scorer_id) || {}).participant_id))}${e.assist_id ? ' • assistência: ' + esc(plname(e.assist_id)) : ' • sem assistência'}</small></div><div class="result-score"><button class="btn sm danger" data-ex="${e.id}">✕</button></div></div>`).join('')}
-   ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>GOL</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>ASSISTÊNCIA</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Jogadores.</div>'}</div>`;
+  return `<div style="grid-column:1/-1;background:#f6f8f9;padding:10px;border:1px solid var(--line)">
+   <div class="admin-help" style="margin-bottom:6px"><b>Gols lançados / placar:</b> ${chk(m.home, m.home_score, cnt(m.home_id))} • ${chk(m.away, m.away_score, cnt(m.away_id))} (lançar autores é opcional)</div>
+   ${ev.map(e => `<div class="result-row"><div class="round-label">GOL</div><div class="result-teams">${esc(plname(e.scorer_id))} <small>${esc(pname((D.players.find(p => p.id === e.scorer_id) || {}).participant_id))}${e.assist_id ? ' • assistência: ' + esc(plname(e.assist_id)) : ' • sem assistência'}</small></div><div class="result-score"><button class="btn sm danger" data-ex="${e.id}">✕</button></div></div>`).join('')}
+   ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>Gol</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>Assistência</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Times.</div>'}</div>`;
 }
-function vRes() {
-  if (!D.rounds.length) { $('view').innerHTML = '<div class="empty">Gere o calendário na aba Campeonato (ou crie rodadas) primeiro.</div>'; return; }
-  if (!D.rounds.some(r => r.id === selRound)) selRound = currentRound(D.rounds, D.matches).id;
-  const ms = D.matches.filter(m => m.round_id === selRound).sort((a, b) => a.seq - b.seq);
-  $('view').innerHTML = `<div class="card"><div class="cardhead"><h2>REGISTRAR / EDITAR RESULTADOS</h2><select id="rs">${opts(D.rounds, selRound, x => roundLabel(x))}</select></div><div class="cardbody">
-  ${ms.length ? ms.map(m => { const ko = m.round.stage === 'mata'; return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${m.id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${m.id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
-   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${ko ? `<span class="admin-help">Jogo ${m.leg} • Pênaltis:</span><input class="scoreinput" type="number" min="0" id="ph${m.id}" value="${m.home_pen ?? ''}"> x <input class="scoreinput" type="number" min="0" id="pa${m.id}" value="${m.away_pen ?? ''}">` : ''}<label class="admin-help">Data</label><input type="date" id="d${m.id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${m.id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${m.id}">GOLS (${D.events.filter(e => e.match_id === m.id).length})</button><button class="btn sm danger" data-c="${m.id}">LIMPAR</button>` : ''}</div>${openGoals === m.id && m.played ? goalsPanel(m) : ''}</div>`; }).join('') : '<div class="empty">Esta rodada não tem confrontos.</div>'}</div></div>`;
-  $('rs').onchange = e => { selRound = e.target.value; openGoals = null; vRes(); };
+function vJogos() {
+  if (!D.rounds.some(r => r.id === selRound)) selRound = D.rounds.length ? currentRound(D.rounds, D.matches).id : null;
+  const r = D.rounds.find(x => x.id === selRound), ST = { liga: 'Liga', grupos: 'Grupos', mata: 'Mata-mata' };
+  const next = D.rounds.length ? Math.max(...D.rounds.map(x => x.number)) + 1 : 1;
+  const newForm = showNew ? `<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número</label><input id="rn" type="number" min="1" value="${next}"></div><div class="field"><label>Fase</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>Nome (opcional)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>Data</label><input id="rd" type="date"></div><button class="btn sm primary" data-rcreate="1">CRIAR RODADA</button></div></div>` : '';
+  const list = D.rounds.map(x => { const ms = D.matches.filter(m => m.round_id === x.id); return `<button data-sel="${x.id}" class="${x.id === selRound ? 'on' : ''}"><span>${esc(roundLabel(x))}</span><small>${ms.filter(m => m.played).length}/${ms.length}</small></button>`; }).join('') || '<div class="empty">Nenhuma rodada.</div>';
+  const ms = r ? curMatches() : [];
+  const right = r ? `<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))} <span class="pill">${ST[r.stage]}</span></h2><span class="inline" style="align-items:center"><input type="date" id="rdt" value="${r.date || ''}"><button class="btn sm" data-rdsave="1">SALVAR DATA</button><button class="btn sm danger" data-rx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">
+    ${ms.length ? `<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>` + ms.map(rowHTML).join('') : '<div class="empty">Sem confrontos nesta rodada.</div>'}
+    <div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(D.participants, null, p => p.name)}</select></div><span style="padding-bottom:9px">x</span><div class="field"><label>&nbsp;</label><select id="ma">${opts(D.participants, null, p => p.name)}</select></div>${r.stage === 'grupos' ? '<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>' : ''}${r.stage === 'mata' ? '<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>' : ''}<div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date || ''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`
+    : '<div class="empty">Gere o calendário na aba Campeonato ou crie uma rodada ao lado.</div>';
+  $('view').innerHTML = `<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew ? 'FECHAR' : '+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
+  $('view').onkeydown = e => { if (e.key === 'Enter' && e.target.dataset.m) saveOne(e.target.dataset.m); };
   $('view').onclick = e => {
-    const d = e.target.dataset;
-    if (d.g) { openGoals = openGoals === d.g ? null : d.g; return vRes(); }
+    const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
+    if (d.sel) { selRound = d.sel; openGoals = null; return vJogos(); }
+    if (d.new) { showNew = !showNew; return vJogos(); }
+    if (d.rcreate) { const n = +$('rn').value; if (n > 0) { showNew = false; run(sb.from('rounds').insert({ number: n, stage: $('rst').value, name: $('rnm').value.trim() || null, date: $('rd').value || null }), 'Rodada criada.'); } return; }
+    if (d.rdsave) return run(sb.from('rounds').update({ date: $('rdt').value || null }).eq('id', selRound), 'Data da rodada salva.');
+    if (d.rx) { if (confirm('Excluir a rodada e todas as suas partidas?')) { selRound = null; run(sb.from('rounds').delete().eq('id', d.rx), 'Rodada excluída.'); } return; }
+    if (d.mx) { if (confirm('Excluir este jogo?')) run(sb.from('matches').delete().eq('id', d.mx), 'Jogo excluído.'); return; }
+    if (d.add) {
+      const h = $('mh').value, a = $('ma').value; if (!h || !a) return say('Cadastre os participantes primeiro.', false); if (h === a) return say('Escolha participantes diferentes.', false);
+      return run(sb.from('matches').insert({ round_id: selRound, home_id: h, away_id: a, played_on: $('mdt').value || null, group_name: $('mg') ? $('mg').value.trim().toUpperCase() || null : null, leg: $('ml') ? +$('ml').value : 1 }), 'Confronto adicionado.');
+    }
+    if (d.saveall) return saveAll();
+    if (d.s) return saveOne(d.s);
+    if (d.g) { openGoals = openGoals === d.g ? null : d.g; return vJogos(); }
     if (d.ex) return run(sb.from('match_events').delete().eq('id', d.ex), 'Gol removido.');
     if (d.ga) return run(sb.from('match_events').insert({ match_id: d.ga, scorer_id: $('gs').value, assist_id: $('ga').value || null }), 'Gol lançado.');
-    if (d.c) { if (confirm('Apagar o placar desta partida? (Os gols lançados dela também serão apagados.)')) sb.from('match_events').delete().eq('match_id', d.c).then(() => run(sb.from('matches').update({ home_score: null, away_score: null, home_pen: null, away_pen: null }).eq('id', d.c), 'Placar removido.')); return; }
-    if (!d.s) return;
-    const id = d.s, h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
-    if (h === '' || a === '') return say('Informe os dois placares.', false);
-    if (!dt) return say('Informe a data da partida.', false);
-    let pen = { home_pen: null, away_pen: null }; const ph = $('ph' + id), pa = $('pa' + id);
-    if (ph && (ph.value !== '' || pa.value !== '')) { if (ph.value === '' || pa.value === '') return say('Informe os dois valores de pênaltis.', false); pen = { home_pen: +ph.value, away_pen: +pa.value }; }
-    run(sb.from('matches').update({ home_score: +h, away_score: +a, played_on: dt, ...pen }).eq('id', id), 'Resultado salvo. Tabela, destaque e estatísticas atualizados.');
+    if (d.c && confirm('Apagar o placar desta partida? (Os gols lançados dela também serão apagados.)')) sb.from('match_events').delete().eq('match_id', d.c).then(() => run(sb.from('matches').update({ home_score: null, away_score: null, home_pen: null, away_pen: null }).eq('id', d.c), 'Placar removido.'));
+  };
+}
+
+// ---------- Times: participantes + jogadores + histórico individual ----------
+function histPart(p) {
+  const ms = D.matches.filter(m => m.played && (m.home_id === p.id || m.away_id === p.id)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (!ms.length) return '<div class="empty">Sem partidas disputadas.</div>';
+  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label">${pad(m.round.number)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(roundLabel(m.round))} • ${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
+}
+function vTimes() {
+  const st = Object.fromEntries(standings(D.participants, D.matches).map(x => [x.p.id, x]));
+  const g = {}, a = {}; D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
+  const panel = p => { const pls = D.players.filter(x => x.participant_id === p.id); return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de partidas</div>${histPart(p)}</div></div></td></tr>`; };
+  $('view').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>Novo participante</h2></div><div class="cardbody"><div class="inline" style="margin-top:10px"><input id="pn" maxlength="60" placeholder="Nome"><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
+  <div class="card"><div class="cardhead"><h2>Participantes (${D.participants.length})</h2><span class="admin-help">Abra um time para ver jogadores e histórico</span></div><div class="cardbody scroll">${D.participants.length ? `<table class="table"><thead><tr><th>NOME</th><th>J</th><th>PTS</th><th></th></tr></thead><tbody>${D.participants.map(p => `<tr><td class="club">${esc(p.name)}</td><td>${st[p.id].j}</td><td>${st[p.id].pts}</td><td style="white-space:nowrap"><button class="btn sm" data-t="${p.id}">${openPart === p.id ? 'FECHAR' : 'ABRIR'}</button> <button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>${openPart === p.id ? panel(p) : ''}`).join('')}</tbody></table>` : '<div class="empty">Cadastre o primeiro participante.</div>'}</div></div>`;
+  $('pAdd').onclick = () => { const n = $('pn').value.trim(); if (n) run(sb.from('participants').insert({ name: n }), 'Participante cadastrado.'); };
+  $('view').onclick = e => {
+    const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
+    if (d.t) { openPart = openPart === d.t ? null : d.t; return vTimes(); }
+    if (d.e) { const p = D.participants.find(x => x.id === d.e), n = prompt('Novo nome:', p.name); if (n && n.trim() && n.trim() !== p.name) run(sb.from('participants').update({ name: n.trim() }).eq('id', p.id), 'Nome atualizado.'); }
+    if (d.d && confirm('Excluir este participante? Só é possível se ele não tiver partidas nem jogadores.')) run(sb.from('participants').delete().eq('id', d.d), 'Participante excluído.');
+    if (d.jadd) { const n = $('jn' + d.jadd).value.trim(); if (n) run(sb.from('players').insert({ name: n, participant_id: d.jadd }), 'Jogador cadastrado.'); }
+    if (d.je) { const p = D.players.find(x => x.id === d.je), n = prompt('Novo nome:', p.name); if (n && n.trim() && n.trim() !== p.name) run(sb.from('players').update({ name: n.trim() }).eq('id', p.id), 'Nome atualizado.'); }
+    if (d.jd && confirm('Excluir este jogador? Só é possível se ele não tiver gols/assistências.')) run(sb.from('players').delete().eq('id', d.jd), 'Jogador excluído.');
   };
 }
 

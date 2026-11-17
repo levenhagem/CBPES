@@ -35,11 +35,15 @@ function renderHome() {
   const { participants, rounds, matches } = D, played = latestPlayed(matches), nx = nextMatches(matches), S = stats(D), t = typeOf();
   $('hSeason').textContent = (SET.name + ' • TEMPORADA ' + SET.season).toUpperCase();
   const ch = champion(D);
-  $('champ').innerHTML = ch ? `<div class="notice" style="background:#fff7d6;border-color:#e6c84a;color:#5c4a00"><b>🏆 CAMPEÃO: ${esc(ch.name)}</b></div>` : '';
+  $('champ').innerHTML = ch ? `<div class="champ">Campeão • ${esc(ch.name)}</div>` : '';
   const cr = currentRound(rounds, matches);
-  $('hRound').textContent = cr ? roundLabel(cr) : 'Aguardando rodadas';
+  $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
+
+  const sc = m => `<a class="sc" href="#games"><div class="sc-meta">${esc(roundLabel(m.round))} • ${m.date ? fd(m.date).slice(0, 5) : 'a definir'}</div><div class="sc-row ${m.played && m.home_score > m.away_score ? 'w' : m.played ? 'l' : ''}"><span>${esc(m.home.name)}</span><b>${m.played ? m.home_score : ''}</b></div><div class="sc-row ${m.played && m.away_score > m.home_score ? 'w' : m.played ? 'l' : ''}"><span>${esc(m.away.name)}</span><b>${m.played ? m.away_score : ''}</b></div></a>`;
+  const sl = played.slice(0, 6).reverse().concat(nx.slice(0, 6));
+  $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played[0];
-  $('latest').innerHTML = m ? `<div class="latest-match"><div class="latest-top"><b>★ ÚLTIMA PARTIDA REALIZADA</b><span>${esc(roundLabel(m.round).toUpperCase())}</span></div><div class="latest-main"><div class="latest-team"><span class="crest">${crest(m.home.name)}</span><div>${esc(m.home.name)}</div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span><small>${m.home_pen !== null ? 'PÊNALTIS ' + m.home_pen + '–' + m.away_pen : 'PARTIDA ENCERRADA'}</small></div><div class="latest-team"><span class="crest">${crest(m.away.name)}</span><div>${esc(m.away.name)}</div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>RESULTADO MAIS RECENTE</span></div></div>` : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
+  $('latest').innerHTML = m ? `<div class="latest-match"><div class="latest-top"><b>Última partida</b><span>${esc(roundLabel(m.round).toUpperCase())}</span></div><div class="latest-main"><div class="latest-team"><span class="crest">${crest(m.home.name)}</span><div>${esc(m.home.name)}</div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span><small>${m.home_pen !== null ? 'PÊNALTIS ' + m.home_pen + '–' + m.away_pen : 'PARTIDA ENCERRADA'}</small></div><div class="latest-team"><span class="crest">${crest(m.away.name)}</span><div>${esc(m.away.name)}</div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.name)} • ${esc(SET.season)}</span></div></div>` : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   $('recent').innerHTML = played.length ? played.slice(0, 5).map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nx.length ? nx.slice(0, 5).map(matchRow).join('') : empty('Nenhuma partida agendada.');
   // Cartão lateral: depende do formato

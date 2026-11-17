@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBPES | Portal Oficial</title>
-<link rel="icon" href="favicon.png"><link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="topline"></div>
@@ -16,31 +16,31 @@
 <div id="status" class="notice">Carregando dados do campeonato…</div>
 
 <section id="home" class="section">
- <div class="page-title"><div><div class="eyebrow">Confederação Brasileira de PES</div><h1>O campeonato em um só lugar.</h1><div class="sub">Jogos, resultados, classificação e estatísticas do CBPES.</div></div><button class="btn primary" data-go="games">VER TODAS AS PARTIDAS ↗</button></div>
+ <div class="strip" id="strip"></div>
  <div id="champ"></div>
+ <div id="latest"></div>
  <div class="cols">
   <div class="stack">
-   <div class="matchday"><div><small id="hSeason"></small><strong id="hRound">—</strong><small>Rodada atual</small></div><span class="pill">EM DESTAQUE</span></div>
-   <div id="latest"></div>
-   <div class="card"><div class="cardhead"><h2>RESULTADOS RECENTES</h2><a class="link" href="#games">VER TODOS →</a></div><div class="cardbody" id="recent"></div></div>
-   <div class="card"><div class="cardhead"><h2>PRÓXIMOS CONFRONTOS</h2><a class="link" href="#games">CALENDÁRIO →</a></div><div class="cardbody" id="next"></div></div>
+   <div class="card"><div class="cardhead"><h2>Últimos resultados</h2><a class="link" href="#games">VER TODOS →</a></div><div class="cardbody" id="recent"></div></div>
+   <div class="card"><div class="cardhead"><h2>Próximos jogos</h2><a class="link" href="#games">CALENDÁRIO →</a></div><div class="cardbody" id="next"></div></div>
   </div>
   <div class="stack">
-   <div class="card"><div class="cardhead"><h2 id="miniTitle">CLASSIFICAÇÃO</h2><a class="link" href="#table">COMPLETA →</a></div><div class="cardbody" style="padding-top:7px" id="miniTable"></div></div>
-   <div class="card"><div class="cardhead"><h2>NÚMEROS DO CAMPEONATO</h2></div><div class="cardbody" id="numbers"></div></div>
-   <div class="card"><div class="cardhead"><h2>DESTAQUES</h2><a class="link" href="#stats">ESTATÍSTICAS →</a></div><div class="cardbody" id="highlights"></div></div>
+   <div class="card"><div class="cardhead"><h2 id="miniTitle">Classificação</h2><a class="link" href="#table">COMPLETA →</a></div><div class="cardbody" id="miniTable"></div></div>
+   <div class="card"><div class="cardhead"><h2>Números</h2><span class="pill" id="hRound"></span></div><div class="cardbody" id="numbers"></div></div>
+   <div class="card"><div class="cardhead"><h2>Destaques</h2><a class="link" href="#stats">ESTATÍSTICAS →</a></div><div class="cardbody" id="highlights"></div></div>
   </div>
  </div>
+ <small id="hSeason" class="hidden"></small>
 </section>
 
 <section id="games" class="section">
- <div class="page-title"><div><div class="eyebrow">Calendário oficial</div><h1>Jogos e resultados</h1><div class="sub">Consulte as partidas por rodada.</div></div></div>
- <div class="card"><div class="cardhead"><h2 id="gTitle">PARTIDAS</h2><div class="filters" id="filters"><button data-f="all" class="selected">Todas</button><button data-f="done">Encerradas</button><button data-f="next">Próximas</button></div></div><div class="cardbody" id="gamesList"></div></div>
+ <div class="page-title"><div><div class="eyebrow">Calendário</div><h1>Jogos e resultados</h1><div class="sub">Consulte as partidas por rodada.</div></div></div>
+ <div class="card"><div class="cardhead"><h2 id="gTitle">Partidas</h2><div class="filters" id="filters"><button data-f="all" class="selected">Todas</button><button data-f="done">Encerradas</button><button data-f="next">Próximas</button></div></div><div class="cardbody" id="gamesList"></div></div>
 </section>
 
 <section id="table" class="section">
  <div class="page-title"><div><div class="eyebrow">Classificação</div><h1>Tabela do campeonato</h1><div class="sub">Atualizada automaticamente a partir dos resultados cadastrados.</div></div></div>
- <div class="card"><div class="cardhead"><h2 id="tblTitle">TABELA GERAL</h2><span class="pill" id="tblPill" style="background:#edf3fa;color:#173d70"></span></div><div class="cardbody scroll" id="fullTable"></div></div>
+ <div class="card"><div class="cardhead"><h2 id="tblTitle">Tabela geral</h2><span class="pill" id="tblPill"></span></div><div class="cardbody scroll" id="fullTable"></div></div>
 </section>
 
 <section id="stats" class="section">
