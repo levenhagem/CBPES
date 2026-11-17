@@ -1,0 +1,135 @@
+const sb = supabase.createClient(CBPES.url, CBPES.key);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const crest = n => esc((n || '').replace(/\s/g, '').slice(0, 3).toUpperCase());
+const fd = d => d ? d.split('-').reverse().join('/') : '';
+const pad = n => String(n).padStart(2, '0');
+
+const PRESETS = {
+  liga1: { type: 'liga', label: 'Pontos corridos — turno único', desc: 'Todos se enfrentam uma vez. Campeão: líder da tabela.', cfg: { legs: 1 } },
+  liga2: { type: 'liga', label: 'Pontos corridos — turno e returno', desc: 'Todos se enfrentam em casa e fora. Campeão: líder da tabela.', cfg: { legs: 2 } },
+  mata1: { type: 'mata', label: 'Mata-mata — jogo único', desc: 'Eliminatórias em jogo único; empate decidido nos pênaltis.', cfg: { koLegs: 1 } },
+  mata2: { type: 'mata', label: 'Mata-mata — ida e volta', desc: 'Confrontos em dois jogos (placar agregado); final em jogo único opcional.', cfg: { koLegs: 2, finalSingle: true } },
+  copa: { type: 'copa', label: 'Fase de grupos + mata-mata', desc: 'Grupos em pontos corridos; os melhores de cada grupo seguem para o mata-mata.', cfg: { groups: 2, qual: 2, groupLegs: 1, koLegs: 1, finalSingle: true } }
+};
+let SET = { name: 'CBPES', season: CBPES.season, format: 'liga1', config: {} };
+const cfgOf = (s = SET) => ({ ptsW: 3, ptsD: 1, ...(PRESETS[s.format] || PRESETS.liga1).cfg, ...(s.config || {}) });
+const typeOf = (s = SET) => (PRESETS[s.format] || PRESETS.liga1).type;
+const roundLabel = r => r.name || 'Rodada ' + pad(r.number);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const isPow2 = n => n >= 2 && (n & (n - 1)) === 0;
+const koName = n => ({ 2: 'Final', 4: 'Semifinais', 8: 'Quartas de final', 16: 'Oitavas de final', 32: '16-avos de final' })[n] || 'Mata-mata (' + n + ' times)';
+function roundRobin(ids) {
+  const L = ids.slice(); if (L.length % 2) L.push(null);
+  const n = L.length, R = [];
+  for (let r = 0; r < n - 1; r++) {
+    const m = [];
+    for (let i = 0; i < n / 2; i++) { const h = L[i], a = L[n - 1 - i]; if (h && a) m.push(r % 2 ? [a, h] : [h, a]); }
+    R.push(m); L.splice(1, 0, L.pop());
+  }
+  return R;
+}
+function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
+  const n = ids.length, legs = (cfg.koLegs == 2 && !(n == 2 && cfg.finalSingle)) ? 2 : 1, ms = [];
+  for (let i = 0; i < n; i += 2) ms.push({ home_id: ids[i], away_id: ids[i + 1], leg: 1 });
+  if (legs == 2) for (let i = 0; i < n; i += 2) ms.push({ home_id: ids[i + 1], away_id: ids[i], leg: 2 });
+  return { stage: 'mata', name: koName(n), matches: ms };
+}
+
+async function load() {
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events'];
+  const res = await Promise.all(T.map(t => sb.from(t).select('*')));
+  const err = res.map(x => x.error).find(Boolean); if (err) throw err;
+  const [p, r, m, s, pl, ev] = res.map(x => x.data);
+  p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
+  if (s[0]) SET = s[0];
+  const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x]));
+  const matches = m.map(x => ({
+    ...x, home: P[x.home_id], away: P[x.away_id], round: R[x.round_id],
+    played: x.home_score !== null && x.away_score !== null,
+    date: x.played_on || (R[x.round_id] && R[x.round_id].date) || null
+  })).filter(x => x.home && x.away && x.round).sort((a, b) => a.seq - b.seq);
+  const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
+  return { participants: p, rounds: r, matches, players, events: ev, settings: SET };
+}
+
+// Desempate: pontos, vitórias, saldo, gols pró, nome.
+function standings(ps, ms, cfg = cfgOf()) {
+  const t = Object.fromEntries(ps.map(p => [p.id, { p, pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }]));
+  ms.filter(m => m.played).forEach(m => {
+    const h = t[m.home_id], a = t[m.away_id]; if (!h || !a) return;
+    h.j++; a.j++; h.gp += m.home_score; h.gc += m.away_score; a.gp += m.away_score; a.gc += m.home_score;
+    if (m.home_score > m.away_score) { h.v++; a.d++; h.pts += cfg.ptsW; }
+    else if (m.home_score < m.away_score) { a.v++; h.d++; a.pts += cfg.ptsW; }
+    else { h.e++; a.e++; h.pts += cfg.ptsD; a.pts += cfg.ptsD; }
+  });
+  return Object.values(t).map(x => ({ ...x, sg: x.gp - x.gc, ap: x.j ? Math.round(x.pts / (x.j * cfg.ptsW) * 100) : 0 }))
+    .sort((a, b) => b.pts - a.pts || b.v - a.v || b.sg - a.sg || b.gp - a.gp || a.p.name.localeCompare(b.p.name));
+}
+const leagueMatches = D => D.matches.filter(m => m.round.stage === 'liga');
+function groupTables(D) {
+  const ms = D.matches.filter(m => m.round.stage === 'grupos' && m.group_name);
+  return [...new Set(ms.map(m => m.group_name))].sort().map(n => {
+    const gm = ms.filter(m => m.group_name === n), ids = new Set(gm.flatMap(m => [m.home_id, m.away_id]));
+    return { name: n, matches: gm, st: standings(D.participants.filter(p => ids.has(p.id)), gm) };
+  });
+}
+const koRounds = D => D.rounds.filter(r => r.stage === 'mata');
+function tiesOf(ms) { // confrontos (ida/volta agregados) de uma fase de mata-mata
+  const map = new Map();
+  ms.slice().sort((a, b) => a.leg - b.leg || a.seq - b.seq).forEach(m => {
+    const k = [m.home_id, m.away_id].sort().join('|');
+    if (!map.has(k)) map.set(k, { a: m.home, b: m.away, legs: [] });
+    map.get(k).legs.push(m);
+  });
+  return [...map.values()].sort((x, y) => x.legs[0].seq - y.legs[0].seq).map(t => {
+    const sum = f => t.legs.reduce((s, m) => s + f(m), 0), isA = m => m.home_id === t.a.id;
+    const A = sum(m => isA(m) ? (m.home_score || 0) : (m.away_score || 0)), B = sum(m => isA(m) ? (m.away_score || 0) : (m.home_score || 0));
+    const PA = sum(m => (isA(m) ? m.home_pen : m.away_pen) || 0), PB = sum(m => (isA(m) ? m.away_pen : m.home_pen) || 0);
+    const done = t.legs.every(m => m.played);
+    let winner = null;
+    if (done) winner = A > B ? t.a : B > A ? t.b : PA > PB ? t.a : PB > PA ? t.b : null;
+    return { ...t, A, B, PA, PB, done, winner };
+  });
+}
+function champion(D) {
+  if (typeOf() === 'liga') { const ms = leagueMatches(D); return ms.length && ms.every(m => m.played) ? standings(D.participants, ms)[0].p : null; }
+  const rs = koRounds(D); if (!rs.length) return null;
+  const ties = tiesOf(D.matches.filter(m => m.round_id === rs[rs.length - 1].id));
+  return ties.length === 1 && ties[0].winner ? ties[0].winner : null;
+}
+function latestPlayed(ms) {
+  return ms.filter(m => m.played).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.round.number - a.round.number || b.seq - a.seq);
+}
+function nextMatches(ms) {
+  return ms.filter(m => !m.played).sort((a, b) => a.round.number - b.round.number || (a.date || '9').localeCompare(b.date || '9') || a.seq - b.seq);
+}
+function currentRound(rounds, ms) {
+  const nx = nextMatches(ms)[0]; if (nx) return nx.round;
+  const lp = latestPlayed(ms)[0]; return lp ? lp.round : rounds[rounds.length - 1] || null;
+}
+const sgf = n => (n > 0 ? '+' : '') + n;
+
+function stats(D) {
+  const played = D.matches.filter(m => m.played), st = standings(D.participants, D.matches);
+  const goals = played.reduce((s, m) => s + m.home_score + m.away_score, 0);
+  const by = (f, dir = -1) => st.filter(x => x.j > 0).sort((a, b) => dir * (f(a) - f(b)) || a.p.name.localeCompare(b.p.name));
+  const big = played.slice().sort((a, b) => Math.abs(b.home_score - b.away_score) - Math.abs(a.home_score - a.away_score) || (b.home_score + b.away_score) - (a.home_score + a.away_score))[0];
+  const g = {}, a = {};
+  D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
+  const pl = D.players.map(x => ({ ...x, g: g[x.id] || 0, a: a[x.id] || 0 }));
+  const cmp = (k, k2) => (x, y) => y[k] - x[k] || y[k2] - x[k2] || x.name.localeCompare(y.name);
+  return {
+    st, jogos: played.length, gols: goals, media: played.length ? goals / played.length : 0, big,
+    ataque: by(x => x.gp), defesa: by(x => x.gc, 1), aprov: by(x => x.ap), vit: by(x => x.v), emp: by(x => x.e), der: by(x => x.d), gols_part: by(x => x.gp + x.gc),
+    artilheiros: pl.filter(x => x.g > 0).sort(cmp('g', 'a')), garcons: pl.filter(x => x.a > 0).sort(cmp('a', 'g')),
+    part: pl.filter(x => x.g + x.a > 0).map(x => ({ ...x, ga: x.g + x.a })).sort(cmp('ga', 'g'))
+  };
+}
+const fmt1 = n => n.toFixed(1).replace('.', ',');
+
+function matchRow(m) {
+  const mid = m.played
+    ? `<div class="score">${m.home_score} : ${m.away_score}<small>${m.home_pen !== null ? '(' + m.home_pen + '–' + m.away_pen + ' pên.)' : fd(m.date)}</small></div>`
+    : `<div class="match-meta">${m.date ? fd(m.date) : 'A DEFINIR'}<small>${esc(roundLabel(m.round).toUpperCase())}</small></div>`;
+  return `<div class="match"><div class="team"><span class="crest">${crest(m.home.name)}</span>${esc(m.home.name)}</div>${mid}<div class="team right">${esc(m.away.name)}<span class="crest">${crest(m.away.name)}</span></div></div>`;
+}

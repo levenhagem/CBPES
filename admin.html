@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>CBPES | Administração</title>
+<link rel="icon" href="favicon.png"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="topline"></div>
+<header><div class="head">
+ <a class="brand" href="index.html"><img src="logo.png" alt="CBPES"><span><span class="brandname">CBPES</span><small>ADMINISTRAÇÃO</small></span></a>
+ <nav></nav>
+ <a class="btn" href="index.html" style="align-self:center">← VER PORTAL</a>
+ <button class="btn hidden" id="logout" style="align-self:center;margin-left:8px">SAIR</button>
+</div></header>
+<main>
+<div id="msg" class="msg"></div>
+
+<section id="login" class="hidden" style="max-width:380px;margin:30px auto">
+ <div class="card"><div class="cardhead"><h2>ACESSO RESTRITO</h2></div><div class="cardbody">
+  <div class="field"><label>E-MAIL</label><input id="email" type="email" autocomplete="username" style="width:100%"></div><br>
+  <div class="field"><label>SENHA</label><input id="pass" type="password" autocomplete="current-password" style="width:100%"></div><br>
+  <button class="btn primary" id="loginBtn">ENTRAR</button>
+ </div></div>
+</section>
+
+<section id="app" class="hidden">
+ <div class="tabs" id="tabs"><button data-t="camp">Campeonato</button><button data-t="part">Participantes</button><button data-t="jog">Jogadores</button><button data-t="rod">Rodadas</button><button data-t="res">Resultados</button><button data-t="est">Estatísticas</button><button data-t="his">Histórico</button></div>
+ <div id="view"></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="lib.js"></script>
+<script src="admin.js"></script>
+</body></html>

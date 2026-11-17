@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBPES | Portal Oficial</title>
+<link rel="icon" href="favicon.png"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="topline"></div>
+<header><div class="head">
+ <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><button data-page="table">TABELA</button><button data-page="stats">ESTATÍSTICAS</button></nav>
+ <span class="season" id="season"></span>
+</div></header>
+<main>
+<div id="status" class="notice">Carregando dados do campeonato…</div>
+
+<section id="home" class="section">
+ <div class="page-title"><div><div class="eyebrow">Confederação Brasileira de PES</div><h1>O campeonato em um só lugar.</h1><div class="sub">Jogos, resultados, classificação e estatísticas do CBPES.</div></div><button class="btn primary" data-go="games">VER TODAS AS PARTIDAS ↗</button></div>
+ <div id="champ"></div>
+ <div class="cols">
+  <div class="stack">
+   <div class="matchday"><div><small id="hSeason"></small><strong id="hRound">—</strong><small>Rodada atual</small></div><span class="pill">EM DESTAQUE</span></div>
+   <div id="latest"></div>
+   <div class="card"><div class="cardhead"><h2>RESULTADOS RECENTES</h2><a class="link" href="#games">VER TODOS →</a></div><div class="cardbody" id="recent"></div></div>
+   <div class="card"><div class="cardhead"><h2>PRÓXIMOS CONFRONTOS</h2><a class="link" href="#games">CALENDÁRIO →</a></div><div class="cardbody" id="next"></div></div>
+  </div>
+  <div class="stack">
+   <div class="card"><div class="cardhead"><h2 id="miniTitle">CLASSIFICAÇÃO</h2><a class="link" href="#table">COMPLETA →</a></div><div class="cardbody" style="padding-top:7px" id="miniTable"></div></div>
+   <div class="card"><div class="cardhead"><h2>NÚMEROS DO CAMPEONATO</h2></div><div class="cardbody" id="numbers"></div></div>
+   <div class="card"><div class="cardhead"><h2>DESTAQUES</h2><a class="link" href="#stats">ESTATÍSTICAS →</a></div><div class="cardbody" id="highlights"></div></div>
+  </div>
+ </div>
+</section>
+
+<section id="games" class="section">
+ <div class="page-title"><div><div class="eyebrow">Calendário oficial</div><h1>Jogos e resultados</h1><div class="sub">Consulte as partidas por rodada.</div></div></div>
+ <div class="card"><div class="cardhead"><h2 id="gTitle">PARTIDAS</h2><div class="filters" id="filters"><button data-f="all" class="selected">Todas</button><button data-f="done">Encerradas</button><button data-f="next">Próximas</button></div></div><div class="cardbody" id="gamesList"></div></div>
+</section>
+
+<section id="table" class="section">
+ <div class="page-title"><div><div class="eyebrow">Classificação</div><h1>Tabela do campeonato</h1><div class="sub">Atualizada automaticamente a partir dos resultados cadastrados.</div></div></div>
+ <div class="card"><div class="cardhead"><h2 id="tblTitle">TABELA GERAL</h2><span class="pill" id="tblPill" style="background:#edf3fa;color:#173d70"></span></div><div class="cardbody scroll" id="fullTable"></div></div>
+</section>
+
+<section id="stats" class="section">
+ <div class="page-title"><div><div class="eyebrow">Dados da competição</div><h1>Estatísticas</h1><div class="sub">Calculadas a partir dos resultados oficiais.</div></div></div>
+ <div class="cols3" id="statsGrid"></div>
+</section>
+</main>
+<footer><b style="color:#173d70">CBPES</b> • Confederação Brasileira de PES • Portal oficial</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="lib.js"></script>
+<script src="portal.js"></script>
+</body></html>
