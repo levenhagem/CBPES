@@ -87,27 +87,26 @@ function renderHome() {
   const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nextHome.length ? nextHome.map(matchRow).join('') : empty('Nenhuma partida agendada.');
-  // Cartão lateral: depende do formato
-  const ko = koRounds(D), lastKo = ko[ko.length - 1];
-  let mini = '', title = 'CLASSIFICAÇÃO';
-  if (t === 'liga') { const st = standings(participants.filter(p => p.participates_in_competition !== false), leagueMatches(D)); mini = st.length ? miniTable(st.slice(0, 8)) : empty('Nenhum participante cadastrado.'); }
-  else {
-    if (t === 'copa') { const g = groupTables(D); title = lastKo ? 'GRUPOS E MATA-MATA' : 'GRUPOS'; mini = g.map(x => heading('GRUPO ' + esc(x.name)) + miniTable(x.st.slice(0, 4))).join(''); }
-    else title = 'CHAVEAMENTO';
-    if (lastKo) mini += heading(esc(roundLabel(lastKo).toUpperCase())) + tieRows(tiesOf(matches.filter(x => x.round_id === lastKo.id)));
-    if (!mini && t === 'copa') {
-      const groupRounds = new Set((D.rounds||[]).filter(r=>r.stage==='grupos'||(D.phases||[]).some(p=>p.id===r.phase_id&&p.counts_in_standings)).map(r=>String(r.id)));
-      const groupGames = matches.filter(m=>(m.category||'official')==='official'&&groupRounds.has(String(m.round_id)));
-      if(groupGames.length) {
-        const recentGroup=groupGames.slice().sort((a,b)=>(a.round?.number||0)-(b.round?.number||0)||(a.seq||0)-(b.seq||0)).slice(0,6);
-        mini=recentGroup.map(matchRow).join('');
-        title='JOGOS DA FASE DE GRUPOS';
-      }
-    }
-    if (!mini) mini = empty('Nenhum jogo de grupos cadastrado nesta competição.');
-  }
-  $('miniTitle').textContent = title; $('miniTable').innerHTML = mini;
-  $('numbers').innerHTML = `<div class="stats"><div class="stat"><b>${S.jogos}</b><span>Partidas</span></div><div class="stat"><b>${S.gols}</b><span>Gols</span></div><div class="stat"><b>${fmt1(S.media)}</b><span>Média</span></div></div>`;
+  // Painel lateral da Liga Pro: classificação, últimos resultados e números exclusivos.
+  const proEdition=(D.officialEditions||[]).find(e=>/liga\\s*pro/i.test(((D.officialCompetitions||[]).find(c=>c.id===e.competition_id)?.name||'')+' '+e.name));
+  const proRounds=proEdition?(D.rounds||[]).filter(r=>String(r.official_edition_id)===String(proEdition.id)):[];
+  const proRoundIds=new Set(proRounds.map(r=>String(r.id)));
+  const proMatches=proEdition?matches.filter(m=>(m.category||'official')==='official'&&(String(m.official_edition_id)===String(proEdition.id)||(!m.official_edition_id&&proRoundIds.has(String(m.round_id))))):[];
+  const proPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&String(p.official_edition_id)===String(proEdition?.id));
+  const standingsPhases=new Set(proPhases.filter(p=>p.counts_in_standings).map(p=>String(p.id)));
+  const leagueRounds=proRounds.filter(r=>standingsPhases.size?standingsPhases.has(String(r.phase_id)):(r.stage==='liga'||r.stage==='grupos'));
+  const leagueIds=new Set(leagueRounds.map(r=>String(r.id)));
+  const proLeagueMatches=proMatches.filter(m=>leagueIds.has(String(m.round_id)));
+  const proTeamIds=new Set(proLeagueMatches.flatMap(m=>[String(m.home_id),String(m.away_id)]));
+  const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
+  const proStanding=standings(proTeams,proLeagueMatches);
+  $('miniTitle').textContent=proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO';
+  $('miniTable').innerHTML=proEdition?(proStanding.length?miniTable(proStanding.slice(0,6)):empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
+  const proRecent=latestPlayed(proMatches).slice(0,3);
+  $('leagueRecent').innerHTML=proRecent.length?proRecent.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida da Liga Pro finalizada.');
+  const proPlayed=proMatches.filter(m=>m.played);
+  const proGoals=proPlayed.reduce((sum,m)=>sum+(Number(m.home_score)||0)+(Number(m.away_score)||0),0);
+  $('numbers').innerHTML=`<div class="stats"><div class="stat"><b>${proPlayed.length}</b><span>Partidas</span></div><div class="stat"><b>${proGoals}</b><span>Gols</span></div><div class="stat"><b>${proPlayed.length?(proGoals/proPlayed.length).toFixed(2).replace('.',','):'0,00'}</b><span>Média de gols</span></div></div>`;
   const hl = (tt, who, sub, v, teamId = null, whoIsTeam = false) => `<div class="player"><div><b>${tt}</b><small>${whoIsTeam && teamId ? `<a href="#team/${teamId}">${esc(who)}</a>` : esc(who)}${sub ? ' • ' + (teamId && !whoIsTeam ? `<a href="#team/${teamId}">${esc(sub)}</a>` : esc(sub)) : ''}</small></div><span class="number">${v}</span></div>`;
   let h = '';
   if (S.artilheiros[0]) h += hl('Artilheiro', S.artilheiros[0].name, S.artilheiros[0].team.name, S.artilheiros[0].g + ' gols', S.artilheiros[0].team.id);
