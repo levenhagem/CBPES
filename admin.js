@@ -160,9 +160,10 @@ function vCamp() {
   const legacyPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&!p.official_edition_id);
 
   const compManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>COMPETIÇÕES OFICIAIS</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Nova competição</label><input id="newOfficialComp" placeholder="Ex.: Copa CBPES"></div><button class="btn primary" id="createOfficialComp">CRIAR COMPETIÇÃO</button></div><div class="inline" style="margin-top:12px"><div class="field"><label>Competição</label><select id="newOfficialCompPick">'+opts(oc,null,x=>x.name)+'</select></div><div class="field"><label>Nome da edição</label><input id="newOfficialEdition" placeholder="Ex.: Copa CBPES 2027"></div><div class="field"><label>Temporada</label><input id="newOfficialSeason" placeholder="2027"></div><button class="btn primary" id="createOfficialEdition">CRIAR EDIÇÃO</button></div><div style="margin-top:12px">'+oc.map(c=>'<div class="player"><b>'+esc(c.name)+'</b><button class="btn sm danger" data-delete-official-comp="'+c.id+'">EXCLUIR COMPETIÇÃO</button></div>'+oe.filter(e=>e.competition_id===c.id).map(e=>'<div class="player" style="padding-left:18px"><div><b>'+esc(e.name)+'</b><small>'+esc(e.season||'')+'</small></div><button class="btn sm danger" data-delete-official-edition="'+e.id+'">EXCLUIR EDIÇÃO</button></div>').join('')).join('')+'</div></div></div>';
+  const duplicateManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>DUPLICAR FORMATO DE COMPETIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Copie as fases, a ordem, as regras dos playoffs e os modelos de confrontos de uma edição existente para uma nova edição. Não copia partidas, resultados, classificação ou participantes.</p><div class="inline"><div class="field"><label>EDIÇÃO DE ORIGEM</label><select id="cloneSourceEdition">'+oe.map(e=>'<option value="'+e.id+'">'+esc((oc.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)+'</option>').join('')+'</select></div><div class="field"><label>COMPETIÇÃO DE DESTINO</label><select id="cloneDestinationComp">'+opts(oc,null,x=>x.name)+'</select></div><div class="field"><label>NOME DA NOVA EDIÇÃO</label><input id="cloneEditionName" placeholder="Ex.: Liga Pro 2027/28"></div><div class="field"><label>TEMPORADA</label><input id="cloneEditionSeason" placeholder="2027/28"></div><button class="btn primary" id="cloneCompetitionFormat">DUPLICAR FORMATO</button></div></div></div>';
   const phaseEditionPicker='<div class="card" style="margin-bottom:12px"><div class="cardbody"><div class="field"><label>EDIÇÃO PARA GERENCIAR AS FASES</label><select id="phaseEditionPick">'+oe.map(e=>'<option value="'+e.id+'" '+(e.id===selOfficialEdition?'selected':'')+'>'+esc((oc.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)+'</option>').join('')+'</select></div></div></div>';
   const legacyPhasePanel=legacyPhases.length?'<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES ANTIGAS SEM EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Associe cada fase já criada à edição selecionada acima.</p>'+legacyPhases.map(p=>'<div class="player"><b>'+esc(p.name)+'</b><button class="btn sm" data-link-legacy-phase="'+p.id+'">VINCULAR À EDIÇÃO</button></div>').join('')+'</div></div>':'';
-  $('view').innerHTML = compManager+phaseEditionPicker+legacyPhasePanel+`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
+  $('view').innerHTML = compManager+duplicateManager+phaseEditionPicker+legacyPhasePanel+`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
    <div class="inline" style="margin-bottom:12px">${field('NOME DO CAMPEONATO', `<input id="cn" value="${esc(draft.name)}" maxlength="60">`)}${field('TEMPORADA', `<input id="cs" value="${esc(draft.season)}" style="width:90px" maxlength="12">`)}${field('PTS VITÓRIA', `<input id="pw" type="number" min="1" max="9" value="${c.ptsW}" style="width:70px">`)}${field('PTS EMPATE', `<input id="pd" type="number" min="0" max="9" value="${c.ptsD}" style="width:70px">`)}</div>
    ${Object.entries(PRESETS).map(([k, p]) => `<label style="display:block;padding:8px 10px;border:1px solid ${k === draft.format ? 'var(--green)' : '#d9dfe2'};margin-bottom:6px;cursor:pointer"><input type="radio" name="fmt" value="${k}" ${k === draft.format ? 'checked' : ''}> <b>${p.label}</b><div class="admin-help">${p.desc}</div></label>`).join('')}
    <div class="inline" style="margin-top:10px">${o}</div>
@@ -204,6 +205,35 @@ function vCamp() {
       const x=await sb.from(eid?'official_editions':'official_competitions').delete().eq('id',eid||cid);
       if(x.error)return say(x.error.message,false);
       say('Excluído com sucesso.');await reload();return;
+    }
+    if(e.target.id==='cloneCompetitionFormat'){
+      const sourceId=$('cloneSourceEdition')?.value,destinationId=$('cloneDestinationComp')?.value;
+      const name=$('cloneEditionName')?.value.trim(),season=$('cloneEditionSeason')?.value.trim();
+      const source=oe.find(x=>String(x.id)===String(sourceId));
+      if(!source||!destinationId||!name)return say('Selecione a origem, o destino e informe o nome da nova edição.',false);
+      const sourcePhases=(D.phases||[]).filter(p=>String(p.official_edition_id)===String(sourceId)&&p.competition_type==='official').sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+      if(!confirm('Duplicar o formato de '+source.name+' para '+name+'? Serão copiadas '+sourcePhases.length+' fases, sem jogos ou resultados.'))return;
+      const button=e.target;button.disabled=true;
+      let newEditionId=null;
+      try{
+        const created=await sb.from('official_editions').insert({competition_id:destinationId,name,season:season||null}).select('id').single();
+        if(created.error)throw created.error;
+        newEditionId=created.data.id;
+        if(sourcePhases.length){
+          const rows=sourcePhases.map(p=>({competition_type:'official',official_edition_id:newEditionId,name:p.name,phase_type:p.phase_type,sort_order:p.sort_order,counts_in_standings:p.counts_in_standings,playoff_config:p.playoff_config||null}));
+          const inserted=await sb.from('competition_phases').insert(rows);
+          if(inserted.error)throw inserted.error;
+        }
+        selOfficialEdition=newEditionId;
+        say('Formato duplicado! Nova edição criada com '+sourcePhases.length+' fases, sem partidas.');await reload();
+      }catch(err){
+        if(newEditionId){
+          await sb.from('competition_phases').delete().eq('official_edition_id',newEditionId);
+          await sb.from('official_editions').delete().eq('id',newEditionId);
+        }
+        say('Não foi possível duplicar: '+(err.message||err),false);
+      }finally{button.disabled=false;}
+      return;
     }
     const id = e.target.id;
     if(e.target.closest('[data-zone-add],[data-zone-edit],[data-zone-del]'))return zoneAction(e.target.closest('button').dataset,'official',null);
