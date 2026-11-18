@@ -260,3 +260,6 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-champion-banner>span{font-size:12px;font-weight:850;letter-spacing:2px;color:#e9c73b}
 .cbpes-champion-banner strong{font-size:clamp(18px,2.5vw,29px);font-weight:800}
 .cbpes-champion-banner a{color:#fff;text-decoration:none}
+
+/* V25 — zonas configuráveis de classificação */
+.cbpes-zone-position{border-left:3px solid var(--zone-color,transparent);padding-left:7px!important}.cbpes-zone-legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:11px 3px;font-size:11px;color:#60717b}.cbpes-zone-legend span{display:inline-flex;align-items:center;gap:6px}.cbpes-zone-legend i{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none}.cbpes-zone-form{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:14px 0}.cbpes-zone-form .field{flex:1;min-width:105px}.cbpes-zone-form .field input:not([type=color]),.cbpes-zone-form .field select{width:100%;box-sizing:border-box}.cbpes-zone-form input[type=color]{height:35px;width:55px;padding:2px}.cbpes-zone-phase{padding:10px 0;border-top:1px solid var(--line)}.cbpes-zone-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:12px}.cbpes-zone-item>span:nth-child(2){flex:1}.cbpes-zone-swatch{width:5px;height:27px;border-radius:2px;flex:none}
