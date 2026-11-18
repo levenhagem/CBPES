@@ -382,3 +382,15 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  }
  .cbpes-match-main .cbpes-match-club{grid-template-columns:30px minmax(0,1fr);column-gap:5px}
 }
+
+/* V34 — aproxima os clubes do placar no layout compacto */
+@media(min-width:621px){
+ .cbpes-match-main{
+  grid-template-columns:minmax(0,132px) 58px minmax(0,132px);
+  gap:6px;
+ }
+ .cbpes-match-main .cbpes-match-club{
+  grid-template-columns:36px minmax(0,1fr);
+  column-gap:5px;
+ }
+}
