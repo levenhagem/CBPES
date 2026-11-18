@@ -71,7 +71,7 @@ function groupTables(D) {
   const ms = D.matches.filter(m => m.category !== 'friendly' && m.round && m.round.stage === 'grupos' && m.group_name);
   return [...new Set(ms.map(m => m.group_name))].sort().map(n => {
     const gm = ms.filter(m => m.group_name === n), ids = new Set(gm.flatMap(m => [m.home_id, m.away_id]));
-    return { name: n, matches: gm, st: standings(D.participants.filter(p => ids.has(p.id)), gm) };
+    return { name: n, matches: gm, st: standings(D.participants.filter(p => ids.has(p.id) && p.participates_in_competition !== false), gm) };
   });
 }
 const koRounds = D => D.rounds.filter(r => r.stage === 'mata');
