@@ -46,6 +46,7 @@ const changeRound = (rounds, selected, direction) => {
   const i=rounds.findIndex(r=>String(r.id)===String(selected));
   return rounds[Math.max(0,Math.min(rounds.length-1,i+direction))]?.id || selected;
 };
+const byDisplayOrder = (a,b)=>(a.display_order??1000000)-(b.display_order??1000000);
 const resultsPanel = (nav, content) => `<div class="cbpes-results-panel">${nav}${content}</div>`;
 const twoColumn = (table, results) => table ? `<div class="cbpes-competition-layout"><div class="cbpes-standings-panel">${table}</div>${resultsPanel('',results)}</div>` : `<div class="cbpes-knockout-full">${resultsPanel('',results)}</div>`;
 
@@ -108,12 +109,12 @@ function renderGames() {
   const weeklies = ms.filter(m => m.category === 'weekly');
   const rs = [...new Map(official.map(m => [m.round.id, m.round])).values()].sort((a,b) => filter === 'next' ? a.number-b.number : b.number-a.number);
   const officialHtml = rs.map(r => {
-    const list = official.filter(m => m.round_id === r.id).sort((a,b) => (a.date||'').localeCompare(b.date||'') || (a.seq||0)-(b.seq||0));
+    const list = official.filter(m => m.round_id === r.id).sort((a,b)=>byDisplayOrder(a,b)||(a.seq||0)-(b.seq||0));
     if (!list.length) return '';
     return heading(`${esc(roundLabel(r).toUpperCase())}${r.date ? ' • ' + fd(r.date) : ''}`) + list.map(matchRow).join('');
   }).join('');
   const friendlyHtml = friendlies.length ? heading('PARTIDAS AMISTOSAS') + friendlies.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(matchRow).join('') : '';
-  const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const games=weeklies.filter(m=>m.weekly_id===id);const title=edition?`SEMANAL • ${fd(edition.event_date)}`:'SEMANAL';const rounds=[...new Map(games.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const roundHtml=rounds.map(r=>heading(esc(roundLabel(r).toUpperCase()))+games.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(m=>matchRow(m,true)).join('')).join('');const unassigned=games.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return heading(title)+roundHtml+(unassigned.length?heading('PARTIDAS SEM RODADA')+unassigned.map(m=>matchRow(m,true)).join(''):'');}).join('');
+  const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const games=weeklies.filter(m=>m.weekly_id===id);const title=edition?`SEMANAL • ${fd(edition.event_date)}`:'SEMANAL';const rounds=[...new Map(games.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const roundHtml=rounds.map(r=>heading(esc(roundLabel(r).toUpperCase()))+games.filter(m=>m.weekly_round_id===r.id).sort(byDisplayOrder).map(m=>matchRow(m,true)).join('')).join('');const unassigned=games.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return heading(title)+roundHtml+(unassigned.length?heading('PARTIDAS SEM RODADA')+unassigned.map(m=>matchRow(m,true)).join(''):'');}).join('');
   $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml || empty('Nenhuma partida encontrada.');
 }
 function renderTable() {
@@ -142,7 +143,7 @@ function renderTable() {
     const phaseMatches=D.matches.filter(m=>rounds.some(r=>r.id===m.round_id));
     const roundKey=String(active.id); selectedOfficialRoundByPhase[roundKey]=defaultRound(rounds,phaseMatches,selectedOfficialRoundByPhase[roundKey]);
     const currentRound=rounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[roundKey]));
-    const currentGames=phaseMatches.filter(m=>m.round_id===currentRound?.id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const currentGames=phaseMatches.filter(m=>m.round_id===currentRound?.id).sort(byDisplayOrder);
     const roundNav=roundPicker(rounds,selectedOfficialRoundByPhase[roundKey],roundKey,'official-round');
     if(active.counts_in_standings){
       if(t==='copa'||rounds.some(r=>r.stage==='grupos')){const groups=[...new Set(phaseMatches.map(m=>m.group_name).filter(Boolean))].sort();html=groups.map(g=>{const gm=phaseMatches.filter(m=>m.group_name===g),ids=new Set(gm.flatMap(m=>[m.home_id,m.away_id]));return heading('GRUPO '+esc(g))+fullTbl(standings(D.participants.filter(p=>ids.has(p.id)),gm));}).join('')||empty('Aguardando partidas da fase de grupos.');}
@@ -191,8 +192,9 @@ function renderWeeklies() {
     const roundKey=String(w.id)+'|'+String(activeId);
     selectedRoundByEdition[roundKey]=defaultRound(rounds,ms,selectedRoundByEdition[roundKey]);
     const chosen=rounds.find(r=>String(r.id)===String(selectedRoundByEdition[roundKey]));
-    let rows=all.filter(m=>m.weekly_round_id===chosen?.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(m=>matchRow(m,true)).join('');
-    if(active.phase_type==='final'){const thirdP=phaseList.find(p=>p.phase_type==='third_place');const thirdRounds=(D.weeklyRounds||[]).filter(r=>r.phase_id===thirdP?.id);const thirdGames=all.filter(m=>thirdRounds.some(r=>r.id===m.weekly_round_id));if(thirdGames.length)rows+=heading('DISPUTA DE 3º LUGAR')+thirdGames.map(matchRow).join('');}
+    let selectedGames=all.filter(m=>m.weekly_round_id===chosen?.id);
+    if(active.phase_type==='final'){const thirdP=phaseList.find(p=>p.phase_type==='third_place');const thirdRounds=(D.weeklyRounds||[]).filter(r=>r.phase_id===thirdP?.id);selectedGames=selectedGames.concat(all.filter(m=>thirdRounds.some(r=>r.id===m.weekly_round_id)));}
+    let rows=selectedGames.sort(byDisplayOrder).map(m=>{const third=active.phase_type==='final'&&(D.weeklyRounds||[]).find(r=>r.id===m.weekly_round_id)?.phase?.phase_type==='third_place';return (third?heading('DISPUTA DE 3º LUGAR'):'')+matchRow(m,true);}).join('');
     const finalPhase = phaseList.find(p=>p.phase_type==='final');
     const thirdPhase = phaseList.find(p=>p.phase_type==='third_place');
     const finalRoundIds=(D.weeklyRounds||[]).filter(r=>r.phase_id===finalPhase?.id).map(r=>r.id);
