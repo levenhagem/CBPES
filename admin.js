@@ -204,7 +204,7 @@ function vCamp() {
       if(cid&&related.length){const x=await sb.from('official_editions').delete().eq('competition_id',cid);if(x.error)return say(x.error.message,false);}
       const x=await sb.from(eid?'official_editions':'official_competitions').delete().eq('id',eid||cid);
       if(x.error)return say(x.error.message,false);
-      say('Excluído com sucesso.');await reload();return;
+      say('Excluído com sucesso.');await refresh();return;
     }
     if(e.target.id==='cloneCompetitionFormat'){
       const sourceId=$('cloneSourceEdition')?.value,destinationId=$('cloneDestinationComp')?.value;
@@ -226,7 +226,7 @@ function vCamp() {
           if(inserted.error)throw inserted.error;
         }
         selOfficialEdition=newEditionId;
-        say('Formato duplicado! Nova edição criada com '+sourcePhases.length+' fases, sem partidas.');await reload();
+        say('Formato duplicado! Nova edição criada com '+sourcePhases.length+' fases, sem partidas.');await refresh();
       }catch(err){
         if(newEditionId){
           await sb.from('competition_phases').delete().eq('official_edition_id',newEditionId);
