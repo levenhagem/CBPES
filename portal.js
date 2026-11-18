@@ -101,7 +101,7 @@ function renderHome() {
   const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
   const proStanding=standings(proTeams,proLeagueMatches);
   $('miniTitle').textContent=proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO';
-  $('miniTable').innerHTML=proEdition?(proStanding.length?miniTable(proStanding.slice(0,6)):empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
+  $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6))+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
   const proRecent=latestPlayed(proMatches).slice(0,3);
   $('leagueRecent').innerHTML=proRecent.length?proRecent.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida da Liga Pro finalizada.');
   const proPlayed=proMatches.filter(m=>m.played);
