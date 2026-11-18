@@ -212,7 +212,9 @@ function rowPayload(id) {
   if (!dt) return { err: 'Informe a data da partida.' };
   let pen = { home_pen: null, away_pen: null }; const ph = $('ph' + id), pa = $('pa' + id);
   if (ph && (ph.value !== '' || pa.value !== '')) { if (ph.value === '' || pa.value === '') return { err: 'Informe os dois valores de pênaltis.' }; pen = { home_pen: +ph.value, away_pen: +pa.value }; }
-  return { data: { home_score: +h, away_score: +a, played_on: dt, ...pen } };
+  const extra=$('extra'+id), golden=$('golden'+id);
+  if(golden?.checked && !extra?.checked)return {err:'Gol de ouro exige prorrogação.'};
+  return { data: { home_score: +h, away_score: +a, played_on: dt, ...pen, went_to_extra_time:!!extra?.checked, golden_goal:!!golden?.checked } };
 }
 function saveOne(id) {
   const r = rowPayload(id); if (r.skip) return say('Informe o placar.', false); if (r.err) return say(r.err, false);
@@ -223,17 +225,18 @@ async function saveAll() {
   for (const m of curMatches()) {
     const r = rowPayload(m.id); if (r.err) return say(`${m.home.name} x ${m.away.name}: ${r.err}`, false);
     if (!r.data) continue; const d = r.data;
-    if (m.played && m.home_score === d.home_score && m.away_score === d.away_score && m.played_on === d.played_on && m.home_pen === d.home_pen && m.away_pen === d.away_pen) continue;
+    if (m.played && m.home_score === d.home_score && m.away_score === d.away_score && m.played_on === d.played_on && m.home_pen === d.home_pen && m.away_pen === d.away_pen && !!m.went_to_extra_time === d.went_to_extra_time && !!m.golden_goal === d.golden_goal) continue;
     ups.push(sb.from('matches').update(d).eq('id', m.id));
   }
   if (!ups.length) return say('Nada para salvar: preencha ou altere algum placar.', false);
   const e = (await Promise.all(ups)).find(x => x.error); if (e) return say(traduz(e.error), false);
   say(ups.length + ' resultado(s) salvo(s).', true); refresh();
 }
+const matchExtras = m => `<span class="match-extra-fields"><label>Prorrogação <input type="checkbox" id="extra${m.id}" ${m.went_to_extra_time?'checked':''}></label><label>Gol de ouro <input type="checkbox" id="golden${m.id}" ${m.golden_goal?'checked':''}></label><label>Pênaltis <input class="scoreinput" type="number" min="0" id="ph${m.id}" value="${m.home_pen??''}"></label> x <input class="scoreinput" type="number" min="0" id="pa${m.id}" value="${m.away_pen??''}"></span>`;
 function rowHTML(m) {
   const ko = !!(m.round && m.round.stage === 'mata'), id = m.id;
   return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${id}" data-m="${id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${id}" data-m="${id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
-   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${ko ? `<span class="admin-help">Jogo ${m.leg} • Pênaltis:</span><input class="scoreinput" type="number" min="0" id="ph${id}" data-m="${id}" value="${m.home_pen ?? ''}"> x <input class="scoreinput" type="number" min="0" id="pa${id}" data-m="${id}" value="${m.away_pen ?? ''}">` : ''}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
+   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${matchExtras(m)}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
 }
 function goalsPanel(m) {
   const ev = D.events.filter(e => e.match_id === m.id), pls = D.players.filter(p => [m.home_id, m.away_id].includes(p.participant_id));
@@ -250,7 +253,7 @@ function vJogos() {
   if (activeCategory === 'friendly') {
     const ms = curMatches();
     const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO AMISTOSO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="fh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="fa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data</label><input type="date" id="fdt" value="${today()}"></div><button class="btn primary" data-fadd="1">CADASTRAR AMISTOSO</button></div></div></div>`;
-    const rows = ms.length ? ms.map(m=>`<div class="arow"><div class="nm">${esc(m.home.name)}<small class="admin-help">${esc(m.home.coach_name||'')}</small></div><div><input class="scoreinput" type="number" min="0" max="99" id="h${m.id}" value="${m.home_score??''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${m.id}" value="${m.away_score??''}"></div><div class="nm" style="text-align:right">${esc(m.away.name)}<small class="admin-help">${esc(m.away.coach_name||'')}</small></div><div class="arow-foot"><label class="admin-help">Data</label><input type="date" id="d${m.id}" value="${m.played_on||m.date||''}"><button class="btn sm primary" data-s="${m.id}">SALVAR</button>${m.played?`<button class="btn sm" data-g="${m.id}">GOLS (${D.events.filter(e=>e.match_id===m.id).length})</button><button class="btn sm danger" data-c="${m.id}">LIMPAR</button>`:''}<button class="btn sm danger" data-mx="${m.id}">EXCLUIR</button></div>${openGoals===m.id&&m.played?goalsPanel(m):''}</div>`).join('') : '<div class="empty">Nenhum amistoso cadastrado. Amistosos não recebem rodada.</div>';
+    const rows = ms.length ? ms.map(m=>`<div class="arow"><div class="nm">${esc(m.home.name)}<small class="admin-help">${esc(m.home.coach_name||'')}</small></div><div><input class="scoreinput" type="number" min="0" max="99" id="h${m.id}" value="${m.home_score??''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${m.id}" value="${m.away_score??''}"></div><div class="nm" style="text-align:right">${esc(m.away.name)}<small class="admin-help">${esc(m.away.coach_name||'')}</small></div><div class="arow-foot">${matchExtras(m)}<label class="admin-help">Data</label><input type="date" id="d${m.id}" value="${m.played_on||m.date||''}"><button class="btn sm primary" data-s="${m.id}">SALVAR</button>${m.played?`<button class="btn sm" data-g="${m.id}">GOLS (${D.events.filter(e=>e.match_id===m.id).length})</button><button class="btn sm danger" data-c="${m.id}">LIMPAR</button>`:''}<button class="btn sm danger" data-mx="${m.id}">EXCLUIR</button></div>${openGoals===m.id&&m.played?goalsPanel(m):''}</div>`).join('') : '<div class="empty">Nenhum amistoso cadastrado. Amistosos não recebem rodada.</div>';
     $('view').innerHTML = switcher + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div>`;
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
@@ -261,7 +264,7 @@ function vJogos() {
       if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
       if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
       if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
-      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null,went_to_extra_time:false,golden_goal:false}).eq('id',d.c),'Placar removido.'));
     };
     return;
   }
@@ -293,7 +296,7 @@ function vJogos() {
       if(d.s)return saveOne(d.s);if(d.mx&&confirm('Excluir esta partida semanal?'))return run(sb.from('matches').delete().eq('id',d.mx),'Partida excluída.');
       if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
       if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
-      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null,went_to_extra_time:false,golden_goal:false}).eq('id',d.c),'Placar removido.'));
       if(d.saveall)return saveAll();
     };
     return;
@@ -320,7 +323,7 @@ function vJogos() {
     if(d.saveall)return saveAll();if(d.s)return saveOne(d.s);if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
     if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
     if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
-    if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+    if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null,went_to_extra_time:false,golden_goal:false}).eq('id',d.c),'Placar removido.'));
   };
 }
 // ---------- Edições de campeonatos semanais ----------

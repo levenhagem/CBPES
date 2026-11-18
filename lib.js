@@ -134,14 +134,14 @@ function stats(D, category = 'official') {
 const fmt1 = n => n.toFixed(1).replace('.', ',');
 
 function matchColor(m) { return m.category === 'friendly' ? '#176b45' : '#174e83'; }
-function matchRow(m) {
+function matchRow(m, hideDate = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} : ${m.away_score}` : '– : –';
   if (m.category === 'friendly' || m.category === 'weekly') return `<div class="friendly-match">
-    <div class="friendly-side home"><span class="friendly-tag">${m.category === 'weekly' ? 'SEMANAL' : 'AMISTOSO'}</span><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+    <span class="friendly-tag">${m.category === 'weekly' ? 'SEMANAL' : 'AMISTOSO'}</span><div class="friendly-side home"><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
     <div class="friendly-score">${score}</div>
     <div class="friendly-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
-    <div class="friendly-date">${m.date ? fd(m.date) : ''}</div>
+    ${hideDate ? '' : `<div class="friendly-date">${m.date ? fd(m.date) : ''}</div>`}
   </div>`;
   const color = matchColor(m), comp = SET.name || 'COMPETIÇÃO';
   return `<div class="fixture-mini" style="--match-color:${color}">
