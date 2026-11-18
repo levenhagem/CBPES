@@ -82,8 +82,16 @@ function renderHome() {
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
   const featured = !!m?.is_featured;
-  const championTrophy = (name,team) => /renato/i.test(String(name||'')+' '+String(team?.coach_name||'')) ? '<img class="featured-champion-trophy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Trophy.svg/512px-Trophy.svg.png" alt="Troféu de campeão" loading="eager" referrerpolicy="no-referrer">' : '';
-  const featuredMatchRow = () => matchRow(m);
+  const trophyImage = '<img class="featured-champion-trophy" src="https://upload.wikimedia.org/wikipedia/commons/8/80/Trophy.svg" alt="Troféu de campeão" loading="eager">';
+  const championTrophy = (name,team) => /renato/i.test(String(name||'')+' '+String(team?.coach_name||'')) ? trophyImage : '';
+  const featuredMatchRow = () => {
+    let html=matchRow(m);
+    const homeTrophy=championTrophy(m.home_coach_name,m.home);
+    const awayTrophy=championTrophy(m.away_coach_name,m.away);
+    if(homeTrophy)html=html.replace('<div class="cbpes-match-team home ', '<div class="cbpes-match-team home cbpes-featured-champion ').replace('<div class="cbpes-match-club">'+crestImg(m.home),'<div class="cbpes-match-club">'+homeTrophy+crestImg(m.home));
+    if(awayTrophy)html=html.replace('<div class="cbpes-match-club">'+crestImg(m.away),'<div class="cbpes-match-club">'+awayTrophy+crestImg(m.away));
+    return html;
+  };
   $('latest').innerHTML = m ? (m.category !== 'official' ? `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredMatchRow()}` : `<div class="latest-match" style="--match-color:${matchColor(m)};background:${matchColor(m)}"><div class="latest-top"><b>${featured?'PARTIDA EM DESTAQUE':'Última partida'}</b><span>${esc(SET.name)}</span></div><div class="latest-main"><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.home_id}">${esc(m.home.name)}</a></div><small>${coachLink(m.home_coach_name || m.home.coach_name)}</small></div>${championTrophy(m.home_coach_name,m.home)}</div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span></div><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.away_id}">${esc(m.away.name)}</a></div><small>${coachLink(m.away_coach_name || m.away.coach_name)}</small></div>${championTrophy(m.away_coach_name,m.away)}</div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.season)}</span></div></div>`) : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
   const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
