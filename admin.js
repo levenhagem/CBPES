@@ -9,7 +9,7 @@ function traduz(e) {
   if (e.code === '23503') return 'Não é possível excluir: há partidas, jogadores ou gols ligados a este item. Remova-os antes.';
   if (e.code === '42501' || /row-level security/i.test(e.message)) return 'Sem permissão para esta operação.';
   if (e.code === '23514') return 'Dados inválidos (confira participantes e placar).';
-  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL anteriores e a V7 no Supabase.';
+  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL anteriores e a V10 no Supabase.';
   return e.message;
 }
 
@@ -29,11 +29,11 @@ $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 $('tabs').onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; draft = null; render(); } };
 
-async function refresh() { const y = window.scrollY; try { D = await load(); } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
+async function refresh() { const y = window.scrollY; try { D = await load(); await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
-  ({ camp: vCamp, times: vTimes, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais })[tab]();
+  ({ camp: vCamp, times: vTimes, coaches: vTechnicians, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais })[tab]();
 }
 const pname = id => (D.participants.find(p => p.id === id) || {}).name || '?';
 const plname = id => (D.players.find(p => p.id === id) || {}).name || '?';
@@ -392,6 +392,87 @@ function vEst() {
   <div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>DESEMPENHO GERAL (TODAS AS FASES)</h2></div><div class="cardbody scroll"><table class="table"><thead><tr><th>#</th><th>PARTICIPANTE</th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th></tr></thead><tbody>${S.st.map((x, i) => `<tr><td>${i + 1}</td><td class="club">${esc(x.p.name)}</td><td class="points">${x.pts}</td><td>${x.j}</td><td>${x.v}</td><td>${x.e}</td><td>${x.d}</td><td>${x.gp}</td><td>${x.gc}</td><td>${sgf(x.sg)}</td><td>${x.ap}</td></tr>`).join('')}</tbody></table></div></div>
   <div class="cols3">${pl('ARTILHARIA', S.artilheiros, x => x.g)}${pl('ASSISTÊNCIAS', S.garcons, x => x.a)}${pl('G+A', S.part, x => x.ga)}</div>
   <p class="admin-help">Tudo é calculado automaticamente a partir das partidas e dos gols lançados; não há lançamento manual, então não há duplicidade.</p>`;
+}
+
+// ---------- Técnicos: perfis, retrospecto e sala de troféus ----------
+const coachKey = n => String(n || '').trim().toLocaleLowerCase();
+function allCoachNames() {
+  const names = new Map();
+  const add = n => { const clean = String(n || '').trim(); if (clean) names.set(coachKey(clean), clean); };
+  (D.coachProfiles || []).forEach(x => add(x.name));
+  D.participants.forEach(p => add(p.coach_name));
+  (D.coachHistory || []).forEach(h => add(h.coach_name));
+  D.matches.forEach(m => { add(m.home_coach_name); add(m.away_coach_name); });
+  (D.weeklies || []).forEach(w => add(w.champion_coach_name));
+  (D.coachTrophies || []).forEach(t => add(t.coach_name));
+  return [...names.values()].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+function coachRecord(name) {
+  const key = coachKey(name), matches = D.matches.filter(m => m.played && (coachKey(m.home_coach_name) === key || coachKey(m.away_coach_name) === key));
+  let wins=0,draws=0,losses=0;
+  matches.forEach(m=>{
+    const home=coachKey(m.home_coach_name)===key;
+    const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;
+    if(own>opp)wins++;else if(own<opp)losses++;else draws++;
+  });
+  return {matches,wins,draws,losses};
+}
+function coachCurrentTeam(name) { return D.participants.find(p=>coachKey(p.coach_name)===coachKey(name)) || null; }
+async function syncAutomaticCoachTrophies() {
+  const awards=[];
+  const officialChampion=champion(D);
+  if(officialChampion){
+    const matches=D.matches.filter(m=>m.played&&(m.home_id===officialChampion.id||m.away_id===officialChampion.id)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const snapshot=matches.map(m=>m.home_id===officialChampion.id?m.home_coach_name:m.away_coach_name).find(Boolean);
+    const coach=snapshot;
+    if(coach) awards.push({coach_name:coach,title:'Campeão',competition_name:`${D.settings.name}${D.settings.season?' • '+D.settings.season:''}`,source_type:'official',source_key:`official:${D.settings.id||D.settings.name}:${D.settings.season||''}`,team_name:officialChampion.name,awarded_on:matches[0]?.date||today(),notes:'Título reconhecido automaticamente pelo resultado do campeonato oficial.'});
+  }
+  (D.weeklies||[]).forEach(w=>{
+    if(!w.champion_id)return;
+    const team=D.participants.find(p=>p.id===w.champion_id);
+    const games=D.matches.filter(m=>m.weekly_id===w.id&&m.played).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const snapshot=games.map(m=>m.home_id===w.champion_id?m.home_coach_name:m.away_id===w.champion_id?m.away_coach_name:null).find(Boolean);
+    const coach=w.champion_coach_name||snapshot;
+    if(coach) awards.push({coach_name:coach,title:'Campeão semanal',competition_name:w.name,source_type:'weekly',source_key:`weekly:${w.id}`,team_name:team?.name||'',awarded_on:w.event_date,notes:'Título reconhecido automaticamente a partir do campeão da edição semanal.'});
+  });
+  for(const award of awards){
+    const {error}=await sb.from('coach_trophies').upsert(award,{onConflict:'source_key'});
+    if(error) throw error;
+  }
+  const validWeeklyKeys=new Set(awards.filter(a=>a.source_type==='weekly').map(a=>a.source_key));
+  for(const old of (D.coachTrophies||[]).filter(t=>t.source_type==='weekly'&&!validWeeklyKeys.has(t.source_key))){
+    const {error}=await sb.from('coach_trophies').delete().eq('id',old.id).eq('source_type','weekly');
+    if(error) throw error;
+  }
+}
+function vTechnicians() {
+  const names=allCoachNames();
+  const profiles=D.coachProfiles||[], trophies=D.coachTrophies||[];
+  const options=names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const cards=names.map(name=>{
+    const profile=profiles.find(p=>coachKey(p.name)===coachKey(name));
+    const team=coachCurrentTeam(name), rec=coachRecord(name), titles=trophies.filter(t=>coachKey(t.coach_name)===coachKey(name));
+    const history=(D.coachHistory||[]).filter(h=>coachKey(h.coach_name)===coachKey(name)).sort((a,b)=>(b.started_on||'').localeCompare(a.started_on||''));
+    return `<div class="card" style="margin-bottom:12px"><div class="cardhead"><div><h2>${esc(name)}</h2><span class="admin-help">${team?'Atual: '+esc(team.name):'Sem equipe atual'} • ${rec.matches.length} jogos • ${titles.length} troféus</span></div><button class="btn sm" data-coach-profile="${encodeURIComponent(name)}">EDITAR PERFIL</button></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${rec.matches.length}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${rec.wins}</b><span>Vitórias</span></div><div class="stat"><b>${rec.draws}</b><span>Empates</span></div><div class="stat"><b class="res-l">${rec.losses}</b><span>Derrotas</span></div></div><p class="admin-help">${esc(profile?.bio||'Sem apresentação cadastrada.')}</p><div class="inline" style="justify-content:space-between;align-items:center"><b>Sala de troféus</b><span class="admin-help">${titles.length} conquista(s)</span></div>${titles.length?titles.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'MANUAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span>${t.source_type==='manual'?`<button class="btn sm danger" data-trophy-delete="${t.id}">EXCLUIR</button>`:''}</div>`).join(''):'<div class="empty">Nenhum troféu registrado.</div>'}<details style="margin-top:10px"><summary class="admin-help" style="cursor:pointer">Ver trajetória de equipes</summary>${history.length?history.map(h=>{const p=D.participants.find(x=>x.id===h.participant_id);return `<div class="player"><b>${esc(p?.name||'Equipe removida')}</b><small>${fd(h.started_on)} – ${h.ended_on?fd(h.ended_on):'Atual'}</small></div>`;}).join(''):'<div class="empty">Sem passagens detalhadas.</div>'}</details></div></div>`;
+  }).join('');
+  $('view').innerHTML=`<div class="card" style="margin-bottom:14px"><div class="cardhead"><h2>CADASTRAR / ATUALIZAR TÉCNICO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>NOME DO TÉCNICO</label><input id="coachName" maxlength="80" placeholder="Nome do técnico"></div><div class="field" style="min-width:260px;flex:1"><label>APRESENTAÇÃO / BIOGRAFIA</label><input id="coachBio" maxlength="500" placeholder="Informações sobre a trajetória (opcional)"></div><button class="btn primary" id="coachSave">SALVAR PERFIL</button></div><p class="admin-help">Os técnicos vinculados aos times e aos históricos já aparecem automaticamente nesta lista. Use este cadastro para criar ou complementar o perfil público.</p></div></div>
+  <div class="card" style="margin-bottom:14px"><div class="cardhead"><h2>REGISTRAR CONQUISTA MANUAL</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>TÉCNICO</label><select id="trophyCoach"><option value="">Selecione</option>${options}</select></div><div class="field"><label>TÍTULO / PREMIAÇÃO</label><input id="trophyTitle" maxlength="100" placeholder="Ex.: Campeão da Copa de Verão"></div><div class="field"><label>COMPETIÇÃO / EVENTO</label><input id="trophyCompetition" maxlength="100" placeholder="Nome da competição"></div><div class="field"><label>DATA</label><input id="trophyDate" type="date" value="${today()}"></div><div class="field"><label>EQUIPE</label><input id="trophyTeam" maxlength="80" placeholder="Equipe (opcional)"></div><button class="btn primary" id="trophyAdd">ADICIONAR TROFÉU</button></div><div class="field" style="margin-top:8px"><label>OBSERVAÇÃO (opcional)</label><input id="trophyNotes" maxlength="300" style="width:100%" placeholder="Detalhes da conquista"></div></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>TÍTULOS AUTOMÁTICOS</h2><span class="admin-help">Atualizados conforme os campeões registrados</span></div><div class="cardbody"><p class="admin-help">O sistema reconhece o campeão do campeonato oficial atual e os campeões das edições semanais. O técnico é identificado pelo registro histórico da equipe no momento da conquista.</p><button class="btn" id="coachSync">SINCRONIZAR TÍTULOS AUTOMÁTICOS</button></div></div>
+  <div class="card"><div class="cardhead"><h2>TÉCNICOS CADASTRADOS (${names.length})</h2></div><div class="cardbody">${cards||'<div class="empty">Nenhum técnico encontrado. Cadastre um perfil ou informe o técnico na aba Times.</div>'}</div></div>`;
+  $('view').onclick=async e=>{
+    const t=e.target.closest('button');if(!t)return;
+    if(t.id==='coachSave'){
+      const name=$('coachName').value.trim(),bio=$('coachBio').value.trim();if(!name)return say('Informe o nome do técnico.',false);
+      const {error}=await sb.from('coach_profiles').upsert({name,bio},{onConflict:'name'});if(error)return say(traduz(error),false);say('Perfil do técnico salvo.',true);return refresh();
+    }
+    if(t.id==='trophyAdd'){
+      const coach=$('trophyCoach').value,title=$('trophyTitle').value.trim();if(!coach||!title)return say('Selecione o técnico e informe o título.',false);
+      const {error}=await sb.from('coach_trophies').insert({coach_name:coach,title,competition_name:$('trophyCompetition').value.trim(),source_type:'manual',team_name:$('trophyTeam').value.trim(),awarded_on:$('trophyDate').value||null,notes:$('trophyNotes').value.trim()});if(error)return say(traduz(error),false);say('Conquista manual adicionada.',true);return refresh();
+    }
+    if(t.id==='coachSync'){try{await syncAutomaticCoachTrophies();say('Títulos automáticos atualizados.',true);return refresh();}catch(err){return say(traduz(err),false);}}
+    if(t.dataset.coachProfile){const name=decodeURIComponent(t.dataset.coachProfile),profile=profiles.find(p=>coachKey(p.name)===coachKey(name));const bio=prompt('Apresentação / biografia de '+name+':',profile?.bio||'');if(bio===null)return;const {error}=await sb.from('coach_profiles').upsert({name,bio},{onConflict:'name'});if(error)return say(traduz(error),false);say('Perfil atualizado.',true);return refresh();}
+    if(t.dataset.trophyDelete&&confirm('Excluir esta conquista manual?')){const {error}=await sb.from('coach_trophies').delete().eq('id',t.dataset.trophyDelete).eq('source_type','manual');if(error)return say(traduz(error),false);say('Conquista manual removida.',true);return refresh();}
+  };
 }
 
 // ---------- Histórico ----------
