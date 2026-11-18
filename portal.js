@@ -135,7 +135,8 @@ function renderTable() {
   $('tblTitle').textContent = title; $('tblPill').textContent = pill.toUpperCase(); $('fullTable').innerHTML = html;
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
-$('tableCompetition').onchange = e => { selectedWeeklyTable=e.target.value; renderTable(); };
+const tableCompetitionSelect = $('tableCompetition');
+if (tableCompetitionSelect) tableCompetitionSelect.onchange = e => { selectedWeeklyTable=e.target.value; renderTable(); };
 
 function renderWeeklies() {
   const root = $('weeklyList');
