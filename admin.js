@@ -488,7 +488,7 @@ function vJogos() {
   $('view').innerHTML=switcher+officialEditionSelect()+bulkPanel+`<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew?'FECHAR':'+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
   $('view').onchange=e=>{if(e.target.id==='officialEditionPick'){selOfficialEdition=e.target.value;selRound=null;vJogos();}};
   $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
-  $('view').onclick=e=>{const t=e.target.closest('button');if(!t)return;
+  $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;
     if(t.id==='fixtureBulkRepair'){
       const phaseId=$('fixtureBulkPhase')?.value;
       const phase=(D.phases||[]).find(p=>p.id===phaseId&&p.official_edition_id===selOfficialEdition);
