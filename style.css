@@ -563,3 +563,14 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-playoff-template .cbpes-match-club-text small{text-align:center}
 .cbpes-playoff-template .cbpes-match-team{align-items:center;justify-content:center;min-width:0}
 @media(max-width:480px){.cbpes-playoff-template .cbpes-match-main{grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);gap:6px}.cbpes-playoff-template .cbpes-match-team .cbpes-team-name{font-size:12px}}
+
+/* Compact homepage Liga Pro top-six table, without affecting full standings */
+#miniTable .cbpes-home-league-compact .table{width:100%;table-layout:auto;border-collapse:collapse}
+#miniTable .cbpes-home-league-compact .table th{padding:6px 5px;font-size:9px}
+#miniTable .cbpes-home-league-compact .table td{padding:5px 5px!important;height:36px!important;vertical-align:middle;font-size:12px;line-height:1.2}
+#miniTable .cbpes-home-league-compact .table td:first-child{width:auto}
+#miniTable .cbpes-home-league-compact .table .pos{display:inline-block;min-width:15px;margin-right:5px;font-size:12px;vertical-align:middle}
+#miniTable .cbpes-home-league-compact .table .club{display:inline-flex;flex-direction:column;vertical-align:middle;min-width:0;gap:1px}
+#miniTable .cbpes-home-league-compact .table .club .table-coach{margin:0;font-size:9px!important;line-height:1.1}
+#miniTable .cbpes-home-league-compact .table .points{font-size:13px}
+#miniTable .cbpes-home-league-compact .table .cbpes-crest{width:20px!important;height:20px!important}
