@@ -220,7 +220,7 @@ function vCamp() {
         if(created.error)throw created.error;
         newEditionId=created.data.id;
         if(sourcePhases.length){
-          const rows=sourcePhases.map(p=>({competition_type:'official',official_edition_id:newEditionId,name:p.name,phase_type:p.phase_type,sort_order:p.sort_order,counts_in_standings:p.counts_in_standings,playoff_config:p.playoff_config||null}));
+          const rows=sourcePhases.map((p,i)=>({competition_type:'official',official_edition_id:newEditionId,name:p.name,phase_type:p.phase_type,sort_order:i+1,counts_in_standings:p.counts_in_standings,playoff_config:p.playoff_config||null}));
           const inserted=await sb.from('competition_phases').insert(rows);
           if(inserted.error)throw inserted.error;
         }
