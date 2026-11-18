@@ -187,7 +187,10 @@ function renderTable() {
         </div>
       </div>`).join('')+'</div>':'';
     const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames)));
-    html=placeholderHtml?'<div class="cbpes-competition-neutral" style="width:100%;max-width:100%">'+placeholderHtml+'</div>':twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
+    const editionCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
+    const isLigaEvo=/liga\s*evo/i.test((editionCompetition?.name||'')+' '+(edition.name||''));
+    const isFirstEvoPhase=isLigaEvo&&ix===0&&!phaseMatches.length;
+    html=isFirstEvoPhase?'<div style="width:100%;text-align:center;padding:38px 12px;color:var(--muted)">Confrontos a definir.</div>':(placeholderHtml?'<div class="cbpes-competition-neutral" style="width:100%;max-width:100%">'+placeholderHtml+'</div>':twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.'))));
     const finalP=phases.find(p=>p.phase_type==='final'),thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
     const finalIds=officialRounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=officialRounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
     const fm=officialMatches.find(m=>finalIds.includes(m.round_id)&&m.played),tm=officialMatches.find(m=>thirdIds.includes(m.round_id)&&m.played);
