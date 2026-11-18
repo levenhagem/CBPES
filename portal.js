@@ -139,9 +139,19 @@ function renderTable() {
     return;
   }
   const edition=editions.find(e=>e.id===selectedWeeklyTable);
-  const officialRounds=D.rounds.filter(r=>r.official_edition_id===edition?.id);
-  const officialMatches=D.matches.filter(m=>(m.category||'official')==='official'&&m.official_edition_id===edition?.id);
-  const officialPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&p.official_edition_id===edition?.id);
+  // A aba Jogos exibe partidas oficiais mesmo quando registros antigos não têm edição.
+  // A classificação também deve reconhecê-las pela edição da rodada.
+  // Compatibilidade com dados legados só é aplicada automaticamente se existir uma única edição.
+  const onlyEdition=editions.length===1;
+  const officialRounds=D.rounds.filter(r=>r.official_edition_id===edition?.id||(onlyEdition&&!r.official_edition_id));
+  const roundIds=new Set(officialRounds.map(r=>String(r.id)));
+  const officialMatches=D.matches.filter(m=>(m.category||'official')==='official'&&(
+    m.official_edition_id===edition?.id||
+    (!m.official_edition_id&&(m.round_id?roundIds.has(String(m.round_id)):onlyEdition))
+  ));
+  const officialPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&(
+    p.official_edition_id===edition?.id||(onlyEdition&&!p.official_edition_id)
+  ));
   if(!edition){$('tblTitle').textContent='COMPETIÇÕES CBPES';$('tblPill').textContent='';$('fullTable').innerHTML=empty('Nenhuma competição oficial cadastrada.');return;}
   const t = officialRounds.some(r=>r.stage==='liga')?'liga':officialRounds.some(r=>r.stage==='grupos')?'copa':officialRounds.some(r=>r.stage==='mata')?'mata':typeOf(); let html = '', title = edition.name, pill = '';
   const phases=officialPhases.filter(p=>p.competition_type==='official'&&(p.phase_type!=='third_place'||!officialPhases.some(x=>x.competition_type==='official'&&x.phase_type==='final'))).sort((a,b)=>a.sort_order-b.sort_order);
@@ -173,7 +183,12 @@ function renderTable() {
     const podium=(win||runner||bronze)?`<div class="notice" style="margin-top:14px"><b>PÓDIO DA COMPETIÇÃO</b><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;align-items:end;margin-top:10px"><div><b>${runner?participantLink(runner):'—'}</b><small style="display:block">2º LUGAR</small><div style="height:36px;background:#a7adb4;margin-top:5px"></div></div><div><b>${win?participantLink(win):'—'}</b><small style="display:block">1º LUGAR</small><div style="height:56px;background:#d2a52b;margin-top:5px"></div></div><div><b>${bronze?participantLink(bronze):'—'}</b><small style="display:block">3º LUGAR</small><div style="height:28px;background:#b87950;margin-top:5px"></div></div></div></div>`:'';
     html=nav+championBanner(win,fm?(win?.id===fm.home_id?fm.home_coach_name:fm.away_coach_name):null)+'<div class="cbpes-competition-neutral">'+html+'</div>'+podium; title=edition.name; pill=`${phaseMatches.filter(m=>m.played).length} PARTIDAS NA FASE`;
   } else if (t === 'liga') { const ms = officialMatches.filter(m=>!m.round?.phase_id); const rs=officialRounds.filter(r=>!r.phase_id).sort((a,b)=>a.number-b.number);const key='league';selectedOfficialRoundByPhase[key]=defaultRound(rs,ms,selectedOfficialRoundByPhase[key]);const rr=rs.find(r=>r.id===selectedOfficialRoundByPhase[key]);html='<div class="cbpes-competition-neutral">'+twoColumn(fullTbl(standings(D.participants.filter(p => p.participates_in_competition !== false), ms)),roundPicker(rs,selectedOfficialRoundByPhase[key],key,'official-round')+ms.filter(m=>m.round_id===rr?.id).map(m=>matchRow(m,true)).join(''))+'</div>'; pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
-  else { html=empty(officialRounds.length?'As rodadas desta edição ainda não têm fases configuradas.':'Nenhuma rodada vinculada a esta edição. Vincule as rodadas no painel administrativo.'); pill=''; }
+  else {
+    const rs=officialRounds.slice().sort((a,b)=>a.number-b.number);
+    const ms=officialMatches.slice().sort(byDisplayOrder);
+    html=ms.length?heading('PARTIDAS DA COMPETIÇÃO')+rs.map(r=>heading(esc(roundLabel(r).toUpperCase()))+ms.filter(m=>String(m.round_id)===String(r.id)).map(m=>matchRow(m,true)).join('')).join('')+ms.filter(m=>!m.round_id).map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida vinculada a esta edição.');
+    pill=ms.filter(m=>m.played).length+' PARTIDAS DISPUTADAS';
+  }
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = pill.toUpperCase(); $('fullTable').innerHTML = html;
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
