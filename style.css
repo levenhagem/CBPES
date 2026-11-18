@@ -577,3 +577,5 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* Champion badge is exclusive to Juventus in the homepage featured match */
 #latest .featured-champion-label{display:inline-block;vertical-align:middle;margin-left:7px;padding:3px 7px;border:1px solid #a97711;border-radius:4px;background:linear-gradient(135deg,#f9e6a1,#d4a22f);color:#593c08;font-size:10px;font-weight:800;letter-spacing:.05em;line-height:1.2;white-space:nowrap}
+
+#latest .featured-juventus-trophy{display:inline-block!important;margin-left:6px;font-size:18px;line-height:1;vertical-align:middle;white-space:nowrap}
