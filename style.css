@@ -553,3 +553,13 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   transform:translateX(11px);
  }
 }
+
+/* Playoff templates: centered labels without reserved crest columns */
+.cbpes-playoff-template{display:flex;flex-direction:column;gap:10px;width:100%;min-width:0}
+.cbpes-playoff-template .cbpes-match-main{grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr);width:100%;align-items:center}
+.cbpes-playoff-template .cbpes-match-main .cbpes-match-club{display:flex;align-items:center;justify-content:center;width:100%;min-width:0}
+.cbpes-playoff-template .cbpes-match-club-text{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;width:100%}
+.cbpes-playoff-template .cbpes-match-team .cbpes-team-name{display:block;overflow-wrap:normal;word-break:normal;white-space:normal;text-align:center;color:inherit}
+.cbpes-playoff-template .cbpes-match-club-text small{text-align:center}
+.cbpes-playoff-template .cbpes-match-team{align-items:center;justify-content:center;min-width:0}
+@media(max-width:480px){.cbpes-playoff-template .cbpes-match-main{grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);gap:6px}.cbpes-playoff-template .cbpes-match-team .cbpes-team-name{font-size:12px}}
