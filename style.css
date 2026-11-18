@@ -460,3 +460,46 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   column-gap:4px;
  }
 }
+
+/* V37 — escudos alinhados em colunas fixas dos dois lados */
+.cbpes-match-main{
+ grid-template-columns:minmax(0,175px) 70px minmax(0,175px);
+ column-gap:8px;
+ justify-content:center;
+ max-width:100%;
+ margin-inline:auto;
+}
+.cbpes-match-main>.cbpes-match-team.home,
+.cbpes-match-main>.cbpes-match-team.away{
+ width:100%;
+ min-width:0;
+ align-items:stretch;
+ justify-content:center;
+}
+.cbpes-match-main .cbpes-match-club{
+ width:100%;
+ max-width:100%;
+ grid-template-columns:36px minmax(0,1fr);
+ column-gap:7px;
+ justify-items:start;
+ margin:0;
+}
+.cbpes-match-main .cbpes-match-club>.cbpes-crest{
+ width:36px;
+ height:36px;
+ margin:0;
+}
+@media(max-width:620px){
+ .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);
+  column-gap:5px;
+ }
+ .cbpes-match-main .cbpes-match-club{
+  grid-template-columns:30px minmax(0,1fr);
+  column-gap:4px;
+ }
+ .cbpes-match-main .cbpes-match-club>.cbpes-crest{
+  width:30px;
+  height:30px;
+ }
+}
