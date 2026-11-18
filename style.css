@@ -304,3 +304,15 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  .cbpes-match-team .cbpes-team-inline{gap:5px}
  .cbpes-match-team>small{padding-left:35px}
 }
+
+/* V30 — escudo e textos em colunas independentes: alinhamento estrutural */
+.cbpes-match-team{display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;margin:0;min-width:0}
+.cbpes-match-club{display:grid;grid-template-columns:36px minmax(0,max-content);align-items:center;column-gap:8px;max-width:100%;min-width:0}
+.cbpes-match-club>.cbpes-crest{width:36px;height:36px;margin:0;object-fit:contain}
+.cbpes-match-club-text{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;gap:3px;text-align:left}
+.cbpes-match-club-text .cbpes-team-name{display:block;min-width:0;line-height:1.2}
+.cbpes-match-club-text small{display:block;padding:0;margin:0;line-height:1.2;text-align:left;overflow-wrap:anywhere}
+@media(max-width:620px){
+ .cbpes-match-club{grid-template-columns:30px minmax(0,max-content);column-gap:5px}
+ .cbpes-match-club>.cbpes-crest{width:30px;height:30px}
+}
