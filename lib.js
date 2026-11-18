@@ -36,13 +36,14 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 }
 
 async function load() {
-  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'coach_profiles', 'coach_trophies'];
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'competition_phases', 'coach_profiles', 'coach_trophies'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
-  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, coachProfiles, coachTrophies] = res.map(x => x.data);
+  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, phases, coachProfiles, coachTrophies] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
   if (s[0]) SET = s[0];
-  const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x])), WR = Object.fromEntries((weeklyRounds || []).map(x => [x.id, x]));
+  const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x])), WR = Object.fromEntries((weeklyRounds || []).map(x => [x.id, x])), PH = Object.fromEntries((phases || []).map(x => [x.id, x]));
+  r.forEach(x => x.phase = PH[x.phase_id] || null); (weeklyRounds || []).forEach(x => x.phase = PH[x.phase_id] || null);
   const matches = m.map(x => ({
     ...x, home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
     category: x.category || 'official', weeklyRound: WR[x.weekly_round_id] || null, weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
@@ -50,7 +51,7 @@ async function load() {
     date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
   })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, phases: phases || [], weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
@@ -147,3 +148,45 @@ function matchRow(m) {
     <div class="fixture-meta">${esc(comp)}${m.date ? ' • ' + fd(m.date) : ''}</div>
   </div>`;
 }
+
+/* Ajuste visual V14: restaura o layout de placares oficiais, amistosos e semanais. */
+(() => {
+  if (document.getElementById('cbpes-match-layout-v14')) return;
+  const style = document.createElement('style');
+  style.id = 'cbpes-match-layout-v14';
+  style.textContent = `
+    .friendly-match,.fixture-mini{
+      display:grid;grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr) 92px;
+      align-items:center;gap:10px;padding:12px 14px;margin:0;
+      border-bottom:1px solid var(--line,#dde2e5);min-width:0;
+    }
+    .friendly-match{background:#176b45;color:#fff;}
+    .friendly-match.weekly{background:#002b36;border-left:4px solid #f2c500;}
+    .friendly-side,.fixture-side{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.2;}
+    .friendly-side.home,.fixture-side:first-child{text-align:left;align-items:flex-start;}
+    .friendly-side.away,.fixture-side.away{text-align:right;align-items:flex-end;}
+    .friendly-side b,.fixture-side b{font-family:var(--fc,'Arial Narrow',sans-serif);font-size:18px;font-weight:700;line-height:1.1;overflow-wrap:anywhere;}
+    .friendly-side a,.friendly-side small a,.fixture-side a,.fixture-side small a{color:inherit;}
+    .friendly-side small,.fixture-side small{font-size:11px;opacity:.82;line-height:1.2;}
+    .friendly-tag{display:inline-block;font-family:var(--fc,'Arial Narrow',sans-serif);font-size:10px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border:1px solid currentColor;opacity:.9;margin-bottom:2px;}
+    .friendly-score,.fixture-score{font-family:var(--fc,'Arial Narrow',sans-serif);font-size:27px;font-weight:800;line-height:1;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;}
+    .friendly-date,.fixture-meta{font-size:11px;text-align:right;white-space:nowrap;opacity:.82;}
+    .fixture-mini{grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);background:var(--match-color,#174e83);color:#fff;}
+    .fixture-mini .fixture-meta{grid-column:1/-1;text-align:center;padding-top:3px;border-top:1px solid rgba(255,255,255,.2);}
+    .friendly-date{align-self:center;}
+    .friendly-match .coach-link,.fixture-mini .coach-link{color:inherit;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:2px;}
+    @media(max-width:620px){
+      .friendly-match,.fixture-mini{grid-template-columns:minmax(0,1fr) 76px minmax(0,1fr);gap:7px;padding:10px 9px;}
+      .friendly-date{grid-column:1/-1;text-align:center;padding-top:3px;border-top:1px solid rgba(255,255,255,.2);}
+      .friendly-side b,.fixture-side b{font-size:16px;}
+      .friendly-score,.fixture-score{font-size:23px;}
+      .fixture-mini .fixture-meta{grid-column:1/-1;}
+    }
+    @media(max-width:360px){
+      .friendly-match,.fixture-mini{grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);gap:5px;padding:9px 7px;}
+      .friendly-side b,.fixture-side b{font-size:14px;}
+      .friendly-score,.fixture-score{font-size:20px;}
+    }
+  `;
+  document.head.appendChild(style);
+})();
