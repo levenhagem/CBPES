@@ -154,7 +154,9 @@ function vCamp() {
     : field('Nº DE GRUPOS', num('groups', c.groups, 2, 8)) + field('CLASSIFICAM POR GRUPO', num('qual', c.qual, 1, 8)) + field('JOGOS NO GRUPO', sel('groupLegs', c.groupLegs, [[1, 'Só ida'], [2, 'Ida e volta']])) + koL + fs;
   const saved = S.format === draft.format;
   const t0 = typeOf(S), P = (id, l, cls = '') => `<button class="btn ${cls}" id="${id}">${l}</button>`;
-  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
+  const oc=D.officialCompetitions||[], oe=D.officialEditions||[];
+  const compManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>COMPETIÇÕES OFICIAIS</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Nova competição</label><input id="newOfficialComp" placeholder="Ex.: Copa CBPES"></div><button class="btn primary" id="createOfficialComp">CRIAR COMPETIÇÃO</button></div><div class="inline" style="margin-top:12px"><div class="field"><label>Competição</label><select id="newOfficialCompPick">'+opts(oc,null,x=>x.name)+'</select></div><div class="field"><label>Nome da edição</label><input id="newOfficialEdition" placeholder="Ex.: Copa CBPES 2027"></div><div class="field"><label>Temporada</label><input id="newOfficialSeason" placeholder="2027"></div><button class="btn primary" id="createOfficialEdition">CRIAR EDIÇÃO</button></div><div style="margin-top:12px">'+oe.map(e=>'<div class="player"><b>'+esc((oc.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)+'</b><small>'+esc(e.season||'')+'</small></div>').join('')+'</div></div></div>';
+  $('view').innerHTML = compManager+`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
    <div class="inline" style="margin-bottom:12px">${field('NOME DO CAMPEONATO', `<input id="cn" value="${esc(draft.name)}" maxlength="60">`)}${field('TEMPORADA', `<input id="cs" value="${esc(draft.season)}" style="width:90px" maxlength="12">`)}${field('PTS VITÓRIA', `<input id="pw" type="number" min="1" max="9" value="${c.ptsW}" style="width:70px">`)}${field('PTS EMPATE', `<input id="pd" type="number" min="0" max="9" value="${c.ptsD}" style="width:70px">`)}</div>
    ${Object.entries(PRESETS).map(([k, p]) => `<label style="display:block;padding:8px 10px;border:1px solid ${k === draft.format ? 'var(--green)' : '#d9dfe2'};margin-bottom:6px;cursor:pointer"><input type="radio" name="fmt" value="${k}" ${k === draft.format ? 'checked' : ''}> <b>${p.label}</b><div class="admin-help">${p.desc}</div></label>`).join('')}
    <div class="inline" style="margin-top:10px">${o}</div>
@@ -173,6 +175,8 @@ function vCamp() {
   $('view').onchange = e => {
     if (e.target.name === 'fmt') { capture(); const keep = { ptsW: draft.config.ptsW, ptsD: draft.config.ptsD }; draft.format = e.target.value; draft.config = { ...keep, ...PRESETS[draft.format].cfg }; vCamp(); }
   };
+  $('createOfficialComp').onclick=()=>{const name=$('newOfficialComp').value.trim();if(!name)return say('Informe o nome da competição.',false);return run(sb.from('official_competitions').insert({name}),'Competição criada.');};
+  $('createOfficialEdition').onclick=()=>{const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');};
   $('view').onclick = e => {
     const id = e.target.id;
     if(e.target.closest('[data-zone-add],[data-zone-edit],[data-zone-del]'))return zoneAction(e.target.closest('button').dataset,'official',null);
