@@ -192,3 +192,24 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .rank-position{display:inline-block;min-width:24px;font-size:19px!important;font-weight:600!important;color:#64717a!important;margin-right:9px}.rank-position:empty{visibility:hidden}
 .match-extra-fields{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;margin-right:8px}.match-extra-fields label{display:inline-flex;align-items:center;gap:4px;font-size:11px}
 @media(max-width:620px){.friendly-match{grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr)!important;gap:6px!important;padding:29px 8px 10px!important}}
+
+/* V18 — classificação e partidas lado a lado, com navegação por rodada */
+.cbpes-competition-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+.cbpes-standings-panel,.cbpes-results-panel{min-width:0}
+.cbpes-standings-panel>.table,.cbpes-standings-panel>.scroll{overflow-x:auto}
+.cbpes-standings-panel h3{font-size:12px;margin:0 0 10px;color:var(--navy)}
+.cbpes-results-panel{border-left:1px solid var(--line);padding-left:16px}
+.round-switcher{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 0 10px;margin-bottom:9px;border-bottom:1px solid var(--line)}
+.round-switcher b{font-size:12px;letter-spacing:.6px;text-align:center;color:var(--navy)}
+.round-switcher .phase-arrow{width:31px;height:31px;flex-basis:31px;border-radius:6px}
+.cbpes-phase-summary{background:#f4f7f8;border:1px solid var(--line);padding:14px}
+.cbpes-phase-summary p{font-size:12px;color:var(--muted);line-height:1.5;margin:5px 0 0}
+/* Regras específicas prevalecem sobre o ajuste de layout injetado em lib.js. */
+#home .friendly-match,#games .friendly-match,#table .friendly-match,#weeklies .friendly-match{padding:24px 10px 7px!important;gap:6px!important;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;margin-bottom:6px!important;min-height:0!important}
+#home .fixture-mini,#games .fixture-mini,#table .fixture-mini,#weeklies .fixture-mini{padding:9px 10px!important;gap:6px!important;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;margin-bottom:6px!important;min-height:0!important}
+#home .friendly-match .friendly-side,#games .friendly-match .friendly-side,#table .friendly-match .friendly-side,#weeklies .friendly-match .friendly-side,#home .fixture-mini .fixture-side,#games .fixture-mini .fixture-side,#table .fixture-mini .fixture-side,#weeklies .fixture-mini .fixture-side{min-width:0;font-size:12px!important;line-height:1.25!important}
+#home .friendly-match .friendly-side small,#games .friendly-match .friendly-side small,#table .friendly-match .friendly-side small,#weeklies .friendly-match .friendly-side small,#home .fixture-mini .fixture-side small,#games .fixture-mini .fixture-side small,#table .fixture-mini .fixture-side small,#weeklies .fixture-mini .fixture-side small{font-size:10px!important;margin-top:2px}
+#home .friendly-match .friendly-score,#games .friendly-match .friendly-score,#table .friendly-match .friendly-score,#weeklies .friendly-match .friendly-score,#home .fixture-mini .fixture-score,#games .fixture-mini .fixture-score,#table .fixture-mini .fixture-score,#weeklies .fixture-mini .fixture-score{font-size:22px!important;white-space:nowrap}
+#home .friendly-match .friendly-tag,#games .friendly-match .friendly-tag,#table .friendly-match .friendly-tag,#weeklies .friendly-match .friendly-tag{top:5px!important;left:9px!important;font-size:9px!important}
+#home .friendly-match .friendly-date,#games .friendly-match .friendly-date,#table .friendly-match .friendly-date,#weeklies .friendly-match .friendly-date{font-size:10px!important;padding-top:0!important}
+@media(max-width:900px){.cbpes-competition-layout{grid-template-columns:1fr;gap:14px}.cbpes-results-panel{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}

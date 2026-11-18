@@ -1,5 +1,6 @@
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
+const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
 const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
@@ -28,6 +29,26 @@ const coachLink = name => name ? `<a class="coach-link" href="#coach/${encodeURI
 const miniTable = st => `<table class="table"><thead><tr><th>TIME</th><th>PTS</th><th>J</th><th>SG</th></tr></thead><tbody>${st.map((x, i) => `<tr><td><span class="pos">${i + 1}</span><span class="club">${participantLink(x.p)}<small class="table-coach">${x.p.coach_name ? coachLink(x.p.coach_name) : ''}</small></span></td><td class="points">${x.pts}</td><td>${x.j}</td><td>${sgf(x.sg)}</td></tr>`).join('')}</tbody></table>`;
 const fullTbl = st => st.length ? `<table class="table"><thead><tr><th>POS.</th><th>TIME</th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th></tr></thead><tbody>${st.map((x, i) => `<tr><td>${i + 1}</td><td class="club">${participantLink(x.p)}<small class="table-coach">${x.p.coach_name ? coachLink(x.p.coach_name) : ''}</small></td><td class="points">${x.pts}</td><td>${x.j}</td><td>${x.v}</td><td>${x.e}</td><td>${x.d}</td><td>${x.gp}</td><td>${x.gc}</td><td>${sgf(x.sg)}</td><td>${x.ap}</td></tr>`).join('')}</tbody></table>` : empty('Sem participantes nesta tabela.');
 const heading = t => `<div class="eyebrow" style="margin:12px 0 4px">${t}</div>`;
+
+const roundPicker = (rounds, selected, prefix, attr) => {
+  if (!rounds.length) return empty('Nenhuma rodada cadastrada nesta fase.');
+  const ix = Math.max(0, rounds.findIndex(r => String(r.id) === String(selected)));
+  const current = rounds[ix];
+  return `<div class="round-switcher" aria-label="Navegação por rodadas"><button class="phase-arrow" data-${attr}-prev="${esc(prefix)}" aria-label="Rodada anterior" ${ix===0?'disabled':''}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>${esc(roundLabel(current).toUpperCase())}</b><button class="phase-arrow" data-${attr}-next="${esc(prefix)}" aria-label="Próxima rodada" ${ix===rounds.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
+};
+const defaultRound = (rounds, games, key) => {
+  if (!rounds.length) return null;
+  if (rounds.some(r=>String(r.id)===String(key))) return key;
+  const played = rounds.filter(r=>games.some(m=>String(m.round_id||m.weekly_round_id)===String(r.id)&&m.played));
+  return (played.length ? played[played.length-1] : rounds[0]).id;
+};
+const changeRound = (rounds, selected, direction) => {
+  const i=rounds.findIndex(r=>String(r.id)===String(selected));
+  return rounds[Math.max(0,Math.min(rounds.length-1,i+direction))]?.id || selected;
+};
+const resultsPanel = (nav, content) => `<div class="cbpes-results-panel">${nav}${content}</div>`;
+const twoColumn = (table, results) => `<div class="cbpes-competition-layout"><div class="cbpes-standings-panel">${table}</div>${resultsPanel('',results)}</div>`;
+
 
 function tieRows(ties) {
   if (!ties.length) return empty('Aguardando definição do mata-mata.');
@@ -118,12 +139,18 @@ function renderTable() {
     const nav=`<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" id="phasePrev" aria-label="Fase anterior" ${ix<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" id="phaseNext" aria-label="Próxima fase" ${ix>=phases.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
     const rounds=D.rounds.filter(r=>r.phase_id===active.id).sort((a,b)=>a.number-b.number);
     const phaseMatches=D.matches.filter(m=>rounds.some(r=>r.id===m.round_id));
+    const roundKey=String(active.id); selectedOfficialRoundByPhase[roundKey]=defaultRound(rounds,phaseMatches,selectedOfficialRoundByPhase[roundKey]);
+    const currentRound=rounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[roundKey]));
+    const currentGames=phaseMatches.filter(m=>m.round_id===currentRound?.id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const roundNav=roundPicker(rounds,selectedOfficialRoundByPhase[roundKey],roundKey,'official-round');
     if(active.counts_in_standings){
       if(t==='copa'||rounds.some(r=>r.stage==='grupos')){const groups=[...new Set(phaseMatches.map(m=>m.group_name).filter(Boolean))].sort();html=groups.map(g=>{const gm=phaseMatches.filter(m=>m.group_name===g),ids=new Set(gm.flatMap(m=>[m.home_id,m.away_id]));return heading('GRUPO '+esc(g))+fullTbl(standings(D.participants.filter(p=>ids.has(p.id)),gm));}).join('')||empty('Aguardando partidas da fase de grupos.');}
       else html=fullTbl(standings(D.participants.filter(p=>p.participates_in_competition!==false),phaseMatches));
     }else{
-      html=rounds.map(r=>heading(esc(roundLabel(r).toUpperCase()))+tieRows(tiesOf(phaseMatches.filter(m=>m.round_id===r.id)))).join('')||empty('Nenhuma partida cadastrada nesta fase.');
+      html='';
     }
+    const roundGames=active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames));
+    html=twoColumn(active.counts_in_standings?html:`<div class="cbpes-phase-summary"><h3>${esc(active.name)}</h3><p>Fase eliminatória — os jogos não somam pontos na classificação.</p></div>`,roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
     const finalP=phases.find(p=>p.phase_type==='final'),thirdP=phases.find(p=>p.phase_type==='third_place');
     const finalIds=D.rounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=D.rounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
     const fm=D.matches.find(m=>finalIds.includes(m.round_id)&&m.played),tm=D.matches.find(m=>thirdIds.includes(m.round_id)&&m.played);
@@ -131,9 +158,10 @@ function renderTable() {
     const bronze=tm?(tm.home_score>tm.away_score?tm.home:tm.away_score>tm.home_score?tm.away:null):null;
     const podium=(win||runner||bronze)?`<div class="notice" style="margin-top:14px"><b>PÓDIO DA COMPETIÇÃO</b><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;align-items:end;margin-top:10px"><div><b>${runner?participantLink(runner):'—'}</b><small style="display:block">2º LUGAR</small><div style="height:36px;background:#a7adb4;margin-top:5px"></div></div><div><b>${win?participantLink(win):'—'}</b><small style="display:block">1º LUGAR</small><div style="height:56px;background:#d2a52b;margin-top:5px"></div></div><div><b>${bronze?participantLink(bronze):'—'}</b><small style="display:block">3º LUGAR</small><div style="height:28px;background:#b87950;margin-top:5px"></div></div></div></div>`:'';
     html=nav+html+podium; title=SET.name||'COMPETIÇÃO'; pill=`${phaseMatches.filter(m=>m.played).length} PARTIDAS NA FASE`;
-  } else if (t === 'liga') { const ms = leagueMatches(D); html = fullTbl(standings(D.participants.filter(p => p.participates_in_competition !== false), ms)); pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
+  } else if (t === 'liga') { const ms = leagueMatches(D); const rs=D.rounds.filter(r=>!r.phase_id).sort((a,b)=>a.number-b.number);const key='league';selectedOfficialRoundByPhase[key]=defaultRound(rs,ms,selectedOfficialRoundByPhase[key]);const rr=rs.find(r=>r.id===selectedOfficialRoundByPhase[key]);html=twoColumn(fullTbl(standings(D.participants.filter(p => p.participates_in_competition !== false), ms)),roundPicker(rs,selectedOfficialRoundByPhase[key],key,'official-round')+ms.filter(m=>m.round_id===rr?.id).map(m=>matchRow(m,true)).join('')); pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
   else { if (t === 'copa') { title = 'GRUPOS E MATA-MATA'; const g = groupTables(D); html = g.length ? g.map(x => heading('GRUPO ' + esc(x.name)) + fullTbl(x.st)).join('') : empty('Fase de grupos ainda não gerada.'); } else title = 'CHAVEAMENTO'; const k = koHTML(); html += k ? (t === 'copa' ? heading('<span style="font-size:12px">MATA-MATA</span>') : '') + k : (t === 'mata' ? empty('Chaveamento ainda não gerado.') : ''); pill = (PRESETS[SET.format] || {}).label || ''; }
   $('tblTitle').textContent = title; $('tblPill').textContent = pill.toUpperCase(); $('fullTable').innerHTML = html;
+  $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=D.rounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
 const tableCompetitionSelect = $('tableCompetition');
@@ -159,7 +187,10 @@ function renderWeeklies() {
     const teams = D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id));
     const tableMatches = active.counts_in_standings ? ms : [];
     const table = standings(teams, tableMatches, {ptsW:3,ptsD:1});
-    let rows = rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+all.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('');
+    const roundKey=String(w.id)+'|'+String(activeId);
+    selectedRoundByEdition[roundKey]=defaultRound(rounds,ms,selectedRoundByEdition[roundKey]);
+    const chosen=rounds.find(r=>String(r.id)===String(selectedRoundByEdition[roundKey]));
+    let rows=all.filter(m=>m.weekly_round_id===chosen?.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(m=>matchRow(m,true)).join('');
     if(active.phase_type==='final'){const thirdP=phaseList.find(p=>p.phase_type==='third_place');const thirdRounds=(D.weeklyRounds||[]).filter(r=>r.phase_id===thirdP?.id);const thirdGames=all.filter(m=>thirdRounds.some(r=>r.id===m.weekly_round_id));if(thirdGames.length)rows+=heading('DISPUTA DE 3º LUGAR')+thirdGames.map(matchRow).join('');}
     const finalPhase = phaseList.find(p=>p.phase_type==='final');
     const thirdPhase = phaseList.find(p=>p.phase_type==='third_place');
@@ -172,9 +203,9 @@ function renderWeeklies() {
     const third=thirdMatch?(thirdMatch.home_score>thirdMatch.away_score?thirdMatch.home:thirdMatch.away_score>thirdMatch.home_score?thirdMatch.away:null):null;
     const podium = (winner||runner||third) ? `<div class="notice" style="margin:12px 0"><b>PÓDIO DA COMPETIÇÃO</b><div class="podium-cbp" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;align-items:end;margin-top:12px"><div><div style="font-size:20px;color:#a7adb4">🥈</div><b>${runner?participantLink(runner):'—'}</b><small style="display:block">2º LUGAR</small><div style="height:38px;background:#a7adb4;margin-top:6px"></div></div><div><div style="font-size:24px;color:#d2a52b">🥇</div><b>${winner?participantLink(winner):'—'}</b><small style="display:block">1º LUGAR</small><div style="height:58px;background:#d2a52b;margin-top:6px"></div></div><div><div style="font-size:20px;color:#b87950">🥉</div><b>${third?participantLink(third):'—'}</b><small style="display:block">3º LUGAR</small><div style="height:30px;background:#b87950;margin-top:6px"></div></div></div></div>`:'';
     const nav = `<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" data-phase-prev="${w.id}" aria-label="Fase anterior" ${phaseList.findIndex(p=>p.id===activeId)<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" data-phase-next="${w.id}" aria-label="Próxima fase" ${phaseList.findIndex(p=>p.id===activeId)>=phaseList.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
-    return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count||teams.length} PARTICIPANTES</small></div><span class="pill">${all.filter(m=>m.played).length} JOGOS • ${phaseList.length} FASES</span></div><div class="cardbody">${w.format_description?`<p class="sub">${esc(w.format_description)}</p>`:''}${nav}${active.counts_in_standings?(table.length?`<h3>CLASSIFICAÇÃO — ${esc(active.name.toUpperCase())}</h3>${fullTbl(table)}`:empty('Aguardando partidas desta fase.')):''}${heading('PARTIDAS E RESULTADOS')}${rows||empty('Nenhuma partida cadastrada nesta fase.')}${podium}</div></div>`;
+    return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count||teams.length} PARTICIPANTES</small></div><span class="pill">${all.filter(m=>m.played).length} JOGOS • ${phaseList.length} FASES</span></div><div class="cardbody">${w.format_description?`<p class="sub">${esc(w.format_description)}</p>`:''}${nav}${twoColumn(active.counts_in_standings?(table.length?`<h3>CLASSIFICAÇÃO — ${esc(active.name.toUpperCase())}</h3><div class="scroll">${fullTbl(table)}</div>`:empty('Aguardando partidas desta fase.')):`<div class="cbpes-phase-summary"><h3>${esc(active.name)}</h3><p>Fase eliminatória — resultados separados da classificação.</p></div>`,roundPicker(rounds,selectedRoundByEdition[roundKey],roundKey,'weekly-round')+(rows||empty('Nenhuma partida cadastrada nesta rodada.')))}${podium}</div></div>`;
   }).join('');
-  root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next]');if(!b)return;const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const ps=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
+  root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next],[data-weekly-round-prev],[data-weekly-round-next]');if(!b)return;if(b.hasAttribute('data-weekly-round-prev')||b.hasAttribute('data-weekly-round-next')){const key=b.dataset.weeklyRoundPrev||b.dataset.weeklyRoundNext;const [edition,phase]=key.split('|');const rs=(D.weeklyRounds||[]).filter(r=>String(r.weekly_id)===edition&&(String(r.phase_id)===phase||(!r.phase_id&&phase==='legacy-groups'))).sort((a,c)=>a.number-c.number);selectedRoundByEdition[key]=changeRound(rs,selectedRoundByEdition[key],b.hasAttribute('data-weekly-round-next')?1:-1);renderWeeklies();return;}const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const ps=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
 }
 
 function renderStats() {
