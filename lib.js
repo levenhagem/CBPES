@@ -1,7 +1,6 @@
 const sb = supabase.createClient(CBPES.url, CBPES.key);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const crest = n => esc((n || '').replace(/\s/g, '').slice(0, 3).toUpperCase());
-const participantLink = (p, cls = '') => p ? `<a class="participant-link ${cls}" href="#participant/${encodeURIComponent(p.id)}">${esc(p.name)}</a>` : '';
 const fd = d => d ? d.split('-').reverse().join('/') : '';
 const pad = n => String(n).padStart(2, '0');
 
@@ -132,5 +131,5 @@ function matchRow(m) {
   const mid = m.played
     ? `<div class="score">${m.home_score} : ${m.away_score}<small>${m.home_pen !== null ? '(' + m.home_pen + '–' + m.away_pen + ' pên.)' : fd(m.date)}</small></div>`
     : `<div class="match-meta">${m.date ? fd(m.date) : 'A DEFINIR'}<small>${esc(roundLabel(m.round).toUpperCase())}</small></div>`;
-  return `<div class="match"><div class="team"><span class="crest">${crest(m.home.name)}</span>${participantLink(m.home)}</div>${mid}<div class="team right">${participantLink(m.away)}<span class="crest">${crest(m.away.name)}</span></div></div>`;
+  return `<div class="match"><div class="team"><span class="crest">${crest(m.home.name)}</span><span>${esc(m.home.name)}<small class="coach-label">${esc(m.home.coach_name || '')}</small></span></div>${mid}<div class="team right"><span>${esc(m.away.name)}<small class="coach-label">${esc(m.away.coach_name || '')}</small></span><span class="crest">${crest(m.away.name)}</span></div></div>`;
 }
