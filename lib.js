@@ -134,6 +134,11 @@ function stats(D, category = 'official') {
 const fmt1 = n => n.toFixed(1).replace('.', ',');
 
 function matchColor(m) { return m.category === 'friendly' || m.category === 'weekly' ? '#176b45' : '#174e83'; }
+function crestImg(p,cls='') {
+  if(!p?.crest_url || !/^https:\/\//i.test(p.crest_url))return '';
+  return `<img class="cbpes-crest ${cls}" src="${esc(p.crest_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`;
+}
+function teamWithCrest(p) { return `<span class="cbpes-team-inline">${crestImg(p)}<span>${esc(p.name)}</span></span>`; }
 function matchRow(m, hideDate = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
@@ -152,9 +157,9 @@ function matchRow(m, hideDate = false) {
   return `<div class="cbpes-match" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
-      <div class="cbpes-match-team home ${homeWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+      <div class="cbpes-match-team home ${homeWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.home_id}">${teamWithCrest(m.home)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
       <div class="cbpes-match-score">${score}${detailHTML}</div>
-      <div class="cbpes-match-team away ${awayWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
+      <div class="cbpes-match-team away ${awayWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.away_id}">${teamWithCrest(m.away)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
     </div>
   </div>`;
 }
