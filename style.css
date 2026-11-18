@@ -394,3 +394,17 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   column-gap:5px;
  }
 }
+
+/* V35 — placar bem colado aos dois clubes, sem espaços flexíveis */
+@media(min-width:621px){
+ .cbpes-match-main{
+  grid-template-columns:110px 48px 110px;
+  column-gap:2px;
+  justify-content:start;
+ }
+ .cbpes-match-main .cbpes-match-club{
+  grid-template-columns:36px minmax(0,1fr);
+  column-gap:3px;
+ }
+ .cbpes-match-main .cbpes-match-score{font-size:21px}
+}
