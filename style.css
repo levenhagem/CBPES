@@ -293,3 +293,14 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-crest-editor-row .field{flex:1;min-width:180px}
 .cbpes-crest-editor-row input[type=url]{width:100%}
 @media(max-width:620px){.cbpes-match-team .cbpes-crest{width:30px;height:30px}.cbpes-crest-large{width:48px;height:48px}}
+
+/* V29 — técnicos alinhados ao nome do clube, não ao escudo */
+.cbpes-match-team{width:max-content;max-width:100%;margin-inline:auto;align-items:stretch;text-align:left}
+.cbpes-match-team .cbpes-team-name{display:block;min-width:0}
+.cbpes-match-team .cbpes-team-inline{display:flex;align-items:center;gap:7px;min-width:0}
+.cbpes-match-team .cbpes-team-inline>span:last-child{min-width:0}
+.cbpes-match-team>small{display:block;padding-left:43px;text-align:left;overflow-wrap:anywhere}
+@media(max-width:620px){
+ .cbpes-match-team .cbpes-team-inline{gap:5px}
+ .cbpes-match-team>small{padding-left:35px}
+}
