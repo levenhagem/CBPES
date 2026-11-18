@@ -200,3 +200,77 @@ function matchRow(m, hideDate = false) {
   `;
   document.head.appendChild(style);
 })();
+
+/* V26 — seleção visual personalizada, mantendo o select nativo como fonte de dados. */
+(function(){
+  function enhance(root){
+    const selects=[];
+    if(root.nodeType===1&&root.matches?.('select'))selects.push(root);
+    root.querySelectorAll?.('select').forEach(s=>selects.push(s));
+    for(const select of selects){
+      if(select.dataset.cbpesEnhanced||select.multiple||select.size>1)continue;
+      select.dataset.cbpesEnhanced='1';
+      const shell=document.createElement('div');shell.className='cbpes-select';
+      const trigger=document.createElement('button');trigger.type='button';trigger.className='cbpes-select-trigger';trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');
+      const menu=document.createElement('div');menu.className='cbpes-select-menu';menu.setAttribute('role','listbox');
+      select.parentNode.insertBefore(shell,select);shell.append(select,trigger,menu);
+      select.classList.add('cbpes-select-native');
+      const sync=()=>{
+        const option=select.selectedOptions[0];
+        trigger.textContent=option?.textContent||'Selecione';
+        trigger.disabled=select.disabled;
+        menu.replaceChildren();
+        [...select.options].forEach((opt,i)=>{
+          const item=document.createElement('button');item.type='button';item.className='cbpes-select-option';item.setAttribute('role','option');
+          item.textContent=opt.textContent;item.disabled=opt.disabled;
+          item.setAttribute('aria-selected',String(opt.selected));
+          if(opt.selected)item.classList.add('selected');
+          item.addEventListener('click',()=>{
+            if(opt.disabled)return;
+            select.selectedIndex=i;
+            select.dispatchEvent(new Event('change',{bubbles:true}));
+            close();sync();trigger.focus();
+          });
+          menu.append(item);
+        });
+      };
+      const close=()=>{shell.classList.remove('open');trigger.setAttribute('aria-expanded','false');};
+      trigger.addEventListener('click',()=>{
+        document.querySelectorAll('.cbpes-select.open').forEach(el=>{if(el!==shell){el.classList.remove('open');el.querySelector('.cbpes-select-trigger')?.setAttribute('aria-expanded','false');}});
+        shell.classList.toggle('open');trigger.setAttribute('aria-expanded',String(shell.classList.contains('open')));
+        if(shell.classList.contains('open'))menu.querySelector('.selected')?.scrollIntoView({block:'nearest'});
+      });
+      trigger.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){close();return;}
+        if(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='Enter'||e.key===' '){
+          e.preventDefault();
+          if(!shell.classList.contains('open'))trigger.click();
+          const choices=[...menu.querySelectorAll('button:not(:disabled)')];
+          const current=choices.indexOf(document.activeElement);
+          const selected=choices.findIndex(x=>x.classList.contains('selected'));
+          const step=e.key==='ArrowUp'?-1:1;
+          choices[Math.max(0,Math.min(choices.length-1,current<0?selected>=0?selected:0:current+step))]?.focus();
+        }
+      });
+      menu.addEventListener('keydown',e=>{
+        const choices=[...menu.querySelectorAll('button:not(:disabled)')],i=choices.indexOf(document.activeElement);
+        if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}
+        if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();choices[Math.max(0,Math.min(choices.length-1,i+(e.key==='ArrowDown'?1:-1)))]?.focus();}
+        if(e.key==='Home'||e.key==='End'){e.preventDefault();choices[e.key==='Home'?0:choices.length-1]?.focus();}
+      });
+      select.addEventListener('change',sync);
+      sync();
+    }
+  }
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.cbpes-select'))document.querySelectorAll('.cbpes-select.open').forEach(el=>{el.classList.remove('open');el.querySelector('.cbpes-select-trigger')?.setAttribute('aria-expanded','false');});
+  });
+  const start=()=>{
+    enhance(document);
+    const observer=new MutationObserver(records=>{
+      for(const r of records)for(const node of r.addedNodes)if(node.nodeType===1)enhance(node);
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
