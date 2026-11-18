@@ -78,7 +78,7 @@ function renderHome() {
   $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
 
   const sc = m => `<div class="sc"><div class="sc-meta"><a href="#games">${m.category === 'friendly' ? 'AMISTOSO' : m.category === 'weekly' ? 'SEMANAL' : esc(SET.name)} • ${m.date ? fd(m.date).slice(0, 5) : 'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played ? m.home_score : ''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played ? m.away_score : ''}</b></div></div>`;
-  const sl = played.slice(0, 6).reverse().concat(nx.slice(0, 6));
+  const sl = played.slice(0, 6).reverse();
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
   const featured = !!m?.is_featured;
@@ -95,7 +95,16 @@ function renderHome() {
     if (t === 'copa') { const g = groupTables(D); title = lastKo ? 'GRUPOS E MATA-MATA' : 'GRUPOS'; mini = g.map(x => heading('GRUPO ' + esc(x.name)) + miniTable(x.st.slice(0, 4))).join(''); }
     else title = 'CHAVEAMENTO';
     if (lastKo) mini += heading(esc(roundLabel(lastKo).toUpperCase())) + tieRows(tiesOf(matches.filter(x => x.round_id === lastKo.id)));
-    if (!mini) mini = empty('Aguardando sorteio e geração dos jogos.');
+    if (!mini && t === 'copa') {
+      const groupRounds = new Set((D.rounds||[]).filter(r=>r.stage==='grupos'||(D.phases||[]).some(p=>p.id===r.phase_id&&p.counts_in_standings)).map(r=>String(r.id)));
+      const groupGames = matches.filter(m=>(m.category||'official')==='official'&&groupRounds.has(String(m.round_id)));
+      if(groupGames.length) {
+        const recentGroup=groupGames.slice().sort((a,b)=>(a.round?.number||0)-(b.round?.number||0)||(a.seq||0)-(b.seq||0)).slice(0,6);
+        mini=recentGroup.map(matchRow).join('');
+        title='JOGOS DA FASE DE GRUPOS';
+      }
+    }
+    if (!mini) mini = empty('Nenhum jogo de grupos cadastrado nesta competição.');
   }
   $('miniTitle').textContent = title; $('miniTable').innerHTML = mini;
   $('numbers').innerHTML = `<div class="stats"><div class="stat"><b>${S.jogos}</b><span>Partidas</span></div><div class="stat"><b>${S.gols}</b><span>Gols</span></div><div class="stat"><b>${fmt1(S.media)}</b><span>Média</span></div></div>`;
