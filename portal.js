@@ -192,7 +192,9 @@ function renderTable() {
     if(isLigaEvo&&ix===0){
       const evoTeamIds=new Set(officialMatches.flatMap(m=>[String(m.home_id),String(m.away_id)]));
       const evoTeams=D.participants.filter(p=>p.participates_in_competition!==false&&(evoTeamIds.size===0||evoTeamIds.has(String(p.id))));
-      html=fullTbl(standings(evoTeams,phaseMatches),zonesFor('official',null,active.id));
+      const evoTable=fullTbl(standings(evoTeams,phaseMatches),zonesFor('official',null,active.id));
+      const evoFixtures=phaseMatches.length?(roundNav+(roundGames||empty('Nenhuma partida nesta rodada.'))):'<div style="display:flex;align-items:center;justify-content:center;min-height:180px;padding:24px;text-align:center;color:var(--muted)">Confrontos a definir.</div>';
+      html=twoColumn(evoTable,evoFixtures);
     }else{
       html=placeholderHtml?'<div class="cbpes-competition-neutral" style="width:100%;max-width:100%">'+placeholderHtml+'</div>':twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
     }
