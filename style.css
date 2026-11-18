@@ -1,6 +1,6 @@
 /* CBPES — visual de portal esportivo: plano, denso, sem sombras nem cantos arredondados */
 :root{--green:#078a45;--yellow:#f2c500;--blue:#173d70;--navy:#002b36;--ink:#14232b;--muted:#66767f;--line:#dde2e5;--bg:#f2f4f5;--white:#fff;--soft:#eef2f4;
---f:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--fc:'Barlow Condensed','Arial Narrow',var(--f)}
+--f:'Ubuntu',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--fc:'Barlow Condensed','Arial Narrow',var(--f)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--f);font-size:14px;line-height:1.35;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
