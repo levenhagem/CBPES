@@ -176,7 +176,7 @@ function renderTable() {
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
     const placeholderHtml=active.phase_type==='playoff'&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match" style="--match-color:#bfcbd3">
-        <div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CONFRONTO ${i+1}</span></div>
+        <div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>
         <div class="cbpes-match-main">
           <div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[0]||'A definir'))}</span><small>A definir</small></div></div></div>
           <div class="cbpes-match-score">– : –</div>
@@ -184,7 +184,7 @@ function renderTable() {
         </div>
       </div>`).join('')+'</div>':'';
     const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames)));
-    html=twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
+    html=twoColumn(active.counts_in_standings?html:'',(placeholderHtml?'':roundNav)+(roundGames||empty('Nenhuma partida nesta rodada.')));
     const finalP=phases.find(p=>p.phase_type==='final'),thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
     const finalIds=officialRounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=officialRounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
     const fm=officialMatches.find(m=>finalIds.includes(m.round_id)&&m.played),tm=officialMatches.find(m=>thirdIds.includes(m.round_id)&&m.played);
