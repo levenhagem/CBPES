@@ -213,7 +213,8 @@ function rowPayload(id) {
   let pen = { home_pen: null, away_pen: null }; const ph = $('ph' + id), pa = $('pa' + id);
   if (ph && (ph.value !== '' || pa.value !== '')) { if (ph.value === '' || pa.value === '') return { err: 'Informe os dois valores de pênaltis.' }; pen = { home_pen: +ph.value, away_pen: +pa.value }; }
   const extra=$('extra'+id), golden=$('golden'+id);
-  if(golden?.checked && !extra?.checked)return {err:'Gol de ouro exige prorrogação.'};
+  const match=D.matches.find(m=>String(m.id)===String(id));
+  if(match && isGroupMatch(match))return {data:{home_score:+h,away_score:+a,played_on:dt}};
   return { data: { home_score: +h, away_score: +a, played_on: dt, ...pen, went_to_extra_time:!!extra?.checked, golden_goal:!!golden?.checked } };
 }
 function saveOne(id) {
@@ -225,14 +226,18 @@ async function saveAll() {
   for (const m of curMatches()) {
     const r = rowPayload(m.id); if (r.err) return say(`${m.home.name} x ${m.away.name}: ${r.err}`, false);
     if (!r.data) continue; const d = r.data;
-    if (m.played && m.home_score === d.home_score && m.away_score === d.away_score && m.played_on === d.played_on && m.home_pen === d.home_pen && m.away_pen === d.away_pen && !!m.went_to_extra_time === d.went_to_extra_time && !!m.golden_goal === d.golden_goal) continue;
+    if (m.played && m.home_score === d.home_score && m.away_score === d.away_score && m.played_on === d.played_on && (isGroupMatch(m) || (m.home_pen === d.home_pen && m.away_pen === d.away_pen && !!m.went_to_extra_time === d.went_to_extra_time && !!m.golden_goal === d.golden_goal))) continue;
     ups.push(sb.from('matches').update(d).eq('id', m.id));
   }
   if (!ups.length) return say('Nada para salvar: preencha ou altere algum placar.', false);
   const e = (await Promise.all(ups)).find(x => x.error); if (e) return say(traduz(e.error), false);
   say(ups.length + ' resultado(s) salvo(s).', true); refresh();
 }
-const matchExtras = m => `<span class="match-extra-fields"><label>Prorrogação <input type="checkbox" id="extra${m.id}" ${m.went_to_extra_time?'checked':''}></label><label>Gol de ouro <input type="checkbox" id="golden${m.id}" ${m.golden_goal?'checked':''}></label><label>Pênaltis <input class="scoreinput" type="number" min="0" id="ph${m.id}" value="${m.home_pen??''}"></label> x <input class="scoreinput" type="number" min="0" id="pa${m.id}" value="${m.away_pen??''}"></span>`;
+const isGroupMatch = m => {
+  const phase = m.round?.phase || m.weeklyRound?.phase;
+  return phase ? phase.phase_type === 'groups' || (phase.counts_in_standings && phase.phase_type !== 'playoff') : ['grupos','liga'].includes(m.round?.stage);
+};
+const matchExtras = m => isGroupMatch(m) ? '' : `<span class="match-extra-fields"><label>Prorrogação <input type="checkbox" id="extra${m.id}" ${m.went_to_extra_time?'checked':''}></label><label>Gol de ouro <input type="checkbox" id="golden${m.id}" ${m.golden_goal?'checked':''}></label><label>Pênaltis <input class="scoreinput" type="number" min="0" id="ph${m.id}" value="${m.home_pen??''}"></label> x <input class="scoreinput" type="number" min="0" id="pa${m.id}" value="${m.away_pen??''}"></span>`;
 function featuredToggle(m) { return `<label class="admin-featured"><input type="checkbox" data-featured="${m.id}" ${m.is_featured?'checked':''}> FIXAR NA PÁGINA INICIAL</label>`; }
 async function setFeatured(id,checked){
   if(checked){const current=D.matches.filter(m=>m.is_featured&&m.id!==id);for(const m of current){const {error}=await sb.from('matches').update({is_featured:false}).eq('id',m.id);if(error)return say(traduz(error),false);}}
