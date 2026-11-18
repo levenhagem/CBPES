@@ -361,3 +361,24 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-match-main .cbpes-match-club-text small{
   text-align:left;
 }
+
+/* V33 — placar compacto agrupado à esquerda; área livre somente à direita */
+.cbpes-match-main{
+ display:grid;
+ grid-template-columns:minmax(0,175px) 68px minmax(0,175px);
+ gap:10px;
+ justify-content:start;
+ align-items:center;
+ width:100%;
+}
+.cbpes-match-main>.cbpes-match-team{min-width:0;width:100%;justify-content:center}
+.cbpes-match-main .cbpes-match-club{width:100%;grid-template-columns:36px minmax(0,1fr);column-gap:7px}
+.cbpes-match-main .cbpes-match-score{min-width:0;text-align:center}
+@media(max-width:620px){
+ .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 55px minmax(0,1fr);
+  gap:5px;
+  max-width:365px;
+ }
+ .cbpes-match-main .cbpes-match-club{grid-template-columns:30px minmax(0,1fr);column-gap:5px}
+}
