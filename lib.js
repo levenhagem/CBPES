@@ -44,8 +44,10 @@ async function load() {
   if (s[0]) SET = s[0];
   const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x])), WR = Object.fromEntries((weeklyRounds || []).map(x => [x.id, x])), PH = Object.fromEntries((phases || []).map(x => [x.id, x]));
   r.forEach(x => x.phase = PH[x.phase_id] || null); (weeklyRounds || []).forEach(x => x.phase = PH[x.phase_id] || null);
+  const evoEditionIds = new Set((officialEditions||[]).filter(e=>/liga\s*evo/i.test(String(e.name||'')+' '+String((officialCompetitions||[]).find(c=>String(c.id)===String(e.competition_id))?.name||''))).map(e=>String(e.id)));
+  const evoRoundIds = new Set(r.filter(round=>evoEditionIds.has(String(round.official_edition_id||''))).map(round=>String(round.id)));
   const matches = m.map(x => ({
-    ...x, home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
+    ...x, is_liga_evo: (x.category||'official')==='official' && (evoEditionIds.has(String(x.official_edition_id||'')) || evoRoundIds.has(String(x.round_id||''))), home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
     category: x.category || 'official', weeklyRound: WR[x.weekly_round_id] || null, weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
     played: x.home_score !== null && x.away_score !== null,
     date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
@@ -154,7 +156,7 @@ function matchRow(m, hideDate = false) {
   const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : esc(SET.name || 'OFICIAL');
   const color = matchColor(m);
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
-  return `<div class="cbpes-match" style="--match-color:${color}">
+  return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
