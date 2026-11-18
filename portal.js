@@ -1,4 +1,4 @@
-let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current';
+let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const $ = id => document.getElementById(id);
 const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
@@ -39,11 +39,11 @@ function tieRows(ties) {
   }).join('');
 }
 const koHTML = () => koRounds(D).map(r => heading(esc(roundLabel(r).toUpperCase())) + tieRows(tiesOf(D.matches.filter(m => m.round_id === r.id)))).join('');
-const plCard = (title, rows, f, unit) => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 10).map((x, i) => `<div class="player"><div><b>${i + 1}. ${esc(x.name)}</b><small><a href="#team/${x.team.id}">${esc(x.team.name)}</a></small></div><span class="number">${f(x)} ${unit}</span></div>`).join('') : empty('Nenhum registro ainda.')}</div></div>`;
-const rankCard = (title, rows, f, unit = '') => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 8).map((x, i) => `<div class="player"><div><b>${i + 1}. ${participantLink(x.p)}</b></div><span class="number">${f(x)}${unit}</span></div>`).join('') : empty('Sem dados ainda.')}</div></div>`;
+const plCard = (title, rows, f, unit) => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 10).map((x, i) => `<div class="player"><div><b><span class="rank-position">${i + 1}</span>${esc(x.name)}</b><small><a href="#team/${x.team.id}">${esc(x.team.name)}</a></small></div><span class="number">${f(x)} ${unit}</span></div>`).join('') : empty('Nenhum registro ainda.')}</div></div>`;
+const rankCard = (title, rows, f, unit = '') => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 8).map((x, i) => `<div class="player"><div><b><span class="rank-position">${i + 1}</span>${participantLink(x.p)}</b></div><span class="number">${f(x)}${unit}</span></div>`).join('') : empty('Sem dados ainda.')}</div></div>`;
 
 function renderHome() {
-  const { participants, rounds, matches } = D, played = latestPlayed(matches), nx = nextMatches(matches), S = stats(D), t = typeOf();
+  const { participants, rounds, matches } = D, played = latestPlayed(matches), nx = nextMatches(matches), S = stats(D, 'nonweekly'), t = typeOf();
   $('hSeason').textContent = (SET.name + ' • TEMPORADA ' + SET.season).toUpperCase();
   const cr = currentRound(rounds, matches);
   $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
@@ -53,7 +53,7 @@ function renderHome() {
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played[0];
   $('latest').innerHTML = m ? (m.category !== 'official' ? `<div class="eyebrow" style="margin-bottom:5px">ÚLTIMA PARTIDA${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${matchRow(m)}` : `<div class="latest-match" style="--match-color:${matchColor(m)};background:${matchColor(m)}"><div class="latest-top"><b>Última partida</b><span>${esc(SET.name)}</span></div><div class="latest-main"><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.home_id}">${esc(m.home.name)}</a></div><small>${coachLink(m.home_coach_name || m.home.coach_name)}</small></div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span></div><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.away_id}">${esc(m.away.name)}</a></div><small>${coachLink(m.away_coach_name || m.away.coach_name)}</small></div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.season)}</span></div></div>`) : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = [...played.filter(m => m.category === 'official').slice(0, 5), ...played.filter(m => m.category === 'friendly').slice(0, 5), ...played.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,15);
   const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nextHome.length ? nextHome.map(matchRow).join('') : empty('Nenhuma partida agendada.');
@@ -114,7 +114,7 @@ function renderTable() {
     if(!phases.some(p=>p.id===selectedOfficialPhase)) selectedOfficialPhase=phases[0].id;
     const active=phases.find(p=>p.id===selectedOfficialPhase);
     const ix=phases.findIndex(p=>p.id===selectedOfficialPhase);
-    const nav=`<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="btn sm" id="phasePrev" ${ix<=0?'disabled':''}>‹</button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="btn sm" id="phaseNext" ${ix>=phases.length-1?'disabled':''}>›</button></div>`;
+    const nav=`<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" id="phasePrev" aria-label="Fase anterior" ${ix<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" id="phaseNext" aria-label="Próxima fase" ${ix>=phases.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
     const rounds=D.rounds.filter(r=>r.phase_id===active.id).sort((a,b)=>a.number-b.number);
     const phaseMatches=D.matches.filter(m=>rounds.some(r=>r.id===m.round_id));
     if(active.counts_in_standings){
@@ -146,7 +146,8 @@ function renderWeeklies() {
     const phases = (D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===w.id).sort((a,b)=>a.sort_order-b.sort_order);
     const fallback = {id:'legacy-groups',name:'Fase de grupos',phase_type:'groups',counts_in_standings:true};
     const phaseList = phases.length ? phases : [fallback];
-    const activeId = phaseList.some(p=>p.id===selectedPhaseByEdition[w.id]) ? selectedPhaseByEdition[w.id] : phaseList[0].id;
+    const finalDefault = phaseList.find(p=>p.phase_type==='final' && all.some(m=>m.played && (D.weeklyRounds||[]).some(r=>r.id===m.weekly_round_id && r.phase_id===p.id)));
+    const activeId = phaseList.some(p=>p.id===selectedPhaseByEdition[w.id]) ? selectedPhaseByEdition[w.id] : (finalDefault?.id || phaseList[0].id);
     selectedPhaseByEdition[w.id]=activeId;
     const active = phaseList.find(p=>p.id===activeId);
     const rounds = (D.weeklyRounds||[]).filter(r=>r.weekly_id===w.id && (r.phase_id===activeId || (!r.phase_id && active.phase_type==='groups'))).sort((a,b)=>a.number-b.number);
@@ -156,7 +157,8 @@ function renderWeeklies() {
     const teams = D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id));
     const tableMatches = active.counts_in_standings ? ms : [];
     const table = standings(teams, tableMatches, {ptsW:3,ptsD:1});
-    const rows = rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+all.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('');
+    let rows = rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+all.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('');
+    if(active.phase_type==='final'){const thirdP=phaseList.find(p=>p.phase_type==='third_place');const thirdRounds=(D.weeklyRounds||[]).filter(r=>r.phase_id===thirdP?.id);const thirdGames=all.filter(m=>thirdRounds.some(r=>r.id===m.weekly_round_id));if(thirdGames.length)rows+=heading('DISPUTA DE 3º LUGAR')+thirdGames.map(matchRow).join('');}
     const finalPhase = phaseList.find(p=>p.phase_type==='final');
     const thirdPhase = phaseList.find(p=>p.phase_type==='third_place');
     const finalRoundIds=(D.weeklyRounds||[]).filter(r=>r.phase_id===finalPhase?.id).map(r=>r.id);
@@ -167,22 +169,26 @@ function renderWeeklies() {
     const runner=finalMatch?(winner?(winner.id===finalMatch.home_id?finalMatch.away:finalMatch.home):null):null;
     const third=thirdMatch?(thirdMatch.home_score>thirdMatch.away_score?thirdMatch.home:thirdMatch.away_score>thirdMatch.home_score?thirdMatch.away:null):null;
     const podium = (winner||runner||third) ? `<div class="notice" style="margin:12px 0"><b>PÓDIO DA COMPETIÇÃO</b><div class="podium-cbp" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;align-items:end;margin-top:12px"><div><div style="font-size:20px;color:#a7adb4">🥈</div><b>${runner?participantLink(runner):'—'}</b><small style="display:block">2º LUGAR</small><div style="height:38px;background:#a7adb4;margin-top:6px"></div></div><div><div style="font-size:24px;color:#d2a52b">🥇</div><b>${winner?participantLink(winner):'—'}</b><small style="display:block">1º LUGAR</small><div style="height:58px;background:#d2a52b;margin-top:6px"></div></div><div><div style="font-size:20px;color:#b87950">🥉</div><b>${third?participantLink(third):'—'}</b><small style="display:block">3º LUGAR</small><div style="height:30px;background:#b87950;margin-top:6px"></div></div></div></div>`:'';
-    const nav = `<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="btn sm" data-phase-prev="${w.id}" ${phaseList.findIndex(p=>p.id===activeId)<=0?'disabled':''}>‹</button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="btn sm" data-phase-next="${w.id}" ${phaseList.findIndex(p=>p.id===activeId)>=phaseList.length-1?'disabled':''}>›</button></div>`;
+    const nav = `<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" data-phase-prev="${w.id}" aria-label="Fase anterior" ${phaseList.findIndex(p=>p.id===activeId)<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" data-phase-next="${w.id}" aria-label="Próxima fase" ${phaseList.findIndex(p=>p.id===activeId)>=phaseList.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
     return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count||teams.length} PARTICIPANTES</small></div><span class="pill">${all.filter(m=>m.played).length} JOGOS • ${phaseList.length} FASES</span></div><div class="cardbody">${w.format_description?`<p class="sub">${esc(w.format_description)}</p>`:''}${nav}${active.counts_in_standings?(table.length?`<h3>CLASSIFICAÇÃO — ${esc(active.name.toUpperCase())}</h3>${fullTbl(table)}`:empty('Aguardando partidas desta fase.')):''}${heading('PARTIDAS E RESULTADOS')}${rows||empty('Nenhuma partida cadastrada nesta fase.')}${podium}</div></div>`;
   }).join('');
   root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next]');if(!b)return;const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const ps=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
 }
 
 function renderStats() {
-  const S = stats(D), b = S.big;
+  const filteredMatches = D.matches.filter(m => m.category === statsCategory);
+  const matchIds = new Set(filteredMatches.map(m => m.id));
+  const filtered = { ...D, matches: filteredMatches, events: D.events.filter(e => matchIds.has(e.match_id)) };
+  const S = stats(filtered, statsCategory), b = S.big;
   const bigTxt = b ? `<a href="#team/${b.home_id}">${esc(b.home.name)}</a> ${b.home_score} x ${b.away_score} <a href="#team/${b.away_id}">${esc(b.away.name)}</a>` : '—';
-  $('statsGrid').innerHTML =
+  $('statsGrid').innerHTML = `<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">${[['official','COMPETIÇÕES OFICIAIS'],['weekly','SEMANAIS'],['friendly','AMISTOSOS']].map(([v,l])=>`<button data-stats-category="${v}" class="${statsCategory===v?'selected':''}">${l}</button>`).join('')}</div>` +
     `<div class="card"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>${S.jogos}</b><span>Partidas</span></div><div class="stat"><b>${S.gols}</b><span>Gols</span></div><div class="stat"><b>${fmt1(S.media)}</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>${bigTxt}</small></div></div></div></div>` +
     plCard('ARTILHARIA', S.artilheiros, x => x.g, 'gols') + plCard('ASSISTÊNCIAS', S.garcons, x => x.a, 'assist.') + plCard('PARTICIPAÇÕES EM GOLS (G+A)', S.part, x => x.ga, '') +
     rankCard('MELHOR ATAQUE (GOLS/JOGO)', S.ataque.slice().sort((a, c) => c.gp / c.j - a.gp / a.j), x => fmt1(x.gp / x.j)) +
     rankCard('MELHOR DEFESA (MENOS SOFRIDOS)', S.defesa, x => x.gc) + rankCard('GOLS MARCADOS', S.ataque, x => x.gp) +
     rankCard('APROVEITAMENTO', S.aprov, x => x.ap, '%') + rankCard('VITÓRIAS', S.vit, x => x.v) + rankCard('EMPATES', S.emp, x => x.e) + rankCard('DERROTAS', S.der, x => x.d) +
     rankCard('SALDO DE GOLS', S.st.filter(x => x.j).sort((a, c) => c.sg - a.sg), x => sgf(x.sg));
+  $('statsGrid').onclick = e => { const b=e.target.closest('[data-stats-category]'); if(!b)return; statsCategory=b.dataset.statsCategory; renderStats(); };
 }
 
 

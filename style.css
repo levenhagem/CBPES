@@ -166,3 +166,16 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .friendly-match .friendly-date,.fixture-mini .fixture-meta{
   color:rgba(255,255,255,.88);
 }
+
+
+/* CBPES — refinamentos da atualização */
+.table-coach{display:block;margin-top:2px;font-size:10px!important;line-height:1.15;color:#7b858d!important;font-weight:400!important;opacity:.9}
+.table-coach a{color:#7b858d!important;font-weight:400!important;text-decoration:none}
+.rank-position{display:inline-block;min-width:22px;margin-right:9px;color:#66717a;font-size:1.16em;font-weight:800;font-variant-numeric:tabular-nums}
+.stats-category-filter{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2px}
+.stats-category-filter button{border:1px solid var(--line,#d9e0e4);background:#fff;color:var(--ink,#18313b);padding:8px 12px;font:700 11px Inter,sans-serif;letter-spacing:.35px;cursor:pointer}
+.stats-category-filter button.selected{background:#002b36;color:#fff;border-color:#002b36}
+.phase-arrow{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border:1px solid #cbd6da;border-radius:50%;background:#eef3f4;color:#006b59;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.phase-arrow span{font-size:29px;line-height:1;margin-top:-3px;font-family:Arial,sans-serif;font-weight:500}
+.phase-arrow:hover:not(:disabled){background:#dcebe7;border-color:#0b806b;transform:translateY(-1px)}
+.phase-arrow:disabled{opacity:.32;cursor:not-allowed}

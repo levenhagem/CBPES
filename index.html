@@ -17,6 +17,7 @@
 
 <section id="home" class="section">
  <div class="strip" id="strip"></div>
+ <div id="champ"></div>
  <div id="latest"></div>
  <div class="cols">
   <div class="stack">
@@ -34,26 +35,22 @@
 
 <section id="games" class="section">
  <div class="page-title"><div><div class="eyebrow">Calendário</div><h1>Jogos e resultados</h1><div class="sub">Consulte as partidas por rodada.</div></div></div>
- <div class="card"><div class="cardhead"><h2 id="gTitle">Partidas</h2><div class="filters" id="filters"><button data-f="all" class="selected">Todas</button><button data-f="official">Oficiais</button><button data-f="friendly">Amistosos</button><button data-f="weekly">Semanais</button><button data-f="done">Encerradas</button><button data-f="next">Próximas</button></div></div><div class="cardbody" id="gamesList"></div></div>
+ <div class="card"><div class="cardhead"><h2 id="gTitle">Partidas</h2><div class="filters" id="filters"><button data-f="all" class="selected">Todas</button><button data-f="done">Encerradas</button><button data-f="next">Próximas</button></div></div><div class="cardbody" id="gamesList"></div></div>
 </section>
 
 <section id="table" class="section">
  <div class="page-title"><div><div class="eyebrow">Classificação</div><h1>Tabela do campeonato</h1><div class="sub">Atualizada automaticamente a partir dos resultados cadastrados.</div></div></div>
- <div class="card"><div class="cardhead"><h2 id="tblTitle">Tabela geral</h2><div class="inline"><select id="tableCompetition" aria-label="Selecionar competição"></select><span class="pill" id="tblPill"></span></div></div><div class="cardbody scroll" id="fullTable"></div></div>
-</section>
-
-<section id="participant" class="section"><div id="participantView"></div></section>
-<section id="team" class="section"><div id="teamView"></div></section>
-<section id="coach" class="section"><div id="coachView"></div></section>
-
-<section id="weeklies" class="section">
- <div class="page-title"><div><div class="eyebrow">Campeonatos independentes</div><h1>Campeonatos semanais</h1><div class="sub">Consulte cada edição, seus participantes, resultados, classificação e campeão.</div></div></div>
- <div id="weeklyList"></div>
+ <div class="card"><div class="cardhead"><h2 id="tblTitle">Tabela geral</h2><span class="pill" id="tblPill"></span></div><div class="cardbody scroll" id="fullTable"></div></div>
 </section>
 
 <section id="stats" class="section">
- <div class="page-title"><div><div class="eyebrow">Dados da competição</div><h1>Estatísticas</h1><div class="sub">Calculadas a partir de todas as partidas: oficiais, amistosos e semanais.</div></div></div>
+ <div class="page-title"><div><div class="eyebrow">Dados da competição</div><h1>Estatísticas</h1><div class="sub">Filtre entre competições oficiais, semanais e amistosos.</div></div></div>
  <div class="cols3" id="statsGrid"></div>
+</section>
+
+<section id="weeklies" class="section">
+ <div class="page-title"><div><div class="eyebrow">Competições independentes</div><h1>Campeonatos semanais</h1><div class="sub">Consulte as edições, fases, resultados e pódios.</div></div></div>
+ <div id="weeklyList"></div>
 </section>
 </main>
 <footer><b style="color:#173d70">CBPES</b> • Confederação Brasileira de PES • Portal oficial</footer>

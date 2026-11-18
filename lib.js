@@ -112,13 +112,16 @@ function currentRound(rounds, ms) {
 }
 const sgf = n => (n > 0 ? '+' : '') + n;
 
-function stats(D) {
-  const played = D.matches.filter(m => m.played), st = standings(D.participants, D.matches);
+function stats(D, category = 'official') {
+  const scoped = category === 'nonweekly' ? D.matches.filter(m => m.category !== 'weekly') : D.matches.filter(m => m.category === category);
+  const ids = new Set(scoped.map(m => m.id));
+  const events = D.events.filter(e => ids.has(e.match_id));
+  const played = scoped.filter(m => m.played), st = standings(D.participants, scoped);
   const goals = played.reduce((s, m) => s + m.home_score + m.away_score, 0);
   const by = (f, dir = -1) => st.filter(x => x.j > 0).sort((a, b) => dir * (f(a) - f(b)) || a.p.name.localeCompare(b.p.name));
   const big = played.slice().sort((a, b) => Math.abs(b.home_score - b.away_score) - Math.abs(a.home_score - a.away_score) || (b.home_score + b.away_score) - (a.home_score + a.away_score))[0];
   const g = {}, a = {};
-  D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
+  events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
   const pl = D.players.map(x => ({ ...x, g: g[x.id] || 0, a: a[x.id] || 0 }));
   const cmp = (k, k2) => (x, y) => y[k] - x[k] || y[k2] - x[k2] || x.name.localeCompare(y.name);
   return {
@@ -163,8 +166,8 @@ function matchRow(m) {
     .friendly-match{background:#176b45;color:#fff;}
     .friendly-match.weekly{background:#002b36;border-left:4px solid #f2c500;}
     .friendly-side,.fixture-side{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.2;}
-    .friendly-side.home,.fixture-side:first-child{text-align:left;align-items:flex-start;}
-    .friendly-side.away,.fixture-side.away{text-align:right;align-items:flex-end;}
+    .friendly-side.home,.fixture-side:first-child{text-align:right;align-items:flex-end;}
+    .friendly-side.away,.fixture-side.away{text-align:left;align-items:flex-start;}
     .friendly-side b,.fixture-side b{font-family:var(--fc,'Arial Narrow',sans-serif);font-size:18px;font-weight:700;line-height:1.1;overflow-wrap:anywhere;}
     .friendly-side a,.friendly-side small a,.fixture-side a,.fixture-side small a{color:inherit;}
     .friendly-side small,.fixture-side small{font-size:11px;opacity:.82;line-height:1.2;}
