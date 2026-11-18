@@ -133,22 +133,22 @@ function stats(D, category = 'official') {
 }
 const fmt1 = n => n.toFixed(1).replace('.', ',');
 
-function matchColor(m) { return m.category === 'friendly' ? '#176b45' : '#174e83'; }
+function matchColor(m) { return m.category === 'friendly' || m.category === 'weekly' ? '#176b45' : '#174e83'; }
 function matchRow(m, hideDate = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
-  const score = m.played ? `${m.home_score} : ${m.away_score}` : '– : –';
-  if (m.category === 'friendly' || m.category === 'weekly') return `<div class="friendly-match">
-    <span class="friendly-tag">${m.category === 'weekly' ? 'SEMANAL' : 'AMISTOSO'}</span><div class="friendly-side home"><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
-    <div class="friendly-score">${score}</div>
-    <div class="friendly-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
-    ${hideDate ? '' : `<div class="friendly-date">${m.date ? fd(m.date) : ''}</div>`}
-  </div>`;
-  const color = matchColor(m), comp = SET.name || 'COMPETIÇÃO';
-  return `<div class="fixture-mini" style="--match-color:${color}">
-    <div class="fixture-side"><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
-    <div class="fixture-score">${score}</div>
-    <div class="fixture-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
-    <div class="fixture-meta">${esc(comp)}${m.date ? ' • ' + fd(m.date) : ''}</div>
+  const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
+  const homeWon = m.played && m.home_score > m.away_score;
+  const awayWon = m.played && m.away_score > m.home_score;
+  const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : esc(SET.name || 'OFICIAL');
+  const color = matchColor(m);
+  const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
+  return `<div class="cbpes-match" style="--match-color:${color}">
+    <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
+    <div class="cbpes-match-main">
+      <div class="cbpes-match-team home ${homeWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+      <div class="cbpes-match-score">${score}</div>
+      <div class="cbpes-match-team away ${awayWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
+    </div>
   </div>`;
 }
 
