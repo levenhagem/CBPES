@@ -88,7 +88,7 @@ function renderHome() {
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nextHome.length ? nextHome.map(matchRow).join('') : empty('Nenhuma partida agendada.');
   // Painel lateral da Liga Pro: classificação, últimos resultados e números exclusivos.
-  const proEdition=(D.officialEditions||[]).find(e=>/liga\\s*pro/i.test(((D.officialCompetitions||[]).find(c=>c.id===e.competition_id)?.name||'')+' '+e.name));
+  const proEdition=(D.officialEditions||[]).find(e=>/liga\s*pro/i.test(((D.officialCompetitions||[]).find(c=>c.id===e.competition_id)?.name||'')+' '+e.name));
   const proRounds=proEdition?(D.rounds||[]).filter(r=>String(r.official_edition_id)===String(proEdition.id)):[];
   const proRoundIds=new Set(proRounds.map(r=>String(r.id)));
   const proMatches=proEdition?matches.filter(m=>(m.category||'official')==='official'&&(String(m.official_edition_id)===String(proEdition.id)||(!m.official_edition_id&&proRoundIds.has(String(m.round_id))))):[];
@@ -107,12 +107,7 @@ function renderHome() {
   const proPlayed=proMatches.filter(m=>m.played);
   const proGoals=proPlayed.reduce((sum,m)=>sum+(Number(m.home_score)||0)+(Number(m.away_score)||0),0);
   $('numbers').innerHTML=`<div class="stats"><div class="stat"><b>${proPlayed.length}</b><span>Partidas</span></div><div class="stat"><b>${proGoals}</b><span>Gols</span></div><div class="stat"><b>${proPlayed.length?(proGoals/proPlayed.length).toFixed(2).replace('.',','):'0,00'}</b><span>Média de gols</span></div></div>`;
-  const hl = (tt, who, sub, v, teamId = null, whoIsTeam = false) => `<div class="player"><div><b>${tt}</b><small>${whoIsTeam && teamId ? `<a href="#team/${teamId}">${esc(who)}</a>` : esc(who)}${sub ? ' • ' + (teamId && !whoIsTeam ? `<a href="#team/${teamId}">${esc(sub)}</a>` : esc(sub)) : ''}</small></div><span class="number">${v}</span></div>`;
-  let h = '';
-  if (S.artilheiros[0]) h += hl('Artilheiro', S.artilheiros[0].name, S.artilheiros[0].team.name, S.artilheiros[0].g + ' gols', S.artilheiros[0].team.id);
-  if (S.garcons[0]) h += hl('Líder em assistências', S.garcons[0].name, S.garcons[0].team.name, S.garcons[0].a, S.garcons[0].team.id);
-  if (S.jogos) h += hl('Melhor ataque', S.ataque[0].p.name, '', S.ataque[0].gp + ' gols', S.ataque[0].p.id, true) + hl('Melhor defesa', S.defesa[0].p.name, '', S.defesa[0].gc + ' sofridos', S.defesa[0].p.id, true);
-  $('highlights').innerHTML = h || empty('Disponível após o primeiro resultado.');
+
 }
 
 function renderGames() {
