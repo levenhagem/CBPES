@@ -157,9 +157,9 @@ function matchRow(m, hideDate = false) {
   return `<div class="cbpes-match" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
-      <div class="cbpes-match-team home ${homeWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.home_id}">${teamWithCrest(m.home)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+      <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
       <div class="cbpes-match-score">${score}${detailHTML}</div>
-      <div class="cbpes-match-team away ${awayWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.away_id}">${teamWithCrest(m.away)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
+      <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
     </div>
   </div>`;
 }
