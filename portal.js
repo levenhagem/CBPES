@@ -174,7 +174,15 @@ function renderTable() {
       html='';
     }
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
-    const placeholderHtml=active.phase_type==='playoff'&&!phaseMatches.length&&configuredSlots.length?`<div class="card" style="margin:10px 0"><div class="cardhead"><h2>CONFRONTOS PREVISTOS</h2></div><div class="cardbody"><p class="admin-help">Aguardando definição dos participantes.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">${configuredSlots.map((pair,i)=>'<div class="notice"><b>CONFRONTO '+(i+1)+'</b><div style="padding:10px 0">'+esc(String(pair[0]||'A definir'))+'</div><div style="border-top:1px solid var(--line);padding:10px 0">'+esc(String(pair[1]||'A definir'))+'</div></div>').join('')}</div></div></div>`:'';
+    const placeholderHtml=active.phase_type==='playoff'&&!phaseMatches.length&&configuredSlots.length?
+      '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match" style="--match-color:#bfcbd3">
+        <div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CONFRONTO ${i+1}</span></div>
+        <div class="cbpes-match-main">
+          <div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[0]||'A definir'))}</span><small>A definir</small></div></div></div>
+          <div class="cbpes-match-score">– : –</div>
+          <div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[1]||'A definir'))}</span><small>A definir</small></div></div></div>
+        </div>
+      </div>`).join('')+'</div>':'';
     const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames)));
     html=twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
     const finalP=phases.find(p=>p.phase_type==='final'),thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
