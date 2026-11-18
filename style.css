@@ -279,3 +279,17 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-select-option:hover,.cbpes-select-option:focus-visible{background:#edf3f5;color:var(--navy);outline:0}
 .cbpes-select-option.selected{background:#e6f1ed;color:#076c40;font-weight:750;border-left:3px solid var(--green);padding-left:9px}
 .cbpes-select-option:disabled{opacity:.45;cursor:not-allowed}
+
+/* V27 — escudos dos clubes */
+.cbpes-crest{width:22px;height:22px;object-fit:contain;vertical-align:middle;flex:none;margin-right:7px}
+.cbpes-team-inline{display:inline-flex;align-items:center;gap:5px;max-width:100%;vertical-align:middle}
+.cbpes-team-inline .cbpes-crest{margin:0}
+.cbpes-match-team .cbpes-crest{width:28px;height:28px}
+.cbpes-profile-name{display:flex;align-items:center;gap:12px}
+.cbpes-crest-large{width:65px;height:65px;margin:0}
+.cbpes-crest-preview{width:56px;height:56px;margin:0}
+.cbpes-crest-editor{padding:12px 0;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.cbpes-crest-editor-row{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin-top:8px}
+.cbpes-crest-editor-row .field{flex:1;min-width:180px}
+.cbpes-crest-editor-row input[type=url]{width:100%}
+@media(max-width:620px){.cbpes-match-team .cbpes-crest{width:21px;height:21px}.cbpes-crest-large{width:48px;height:48px}}
