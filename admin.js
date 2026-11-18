@@ -9,7 +9,7 @@ function traduz(e) {
   if (e.code === '23503') return 'Não é possível excluir: há partidas, jogadores ou gols ligados a este item. Remova-os antes.';
   if (e.code === '42501' || /row-level security/i.test(e.message)) return 'Sem permissão para esta operação.';
   if (e.code === '23514') return 'Dados inválidos (confira participantes e placar).';
-  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL v2 e v3 no Supabase.';
+  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL v2, v3, v4 e v5 no Supabase.';
   return e.message;
 }
 
@@ -122,7 +122,7 @@ function genKoFromGroups() {
   if (koRounds(D).length) return say('O mata-mata já foi gerado.', false);
   const c = cfgOf(), gt = groupTables(D); if (!gt.length) return say('Gere a fase de grupos primeiro.', false);
   const total = gt.length * c.qual; if (!isPow2(total)) return say(`Classificados (${total}) deve ser 2, 4, 8, 16 ou 32. Ajuste grupos/classificados.`, false);
-  if (D.matches.some(m => m.round.stage === 'grupos' && !m.played) && !confirm('Ainda há jogos de grupo sem resultado. Gerar mesmo assim com a classificação atual?')) return;
+  if (D.matches.some(m => m.round && m.round.stage === 'grupos' && !m.played) && !confirm('Ainda há jogos de grupo sem resultado. Gerar mesmo assim com a classificação atual?')) return;
   let pairs = [];
   if (c.qual === 2 && gt.length % 2 === 0) {
     const a = [], b = [];
@@ -145,7 +145,7 @@ function advance() {
 
 // ---------- Jogos: rodadas, placares, gols e confrontos numa tela só ----------
 let showNew = false, activeCategory = 'official';
-const curMatches = () => D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === activeCategory).sort((a, b) => a.seq - b.seq);
+const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === 'official').sort((a, b) => a.seq - b.seq);
 function rowPayload(id) {
   const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
   if (h === '' && a === '') return { skip: true };
@@ -172,7 +172,7 @@ async function saveAll() {
   say(ups.length + ' resultado(s) salvo(s).', true); refresh();
 }
 function rowHTML(m) {
-  const ko = m.round.stage === 'mata', id = m.id;
+  const ko = !!(m.round && m.round.stage === 'mata'), id = m.id;
   return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${id}" data-m="${id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${id}" data-m="${id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
    <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${ko ? `<span class="admin-help">Jogo ${m.leg} • Pênaltis:</span><input class="scoreinput" type="number" min="0" id="ph${id}" data-m="${id}" value="${m.home_pen ?? ''}"> x <input class="scoreinput" type="number" min="0" id="pa${id}" data-m="${id}" value="${m.away_pen ?? ''}">` : ''}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
 }
@@ -187,59 +187,98 @@ function goalsPanel(m) {
    ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>Gol</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>Assistência</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Times.</div>'}</div>`;
 }
 function vJogos() {
-  const categoryRounds = D.rounds.filter(x => { const linked = D.matches.filter(m => m.round_id === x.id); return !linked.length || linked.some(m => (m.category || 'official') === activeCategory); });
-  if (!categoryRounds.some(r => r.id === selRound)) selRound = categoryRounds.length ? categoryRounds[categoryRounds.length - 1].id : null;
-  const r = D.rounds.find(x => x.id === selRound), ST = { liga: 'Liga', grupos: 'Grupos', mata: 'Mata-mata' };
-  const next = D.rounds.length ? Math.max(...D.rounds.map(x => x.number)) + 1 : 1;
-  const newForm = showNew ? `<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número</label><input id="rn" type="number" min="1" value="${next}"></div><div class="field"><label>Fase</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>Nome (opcional)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>Data</label><input id="rd" type="date"></div><button class="btn sm primary" data-rcreate="1">CRIAR RODADA</button></div></div>` : '';
-  const list = categoryRounds.map(x => { const ms = D.matches.filter(m => m.round_id === x.id && (m.category || 'official') === activeCategory); return `<button data-sel="${x.id}" class="${x.id === selRound ? 'on' : ''}"><span>${esc(roundLabel(x))}</span><small>${ms.filter(m => m.played).length}/${ms.length}</small></button>`; }).join('') || `<div class="empty">Nenhuma partida ${activeCategory === 'friendly' ? 'amistosa' : 'oficial'} cadastrada. Crie uma rodada para começar.</div>`;
-  const ms = r ? curMatches() : [];
-  const right = r ? `<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))} <span class="pill">${ST[r.stage]}</span></h2><span class="inline" style="align-items:center"><input type="date" id="rdt" value="${r.date || ''}"><button class="btn sm" data-rdsave="1">SALVAR DATA</button><button class="btn sm danger" data-rx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">
-    ${ms.length ? `<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>` + ms.map(rowHTML).join('') : '<div class="empty">Sem confrontos nesta rodada.</div>'}
-    <div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(D.participants, null, p => p.name)}</select></div><span style="padding-bottom:9px">x</span><div class="field"><label>&nbsp;</label><select id="ma">${opts(D.participants, null, p => p.name)}</select></div>${r.stage === 'grupos' ? '<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>' : ''}${r.stage === 'mata' ? '<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>' : ''}<div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date || ''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`
-    : '<div class="empty">Gere o calendário na aba Campeonato ou crie uma rodada ao lado.</div>';
-  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><span class="admin-help">${activeCategory==='friendly'?'Cadastro e resultados de partidas amistosas.':'Cadastro e resultados das competições oficiais CBPES.'}</span></div></div><div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew ? 'FECHAR' : '+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
-  $('view').onkeydown = e => { if (e.key === 'Enter' && e.target.dataset.m) saveOne(e.target.dataset.m); };
-  $('view').onclick = e => {
-    const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
-    if (d.category) { activeCategory = d.category; selRound = null; showNew = false; openGoals = null; return vJogos(); }
-    if (d.sel) { selRound = d.sel; openGoals = null; return vJogos(); }
-    if (d.new) { showNew = !showNew; return vJogos(); }
-    if (d.rcreate) { const n = +$('rn').value; if (n > 0) { showNew = false; run(sb.from('rounds').insert({ number: n, stage: $('rst').value, name: $('rnm').value.trim() || null, date: $('rd').value || null }), 'Rodada criada.'); } return; }
-    if (d.rdsave) return run(sb.from('rounds').update({ date: $('rdt').value || null }).eq('id', selRound), 'Data da rodada salva.');
-    if (d.rx) { if (confirm('Excluir a rodada e todas as suas partidas?')) { selRound = null; run(sb.from('rounds').delete().eq('id', d.rx), 'Rodada excluída.'); } return; }
-    if (d.mx) { if (confirm('Excluir este jogo?')) run(sb.from('matches').delete().eq('id', d.mx), 'Jogo excluído.'); return; }
-    if (d.add) {
-      const h = $('mh').value, a = $('ma').value; if (!h || !a) return say('Cadastre os participantes primeiro.', false); if (h === a) return say('Escolha participantes diferentes.', false);
-      return run(sb.from('matches').insert({ round_id: selRound, home_id: h, away_id: a, played_on: $('mdt').value || null, group_name: $('mg') ? $('mg').value.trim().toUpperCase() || null : null, leg: $('ml') ? +$('ml').value : 1, category: activeCategory }), 'Confronto adicionado.');
-    }
-    if (d.saveall) return saveAll();
-    if (d.s) return saveOne(d.s);
-    if (d.g) { openGoals = openGoals === d.g ? null : d.g; return vJogos(); }
-    if (d.ex) return run(sb.from('match_events').delete().eq('id', d.ex), 'Gol removido.');
-    if (d.ga) return run(sb.from('match_events').insert({ match_id: d.ga, scorer_id: $('gs').value, assist_id: $('ga').value || null }), 'Gol lançado.');
-    if (d.c && confirm('Apagar o placar desta partida? (Os gols lançados dela também serão apagados.)')) sb.from('match_events').delete().eq('match_id', d.c).then(() => run(sb.from('matches').update({ home_score: null, away_score: null, home_pen: null, away_pen: null }).eq('id', d.c), 'Placar removido.'));
+  const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes: não pertencem a liga, copa ou rodada.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
+  if (activeCategory === 'friendly') {
+    const ms = curMatches();
+    const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO AMISTOSO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="fh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="fa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data</label><input type="date" id="fdt" value="${today()}"></div><button class="btn primary" data-fadd="1">CADASTRAR AMISTOSO</button></div></div></div>`;
+    const rows = ms.length ? ms.map(m=>`<div class="arow"><div class="nm">${esc(m.home.name)}<small class="admin-help">${esc(m.home.coach_name||'')}</small></div><div><input class="scoreinput" type="number" min="0" max="99" id="h${m.id}" value="${m.home_score??''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${m.id}" value="${m.away_score??''}"></div><div class="nm" style="text-align:right">${esc(m.away.name)}<small class="admin-help">${esc(m.away.coach_name||'')}</small></div><div class="arow-foot"><label class="admin-help">Data</label><input type="date" id="d${m.id}" value="${m.played_on||m.date||''}"><button class="btn sm primary" data-s="${m.id}">SALVAR</button>${m.played?`<button class="btn sm" data-g="${m.id}">GOLS (${D.events.filter(e=>e.match_id===m.id).length})</button><button class="btn sm danger" data-c="${m.id}">LIMPAR</button>`:''}<button class="btn sm danger" data-mx="${m.id}">EXCLUIR</button></div>${openGoals===m.id&&m.played?goalsPanel(m):''}</div>`).join('') : '<div class="empty">Nenhum amistoso cadastrado. Amistosos não recebem rodada.</div>';
+    $('view').innerHTML = switcher + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div>`;
+    $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
+    $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+      if(d.category){activeCategory=d.category;selRound=null;return vJogos();}
+      if(d.fadd){const h=$('fh').value,a=$('fa').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,home_id:h,away_id:a,played_on:$('fdt').value||null,category:'friendly'}),'Amistoso cadastrado sem vínculo com rodada.');}
+      if(d.s)return saveOne(d.s);
+      if(d.mx&&confirm('Excluir este amistoso?'))return run(sb.from('matches').delete().eq('id',d.mx),'Amistoso excluído.');
+      if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
+      if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
+      if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
+      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+    };
+    return;
+  }
+  const categoryRounds = D.rounds.filter(x => { const linked=D.matches.filter(m=>m.round_id===x.id);return !linked.length||linked.some(m=>(m.category||'official')==='official'); });
+  if(!categoryRounds.some(r=>r.id===selRound))selRound=categoryRounds.length?categoryRounds[categoryRounds.length-1].id:null;
+  const r=D.rounds.find(x=>x.id===selRound),ST={liga:'Liga',grupos:'Grupos',mata:'Mata-mata'};
+  const next=D.rounds.length?Math.max(...D.rounds.map(x=>x.number))+1:1;
+  const newForm=showNew?`<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número</label><input id="rn" type="number" min="1" value="${next}"></div><div class="field"><label>Fase</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>Nome (opcional)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>Data</label><input id="rd" type="date"></div><button class="btn sm primary" data-rcreate="1">CRIAR RODADA</button></div></div>`:'';
+  const list=categoryRounds.map(x=>{const a=D.matches.filter(m=>m.round_id===x.id&&(m.category||'official')==='official');return `<button data-sel="${x.id}" class="${x.id===selRound?'on':''}"><span>${esc(roundLabel(x))}</span><small>${a.filter(m=>m.played).length}/${a.length}</small></button>`;}).join('')||'<div class="empty">Nenhuma rodada oficial cadastrada.</div>';
+  const ms=r?curMatches():[];
+  const right=r?`<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))} <span class="pill">${ST[r.stage]}</span></h2><span class="inline" style="align-items:center"><input type="date" id="rdt" value="${r.date||''}"><button class="btn sm" data-rdsave="1">SALVAR DATA</button><button class="btn sm danger" data-rx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">${ms.length?`<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>`+ms.map(rowHTML).join(''):'<div class="empty">Sem confrontos nesta rodada.</div>'}<div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="ma">${opts(D.participants,null,p=>p.name)}</select></div>${r.stage==='grupos'?'<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>':''}${r.stage==='mata'?'<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>':''}<div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date||''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`:'<div class="empty">Gere o calendário na aba Campeonato ou crie uma rodada ao lado.</div>';
+  $('view').innerHTML=switcher+`<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew?'FECHAR':'+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
+  $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
+  $('view').onclick=e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+    if(d.category){activeCategory=d.category;selRound=null;showNew=false;openGoals=null;return vJogos();}
+    if(d.sel){selRound=d.sel;openGoals=null;return vJogos();}
+    if(d.new){showNew=!showNew;return vJogos();}
+    if(d.rcreate){const n=+$('rn').value;if(n>0){showNew=false;run(sb.from('rounds').insert({number:n,stage:$('rst').value,name:$('rnm').value.trim()||null,date:$('rd').value||null}),'Rodada criada.');}return;}
+    if(d.rdsave)return run(sb.from('rounds').update({date:$('rdt').value||null}).eq('id',selRound),'Data da rodada salva.');
+    if(d.rx){if(confirm('Excluir a rodada e todas as suas partidas?')){selRound=null;run(sb.from('rounds').delete().eq('id',d.rx),'Rodada excluída.');}return;}
+    if(d.mx&&confirm('Excluir este jogo?'))return run(sb.from('matches').delete().eq('id',d.mx),'Jogo excluído.');
+    if(d.add){const h=$('mh').value,a=$('ma').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:selRound,home_id:h,away_id:a,played_on:$('mdt').value||null,group_name:$('mg')?$('mg').value.trim().toUpperCase()||null:null,leg:$('ml')?+$('ml').value:1,category:'official'}),'Confronto oficial adicionado à rodada.');}
+    if(d.saveall)return saveAll();if(d.s)return saveOne(d.s);if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
+    if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
+    if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
+    if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
   };
 }
-
 // ---------- Times: participantes + jogadores + histórico individual ----------
 function histPart(p) {
   const ms = D.matches.filter(m => m.played && (m.home_id === p.id || m.away_id === p.id)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   if (!ms.length) return '<div class="empty">Sem partidas disputadas.</div>';
-  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label">${pad(m.round.number)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(roundLabel(m.round))} • ${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
+  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label ${m.category==='friendly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':pad(m.round?.number||0)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${m.category==='friendly'?'':esc(roundLabel(m.round))+' • '}${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
 }
 function vTimes() {
   const st = Object.fromEntries(standings(D.participants, D.matches).map(x => [x.p.id, x]));
   const g = {}, a = {}; D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
-  const panel = p => { const pls = D.players.filter(x => x.participant_id === p.id); return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de partidas</div>${histPart(p)}</div></div></td></tr>`; };
-  $('view').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>Novo participante</h2></div><div class="cardbody"><div class="inline" style="margin-top:10px"><input id="pn" maxlength="60" placeholder="Nome do participante"><input id="pc" maxlength="80" placeholder="Técnico responsável"><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
-  <div class="card"><div class="cardhead"><h2>Participantes (${D.participants.length})</h2><span class="admin-help">Abra um time para ver jogadores e histórico</span></div><div class="cardbody scroll">${D.participants.length ? `<table class="table"><thead><tr><th>PARTICIPANTE / TÉCNICO</th><th>J</th><th>PTS</th><th></th></tr></thead><tbody>${D.participants.map(p => `<tr><td class="club">${esc(p.name)}<small style="display:block;color:var(--muted);font-weight:500">${esc(p.coach_name || 'Técnico não informado')}</small></td><td>${st[p.id].j}</td><td>${st[p.id].pts}</td><td style="white-space:nowrap"><button class="btn sm" data-t="${p.id}">${openPart === p.id ? 'FECHAR' : 'ABRIR'}</button> <button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>${openPart === p.id ? panel(p) : ''}`).join('')}</tbody></table>` : '<div class="empty">Cadastre o primeiro participante.</div>'}</div></div>`;
-  $('pAdd').onclick = () => { const n = $('pn').value.trim(), coach_name = $('pc').value.trim() || null; if (n) run(sb.from('participants').insert({ name: n, coach_name }), 'Participante cadastrado.'); };
-  $('view').onclick = e => {
+  const panel = p => {
+    const pls = D.players.filter(x => x.participant_id === p.id);
+    const coachRows = (D.coachHistory||[]).filter(h=>h.participant_id===p.id).sort((a,b)=>(b.started_on||'').localeCompare(a.started_on||'')).map(h=>`<div class="player"><div><b>${esc(h.coach_name)}</b><small>${h.started_on||'—'} até ${h.ended_on||'atual'}</small></div><span class="pill">${h.ended_on?'ANTERIOR':'ATUAL'}</span></div>`).join('') || '<div class="empty">Nenhum técnico no histórico.</div>';
+    return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de técnicos</div>${coachRows}<small class="admin-help">A data final é o primeiro dia em que o técnico já não estava no time. As partidas datadas desse período serão atribuídas a ele.</small><div class="inline" style="margin-top:10px;align-items:end"><div class="field"><label>Técnico anterior</label><input id="hcn${p.id}" placeholder="Nome do técnico"></div><div class="field"><label>Início</label><input id="hcs${p.id}" type="date"></div><div class="field"><label>Fim do vínculo</label><input id="hce${p.id}" type="date"></div><button class="btn sm primary" data-hadd="${p.id}">REGISTRAR PASSAGEM</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de partidas</div>${histPart(p)}</div></div></td></tr>`;
+  };
+  $('view').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>CADASTRAR TIME</h2></div><div class="cardbody"><div class="inline" style="margin-top:10px"><input id="pn" maxlength="60" placeholder="Nome do time"><input id="pc" maxlength="80" placeholder="Técnico atual"><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
+  <div class="card"><div class="cardhead"><h2>Times (${D.participants.length})</h2><span class="admin-help">Abra um time para ver jogadores e histórico</span></div><div class="cardbody scroll">${D.participants.length ? `<table class="table"><thead><tr><th>TIME / TÉCNICO</th><th>J</th><th>PTS</th><th></th></tr></thead><tbody>${D.participants.map(p => `<tr><td class="club">${esc(p.name)}<small style="display:block;color:var(--muted);font-weight:500">${esc(p.coach_name || 'Técnico não informado')}</small></td><td>${st[p.id].j}</td><td>${st[p.id].pts}</td><td style="white-space:nowrap"><button class="btn sm" data-t="${p.id}">${openPart === p.id ? 'FECHAR' : 'ABRIR'}</button> <button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>${openPart === p.id ? panel(p) : ''}`).join('')}</tbody></table>` : '<div class="empty">Cadastre o primeiro time.</div>'}</div></div>`;
+  $('pAdd').onclick = async () => {
+    const n = $('pn').value.trim(), coach_name = $('pc').value.trim() || null;
+    if (!n) return;
+    const { data, error } = await sb.from('participants').insert({ name: n, coach_name: null }).select('id').single();
+    if (error) return say(traduz(error), false);
+    if (coach_name) {
+      const { error: ce } = await sb.rpc('assign_team_coach', { p_participant_id: data.id, p_coach_name: coach_name, p_start_date: today() });
+      if (ce) return say('Time criado, mas não foi possível registrar o técnico: ' + traduz(ce), false);
+    }
+    say('Time cadastrado' + (coach_name ? ' com técnico responsável.' : '.'), true); await refresh();
+  };
+  $('view').onclick = async e => {
     const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
     if (d.t) { openPart = openPart === d.t ? null : d.t; return vTimes(); }
-    if (d.e) { const p = D.participants.find(x => x.id === d.e), n = prompt('Nome do participante:', p.name); if (n === null) return; const c = prompt('Técnico responsável:', p.coach_name || ''); if (c === null) return; run(sb.from('participants').update({ name: n.trim(), coach_name: c.trim() || null }).eq('id', p.id), 'Participante e técnico atualizados.'); }
+    if (d.e) {
+      const p = D.participants.find(x => x.id === d.e), n = prompt('Nome do time:', p.name); if (n === null) return;
+      const c = prompt('Técnico atual do time (deixe em branco se não houver):', p.coach_name || ''); if (c === null) return;
+      const { error: ne } = await sb.from('participants').update({ name: n.trim() }).eq('id', p.id);
+      if (ne) return say(traduz(ne), false);
+      const { error: ce } = await sb.rpc('assign_team_coach', { p_participant_id: p.id, p_coach_name: c.trim() || null, p_start_date: today() });
+      if (ce) return say('Nome do time atualizado, mas houve falha ao registrar o técnico: ' + traduz(ce), false);
+      say('Time e técnico atualizados. O vínculo anterior foi preservado no histórico.', true); await refresh();
+    }
     if (d.d && confirm('Excluir este participante? Só é possível se ele não tiver partidas nem jogadores.')) run(sb.from('participants').delete().eq('id', d.d), 'Participante excluído.');
+    if (d.hadd) {
+      const coach_name=$('hcn'+d.hadd).value.trim(), started_on=$('hcs'+d.hadd).value, ended_on=$('hce'+d.hadd).value;
+      if(!coach_name||!started_on||!ended_on)return say('Informe o técnico e as datas de início e fim da passagem.',false);
+      if(ended_on<started_on)return say('A data final não pode ser anterior à inicial.',false);
+      const {error}=await sb.rpc('register_past_team_coach', { p_participant_id:d.hadd, p_coach_name:coach_name, p_start_date:started_on, p_end_date:ended_on });
+      if(error)return say(traduz(error),false);
+      say('Passagem anterior registrada; partidas desse período vinculadas ao técnico.',true);await refresh();
+    }
     if (d.jadd) { const n = $('jn' + d.jadd).value.trim(); if (n) run(sb.from('players').insert({ name: n, participant_id: d.jadd }), 'Jogador cadastrado.'); }
     if (d.je) { const p = D.players.find(x => x.id === d.je), n = prompt('Novo nome:', p.name); if (n && n.trim() && n.trim() !== p.name) run(sb.from('players').update({ name: n.trim() }).eq('id', p.id), 'Nome atualizado.'); }
     if (d.jd && confirm('Excluir este jogador? Só é possível se ele não tiver gols/assistências.')) run(sb.from('players').delete().eq('id', d.jd), 'Jogador excluído.');
@@ -248,22 +287,35 @@ function vTimes() {
 
 
 // ---------- Importação em lote de partidas CSV / Excel ----------
+function parseImportDate(value) {
+  const v = String(value ?? '').trim(); if (!v) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const br = v.match(/^(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4})$/);
+  if (br) return `${br[3]}-${br[2].padStart(2,'0')}-${br[1].padStart(2,'0')}`;
+  if (/^\d+(\.\d+)?$/.test(v) && Number(v) > 20000 && window.XLSX?.SSF) {
+    const d = XLSX.SSF.parse_date_code(Number(v));
+    if (d) return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+  }
+  return false;
+}
 function parseImportMatrix(rows) {
   const norm = x => String(x ?? '').trim();
   const data = rows.filter(r => r.some(x => norm(x))).map(r => r.map(norm));
-  if (data.length && /categoria/i.test(data[0][0]) && /confronto/i.test(data[0][1])) data.shift();
+  if (data.length && /categoria/i.test(data[0][0]) && /confronto|mandante/i.test(data[0][1])) data.shift();
   return data.map((r,i)=>{
     const cat=(r[0]||'Oficial').toLowerCase().startsWith('amist')?'friendly':'official';
-    const matchup=r[1]||''; let home='',away='';
-    if(matchup.includes(' x ')){[home,away]=matchup.split(/\s+x\s+/i).map(norm)}
+    const matchup=r[1]||'', inline= /\s+x\s+/i.test(matchup); let home='',away='';
+    if(inline){[home,away]=matchup.split(/\s+x\s+/i).map(norm)}
     else if(r.length>=4){home=r[1];away=r[2];}
-    const score=(r[2]||r[3]||'').match(/^(\d+)\s*[-–:x]\s*(\d+)$/);
-    return {line:i+2,category:cat,home,away,home_score:score?+score[1]:null,away_score:score?+score[2]:null,error:!home||!away?'Informe o confronto no formato Time A x Time B.':home.toLowerCase()===away.toLowerCase()?'Os participantes precisam ser diferentes.':!score?'Placar inválido; use 1-0.':''};
+    const scoreCell=inline?r[2]:r[3];
+    const score=String(scoreCell||'').match(/^(\d+)\s*[-–:x]\s*(\d+)$/);
+    const rawDate=inline?r[3]:r[4], date=parseImportDate(rawDate);
+    return {line:i+2,category:cat,home,away,home_score:score?+score[1]:null,away_score:score?+score[2]:null,date:date||null,error:!home||!away?'Informe o confronto no formato Time A x Time B.':home.toLowerCase()===away.toLowerCase()?'Os participantes precisam ser diferentes.':!score?'Placar inválido; use 1-0.':rawDate&&!date?'Data inválida; use DD/MM/AAAA ou AAAA-MM-DD.':''};
   });
 }
 function vImport(){
- $('view').innerHTML=`<div class="card"><div class="cardhead"><h2>IMPORTAR PARTIDAS EM LOTE</h2></div><div class="cardbody"><p class="admin-help">Envie um arquivo .xlsx, .xls ou .csv. Uma linha por partida, com as colunas: Categoria | Confronto | Placar.</p><p class="admin-help">Exemplo: Amistoso | Time A x Time B | 1-0. Participantes que ainda não existem serão criados automaticamente.</p><div class="inline" style="margin:12px 0"><input type="file" id="importFile" accept=".xlsx,.xls,.csv"><button class="btn" id="sampleCsv">BAIXAR MODELO CSV</button></div><div id="importPreview"></div></div></div>`;
- $('sampleCsv').onclick=()=>{const blob=new Blob(['Categoria;Confronto;Placar\nAmistoso;Time A x Time B;1-0\nOficial;Time C x Time D;2-2'],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modelo_importacao_cbpes.csv';a.click();URL.revokeObjectURL(a.href);};
+ $('view').innerHTML=`<div class="card"><div class="cardhead"><h2>IMPORTAR PARTIDAS EM LOTE</h2></div><div class="cardbody"><p class="admin-help">Envie um arquivo .xlsx, .xls ou .csv. Uma linha por partida, com as colunas: Categoria | Confronto | Placar | Data (opcional).</p><p class="admin-help">Exemplo: Amistoso | Time A x Time B | 1-0 | 17/11/2026. Informe a data para que o histórico de técnicos possa identificar quem comandou o time em cada partida.</p><div class="inline" style="margin:12px 0"><input type="file" id="importFile" accept=".xlsx,.xls,.csv"><button class="btn" id="sampleCsv">BAIXAR MODELO CSV</button></div><div id="importPreview"></div></div></div>`;
+ $('sampleCsv').onclick=()=>{const blob=new Blob(['Categoria;Confronto;Placar;Data\nAmistoso;Time A x Time B;1-0;17/11/2026\nOficial;Time C x Time D;2-2;17/11/2026'],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modelo_importacao_cbpes.csv';a.click();URL.revokeObjectURL(a.href);};
  $('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let rows;if(/\.csv$/i.test(f.name)){const txt=await f.text();const sep=txt.includes(';')?';':',';rows=txt.split(/\r?\n/).map(x=>x.split(sep));}else{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});}importRows=parseImportMatrix(rows);showImportPreview();}catch(err){say('Não foi possível ler o arquivo: '+err.message,false);}};
 }
 function showImportPreview(){
@@ -273,21 +325,20 @@ function showImportPreview(){
  const missing=names.filter(n=>!existing.has(n.toLowerCase()));
  const errors=importRows.filter(r=>r.error);
  const duplicates=names.filter(n=>names.some(x=>x!==n&&x.toLowerCase()!==n.toLowerCase()&&(x.toLowerCase().includes(n.toLowerCase())||n.toLowerCase().includes(x.toLowerCase()))));
- root.innerHTML=`<div class="admin-help">${importRows.length} partidas • ${missing.length} participantes novos • ${errors.length} linha(s) com erro</div>${duplicates.length?`<div class="msg err" style="margin-top:8px">Atenção: nomes parecidos detectados: ${duplicates.map(esc).join(', ')}. Confira se são participantes diferentes antes de importar.</div>`:''}<div class="scroll"><table class="table"><thead><tr><th>Linha</th><th>Categoria</th><th>Mandante</th><th>Placar</th><th>Visitante</th><th>Validação</th></tr></thead><tbody>${importRows.map(r=>`<tr><td>${r.line}</td><td>${r.category==='friendly'?'Amistoso':'Oficial'}</td><td>${esc(r.home)}</td><td>${r.home_score??'—'} x ${r.away_score??'—'}</td><td>${esc(r.away)}</td><td>${r.error?`<span class="res-l">${esc(r.error)}</span>`:'<span class="res-w">OK</span>'}</td></tr>`).join('')}</tbody></table></div><p class="admin-help">Novos participantes: ${missing.map(esc).join(', ')||'nenhum'}.</p><button class="btn primary" id="confirmImport" ${errors.length?'disabled':''}>CONFIRMAR E IMPORTAR ${importRows.length} PARTIDAS</button>`;
+ root.innerHTML=`<div class="admin-help">${importRows.length} partidas • ${missing.length} participantes novos • ${errors.length} linha(s) com erro</div>${duplicates.length?`<div class="msg err" style="margin-top:8px">Atenção: nomes parecidos detectados: ${duplicates.map(esc).join(', ')}. Confira se são participantes diferentes antes de importar.</div>`:''}<div class="scroll"><table class="table"><thead><tr><th>Linha</th><th>Categoria</th><th>Mandante</th><th>Placar</th><th>Visitante</th><th>Data</th><th>Validação</th></tr></thead><tbody>${importRows.map(r=>`<tr><td>${r.line}</td><td>${r.category==='friendly'?'Amistoso':'Oficial'}</td><td>${esc(r.home)}</td><td>${r.home_score??'—'} x ${r.away_score??'—'}</td><td>${esc(r.away)}</td><td>${r.date?fd(r.date):'—'}</td><td>${r.error?`<span class="res-l">${esc(r.error)}</span>`:'<span class="res-w">OK</span>'}</td></tr>`).join('')}</tbody></table></div><p class="admin-help">Novos participantes: ${missing.map(esc).join(', ')||'nenhum'}.</p><button class="btn primary" id="confirmImport" ${errors.length?'disabled':''}>CONFIRMAR E IMPORTAR ${importRows.length} PARTIDAS</button>`;
  $('confirmImport').onclick=importMatches;
 }
 async function importMatches(){
  if(!importRows.length||importRows.some(r=>r.error))return say('Corrija os erros antes de importar.',false);
- if(!confirm(`Importar ${importRows.length} partidas? Novos participantes serão criados e os jogos ficarão registrados em uma rodada chamada Importação histórica.`))return;
+ if(!confirm(`Importar ${importRows.length} partidas? Amistosos serão cadastrados sem rodada; partidas oficiais receberão rodadas de importação.`))return;
  const names=[...new Set(importRows.flatMap(r=>[r.home,r.away]))], ids=new Map(D.participants.map(p=>[p.name.toLowerCase(),p.id]));
  for(const n of names){if(!ids.has(n.toLowerCase())){const {data,error}=await sb.from('participants').insert({name:n}).select('id').single();if(error)return say('Falha ao criar participante '+n+': '+traduz(error),false);ids.set(n.toLowerCase(),data.id);}}
  let number=D.rounds.length?Math.max(...D.rounds.map(r=>r.number))+1:1;
  // Cada partida recebe sua própria rodada para permitir confrontos repetidos no histórico.
  for(let i=0;i<importRows.length;i++){
-   const r=importRows[i];
-   const {data:rd,error:re}=await sb.from('rounds').insert({number:number+i,stage:'liga',name:`Importação histórica ${i+1}`}).select('id').single();
-   if(re)return say('Falha ao criar rodada da partida '+(i+1)+': '+traduz(re),false);
-   const {error}=await sb.from('matches').insert({round_id:rd.id,home_id:ids.get(r.home.toLowerCase()),away_id:ids.get(r.away.toLowerCase()),home_score:r.home_score,away_score:r.away_score,category:r.category});
+   const r=importRows[i]; let round_id=null;
+   if(r.category==='official'){const {data:rd,error:re}=await sb.from('rounds').insert({number:number++,stage:'liga',name:`Importação histórica ${i+1}`,date:r.date}).select('id').single();if(re)return say('Falha ao criar rodada da partida '+(i+1)+': '+traduz(re),false);round_id=rd.id;}
+   const {error}=await sb.from('matches').insert({round_id,home_id:ids.get(r.home.toLowerCase()),away_id:ids.get(r.away.toLowerCase()),home_score:r.home_score,away_score:r.away_score,played_on:r.date,category:r.category});
    if(error)return say('Falha ao importar a partida '+(i+1)+': '+traduz(error),false);
  }
  importRows=[];say('Importação concluída com sucesso.',true);await refresh();tab='jogos';render();

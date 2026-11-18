@@ -36,20 +36,21 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 }
 
 async function load() {
-  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events'];
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
-  const [p, r, m, s, pl, ev] = res.map(x => x.data);
+  const [p, r, m, s, pl, ev, coachHistory] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
   if (s[0]) SET = s[0];
   const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x]));
   const matches = m.map(x => ({
-    ...x, home: P[x.home_id], away: P[x.away_id], round: R[x.round_id],
+    ...x, home: P[x.home_id], away: P[x.away_id], round: R[x.round_id] || null,
+    category: x.category || 'official',
     played: x.home_score !== null && x.away_score !== null,
     date: x.played_on || (R[x.round_id] && R[x.round_id].date) || null
-  })).filter(x => x.home && x.away && x.round).sort((a, b) => a.seq - b.seq);
+  })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
@@ -65,9 +66,9 @@ function standings(ps, ms, cfg = cfgOf()) {
   return Object.values(t).map(x => ({ ...x, sg: x.gp - x.gc, ap: x.j ? Math.round(x.pts / (x.j * cfg.ptsW) * 100) : 0 }))
     .sort((a, b) => b.pts - a.pts || b.v - a.v || b.sg - a.sg || b.gp - a.gp || a.p.name.localeCompare(b.p.name));
 }
-const leagueMatches = D => D.matches.filter(m => m.round.stage === 'liga');
+const leagueMatches = D => D.matches.filter(m => m.category !== 'friendly' && m.round && m.round.stage === 'liga');
 function groupTables(D) {
-  const ms = D.matches.filter(m => m.round.stage === 'grupos' && m.group_name);
+  const ms = D.matches.filter(m => m.category !== 'friendly' && m.round && m.round.stage === 'grupos' && m.group_name);
   return [...new Set(ms.map(m => m.group_name))].sort().map(n => {
     const gm = ms.filter(m => m.group_name === n), ids = new Set(gm.flatMap(m => [m.home_id, m.away_id]));
     return { name: n, matches: gm, st: standings(D.participants.filter(p => ids.has(p.id)), gm) };
@@ -98,14 +99,15 @@ function champion(D) {
   return ties.length === 1 && ties[0].winner ? ties[0].winner : null;
 }
 function latestPlayed(ms) {
-  return ms.filter(m => m.played).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.round.number - a.round.number || b.seq - a.seq);
+  return ms.filter(m => m.played).sort((a, b) => (b.date || '').localeCompare(a.date || '') || ((b.round?.number || 0) - (a.round?.number || 0)) || (b.seq || 0) - (a.seq || 0));
 }
 function nextMatches(ms) {
-  return ms.filter(m => !m.played).sort((a, b) => a.round.number - b.round.number || (a.date || '9').localeCompare(b.date || '9') || a.seq - b.seq);
+  return ms.filter(m => !m.played).sort((a, b) => ((a.round?.number || 999999) - (b.round?.number || 999999)) || (a.date || '9').localeCompare(b.date || '9') || (a.seq || 0) - (b.seq || 0));
 }
 function currentRound(rounds, ms) {
-  const nx = nextMatches(ms)[0]; if (nx) return nx.round;
-  const lp = latestPlayed(ms)[0]; return lp ? lp.round : rounds[rounds.length - 1] || null;
+  const official = ms.filter(m => m.category !== 'friendly' && m.round);
+  const nx = nextMatches(official)[0]; if (nx) return nx.round;
+  const lp = latestPlayed(official)[0]; return lp ? lp.round : rounds[rounds.length - 1] || null;
 }
 const sgf = n => (n > 0 ? '+' : '') + n;
 
@@ -127,9 +129,14 @@ function stats(D) {
 }
 const fmt1 = n => n.toFixed(1).replace('.', ',');
 
+function matchColor(m) { return m.category === 'friendly' ? '#176b45' : '#174e83'; }
 function matchRow(m) {
-  const mid = m.played
-    ? `<div class="score">${m.home_score} : ${m.away_score}<small>${m.home_pen !== null ? '(' + m.home_pen + '–' + m.away_pen + ' pên.)' : fd(m.date)}</small></div>`
-    : `<div class="match-meta">${m.date ? fd(m.date) : 'A DEFINIR'}<small>${esc(roundLabel(m.round).toUpperCase())}</small></div>`;
-  return `<div class="match"><div class="team"><span class="crest">${crest(m.home.name)}</span><span>${esc(m.home.name)}<small class="coach-label">${esc(m.home.coach_name || '')}</small></span></div>${mid}<div class="team right"><span>${esc(m.away.name)}<small class="coach-label">${esc(m.away.coach_name || '')}</small></span><span class="crest">${crest(m.away.name)}</span></div></div>`;
+  const color = matchColor(m), comp = m.category === 'friendly' ? 'AMIS' : (SET.name || 'COMPETIÇÃO');
+  const coach = (name) => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
+  return `<div class="fixture-mini" style="--match-color:${color}">
+    <div class="fixture-side"><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+    <div class="fixture-score">${m.played ? `${m.home_score} : ${m.away_score}` : '– : –'}</div>
+    <div class="fixture-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
+    <div class="fixture-meta">${m.category === 'friendly' ? `AMIS${m.date ? ' • ' + fd(m.date) : ''}` : `${esc(comp)}${m.date ? ' • ' + fd(m.date) : ''}`}</div>
+  </div>`;
 }
