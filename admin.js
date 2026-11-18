@@ -437,11 +437,11 @@ function validateCrestSvg(raw){
    const name=attr.name.toLowerCase(),value=attr.value.trim();
    if(name.startsWith('on'))throw Error('SVG contém evento não permitido.');
    if(name==='href'||name.endsWith(':href')){
-    if(!/^#[a-zA-Z_][\\w.:-]*$/.test(value))throw Error('SVG contém referência externa.');
+    if(!/^#[a-zA-Z_][\w.:-]*$/.test(value))throw Error('SVG contém referência externa.');
     continue;
    }
-   const noLocalUrls=value.replace(/url\\(\\s*(['"]?)#[a-zA-Z_][\\w.:-]*\\1\\s*\\)/gi,'');
-   if(/url\\s*\\(|javascript:|data:|@import|expression\\s*\\(|-moz-binding/i.test(noLocalUrls))throw Error('SVG contém referência externa ou estilo inseguro.');
+   const noLocalUrls=value.replace(/url\(\s*(['"]?)#[a-zA-Z_][\w.:-]*\1\s*\)/gi,'');
+   if(/url\s*\(|javascript:|data:|@import|expression\s*\(|-moz-binding/i.test(noLocalUrls))throw Error('SVG contém referência externa ou estilo inseguro.');
   }
  }
  return new Blob([new XMLSerializer().serializeToString(root)],{type:'image/svg+xml'});
