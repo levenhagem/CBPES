@@ -541,28 +541,3 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   column-gap:4px;
  }
 }
-
-/* V40 — mandante inteiro encostado ao placar, sem separar escudo/nome/técnico */
-.cbpes-match-main>.cbpes-match-team.home{
- display:flex;
- flex-direction:column;
- align-items:flex-end;
- justify-content:center;
- transform:none;
-}
-.cbpes-match-main>.cbpes-match-team.home .cbpes-match-club{
- width:max-content;
- max-width:100%;
- grid-template-columns:36px minmax(0,max-content);
- justify-content:end;
- margin-left:auto;
- margin-right:0;
-}
-.cbpes-match-main>.cbpes-match-team.away{
- transform:none;
-}
-@media(max-width:620px){
- .cbpes-match-main>.cbpes-match-team.home .cbpes-match-club{
-  grid-template-columns:30px minmax(0,max-content);
- }
-}
