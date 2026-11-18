@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 /* CBPES — visual de portal esportivo: plano, denso, sem sombras nem cantos arredondados */
 :root{--green:#078a45;--yellow:#f2c500;--blue:#173d70;--navy:#002b36;--ink:#14232b;--muted:#66767f;--line:#dde2e5;--bg:#f2f4f5;--white:#fff;--soft:#eef2f4;
---f:'Open Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--fc:'Open Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+--f:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--fc:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--f);font-size:14px;line-height:1.35;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
@@ -147,4 +147,22 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  .latest-team .crest{width:40px;height:40px;font-size:13px}.latest-score span{font-size:56px}
  .match{grid-template-columns:1fr 70px 1fr;font-size:13px}.crest{width:22px;height:22px}
  .table th,.table td{padding:7px 4px}
+}
+
+
+/* CBPES — Inter + fundos de partidas com degradê discreto */
+.friendly-match{
+  background:linear-gradient(112deg,#176b45 0%,#1b754c 58%,#23845a 100%) !important;
+  color:#fff;
+}
+.fixture-mini{
+  background:linear-gradient(112deg,
+    var(--match-color,#174e83) 0%,
+    color-mix(in srgb,var(--match-color,#174e83) 86%,#ffffff) 100%
+  ) !important;
+  color:#fff;
+}
+/* Mantém contraste e legibilidade em textos e metadados */
+.friendly-match .friendly-date,.fixture-mini .fixture-meta{
+  color:rgba(255,255,255,.88);
 }
