@@ -408,3 +408,55 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  }
  .cbpes-match-main .cbpes-match-score{font-size:21px}
 }
+
+/* V36 — restaura o placar centralizado; clubes agrupados ao redor dele */
+.cbpes-match-main{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr);
+ gap:12px;
+ width:100%;
+ max-width:none;
+ align-items:center;
+ justify-content:stretch;
+}
+.cbpes-match-main>.cbpes-match-team{
+ width:100%;
+ min-width:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+.cbpes-match-main>.cbpes-match-team.home{
+ align-items:flex-end;
+}
+.cbpes-match-main>.cbpes-match-team.away{
+ align-items:flex-start;
+}
+.cbpes-match-main .cbpes-match-club{
+ display:grid;
+ grid-template-columns:36px minmax(0,max-content);
+ column-gap:6px;
+ width:max-content;
+ max-width:100%;
+ min-width:0;
+ align-items:center;
+}
+.cbpes-match-main .cbpes-match-club-text{
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ text-align:left;
+}
+.cbpes-match-main .cbpes-match-club-text small{padding:0;text-align:left}
+.cbpes-match-main .cbpes-match-score{text-align:center}
+@media(max-width:620px){
+ .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);
+  gap:5px;
+  max-width:none;
+ }
+ .cbpes-match-main .cbpes-match-club{
+  grid-template-columns:30px minmax(0,max-content);
+  column-gap:4px;
+ }
+}
