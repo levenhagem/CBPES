@@ -545,11 +545,11 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 /* V41 — afasta visitantes do placar para equilibrar a distancia visual */
 @media(min-width:621px){
  .cbpes-match-main>.cbpes-match-team.away{
-  transform:translateX(22px);
+  transform:translateX(30px);
  }
 }
 @media(max-width:620px){
  .cbpes-match-main>.cbpes-match-team.away{
-  transform:translateX(8px);
+  transform:translateX(11px);
  }
 }
