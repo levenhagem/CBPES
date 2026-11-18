@@ -245,3 +245,6 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .coach-career-win .coach-career-result{color:#16804b}.coach-career-loss .coach-career-result{color:#c63d3d}.coach-career-draw .coach-career-result{color:#687783}
 .admin-featured{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--navy,#002b36);white-space:nowrap}
 @media(max-width:620px){.cbpes-rivalry-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.cbpes-rivalry-grid .cbpes-rivalry-name{font-size:14px}}
+
+/* V22 — ordenação manual de partidas */
+.cbpes-order-controls{display:inline-flex;align-items:center;gap:4px}.cbpes-order-controls .btn{min-width:30px;padding:4px 8px;font-size:16px;line-height:1}.cbpes-order-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:9px 0}.cbpes-order-item span:first-child{font-size:12px;font-weight:600}.cbpes-final-order{margin-bottom:12px}
