@@ -36,21 +36,21 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 }
 
 async function load() {
-  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history'];
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
-  const [p, r, m, s, pl, ev, coachHistory] = res.map(x => x.data);
+  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
   if (s[0]) SET = s[0];
   const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x]));
   const matches = m.map(x => ({
     ...x, home: P[x.home_id], away: P[x.away_id], round: R[x.round_id] || null,
-    category: x.category || 'official',
+    category: x.category || 'official', weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
     played: x.home_score !== null && x.away_score !== null,
-    date: x.played_on || (R[x.round_id] && R[x.round_id].date) || null
+    date: x.played_on || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
   })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
@@ -131,12 +131,19 @@ const fmt1 = n => n.toFixed(1).replace('.', ',');
 
 function matchColor(m) { return m.category === 'friendly' ? '#176b45' : '#174e83'; }
 function matchRow(m) {
-  const color = matchColor(m), comp = m.category === 'friendly' ? 'AMIS' : (SET.name || 'COMPETIÇÃO');
-  const coach = (name) => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
+  const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
+  const score = m.played ? `${m.home_score} : ${m.away_score}` : '– : –';
+  if (m.category === 'friendly' || m.category === 'weekly') return `<div class="friendly-match">
+    <div class="friendly-side home"><span class="friendly-tag">${m.category === 'weekly' ? 'SEMANAL' : 'AMISTOSO'}</span><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
+    <div class="friendly-score">${score}</div>
+    <div class="friendly-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
+    <div class="friendly-date">${m.date ? fd(m.date) : ''}</div>
+  </div>`;
+  const color = matchColor(m), comp = SET.name || 'COMPETIÇÃO';
   return `<div class="fixture-mini" style="--match-color:${color}">
     <div class="fixture-side"><b><a href="#team/${m.home_id}">${esc(m.home.name)}</a></b><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
-    <div class="fixture-score">${m.played ? `${m.home_score} : ${m.away_score}` : '– : –'}</div>
+    <div class="fixture-score">${score}</div>
     <div class="fixture-side away"><b><a href="#team/${m.away_id}">${esc(m.away.name)}</a></b><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
-    <div class="fixture-meta">${m.category === 'friendly' ? `AMIS${m.date ? ' • ' + fd(m.date) : ''}` : `${esc(comp)}${m.date ? ' • ' + fd(m.date) : ''}`}</div>
+    <div class="fixture-meta">${esc(comp)}${m.date ? ' • ' + fd(m.date) : ''}</div>
   </div>`;
 }

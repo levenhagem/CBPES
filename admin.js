@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let D, tab = 'camp', selRound = null, openPart = null, openGoals = null, draft = null, firstLoad = true, importRows = []; 
+let D, tab = 'camp', selRound = null, openPart = null, openGoals = null, draft = null, firstLoad = true, importRows = [], selWeekly = null, weeklyDraft = null; 
 const today = () => new Date().toISOString().slice(0, 10);
 
 function say(t, ok) { const m = $('msg'); m.textContent = t || ''; m.className = 'msg ' + (ok ? 'ok' : 'err'); if (t && ok) setTimeout(() => { if (m.textContent === t) m.textContent = ''; }, 3500); }
@@ -9,7 +9,7 @@ function traduz(e) {
   if (e.code === '23503') return 'Não é possível excluir: há partidas, jogadores ou gols ligados a este item. Remova-os antes.';
   if (e.code === '42501' || /row-level security/i.test(e.message)) return 'Sem permissão para esta operação.';
   if (e.code === '23514') return 'Dados inválidos (confira participantes e placar).';
-  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL v2, v3, v4 e v5 no Supabase.';
+  if (e.code === '42P01' || /does not exist|schema cache/i.test(e.message)) return 'Banco desatualizado: confira se executou as atualizações SQL anteriores e a V7 no Supabase.';
   return e.message;
 }
 
@@ -33,7 +33,7 @@ async function refresh() { const y = window.scrollY; try { D = await load(); } c
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
-  ({ camp: vCamp, times: vTimes, jogos: vJogos, est: vEst, his: vHis, import: vImport })[tab]();
+  ({ camp: vCamp, times: vTimes, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais })[tab]();
 }
 const pname = id => (D.participants.find(p => p.id === id) || {}).name || '?';
 const plname = id => (D.players.find(p => p.id === id) || {}).name || '?';
@@ -145,7 +145,7 @@ function advance() {
 
 // ---------- Jogos: rodadas, placares, gols e confrontos numa tela só ----------
 let showNew = false, activeCategory = 'official';
-const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === 'official').sort((a, b) => a.seq - b.seq);
+const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : activeCategory === 'weekly' ? D.matches.filter(m => m.category === 'weekly' && m.weekly_id === selWeekly).sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === 'official').sort((a, b) => a.seq - b.seq);
 function rowPayload(id) {
   const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
   if (h === '' && a === '') return { skip: true };
@@ -187,7 +187,7 @@ function goalsPanel(m) {
    ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>Gol</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>Assistência</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Times.</div>'}</div>`;
 }
 function vJogos() {
-  const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes: não pertencem a liga, copa ou rodada.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
+  const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
   if (activeCategory === 'friendly') {
     const ms = curMatches();
     const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO AMISTOSO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="fh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="fa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data</label><input type="date" id="fdt" value="${today()}"></div><button class="btn primary" data-fadd="1">CADASTRAR AMISTOSO</button></div></div></div>`;
@@ -201,6 +201,28 @@ function vJogos() {
       if(d.mx&&confirm('Excluir este amistoso?'))return run(sb.from('matches').delete().eq('id',d.mx),'Amistoso excluído.');
       if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
       if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
+      if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
+      if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+    };
+    return;
+  }
+  if (activeCategory === 'weekly') {
+    if (!selWeekly || !D.weeklies.some(w => w.id === selWeekly)) selWeekly = D.weeklies[0]?.id || null;
+    const edition = D.weeklies.find(w => w.id === selWeekly);
+    const ms = curMatches();
+    const picker = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><div class="field"><label>Campeonato semanal</label><select id="weeklyPick">${D.weeklies.map(w=>`<option value="${w.id}" ${w.id===selWeekly?'selected':''}>${esc(w.name)} • ${fd(w.event_date)}</option>`).join('')}</select></div><button class="btn" data-goweekly="1">ABRIR SEMANAIS</button></div></div>`;
+    if (!edition) { $('view').innerHTML = switcher + picker + '<div class="empty">Cadastre uma edição na aba SEMANAIS antes de registrar partidas.</div>'; $('view').onclick=e=>{if(e.target.closest('[data-goweekly]')){tab='weekly';render();}}; return; }
+    const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVA PARTIDA — ${esc(edition.name)}</h2><span class="pill">${fd(edition.event_date)}</span></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="wh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="wa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data do jogo</label><input type="date" id="wdt" value="${edition.event_date}"></div><button class="btn primary" data-wadd="1">CADASTRAR PARTIDA SEMANAL</button></div></div></div>`;
+    const rows = ms.length ? ms.map(rowHTML).join('') : '<div class="empty">Nenhuma partida cadastrada nesta edição.</div>';
+    $('view').innerHTML = switcher + picker + form + `<div class="card"><div class="cardhead"><h2>PARTIDAS DA EDIÇÃO (${ms.length})</h2></div><div class="cardbody">${rows}</div></div>`;
+    $('view').onchange=e=>{if(e.target.id==='weeklyPick'){selWeekly=e.target.value;vJogos();}};
+    $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
+    $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+      if(d.category){activeCategory=d.category;selRound=null;return vJogos();}
+      if(d.goweekly){tab='weekly';render();return;}
+      if(d.wadd){const h=$('wh').value,a=$('wa').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,weekly_id:selWeekly,home_id:h,away_id:a,played_on:$('wdt').value||edition.event_date,category:'weekly'}),'Partida vinculada à edição semanal.');}
+      if(d.s)return saveOne(d.s);if(d.mx&&confirm('Excluir esta partida semanal?'))return run(sb.from('matches').delete().eq('id',d.mx),'Partida excluída.');
+      if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
       if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
       if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
     };
@@ -231,11 +253,25 @@ function vJogos() {
     if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
   };
 }
+// ---------- Edições de campeonatos semanais ----------
+function vSemanais() {
+  const selected = D.weeklies.find(w=>w.id===selWeekly) || null;
+  const w = selected || {name:'',event_date:today(),participant_count:0,format_description:'',champion_id:null,champion_coach_name:''};
+  $('view').innerHTML = `<div class="card" style="margin-bottom:14px"><div class="cardhead"><h2>${selected?'EDITAR EDIÇÃO SEMANAL':'NOVA EDIÇÃO SEMANAL'}</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Nome do campeonato</label><input id="wn" maxlength="80" value="${esc(w.name)}" placeholder="Ex.: Semanal CBPES"></div><div class="field"><label>Data da edição</label><input id="wdate" type="date" value="${w.event_date||today()}"></div><div class="field"><label>Quantidade de participantes</label><input id="wcount" type="number" min="0" max="128" value="${w.participant_count||0}" style="width:110px"></div></div><div class="field" style="margin-top:10px"><label>Formato / regras desta edição</label><textarea id="wformat" rows="3" style="width:100%" placeholder="Ex.: 8 participantes, grupos + semifinal e final, jogo único...">${esc(w.format_description||'')}</textarea></div><div style="margin-top:12px"><label class="admin-help">PARTICIPANTES INSCRITOS NESTA EDIÇÃO (opcional)</label><div class="cols3" style="gap:6px;margin-top:6px">${D.participants.map(p=>`<label style="display:flex;gap:7px;align-items:center;padding:5px;border:1px solid var(--line)"><input type="checkbox" name="weeklyParticipant" value="${p.id}" ${(D.weeklyParticipants||[]).some(x=>x.weekly_id===selected?.id&&x.participant_id===p.id)?'checked':''}>${esc(p.name)}</label>`).join('')||'<span class="admin-help">Cadastre os times na aba Times primeiro.</span>'}</div></div><div class="inline" style="margin-top:10px"><div class="field"><label>Campeão da edição</label><select id="wchamp"><option value="">Ainda não definido</option>${opts(D.participants,w.champion_id,p=>p.name)}</select></div><div class="field"><label>Técnico campeão</label><input id="wcoach" maxlength="80" value="${esc(w.champion_coach_name||'')}" placeholder="Nome do técnico"></div></div><div class="form-actions"><button class="btn primary" id="wSave">${selected?'SALVAR ALTERAÇÕES':'CRIAR EDIÇÃO'}</button>${selected?'<button class="btn danger" id="wDelete">EXCLUIR EDIÇÃO</button><button class="btn" id="wNew">NOVA EDIÇÃO</button>':''}</div><p class="admin-help">Cada data identifica uma edição independente. O campeão e seu técnico ficam registrados como troféu no histórico geral.</p></div></div>
+  <div class="card"><div class="cardhead"><h2>EDIÇÕES CADASTRADAS (${D.weeklies.length})</h2></div><div class="cardbody">${D.weeklies.length?D.weeklies.map(x=>`<div class="player"><div><b>${esc(x.name)}</b><small>${fd(x.event_date)} • ${x.participant_count||0} participantes • ${D.matches.filter(m=>m.weekly_id===x.id).length} partidas ${x.champion_id?'• Campeão: '+esc(pname(x.champion_id)):''}</small></div><button class="btn sm" data-wedit="${x.id}">EDITAR</button></div>`).join(''):'<div class="empty">Nenhuma edição semanal cadastrada.</div>'}</div></div>`;
+  $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+    if(d.wedit){selWeekly=d.wedit;return vSemanais();}
+    if(t.id==='wNew'){selWeekly=null;return vSemanais();}
+    if(t.id==='wSave'){const roster=[...document.querySelectorAll('input[name=weeklyParticipant]:checked')].map(x=>x.value);const payload={name:$('wn').value.trim()||'Campeonato Semanal',event_date:$('wdate').value,participant_count:roster.length||(+$('wcount').value||0),format_description:$('wformat').value.trim(),champion_id:$('wchamp').value||null,champion_coach_name:$('wcoach').value.trim()||null};if(!payload.event_date)return say('Informe a data da edição.',false);if(payload.champion_id&&!payload.champion_coach_name){const cp=D.participants.find(p=>p.id===payload.champion_id);const games=D.matches.filter(m=>m.weekly_id===selected?.id&&m.played);const last=games.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));const snap=last.map(m=>m.home_id===payload.champion_id?m.home_coach_name:m.away_id===payload.champion_id?m.away_coach_name:null).find(Boolean);payload.champion_coach_name=snap||cp?.coach_name||null;}let savedId=selected?.id;if(selected){const {error}=await sb.from('weekly_editions').update(payload).eq('id',selected.id);if(error)return say(traduz(error),false);}else{const {data,error}=await sb.from('weekly_editions').insert(payload).select('id').single();if(error)return say(traduz(error),false);savedId=data.id;selWeekly=savedId;}const {error:delErr}=await sb.from('weekly_participants').delete().eq('weekly_id',savedId);if(delErr)return say(traduz(delErr),false);if(roster.length){const {error:insErr}=await sb.from('weekly_participants').insert(roster.map(participant_id=>({weekly_id:savedId,participant_id})));if(insErr)return say(traduz(insErr),false);}say(selected?'Edição semanal atualizada.':'Edição semanal criada.',true);await refresh();return;}
+    if(t.id==='wDelete'&&selected){if(D.matches.some(m=>m.weekly_id===selected.id))return say('Exclua primeiro as partidas vinculadas a esta edição.',false);if(confirm('Excluir esta edição semanal?')){selWeekly=null;return run(sb.from('weekly_editions').delete().eq('id',selected.id),'Edição excluída.');}}
+  };
+}
+
 // ---------- Times: participantes + jogadores + histórico individual ----------
 function histPart(p) {
   const ms = D.matches.filter(m => m.played && (m.home_id === p.id || m.away_id === p.id)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   if (!ms.length) return '<div class="empty">Sem partidas disputadas.</div>';
-  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label ${m.category==='friendly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':pad(m.round?.number||0)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${m.category==='friendly'?'':esc(roundLabel(m.round))+' • '}${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
+  return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':pad(m.round?.number||0)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${m.category==='friendly'?'Amistoso':m.category==='weekly'?esc(m.weekly?.name||'Semanal'):esc(roundLabel(m.round))+' • '}${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
 }
 function vTimes() {
   const st = Object.fromEntries(standings(D.participants, D.matches).map(x => [x.p.id, x]));
