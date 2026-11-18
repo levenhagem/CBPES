@@ -173,7 +173,9 @@ function renderTable() {
     }else{
       html='';
     }
-    const roundGames=active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames));
+    const leagueProPlayoff=active.phase_type==='playoff'&&/liga\\s*pro/i.test((competitions.find(c=>c.id===edition.competition_id)?.name||'')+' '+edition.name);
+    const playoffTemplate=leagueProPlayoff&&!phaseMatches.length?`<div class="card" style="margin:10px 0"><div class="cardhead"><h2>CONFRONTOS DOS PLAYOFFS</h2></div><div class="cardbody"><p class="admin-help">Aguardando a definição da classificação da fase de liga.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px"><div class="notice"><b>CONFRONTO 1</b><div style="padding:10px 0">3º colocado</div><div style="border-top:1px solid var(--line);padding:10px 0">6º colocado</div></div><div class="notice"><b>CONFRONTO 2</b><div style="padding:10px 0">4º colocado</div><div style="border-top:1px solid var(--line);padding:10px 0">5º colocado</div></div></div></div></div>`:'';
+    const roundGames=playoffTemplate||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames)));
     html=twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
     const finalP=phases.find(p=>p.phase_type==='final'),thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
     const finalIds=officialRounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=officialRounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
