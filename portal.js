@@ -174,7 +174,7 @@ function renderTable() {
       html='';
     }
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
-    const placeholderHtml=active.phase_type==='playoff'&&!phaseMatches.length&&configuredSlots.length?
+    const placeholderHtml=['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match" style="--match-color:#bfcbd3">
         <div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>
         <div class="cbpes-match-main">
