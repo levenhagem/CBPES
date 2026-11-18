@@ -515,3 +515,29 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   transform:translateX(8px);
  }
 }
+
+/* V39 — distancia simetrica entre os dois blocos e o placar.
+   Substitui o deslocamento artificial V38 por colunas compactas iguais. */
+.cbpes-match-main{
+ grid-template-columns:minmax(0,132px) 70px minmax(0,132px);
+ column-gap:6px;
+ justify-content:center;
+}
+.cbpes-match-main>.cbpes-match-team.home,
+.cbpes-match-main>.cbpes-match-team.away{
+ transform:none;
+}
+.cbpes-match-main .cbpes-match-club{
+ grid-template-columns:36px minmax(0,1fr);
+ column-gap:5px;
+}
+@media(max-width:620px){
+ .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);
+  column-gap:4px;
+ }
+ .cbpes-match-main .cbpes-match-club{
+  grid-template-columns:30px minmax(0,1fr);
+  column-gap:4px;
+ }
+}
