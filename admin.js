@@ -377,7 +377,7 @@ function vJogos() {
     };
     return;
   }
-  const categoryRounds = D.rounds.filter(x => x.official_edition_id===selOfficialEdition && ( const linked=D.matches.filter(m=>m.round_id===x.id);return !linked.length||linked.some(m=>(m.category||'official')==='official'); }));
+  const categoryRounds = D.rounds.filter(x => { if(x.official_edition_id!==selOfficialEdition)return false; const linked=D.matches.filter(m=>m.round_id===x.id);return !linked.length||linked.some(m=>(m.category||'official')==='official'); });
   if(!categoryRounds.some(r=>r.id===selRound))selRound=categoryRounds.length?categoryRounds[categoryRounds.length-1].id:null;
   const r=categoryRounds.find(x=>x.id===selRound),ST={liga:'Liga',grupos:'Grupos',mata:'Mata-mata'};
   const officialRounds=categoryRounds; const next=officialRounds.length?Math.max(...officialRounds.map(x=>x.number))+1:1;
