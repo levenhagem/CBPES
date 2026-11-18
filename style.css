@@ -503,3 +503,15 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   height:30px;
  }
 }
+
+/* V38 — aproxima somente os mandantes do placar, preservando alinhamento dos escudos */
+@media(min-width:621px){
+ .cbpes-match-main>.cbpes-match-team.home{
+  transform:translateX(26px);
+ }
+}
+@media(max-width:620px){
+ .cbpes-match-main>.cbpes-match-team.home{
+  transform:translateX(8px);
+ }
+}
