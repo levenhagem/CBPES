@@ -579,3 +579,24 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #latest .featured-champion-label{display:inline-block;vertical-align:middle;margin-left:7px;padding:3px 7px;border:1px solid #a97711;border-radius:4px;background:linear-gradient(135deg,#f9e6a1,#d4a22f);color:#593c08;font-size:10px;font-weight:800;letter-spacing:.05em;line-height:1.2;white-space:nowrap}
 
 #latest .featured-juventus-trophy{display:inline-block!important;margin-left:6px;font-size:18px;line-height:1;vertical-align:middle;white-space:nowrap}
+
+/* Liga Evo: deep navy, electric-blue highlights and restrained stadium-light accents */
+.cbpes-match.cbpes-match-evo{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 18% -50%,rgba(78,158,255,.46),transparent 58%),
+    radial-gradient(ellipse at 91% 115%,rgba(0,111,255,.35),transparent 52%),
+    linear-gradient(112deg,#031138 0%,#073076 47%,#041333 100%)!important;
+  border:1px solid rgba(89,160,255,.45);
+  border-left:3px solid #248bff;
+  box-shadow:inset 0 1px 0 rgba(159,209,255,.15),0 2px 8px rgba(0,19,65,.12);
+  color:#fff;
+}
+.cbpes-match.cbpes-match-evo::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  inset:0;background:linear-gradient(115deg,transparent 38%,rgba(103,182,255,.12) 51%,transparent 65%);
+}
+.cbpes-match.cbpes-match-evo .cbpes-match-category{color:#9ed0ff;opacity:1;font-weight:850;letter-spacing:.09em}
+.cbpes-match.cbpes-match-evo .cbpes-match-score{text-shadow:0 1px 12px rgba(68,153,255,.45)}
+.cbpes-match.cbpes-match-evo .cbpes-match-team small{color:#d1e6ff;opacity:.86}
+.cbpes-match.cbpes-match-evo .cbpes-match-top{border-bottom:1px solid rgba(150,198,255,.16);padding-bottom:4px}
