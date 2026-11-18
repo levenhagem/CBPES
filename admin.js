@@ -384,15 +384,27 @@ async function importOfficialFixtures(){
  if(!confirm('Importar '+result.length+' confrontos para esta edição?'))return;
  button.disabled=true;
  try{
+  const phaseId=$('fixtureBulkPhase')?.value||null;
+  if(!phaseId)return say('Selecione a fase para importar as partidas.',false);
+  const phase=(D.phases||[]).find(p=>p.id===phaseId&&p.official_edition_id===selOfficialEdition);
+  if(!phase)return say('A fase selecionada não pertence à edição.',false);
   const rounds=D.rounds.filter(r=>r.official_edition_id===selOfficialEdition);
   const numbers=[...new Set(result.map(x=>x.number))];
   const roundIds=new Map(rounds.map(r=>[r.number,r.id]));
   const created=[];
   for(const number of numbers){
    if(roundIds.has(number))continue;
-   const {data,error}=await sb.from('rounds').insert({number,stage:'liga',official_edition_id:selOfficialEdition}).select('id').single();
+   const {data,error}=await sb.from('rounds').insert({number,stage:phase.counts_in_standings?'liga':'mata',phase_id:phaseId,official_edition_id:selOfficialEdition}).select('id').single();
    if(error)throw new Error('Erro ao criar rodada '+number+': '+error.message);
    roundIds.set(number,data.id);created.push(number);
+  }
+  for(const number of numbers){
+   const round=rounds.find(r=>r.number===number);
+   if(round&&round.phase_id!==phaseId){
+    if(round.phase_id)throw new Error('A rodada '+number+' já está vinculada a outra fase. Nenhum confronto foi importado.');
+    const {error}=await sb.from('rounds').update({phase_id:phaseId}).eq('id',round.id).eq('official_edition_id',selOfficialEdition);
+    if(error)throw new Error('Não foi possível vincular a rodada '+number+': '+error.message);
+   }
   }
   const rows=result.map(x=>({round_id:roundIds.get(x.number),official_edition_id:selOfficialEdition,home_id:x.home.id,away_id:x.away.id,category:'official',leg:1}));
   const {error}=await sb.from('matches').insert(rows);
@@ -470,11 +482,29 @@ function vJogos() {
   const list=categoryRounds.map(x=>{const a=D.matches.filter(m=>m.round_id===x.id&&(m.category||'official')==='official');return `<button data-sel="${x.id}" class="${x.id===selRound?'on':''}"><span>${esc(roundLabel(x))}</span><small>${a.filter(m=>m.played).length}/${a.length}</small></button>`;}).join('')||'<div class="empty">Nenhuma rodada oficial cadastrada.</div>';
   const ms=r?curMatches():[];
   const right=r?`<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))} <span class="pill">${ST[r.stage]}</span></h2><span class="inline" style="align-items:center"><input type="date" id="rdt" value="${r.date||''}"><button class="btn sm" data-rdsave="1">SALVAR DATA</button><button class="btn sm danger" data-rx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">${ms.length?`<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>`+ms.map(rowHTML).join(''):'<div class="empty">Sem confrontos nesta rodada.</div>'}<div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(competitionParticipants(),null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="ma">${opts(competitionParticipants(),null,p=>p.name)}</select></div>${r.stage==='grupos'?'<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>':''}${r.stage==='mata'?'<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>':''}<div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date||''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`:'<div class="empty">Gere o calendário na aba Campeonato ou crie uma rodada ao lado.</div>';
-  const bulkPanel=`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>IMPORTAR PARTIDAS EM LOTE</h2></div><div class="cardbody"><p class="admin-help">Uma partida por linha: Rodada | Mandante | Visitante. Sem datas e horários. As rodadas inexistentes serão criadas como Liga.</p><textarea id="fixtureBulkText" rows="5" style="width:100%" placeholder="Rodada | Mandante | Visitante&#10;1 | Roma | Milan&#10;1 | Arsenal | Inter"></textarea><pre id="fixtureBulkFeedback" style="white-space:pre-wrap;font-size:12px"></pre><div class="inline"><button class="btn" id="fixtureBulkPreview">CONFERIR PARTIDAS</button><button class="btn primary" id="fixtureBulkSave">IMPORTAR PARTIDAS</button></div></div></div>`;
+  const importPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&p.official_edition_id===selOfficialEdition);
+  const importPhaseOptions='<option value="">Selecione a fase</option>'+importPhases.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');
+  const bulkPanel=`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>IMPORTAR PARTIDAS EM LOTE</h2></div><div class="cardbody"><p class="admin-help">Uma partida por linha: Rodada | Mandante | Visitante. Sem datas e horários. As rodadas inexistentes serão vinculadas à fase escolhida.</p><div class="field" style="margin-bottom:10px"><label>FASE DA COMPETIÇÃO</label><select id="fixtureBulkPhase">${importPhaseOptions}</select></div><textarea id="fixtureBulkText" rows="5" style="width:100%" placeholder="Rodada | Mandante | Visitante&#10;1 | Roma | Milan&#10;1 | Arsenal | Inter"></textarea><pre id="fixtureBulkFeedback" style="white-space:pre-wrap;font-size:12px"></pre><div class="inline"><button class="btn" id="fixtureBulkRepair">VINCULAR RODADAS EXISTENTES À FASE</button><button class="btn" id="fixtureBulkPreview">CONFERIR PARTIDAS</button><button class="btn primary" id="fixtureBulkSave">IMPORTAR PARTIDAS</button></div></div></div>`;
   $('view').innerHTML=switcher+officialEditionSelect()+bulkPanel+`<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew?'FECHAR':'+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
   $('view').onchange=e=>{if(e.target.id==='officialEditionPick'){selOfficialEdition=e.target.value;selRound=null;vJogos();}};
   $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
   $('view').onclick=e=>{const t=e.target.closest('button');if(!t)return;
+    if(t.id==='fixtureBulkRepair'){
+      const phaseId=$('fixtureBulkPhase')?.value;
+      const phase=(D.phases||[]).find(p=>p.id===phaseId&&p.official_edition_id===selOfficialEdition);
+      if(!phase)return say('Selecione uma fase válida da edição.',false);
+      const rounds=D.rounds.filter(r=>r.official_edition_id===selOfficialEdition&&!r.phase_id);
+      if(!rounds.length)return say('Não há rodadas sem fase nesta edição.',false);
+      if(!confirm('Vincular '+rounds.length+' rodadas sem fase à fase '+phase.name+'? Os jogos existentes serão preservados.'))return;
+      t.disabled=true;
+      try{
+        const ids=rounds.map(r=>r.id);
+        const {error}=await sb.from('rounds').update({phase_id:phaseId}).in('id',ids).eq('official_edition_id',selOfficialEdition);
+        if(error)throw error;
+        say('Rodadas vinculadas à fase. Nenhuma partida foi duplicada.',true);await refresh();
+      }catch(err){say(err.message,false);}finally{t.disabled=false;}
+      return;
+    }
     if(t.id==='fixtureBulkPreview'){const {result,errors}=parseOfficialFixtures($('fixtureBulkText').value,selOfficialEdition);$('fixtureBulkFeedback').textContent=errors.length?errors.join('\\n'):result.map(x=>'Rodada '+x.number+': '+x.home.name+' × '+x.away.name).join('\\n')||'Nenhuma partida identificada.';return;}
     if(t.id==='fixtureBulkSave')return importOfficialFixtures();
     const d=t.dataset;
