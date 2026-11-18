@@ -82,7 +82,7 @@ function renderHome() {
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
   const featured = !!m?.is_featured;
-  const championLabel = team => /^juventus$/i.test(String(team?.name||'').trim()) ? '<span class="featured-champion-label">CAMPEÃO</span>' : '';
+  const championLabel = team => /juventus/i.test(String(team?.name||'').trim()) ? '<span class="featured-champion-label">CAMPEÃO</span>' : '';
   const featuredRow = () => {
     let html=matchRow(m);
     if(!m)return html;
@@ -92,6 +92,13 @@ function renderHome() {
     return html;
   };
   $('latest').innerHTML = m ? (m.category !== 'official' ? `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}` : `<div class="latest-match" style="--match-color:${matchColor(m)};background:${matchColor(m)}"><div class="latest-top"><b>${featured?'PARTIDA EM DESTAQUE':'Última partida'}</b><span>${esc(SET.name)}</span></div><div class="latest-main"><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.home_id}">${esc(m.home.name)}</a>${championLabel(m.home)}</div><small>${coachLink(m.home_coach_name || m.home.coach_name)}</small></div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span></div><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.away_id}">${esc(m.away.name)}</a>${championLabel(m.away)}</div><small>${coachLink(m.away_coach_name || m.away.coach_name)}</small></div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.season)}</span></div></div>`) : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
+  // Apply the badge to the rendered featured card itself, regardless of match category.
+  // This also covers alternate Juventus names and avoids reliance on coach metadata.
+  $('latest').querySelectorAll('a[href^="#team/"]').forEach(link=>{
+    if(!/juventus/i.test(link.textContent||''))return;
+    if(link.parentElement?.querySelector('.featured-champion-label'))return;
+    link.insertAdjacentHTML('afterend','<span class="featured-champion-label">CAMPEÃO</span>');
+  });
   const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
   const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
