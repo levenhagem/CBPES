@@ -213,11 +213,11 @@ function vCamp() {
       const ph=editionPhases.find(p=>String(p.id)===String(e.target.dataset.opTemplate));
       if(!ph)return;
       const current=Array.isArray(ph.playoff_config?.placeholder_matches)?ph.playoff_config.placeholder_matches:[];
-      const sample=current.length?current.map(pair=>pair.join(' x ')).join('\\n'):'3º colocado x 6º colocado\\n4º colocado x 5º colocado';
-      const input=prompt('MODELO DE CONFRONTOS — uma partida por linha, separando os participantes com " x ". Deixe vazio para remover o modelo.\\nExemplo: 3º colocado x 6º colocado',sample);
+      const sample=current.length?current.map(pair=>pair.join(' x ')).join('\n'):'3º colocado x 6º colocado\n4º colocado x 5º colocado';
+      const input=prompt('MODELO DE CONFRONTOS — uma partida por linha, separando os participantes com " x ". Deixe vazio para remover o modelo.\nExemplo: 3º colocado x 6º colocado',sample);
       if(input===null)return;
-      const lines=input.trim()?input.trim().split(/\\r?\\n/):[];
-      const pairs=lines.map(line=>line.split(/\\s+x\\s+/i).map(x=>x.trim()));
+      const lines=input.trim()?input.trim().split(/\r?\n/):[];
+      const pairs=lines.map(line=>line.split(/\s+x\s+/i).map(x=>x.trim()));
       if(pairs.some(pair=>pair.length!==2||!pair[0]||!pair[1]))return say('Formato inválido. Use uma partida por linha: 3º colocado x 6º colocado.',false);
       const cfg={...(ph.playoff_config||{}),placeholder_matches:pairs};
       return run(sb.from('competition_phases').update({playoff_config:cfg}).eq('id',ph.id).eq('official_edition_id',selOfficialEdition),'Modelo de confrontos salvo.');
