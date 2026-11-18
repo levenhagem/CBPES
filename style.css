@@ -231,3 +231,17 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-rivalry .cbpes-rivalry-name{font-size:17px;font-weight:600;line-height:1.2}
 .cbpes-rivalry small{font-size:12px}.cbpes-rivalry .res-w{color:#16804b}.cbpes-rivalry .res-l{color:#c63d3d}
 @media(max-width:620px){.cbpes-match{padding:7px 8px 10px}.cbpes-match-main{grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);gap:5px}.cbpes-match-team .cbpes-team-name{font-size:12px}.cbpes-match-score{font-size:19px}}
+
+/* V21 — contraste, destaques e mata-mata */
+.cbpes-match{background:linear-gradient(110deg,var(--match-color,#174e83) 0%,color-mix(in srgb,var(--match-color,#174e83) 92%,white) 53%,color-mix(in srgb,var(--match-color,#174e83) 82%,#071d29) 100%)!important}
+.cbpes-rivalry-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important}
+.cbpes-rivalry-grid>.cbpes-rivalry{width:100%;min-width:0;flex:initial!important;text-align:center}
+.cbpes-knockout-full{width:100%;max-width:100%;margin:0 auto}
+.cbpes-knockout-full .cbpes-results-panel{width:100%;padding:0!important;border:0!important}
+.cbpes-knockout-full .round-switcher{max-width:100%}
+.cbpes-knockout-full .cbpes-match{max-width:100%;margin-left:auto;margin-right:auto}
+.coach-career-win{border-left:3px solid #16804b}.coach-career-loss{border-left:3px solid #c63d3d}.coach-career-draw{border-left:3px solid #87939b}
+.coach-career-result{display:inline-block;min-width:18px;font-weight:850;margin-right:7px}
+.coach-career-win .coach-career-result{color:#16804b}.coach-career-loss .coach-career-result{color:#c63d3d}.coach-career-draw .coach-career-result{color:#687783}
+.admin-featured{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--navy,#002b36);white-space:nowrap}
+@media(max-width:620px){.cbpes-rivalry-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.cbpes-rivalry-grid .cbpes-rivalry-name{font-size:14px}}
