@@ -137,8 +137,15 @@ function matchColor(m) { return m.category === 'friendly' || m.category === 'wee
 function matchRow(m, hideDate = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
-  const homeWon = m.played && m.home_score > m.away_score;
-  const awayWon = m.played && m.away_score > m.home_score;
+  const details = [];
+  if(m.went_to_extra_time)details.push('PRORROGAÇÃO');
+  if(m.golden_goal)details.push('GOL DE OURO');
+  if(m.home_pen!=null&&m.away_pen!=null)details.push(`PÊNALTIS ${m.home_pen}–${m.away_pen}`);
+  const detailHTML=details.length?`<div class="cbpes-match-details">${details.map(t=>`<span>${t}</span>`).join('')}</div>`:'';
+  const winnerByPens=m.played&&m.home_score===m.away_score&&m.home_pen!=null&&m.away_pen!=null;
+
+  const homeWon = m.played && (m.home_score > m.away_score || (winnerByPens&&m.home_pen>m.away_pen));
+  const awayWon = m.played && (m.away_score > m.home_score || (winnerByPens&&m.away_pen>m.home_pen));
   const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : esc(SET.name || 'OFICIAL');
   const color = matchColor(m);
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
@@ -146,7 +153,7 @@ function matchRow(m, hideDate = false) {
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div>
-      <div class="cbpes-match-score">${score}</div>
+      <div class="cbpes-match-score">${score}${detailHTML}</div>
       <div class="cbpes-match-team away ${awayWon?'winner':''}"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div>
     </div>
   </div>`;
