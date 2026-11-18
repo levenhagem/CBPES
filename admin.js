@@ -457,6 +457,55 @@ async function saveCrest(id){
  if(url&&!/^https:\/\//i.test(url))return say('A URL precisa começar com https://',false);
  return run(sb.from('participants').update({crest_url:url||null}).eq('id',id),url?'Escudo salvo.':'Escudo removido.');
 }
+
+// Importação de escudos SVG em lote: associação por nomes conhecidos e confirmação prévia.
+const crestAliases=[
+ ['Milan',['milan','ac milan']],['Arsenal',['arsenal']],['Chelsea',['chelsea']],
+ ['Barcelona',['barcelona','fc barcelona']],['Inter de Milão',['inter milan','inter de milao','internazionale','inter']],
+ ['Juventus',['juventus']],['Liverpool',['liverpool']],['Manchester United',['manchester united','man utd']],
+ ['Lyon',['lyonnais','lyon','olympique lyonnais']],['Real Madrid',['real madrid']],
+ ['Roma',['roma','as roma']],['Villarreal',['villarreal']]
+];
+const crestNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+function crestClubForFile(filename){
+ const stem=crestNorm(filename.replace(/\.svg$/i,'').replace(/logo.*$/i,''));
+ const found=crestAliases.find(([name,aliases])=>aliases.some(a=>stem===crestNorm(a)||stem.startsWith(crestNorm(a)+' ')));
+ if(!found)return null;
+ const candidates=D.participants.filter(p=>crestNorm(p.name)===crestNorm(found[0])||found[1].some(a=>crestNorm(p.name)===crestNorm(a)));
+ return candidates.length===1?candidates[0]:null;
+}
+async function uploadCrestsBulk(files){
+ const items=[...files].filter(f=>/\.svg$/i.test(f.name));
+ if(!items.length)return say('Selecione arquivos SVG extraídos do RAR.',false);
+ const matched=items.map(file=>({file,team:crestClubForFile(file.name)}));
+ const valid=matched.filter(x=>x.team),missing=matched.filter(x=>!x.team);
+ if(!valid.length)return say('Nenhum nome de arquivo corresponde aos times cadastrados. Confira os nomes dos clubes.',false);
+ const details=valid.map(x=>x.file.name+' → '+x.team.name).join('\n');
+ if(!confirm('IMPORTAR '+valid.length+' ESCUDOS?\n\n'+details+'\n\nSem correspondência: '+(missing.map(x=>x.file.name).join(', ')||'nenhum')+'\n\nOs escudos dos times associados serão substituídos.'))return;
+ const errors=[];let count=0;
+ for(const {file,team} of valid){
+  try{
+   if(file.size>2097152)throw Error('Arquivo maior que 2 MB');
+   const raw=await file.text();
+   if(/<!DOCTYPE|<!ENTITY/i.test(raw))throw Error('DOCTYPE/ENTITY não permitido');
+   const doc=new DOMParser().parseFromString(raw,'image/svg+xml'),root=doc.documentElement;
+   if(doc.querySelector('parsererror')||root.localName!=='svg'||root.namespaceURI!=='http://www.w3.org/2000/svg')throw Error('SVG inválido');
+   const forbidden=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','animateMotion','animateTransform','set','a','style','filter','feImage']);
+   if([root,...root.querySelectorAll('*')].some(el=>forbidden.has(el.localName)||[...el.attributes].some(a=>a.name.toLowerCase().startsWith('on')||['style','href'].includes(a.name.toLowerCase())||a.name.toLowerCase().endsWith(':href')||/url\s*\(|javascript:|data:|@import/i.test(a.value))))throw Error('Elementos ou referências não permitidos');
+   const blob=new Blob([new XMLSerializer().serializeToString(root)],{type:'image/svg+xml'});
+   const key=team.id+'/'+Date.now()+'-'+count+'.svg';
+   const {error:ue}=await sb.storage.from('club-crests').upload(key,blob,{contentType:'image/svg+xml',upsert:false});
+   if(ue)throw ue;
+   const url=sb.storage.from('club-crests').getPublicUrl(key).data.publicUrl;
+   const {error:de}=await sb.from('participants').update({crest_url:url}).eq('id',team.id);
+   if(de)throw de;
+   count++;
+  }catch(e){errors.push(team.name+': '+(e.message||e));}
+ }
+ say('Escudos atualizados: '+count+'. Sem correspondência: '+missing.length+'.'+(errors.length?' Falhas: '+errors.join(' | '):''),!errors.length);
+ if(count)await refresh();
+}
+
 function vTimes() {
   const st = Object.fromEntries(standings(D.participants, D.matches).map(x => [x.p.id, x]));
   const g = {}, a = {}; D.events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
@@ -466,7 +515,9 @@ function vTimes() {
     return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cbpes-crest-editor"><div class="eyebrow">ESCUDO DO CLUBE</div><div class="cbpes-crest-editor-row">${crestImg(p,'cbpes-crest-preview')}<div class="field"><label>Enviar imagem (PNG, JPG, WebP ou SVG, até 2 MB)</label><input id="crestFile${p.id}" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,.svg"></div><div class="field"><label>Ou URL HTTPS da imagem</label><input id="crestUrl${p.id}" type="url" placeholder="https://..." value="${esc(p.crest_url||'')}"></div><button class="btn sm primary" data-crest-save="${p.id}">SALVAR ESCUDO</button><button class="btn sm" data-crest-remove="${p.id}">REMOVER</button></div></div><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de técnicos</div>${coachRows}<div class="inline" style="margin-top:10px;align-items:end"><div class="field"><label>Técnico anterior</label><input id="hcn${p.id}" placeholder="Nome do técnico"></div><div class="field"><label>Início</label><input id="hcs${p.id}" type="date"></div><div class="field"><label>Fim do vínculo</label><input id="hce${p.id}" type="date"></div><button class="btn sm primary" data-hadd="${p.id}">REGISTRAR PASSAGEM</button></div></div></div></td></tr>`;
   };
   $('view').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>CADASTRAR TIME</h2></div><div class="cardbody"><div class="inline" style="margin-top:10px"><input id="pn" maxlength="60" placeholder="Nome do time"><input id="pc" maxlength="80" placeholder="Técnico atual"><label class="field" style="min-width:190px"><span>Participa de competição atualmente?</span><select id="pactive"><option value="true" selected>Sim</option><option value="false">Não</option></select></label><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
+  <div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>IMPORTAR ESCUDOS SVG EM LOTE</h2></div><div class="cardbody"><p class="admin-help">Extraia o RAR no computador e selecione todos os arquivos SVG. O sistema identifica os clubes pelo nome do arquivo e pede confirmação antes de substituir os escudos.</p><div class="inline"><input id="crestBulkFiles" type="file" accept=".svg,image/svg+xml" multiple><button class="btn primary" id="crestBulkUpload">IMPORTAR ESCUDOS</button></div></div></div>
   <div class="card"><div class="cardhead"><h2>Times (${D.participants.length})</h2><span class="admin-help">Abra um time para gerenciar escudo, jogadores e técnicos</span></div><div class="cardbody scroll">${D.participants.length ? `<table class="table"><thead><tr><th>TIME / TÉCNICO</th><th>J</th><th>PTS</th><th></th></tr></thead><tbody>${D.participants.map(p => `<tr><td class="club">${crestImg(p)}${esc(p.name)}<small style="display:block;color:var(--muted);font-weight:500">${esc(p.coach_name || 'Sem técnico atualmente')}<span class="pill" style="margin-left:6px">${p.participates_in_competition === false ? 'FORA DA COMPETIÇÃO' : 'ATIVO'}</span></small></td><td>${st[p.id].j}</td><td>${st[p.id].pts}</td><td style="white-space:nowrap"><button class="btn sm" data-t="${p.id}">${openPart === p.id ? 'FECHAR' : 'ABRIR'}</button> <button class="btn sm" data-e="${p.id}">EDITAR</button> <button class="btn sm danger" data-d="${p.id}">EXCLUIR</button></td></tr>${openPart === p.id ? panel(p) : ''}`).join('')}</tbody></table>` : '<div class="empty">Cadastre o primeiro time.</div>'}</div></div>`;
+  $('crestBulkUpload').onclick = () => uploadCrestsBulk($('crestBulkFiles').files);
   $('pAdd').onclick = async () => {
     const n = $('pn').value.trim(), coach_name = $('pc').value.trim() || null, participates_in_competition = $('pactive').value === 'true';
     if (!n) return;
