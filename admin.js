@@ -222,13 +222,22 @@ function vCamp() {
         if(sourcePhases.length){
           const maxOfficialOrder=Math.max(0,...(D.phases||[]).filter(p=>p.competition_type==='official').map(p=>Number(p.sort_order)||0));
           const rows=sourcePhases.map((p,i)=>({competition_type:'official',official_edition_id:newEditionId,name:p.name,phase_type:p.phase_type,sort_order:maxOfficialOrder+i+1,counts_in_standings:p.counts_in_standings,playoff_config:p.playoff_config||null}));
-          const inserted=await sb.from('competition_phases').insert(rows);
+          const inserted=await sb.from('competition_phases').insert(rows).select('id,sort_order');
           if(inserted.error)throw inserted.error;
+          const phaseIdMap=new Map(sourcePhases.map((p,i)=>[String(p.id),inserted.data.find(n=>Number(n.sort_order)===rows[i].sort_order)?.id]));
+          const sourceZones=(D.standingsZones||[]).filter(z=>z.competition_type==='official'&&phaseIdMap.has(String(z.phase_id)));
+          if(sourceZones.length){
+            const zoneRows=sourceZones.map(z=>({competition_type:'official',phase_id:phaseIdMap.get(String(z.phase_id)),position_start:z.position_start,position_end:z.position_end,label:z.label,color:z.color}));
+            const zoneResult=await sb.from('standings_zones').insert(zoneRows);
+            if(zoneResult.error)throw zoneResult.error;
+          }
         }
         selOfficialEdition=newEditionId;
         say('Formato duplicado! Nova edição criada com '+sourcePhases.length+' fases, sem partidas.');await refresh();
       }catch(err){
         if(newEditionId){
+          const cleanupPhases=await sb.from('competition_phases').select('id').eq('official_edition_id',newEditionId);
+          if(cleanupPhases.data?.length)await sb.from('standings_zones').delete().in('phase_id',cleanupPhases.data.map(p=>p.id));
           await sb.from('competition_phases').delete().eq('official_edition_id',newEditionId);
           await sb.from('official_editions').delete().eq('id',newEditionId);
         }
