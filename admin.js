@@ -100,6 +100,46 @@ async function generateNextFromPlayoff(nextPhase) {
   say('Próxima fase gerada com os classificados diretos e vencedores do playoff.',true);await refresh();
 }
 
+// Zonas visuais independentes das regras de classificação esportiva.
+function zoneManager(type,weeklyId) {
+ const phases=(D.phases||[]).filter(p=>p.competition_type===type&&(type==='official'||p.weekly_id===weeklyId)&&p.counts_in_standings);
+ const zones=(D.standingsZones||[]).filter(z=>z.competition_type===type&&(type==='official'||z.weekly_id===weeklyId));
+ const phaseOptions=phases.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+ return `<div class="card cbpes-zones-admin"><div class="cardhead"><h2>ZONAS DA CLASSIFICAÇÃO</h2></div><div class="cardbody">
+ <p class="admin-help">Defina faixas de posições, cores e legendas. Essas cores não alteram quem avança de fase. As faixas não devem se sobrepor dentro da mesma fase.</p>
+ ${phases.length ? `<div class="cbpes-zone-form">
+ ${field('FASE',`<select id="zonePhase">${phaseOptions}</select>`)}
+ ${field('DA POSIÇÃO',`<input id="zoneFrom" type="number" min="1" value="1">`)}
+ ${field('ATÉ A POSIÇÃO',`<input id="zoneTo" type="number" min="1" value="2">`)}
+ ${field('LEGENDA',`<input id="zoneLabel" maxlength="80" placeholder="Ex.: Classificados">`)}
+ ${field('COR',`<input id="zoneColor" type="color" value="#15945a">`)}
+ <button class="btn primary" data-zone-add="1">ADICIONAR ZONA</button></div>`:'<p class="admin-help">Cadastre primeiro uma fase classificatória para configurar as zonas.</p>'}
+ ${phases.map(p=>{const list=zones.filter(z=>z.phase_id===p.id).sort((a,b)=>a.position_start-b.position_start);return `<div class="cbpes-zone-phase"><b>${esc(p.name)}</b>${list.length?list.map(z=>`<div class="cbpes-zone-item"><span class="cbpes-zone-swatch" style="background:${z.color}"></span><span>${z.position_start===z.position_end?z.position_start+'º':z.position_start+'º–'+z.position_end+'º'} — ${esc(z.label)}</span><button class="btn sm" data-zone-edit="${z.id}">EDITAR</button><button class="btn sm danger" data-zone-del="${z.id}">EXCLUIR</button></div>`).join(''):'<small class="admin-help">Sem zonas cadastradas.</small>'}</div>`}).join('')}
+ </div></div>`;
+}
+async function zoneAction(d,type,weeklyId) {
+ if(d.zoneDel){if(!confirm('Excluir esta zona da tabela?'))return;return run(sb.from('standings_zones').delete().eq('id',d.zoneDel),'Zona excluída.');}
+ const old=d.zoneEdit?(D.standingsZones||[]).find(z=>String(z.id)===String(d.zoneEdit)):null;
+ if(d.zoneEdit&&!old)return;
+ if(!d.zoneAdd&&!d.zoneEdit)return;
+ let phaseId,from,to,label,color;
+ if(old){
+  phaseId=old.phase_id;
+  const a=prompt('Posição inicial:',old.position_start);if(a===null)return;from=Number(a);
+  const b=prompt('Posição final:',old.position_end);if(b===null)return;to=Number(b);
+  const c=prompt('Legenda:',old.label);if(c===null)return;label=c.trim();
+  const e=prompt('Cor hexadecimal (#RRGGBB):',old.color);if(e===null)return;color=e.trim();
+ }else{
+  phaseId=$('zonePhase')?.value;from=Number($('zoneFrom')?.value);to=Number($('zoneTo')?.value);
+  label=$('zoneLabel')?.value.trim();color=$('zoneColor')?.value;
+ }
+ if(!phaseId||!Number.isInteger(from)||!Number.isInteger(to)||from<1||to<from||!label||!/^#[0-9a-fA-F]{6}$/.test(color))return say('Informe posições válidas, legenda e cor.',false);
+ const overlapping=(D.standingsZones||[]).some(z=>z.id!==old?.id&&z.phase_id===phaseId&&z.competition_type===type&&(type==='official'||z.weekly_id===weeklyId)&&from<=z.position_end&&to>=z.position_start);
+ if(overlapping)return say('Esta faixa se sobrepõe a outra zona da mesma fase.',false);
+ const payload={position_start:from,position_end:to,label,color};
+ if(old)return run(sb.from('standings_zones').update(payload).eq('id',old.id),'Zona atualizada.');
+ return run(sb.from('standings_zones').insert({...payload,competition_type:type,weekly_id:type==='weekly'?weeklyId:null,phase_id:phaseId}),'Zona adicionada.');
+}
 function vCamp() {
   const S = D.settings;
   if (!draft) draft = { name: S.name, season: S.season, format: S.format, config: { ...cfgOf(S) } };
@@ -119,6 +159,7 @@ function vCamp() {
    <div class="inline" style="margin-top:10px">${o}</div>
    <div class="form-actions"><button class="btn primary" id="cSave">SALVAR CONFIGURAÇÃO</button></div></div></div>
   <div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES DA COMPETIÇÃO OFICIAL</h2><button class="btn sm primary" id="opAdd">ADICIONAR FASE</button></div><div class="cardbody">${(D.phases||[]).filter(p=>p.competition_type==='official').sort((a,b)=>a.sort_order-b.sort_order).map(p=>`<div class="player"><div><b>${esc(p.name)}</b><small>${p.phase_type==='playoff'?'Playoff • '+(p.playoff_config?.direct??2)+' diretos / posições '+(p.playoff_config?.from??3)+'–'+(p.playoff_config?.to??6):(p.counts_in_standings?'Entra na classificação':'Fora da classificação')}</small></div><span>${p.phase_type==='playoff'?`<button class="btn sm primary" data-op-playoff="${p.id}">GERAR PLAYOFF</button>`:''}${p.phase_type!=='playoff' && (D.phases||[]).some(q=>q.competition_type==='official'&&q.sort_order===p.sort_order-1&&q.phase_type==='playoff')?`<button class="btn sm primary" data-op-advance="${p.id}">AVANÇAR VENCEDORES</button>`:''} <button class="btn sm" data-opedit="${p.id}">EDITAR</button> <button class="btn sm danger" data-opdel="${p.id}">EXCLUIR</button></span></div>`).join('')||'<div class="empty">Nenhuma fase cadastrada.</div>'}<p class="admin-help">A classificação considera somente fases classificatórias. Playoffs são gerados pela classificação e podem ser ajustados na aba Jogos; depois, use AVANÇAR VENCEDORES para montar a fase seguinte.</p></div></div>
+  ${zoneManager('official',null)}
   <div class="card"><div class="cardhead"><h2>CALENDÁRIO DE JOGOS</h2><span class="admin-help">${D.rounds.length} rodadas • ${D.matches.length} partidas • ${competitionParticipants().length} participantes ativos</span></div><div class="cardbody">
    ${saved ? '' : '<div class="msg err">Salve a configuração antes de gerar o calendário.</div>'}
    <label class="admin-help"><input type="checkbox" id="draw" checked> Sortear a ordem/grupos (desmarcado: ordem alfabética)</label>
@@ -133,6 +174,7 @@ function vCamp() {
   };
   $('view').onclick = e => {
     const id = e.target.id;
+    if(e.target.closest('[data-zone-add],[data-zone-edit],[data-zone-del]'))return zoneAction(e.target.closest('button').dataset,'official',null);
     if(id==='opAdd'){const name=prompt('Nome da fase (ex.: Fase de grupos, Final, Disputa de 3º lugar):');if(!name)return;const choice=askPhaseType('knockout');if(!choice)return choice===false?say('Escolha uma opção de 1 a 6.',false):null;const kind=choice.type,ps=(D.phases||[]).filter(p=>p.competition_type==='official');const playoff_config=kind==='playoff'?askPlayoffConfig():null;if(playoff_config===false||playoff_config===null&&kind==='playoff')return;return run(sb.from('competition_phases').insert({competition_type:'official',name:name.trim(),phase_type:kind,sort_order:ps.length+1,counts_in_standings:kind==='groups',playoff_config}),'Fase oficial criada.');}
     if(e.target.dataset.opedit){const p=(D.phases||[]).find(x=>x.id===e.target.dataset.opedit);if(!p)return;const name=prompt('Nome da fase:',p.name);if(!name)return;const choice=askPhaseType(p.phase_type);if(!choice)return choice===false?say('Escolha uma opção de 1 a 6.',false):null;const kind=choice.type;const playoff_config=kind==='playoff'?askPlayoffConfig(p.playoff_config):null;if(playoff_config===false||playoff_config===null&&kind==='playoff')return;return run(sb.from('competition_phases').update({name:name.trim(),phase_type:kind,counts_in_standings:kind==='groups',playoff_config}).eq('id',p.id),'Fase atualizada.');}
     if(e.target.dataset.opPlayoff){const ph=(D.phases||[]).find(p=>p.id===e.target.dataset.opPlayoff);if(ph)return generateConfiguredPlayoff(ph);}
@@ -361,8 +403,10 @@ function vSemanais() {
   const w = selected || {name:'',event_date:today(),participant_count:0,format_description:'',champion_id:null,champion_coach_name:''};
   $('view').innerHTML = `<div class="card" style="margin-bottom:14px"><div class="cardhead"><h2>${selected?'EDITAR EDIÇÃO SEMANAL':'NOVA EDIÇÃO SEMANAL'}</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Nome do campeonato</label><input id="wn" maxlength="80" value="${esc(w.name)}" placeholder="Ex.: Semanal CBPES"></div><div class="field"><label>Data da edição</label><input id="wdate" type="date" value="${w.event_date||today()}"></div><div class="field"><label>Quantidade de participantes</label><input id="wcount" type="number" min="0" max="128" value="${w.participant_count||0}" style="width:110px"></div></div><div class="field" style="margin-top:10px"><label>Formato / regras desta edição</label><textarea id="wformat" rows="3" style="width:100%" placeholder="Ex.: 8 participantes, grupos + semifinal e final, jogo único...">${esc(w.format_description||'')}</textarea></div><div style="margin-top:12px"><label class="admin-help">PARTICIPANTES INSCRITOS NESTA EDIÇÃO (opcional)</label><div class="cols3" style="gap:6px;margin-top:6px">${D.participants.map(p=>`<label style="display:flex;gap:7px;align-items:center;padding:5px;border:1px solid var(--line)"><input type="checkbox" name="weeklyParticipant" value="${p.id}" ${(D.weeklyParticipants||[]).some(x=>x.weekly_id===selected?.id&&x.participant_id===p.id)?'checked':''}>${esc(p.name)}</label>`).join('')||'<span class="admin-help">Cadastre os times na aba Times primeiro.</span>'}</div></div><div class="inline" style="margin-top:10px"><div class="field"><label>Campeão da edição</label><select id="wchamp"><option value="">Ainda não definido</option>${opts(D.participants,w.champion_id,p=>p.name)}</select></div><div class="field"><label>Técnico campeão</label><input id="wcoach" maxlength="80" value="${esc(w.champion_coach_name||'')}" placeholder="Nome do técnico"></div></div><div class="form-actions"><button class="btn primary" id="wSave">${selected?'SALVAR ALTERAÇÕES':'CRIAR EDIÇÃO'}</button>${selected?'<button class="btn danger" id="wDelete">EXCLUIR EDIÇÃO</button><button class="btn" id="wNew">NOVA EDIÇÃO</button>':''}</div><p class="admin-help">Cada data identifica uma edição independente. O campeão e seu técnico ficam registrados como troféu no histórico geral.</p></div></div>
   <div class="card" style="margin-bottom:14px"><div class="cardhead"><h2>FASES DESTA EDIÇÃO</h2><button class="btn sm primary" id="wpAdd" ${selected?'':'disabled'}>ADICIONAR FASE</button></div><div class="cardbody">${selected?((D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selected.id).sort((a,b)=>a.sort_order-b.sort_order).map(p=>`<div class="player"><div><b>${esc(p.name)}</b><small>${p.phase_type==='groups'?'Conta para a classificação':p.phase_type==='final'?'Final':p.phase_type==='third_place'?'Disputa de 3º lugar':p.phase_type==='playoff'?'Playoff • '+(p.playoff_config?.direct??2)+' diretos / posições '+(p.playoff_config?.from??3)+'–'+(p.playoff_config?.to??6):'Mata-mata'}</small></div><span>${p.phase_type==='playoff'?`<button class="btn sm primary" data-wp-playoff="${p.id}">GERAR PLAYOFF</button>`:''}${p.phase_type!=='playoff' && (D.phases||[]).some(q=>q.competition_type==='weekly'&&q.weekly_id===selected.id&&q.sort_order===p.sort_order-1&&q.phase_type==='playoff')?`<button class="btn sm primary" data-wp-advance="${p.id}">AVANÇAR VENCEDORES</button>`:''} <button class="btn sm" data-wpedit="${p.id}">EDITAR</button> <button class="btn sm danger" data-wpdel="${p.id}">EXCLUIR</button></span></div>`).join('')||'<div class="empty">Nenhuma fase cadastrada.</div>'):'Salve a edição para administrar suas fases.'}<p class="admin-help">Crie fases de grupos, playoffs, mata-mata, final e disputa de 3º lugar. O playoff gera confrontos automaticamente; partidas podem ser ajustadas na aba Jogos antes de avançar os vencedores.</p></div></div>
+  ${selected?zoneManager('weekly',selected.id):''}
   <div class="card"><div class="cardhead"><h2>EDIÇÕES CADASTRADAS (${D.weeklies.length})</h2></div><div class="cardbody">${D.weeklies.length?D.weeklies.map(x=>`<div class="player"><div><b>${esc(x.name)}</b><small>${fd(x.event_date)} • ${x.participant_count||0} participantes • ${D.matches.filter(m=>m.weekly_id===x.id).length} partidas ${x.champion_id?'• Campeão: '+esc(pname(x.champion_id)):''}</small></div><button class="btn sm" data-wedit="${x.id}">EDITAR</button></div>`).join(''):'<div class="empty">Nenhuma edição semanal cadastrada.</div>'}</div></div>`;
   $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+    if(d.zoneAdd||d.zoneEdit||d.zoneDel)return zoneAction(d,'weekly',selected?.id);
     if(d.wedit){selWeekly=d.wedit;return vSemanais();}
     if(t.id==='wpAdd'&&selected){const name=prompt('Nome da nova fase (ex.: Final, Disputa de 3º lugar):');if(!name)return;const choice=askPhaseType('knockout');if(!choice)return choice===false?say('Escolha uma opção de 1 a 6.',false):null;const kind=choice.type,phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selected.id);const playoff_config=kind==='playoff'?askPlayoffConfig():null;if(playoff_config===false||playoff_config===null&&kind==='playoff')return;return run(sb.from('competition_phases').insert({competition_type:'weekly',weekly_id:selected.id,name:name.trim(),phase_type:kind,sort_order:phases.length+1,counts_in_standings:kind==='groups',playoff_config}),'Fase semanal criada.');}
     if(d.wpPlayoff){const ph=(D.phases||[]).find(p=>p.id===d.wpPlayoff);if(ph)return generateConfiguredPlayoff(ph);}
