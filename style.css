@@ -574,11 +574,3 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #miniTable .cbpes-home-league-compact .table .club .table-coach{margin:0;font-size:9px!important;line-height:1.1}
 #miniTable .cbpes-home-league-compact .table .points{font-size:13px}
 #miniTable .cbpes-home-league-compact .table .cbpes-crest{width:20px!important;height:20px!important}
-
-/* Trophy belongs to the featured team's visual area, not the coach label */
-.latest-match .latest-team{display:flex;align-items:center;justify-content:center;gap:12px}
-.latest-match .featured-champion-trophy{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;font-size:clamp(34px,4vw,54px);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.16))}
-@media(max-width:520px){.latest-match .latest-team{gap:5px}.latest-match .featured-champion-trophy{font-size:32px}}
-
-.latest-match img.featured-champion-trophy{width:clamp(48px,6vw,84px);height:clamp(48px,6vw,84px);object-fit:contain;display:block;flex-shrink:0;filter:drop-shadow(0 3px 5px rgba(0,0,0,.2))}
-@media(max-width:520px){.latest-match img.featured-champion-trophy{width:48px;height:48px}}
