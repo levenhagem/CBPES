@@ -124,11 +124,11 @@ function renderGames() {
   $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml || empty('Nenhuma partida encontrada.');
 }
 function renderTable() {
-  const currentName = SET.name || 'Competição atual';
-  const weeklyOptions = '';
-  if (selectedWeeklyTable !== 'current' && !(D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) selectedWeeklyTable='current';
-  $('tableCompetition').innerHTML = `<option value="current" ${selectedWeeklyTable==='current'?'selected':''}>${esc(currentName)}</option>`;
-  if (selectedWeeklyTable !== 'current') {
+  const editions=D.officialEditions||[], competitions=D.officialCompetitions||[];
+  const valid=editions.some(e=>e.id===selectedWeeklyTable);
+  if(!valid)selectedWeeklyTable=editions[0]?.id||'current';
+  $('tableCompetition').innerHTML = editions.map(e=>`<option value="${e.id}" ${selectedWeeklyTable===e.id?'selected':''}>${esc((competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)}</option>`).join('') || '<option value="current">Nenhuma competição cadastrada</option>';
+  if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
     $('tblTitle').textContent=w?.name||'CAMPEONATO SEMANAL'; $('tblPill').textContent=`${fd(w?.event_date)} • ${ms.filter(m=>m.played).length} JOGOS`; 
@@ -138,19 +138,24 @@ function renderTable() {
     $('fullTable').innerHTML=info+`<div class="admin-help">A classificação considera somente as fases classificatórias. Partidas de mata-mata são exibidas separadamente e não somam pontos.</div>`+(st.length?`<div class="eyebrow" style="margin:12px 0 4px">RESUMO ESTATÍSTICO DA EDIÇÃO (RESUMO: 3 PTS POR VITÓRIA, 1 POR EMPATE)</div>${fullTbl(st,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
     return;
   }
-  const t = typeOf(); let html = '', title = 'TABELA GERAL', pill = '';
-  const phases=(D.phases||[]).filter(p=>p.competition_type==='official'&&(p.phase_type!=='third_place'||!(D.phases||[]).some(x=>x.competition_type==='official'&&x.phase_type==='final'))).sort((a,b)=>a.sort_order-b.sort_order);
+  const edition=editions.find(e=>e.id===selectedWeeklyTable);
+  const officialRounds=D.rounds.filter(r=>r.official_edition_id===edition?.id);
+  const officialMatches=D.matches.filter(m=>(m.category||'official')==='official'&&m.official_edition_id===edition?.id);
+  const officialPhases=(D.phases||[]).filter(p=>p.competition_type==='official'&&p.official_edition_id===edition?.id);
+  if(!edition){$('tblTitle').textContent='COMPETIÇÕES CBPES';$('tblPill').textContent='';$('fullTable').innerHTML=empty('Nenhuma competição oficial cadastrada.');return;}
+  const t = typeOf(); let html = '', title = edition.name, pill = '';
+  const phases=officialPhases.filter(p=>p.competition_type==='official'&&(p.phase_type!=='third_place'||!officialPhases.some(x=>x.competition_type==='official'&&x.phase_type==='final'))).sort((a,b)=>a.sort_order-b.sort_order);
   if(phases.length){
     if(!phases.some(p=>p.id===selectedOfficialPhase)) selectedOfficialPhase=phases[0].id;
     const active=phases.find(p=>p.id===selectedOfficialPhase);
     const ix=phases.findIndex(p=>p.id===selectedOfficialPhase);
     const nav=`<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" id="phasePrev" aria-label="Fase anterior" ${ix<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" id="phaseNext" aria-label="Próxima fase" ${ix>=phases.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
-    const rounds=D.rounds.filter(r=>r.phase_id===active.id).sort((a,b)=>a.number-b.number);
-    const phaseMatches=D.matches.filter(m=>rounds.some(r=>r.id===m.round_id));
+    const rounds=officialRounds.filter(r=>r.phase_id===active.id).sort((a,b)=>a.number-b.number);
+    const phaseMatches=officialMatches.filter(m=>rounds.some(r=>r.id===m.round_id));
     const roundKey=String(active.id); selectedOfficialRoundByPhase[roundKey]=defaultRound(rounds,phaseMatches,selectedOfficialRoundByPhase[roundKey]);
     const currentRound=rounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[roundKey]));
     let currentGames=phaseMatches.filter(m=>m.round_id===currentRound?.id).sort(byDisplayOrder);
-    if(active.phase_type==='final'){const thirdP=(D.phases||[]).find(p=>p.competition_type==='official'&&p.phase_type==='third_place');const ids=D.rounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);currentGames=currentGames.concat(D.matches.filter(m=>ids.includes(m.round_id))).sort(byDisplayOrder);}
+    if(active.phase_type==='final'){const thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');const ids=officialRounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);currentGames=currentGames.concat(officialMatches.filter(m=>ids.includes(m.round_id))).sort(byDisplayOrder);}
     const roundNav=roundPicker(rounds,selectedOfficialRoundByPhase[roundKey],roundKey,'official-round');
     if(active.counts_in_standings){
       if(t==='copa'||rounds.some(r=>r.stage==='grupos')){const groups=[...new Set(phaseMatches.map(m=>m.group_name).filter(Boolean))].sort();html=groups.map(g=>{const gm=phaseMatches.filter(m=>m.group_name===g),ids=new Set(gm.flatMap(m=>[m.home_id,m.away_id]));return heading('GRUPO '+esc(g))+fullTbl(standings(D.participants.filter(p=>ids.has(p.id)),gm),zonesFor('official',null,active.id));}).join('')||empty('Aguardando partidas da fase de grupos.');}
@@ -160,17 +165,17 @@ function renderTable() {
     }
     const roundGames=active.counts_in_standings?currentGames.map(m=>matchRow(m,true)).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true)).join(''):tieRows(tiesOf(currentGames));
     html=twoColumn(active.counts_in_standings?html:'',roundNav+(roundGames||empty('Nenhuma partida nesta rodada.')));
-    const finalP=phases.find(p=>p.phase_type==='final'),thirdP=(D.phases||[]).find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
-    const finalIds=D.rounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=D.rounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
-    const fm=D.matches.find(m=>finalIds.includes(m.round_id)&&m.played),tm=D.matches.find(m=>thirdIds.includes(m.round_id)&&m.played);
+    const finalP=phases.find(p=>p.phase_type==='final'),thirdP=officialPhases.find(p=>p.competition_type==='official'&&p.phase_type==='third_place');
+    const finalIds=officialRounds.filter(r=>r.phase_id===finalP?.id).map(r=>r.id),thirdIds=officialRounds.filter(r=>r.phase_id===thirdP?.id).map(r=>r.id);
+    const fm=officialMatches.find(m=>finalIds.includes(m.round_id)&&m.played),tm=officialMatches.find(m=>thirdIds.includes(m.round_id)&&m.played);
     const win=matchWinner(fm), runner=win?(win.id===fm.home_id?fm.away:fm.home):null;
     const bronze=matchWinner(tm);
     const podium=(win||runner||bronze)?`<div class="notice" style="margin-top:14px"><b>PÓDIO DA COMPETIÇÃO</b><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;align-items:end;margin-top:10px"><div><b>${runner?participantLink(runner):'—'}</b><small style="display:block">2º LUGAR</small><div style="height:36px;background:#a7adb4;margin-top:5px"></div></div><div><b>${win?participantLink(win):'—'}</b><small style="display:block">1º LUGAR</small><div style="height:56px;background:#d2a52b;margin-top:5px"></div></div><div><b>${bronze?participantLink(bronze):'—'}</b><small style="display:block">3º LUGAR</small><div style="height:28px;background:#b87950;margin-top:5px"></div></div></div></div>`:'';
-    html=nav+championBanner(win,fm?(win?.id===fm.home_id?fm.home_coach_name:fm.away_coach_name):null)+'<div class="cbpes-competition-neutral">'+html+'</div>'+podium; title=SET.name||'COMPETIÇÃO'; pill=`${phaseMatches.filter(m=>m.played).length} PARTIDAS NA FASE`;
-  } else if (t === 'liga') { const ms = leagueMatches(D); const rs=D.rounds.filter(r=>!r.phase_id).sort((a,b)=>a.number-b.number);const key='league';selectedOfficialRoundByPhase[key]=defaultRound(rs,ms,selectedOfficialRoundByPhase[key]);const rr=rs.find(r=>r.id===selectedOfficialRoundByPhase[key]);html='<div class="cbpes-competition-neutral">'+twoColumn(fullTbl(standings(D.participants.filter(p => p.participates_in_competition !== false), ms)),roundPicker(rs,selectedOfficialRoundByPhase[key],key,'official-round')+ms.filter(m=>m.round_id===rr?.id).map(m=>matchRow(m,true)).join(''))+'</div>'; pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
+    html=nav+championBanner(win,fm?(win?.id===fm.home_id?fm.home_coach_name:fm.away_coach_name):null)+'<div class="cbpes-competition-neutral">'+html+'</div>'+podium; title=edition.name; pill=`${phaseMatches.filter(m=>m.played).length} PARTIDAS NA FASE`;
+  } else if (t === 'liga') { const ms = officialMatches.filter(m=>!m.round?.phase_id); const rs=officialRounds.filter(r=>!r.phase_id).sort((a,b)=>a.number-b.number);const key='league';selectedOfficialRoundByPhase[key]=defaultRound(rs,ms,selectedOfficialRoundByPhase[key]);const rr=rs.find(r=>r.id===selectedOfficialRoundByPhase[key]);html='<div class="cbpes-competition-neutral">'+twoColumn(fullTbl(standings(D.participants.filter(p => p.participates_in_competition !== false), ms)),roundPicker(rs,selectedOfficialRoundByPhase[key],key,'official-round')+ms.filter(m=>m.round_id===rr?.id).map(m=>matchRow(m,true)).join(''))+'</div>'; pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
   else { if (t === 'copa') { title = 'GRUPOS E MATA-MATA'; const g = groupTables(D); html = g.length ? g.map(x => heading('GRUPO ' + esc(x.name)) + fullTbl(x.st)).join('') : empty('Fase de grupos ainda não gerada.'); } else title = 'CHAVEAMENTO'; const k = koHTML(); html += k ? (t === 'copa' ? heading('<span style="font-size:12px">MATA-MATA</span>') : '') + k : (t === 'mata' ? empty('Chaveamento ainda não gerado.') : ''); pill = (PRESETS[SET.format] || {}).label || ''; }
   $('tblTitle').textContent = title; $('tblPill').textContent = pill.toUpperCase(); $('fullTable').innerHTML = html;
-  $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=D.rounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
+  $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
 const tableCompetitionSelect = $('tableCompetition');
