@@ -432,7 +432,7 @@ async function saveCrest(id){
  if(file&&input)return say('Escolha o arquivo OU informe a URL, não ambos.',false);
  let url=input;
  if(file){
-  const svg=file.type==='image/svg+xml'||/\\.svg$/i.test(file.name);
+  const svg=file.type==='image/svg+xml'||/\.svg$/i.test(file.name);
   if(!['image/png','image/jpeg','image/webp'].includes(file.type)&&!svg || file.size>2097152)return say('Use PNG, JPG, WebP ou SVG de até 2 MB.',false);
   let uploadFile=file;
   if(svg){
@@ -444,7 +444,7 @@ async function saveCrest(id){
     const forbidden=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','animateMotion','animateTransform','set','a','style','filter','feImage']);
     const nodes=[root,...root.querySelectorAll('*')];
     if(nodes.some(el=>forbidden.has(el.localName)))return say('O SVG contém elementos não permitidos. Exporte um SVG simples.',false);
-    if(nodes.some(el=>[...el.attributes].some(a=>a.name.toLowerCase().startsWith('on')||a.name.toLowerCase()==='style'||a.name.toLowerCase()==='href'||a.name.toLowerCase().endsWith(':href')||/url\\s*\\(|javascript:|data:|@import/i.test(a.value))))return say('O SVG contém referências ou estilos não permitidos.',false);
+    if(nodes.some(el=>[...el.attributes].some(a=>a.name.toLowerCase().startsWith('on')||a.name.toLowerCase()==='style'||a.name.toLowerCase()==='href'||a.name.toLowerCase().endsWith(':href')||/url\s*\(|javascript:|data:|@import/i.test(a.value))))return say('O SVG contém referências ou estilos não permitidos.',false);
     const safe=new XMLSerializer().serializeToString(root);
     uploadFile=new Blob([safe],{type:'image/svg+xml'});
   }
