@@ -264,6 +264,9 @@ function matchRow(m, hideDate = false) {
         if(e.key==='Home'||e.key==='End'){e.preventDefault();choices[e.key==='Home'?0:choices.length-1]?.focus();}
       });
       select.addEventListener('change',sync);
+      // Opções de filtros carregadas após o início da página também precisam atualizar o seletor visual.
+      const optionsObserver=new MutationObserver(()=>sync());
+      optionsObserver.observe(select,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['selected','disabled']});
       sync();
     }
   }
