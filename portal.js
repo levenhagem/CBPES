@@ -1,6 +1,6 @@
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current';
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 
 function route() {
@@ -119,6 +119,22 @@ function renderTable() {
 }
 $('tableCompetition').onchange = e => { selectedWeeklyTable=e.target.value; renderTable(); };
 
+function renderWeeklies() {
+  const root = $('weeklyList');
+  const editions = D.weeklies || [];
+  if (!editions.length) { root.innerHTML = `<div class="card"><div class="cardbody">${empty('Nenhuma edição semanal cadastrada ainda.')}</div></div>`; return; }
+  root.innerHTML = editions.map(w => {
+    const ms = D.matches.filter(m => m.category === 'weekly' && m.weekly_id === w.id);
+    const ids = new Set(ms.flatMap(m => [m.home_id, m.away_id]));
+    const roster = (D.weeklyParticipants || []).filter(x => x.weekly_id === w.id).map(x => x.participant_id);
+    const teams = D.participants.filter(p => ids.has(p.id) || roster.includes(p.id));
+    const table = standings(teams, ms, {ptsW:3, ptsD:1});
+    const champion = w.champion_id ? D.participants.find(p => p.id === w.champion_id) : null;
+    const rows = ms.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('');
+    return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count || teams.length} PARTICIPANTES</small></div><span class="pill">${ms.filter(m=>m.played).length} JOGOS</span></div><div class="cardbody">${w.format_description ? `<p class="sub">${esc(w.format_description)}</p>` : ''}${champion ? `<div class="notice"><b>CAMPEÃO:</b> <a href="#team/${champion.id}">${esc(champion.name)}</a>${w.champion_coach_name ? ' • ' + coachLink(w.champion_coach_name) : ''}</div>` : `<div class="notice">Campeão ainda não definido.</div>`}${table.length ? `<h3>CLASSIFICAÇÃO DA EDIÇÃO</h3>${fullTbl(table)}` : empty('Aguardando partidas e participantes.') }<h3 style="margin-top:16px">PARTIDAS E RESULTADOS</h3>${rows || empty('Nenhuma partida cadastrada nesta edição.')}</div></div>`;
+  }).join('');
+}
+
 function renderStats() {
   const S = stats(D), b = S.big;
   const bigTxt = b ? `<a href="#team/${b.home_id}">${esc(b.home.name)}</a> ${b.home_score} x ${b.away_score} <a href="#team/${b.away_id}">${esc(b.away.name)}</a>` : '—';
@@ -200,7 +216,7 @@ function renderCoach(name) {
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
 }
 
-function renderAll() { renderHome(); renderGames(); renderTable(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderAll() { renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   route();
   try {

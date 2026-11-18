@@ -306,7 +306,22 @@ function vTimes() {
       if (ce) return say('Nome do time atualizado, mas houve falha ao registrar o técnico: ' + traduz(ce), false);
       say('Time e técnico atualizados. O vínculo anterior foi preservado no histórico.', true); await refresh();
     }
-    if (d.d && confirm('Excluir este participante? Só é possível se ele não tiver partidas nem jogadores.')) run(sb.from('participants').delete().eq('id', d.d), 'Participante excluído.');
+    if (d.d && confirm('Verificar vínculos antes de excluir este participante?')) {
+      const checks = [
+        ['Partidas como mandante', sb.from('matches').select('id', {count:'exact',head:true}).eq('home_id',d.d)],
+        ['Partidas como visitante', sb.from('matches').select('id', {count:'exact',head:true}).eq('away_id',d.d)],
+        ['Jogadores', sb.from('players').select('id', {count:'exact',head:true}).eq('participant_id',d.d)],
+        ['Inscrições em semanais', sb.from('weekly_participants').select('weekly_id', {count:'exact',head:true}).eq('participant_id',d.d)],
+        ['Títulos semanais', sb.from('weekly_editions').select('id', {count:'exact',head:true}).eq('champion_id',d.d)],
+        ['Histórico de técnicos', sb.from('team_coach_history').select('id', {count:'exact',head:true}).eq('participant_id',d.d)]
+      ];
+      const results = await Promise.all(checks.map(async ([label,q]) => ({label,...await q})));
+      const failed = results.find(x=>x.error);
+      if (failed) return say('Não foi possível identificar todos os vínculos: '+traduz(failed.error),false);
+      const linked = results.filter(x=>(x.count||0)>0);
+      if (linked.length) return say('Este time possui vínculos e não será apagado para preservar o histórico: '+linked.map(x=>`${x.label}: ${x.count}`).join(' • '),false);
+      if (confirm('Nenhum vínculo encontrado. Excluir definitivamente este participante?')) run(sb.from('participants').delete().eq('id',d.d), 'Participante excluído.');
+    }
     if (d.hadd) {
       const coach_name=$('hcn'+d.hadd).value.trim(), started_on=$('hcs'+d.hadd).value, ended_on=$('hce'+d.hadd).value;
       if(!coach_name||!started_on||!ended_on)return say('Informe o técnico e as datas de início e fim da passagem.',false);
