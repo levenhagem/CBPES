@@ -248,3 +248,15 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* V22 — ordenação manual de partidas */
 .cbpes-order-controls{display:inline-flex;align-items:center;gap:4px}.cbpes-order-controls .btn{min-width:30px;padding:4px 8px;font-size:16px;line-height:1}.cbpes-order-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:9px 0}.cbpes-order-item span:first-child{font-size:12px;font-weight:600}.cbpes-final-order{margin-bottom:12px}
+
+/* V23 — placares neutros dentro das competições */
+.cbpes-competition-neutral .cbpes-match{background:#f5f7f8!important;color:#002b36!important;border:1px solid #dce3e7;border-left:3px solid #cbd6db}
+.cbpes-competition-neutral .cbpes-match .cbpes-team-name,.cbpes-competition-neutral .cbpes-match .coach-link{color:#002b36!important}
+.cbpes-competition-neutral .cbpes-match .cbpes-match-category,.cbpes-competition-neutral .cbpes-match .match-date,.cbpes-competition-neutral .cbpes-match .cbpes-match-team small{color:#536774!important;opacity:1}
+.cbpes-match-details{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:5px}
+.cbpes-match-details span{font-size:8px;font-weight:750;letter-spacing:.1px;line-height:1.4;white-space:nowrap}
+.cbpes-competition-neutral .cbpes-match-details span{color:#4c6370}
+.cbpes-champion-banner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;background:#002b36;color:#fff;padding:22px 12px;margin:12px 0;border-top:4px solid #e9c73b}
+.cbpes-champion-banner>span{font-size:12px;font-weight:850;letter-spacing:2px;color:#e9c73b}
+.cbpes-champion-banner strong{font-size:clamp(18px,2.5vw,29px);font-weight:800}
+.cbpes-champion-banner a{color:#fff;text-decoration:none}
