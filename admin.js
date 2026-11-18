@@ -381,6 +381,9 @@ function vJogos() {
     };
     return;
   }
+  // Resolve a edição antes de filtrar rodadas: o seletor não pode alterar o estado após a filtragem.
+  const editions=D.officialEditions||[];
+  if(!editions.some(e=>e.id===selOfficialEdition))selOfficialEdition=editions[0]?.id||null;
   const categoryRounds = D.rounds.filter(x => { if(x.official_edition_id!==selOfficialEdition)return false; const linked=D.matches.filter(m=>m.round_id===x.id);return !linked.length||linked.some(m=>(m.category||'official')==='official'); });
   if(!categoryRounds.some(r=>r.id===selRound))selRound=categoryRounds.length?categoryRounds[categoryRounds.length-1].id:null;
   const r=categoryRounds.find(x=>x.id===selRound),ST={liga:'Liga',grupos:'Grupos',mata:'Mata-mata'};
@@ -395,7 +398,7 @@ function vJogos() {
   $('view').onclick=e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
     if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
     if(d.category){activeCategory=d.category;selRound=null;showNew=false;openGoals=null;return vJogos();}
-    if(d.sel){selRound=d.sel;openGoals=null;return vJogos();}
+    if(d.sel){const selected=categoryRounds.find(x=>String(x.id)===String(d.sel));if(!selected)return say('Rodada não encontrada nesta edição. Atualize a página.',false);selRound=selected.id;openGoals=null;return vJogos();}
     if(d.new){showNew=!showNew;return vJogos();}
     if(d.rcreate){const n=+$('rn').value;if(n>0){showNew=false;run(sb.from('rounds').insert({number:n,stage:$('rst').value,phase_id:$('rphase').value||null,official_edition_id:selOfficialEdition,name:$('rnm').value.trim()||null,date:$('rd').value||null}),'Rodada criada.');}return;}
     if(d.rdsave)return run(sb.from('rounds').update({date:$('rdt').value||null}).eq('id',selRound),'Data da rodada salva.');
