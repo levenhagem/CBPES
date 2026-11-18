@@ -341,3 +341,23 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
    column-gap:5px;
  }
 }
+
+/* V32 — teste visual: conteúdo dos dois lados justificado à esquerda */
+.cbpes-match-main>.cbpes-match-team{
+  align-items:stretch;
+  justify-content:flex-start;
+  text-align:left;
+}
+.cbpes-match-main .cbpes-match-club{
+  justify-content:start;
+  justify-items:start;
+  margin:0;
+}
+.cbpes-match-main .cbpes-match-club-text{
+  align-items:flex-start;
+  text-align:left;
+}
+.cbpes-match-main .cbpes-match-club-text .cbpes-team-name,
+.cbpes-match-main .cbpes-match-club-text small{
+  text-align:left;
+}
