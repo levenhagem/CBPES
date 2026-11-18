@@ -316,3 +316,28 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  .cbpes-match-club{grid-template-columns:30px minmax(0,max-content);column-gap:5px}
  .cbpes-match-club>.cbpes-crest{width:30px;height:30px}
 }
+
+/* V31 — alinhamento vertical fixo dos escudos entre partidas */
+.cbpes-match-main>.cbpes-match-team{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:stretch;
+  justify-content:stretch;
+}
+.cbpes-match-main .cbpes-match-club{
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr);
+  column-gap:8px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  align-items:center;
+}
+.cbpes-match-main .cbpes-match-club-text{min-width:0}
+@media(max-width:620px){
+ .cbpes-match-main .cbpes-match-club{
+   grid-template-columns:30px minmax(0,1fr);
+   column-gap:5px;
+ }
+}
