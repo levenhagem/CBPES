@@ -77,7 +77,7 @@ function renderGames() {
     return heading(`${esc(roundLabel(r).toUpperCase())} • ${done ? 'ENCERRADA' : 'EM ANDAMENTO / PRÓXIMA'}${r.date ? ' • ' + fd(r.date) : ''}`) + list.map(m => {
       const tag = [m.group_name ? 'Grupo ' + esc(m.group_name) : '', m.round.stage === 'mata' && m.leg === 2 ? 'Jogo de volta' : '', m.played ? 'Encerrada' : 'Agendada', m.date ? fd(m.date) : 'data a definir'].filter(Boolean).join(' • ');
       const sc = m.played ? `${m.home_score} – ${m.away_score}${m.home_pen !== null ? ` <small>(${m.home_pen}–${m.away_pen})</small>` : ''}` : '– : –';
-      return `<div class="result-row"><div class="round-label">${pad(r.number)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(m.home.coach_name || 'Técnico não informado')} × ${esc(m.away.coach_name || 'Técnico não informado')} • ${m.category === 'friendly' ? 'Amistoso' : 'Oficial'} • ${tag}</small></div><div class="result-score">${sc}</div></div>`;
+      return `<div class="result-row"><div class="round-label ${m.category === 'friendly' ? 'tag-friendly' : 'tag-official'}">${m.category === 'friendly' ? 'AMIS' : 'OFIC'}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(m.home.coach_name || 'Técnico não informado')} × ${esc(m.away.coach_name || 'Técnico não informado')} • ${m.category === 'friendly' ? 'Amistoso' : 'Oficial'} • ${tag}</small></div><div class="result-score">${sc}</div></div>`;
     }).join('');
   }).join('');
   $('gamesList').innerHTML = html || empty('Nenhuma partida encontrada.');
@@ -85,6 +85,8 @@ function renderGames() {
 
 function renderTable() {
   const t = typeOf(); let html = '', title = 'TABELA GERAL', pill = '';
+  const currentName = SET.name || 'Competição atual';
+  $('tableCompetition').innerHTML = `<option value="current">${esc(currentName)}</option>`;
   if (t === 'liga') { const ms = leagueMatches(D); html = fullTbl(standings(D.participants, ms)); pill = ms.filter(m => m.played).length + ' PARTIDAS DISPUTADAS'; }
   else {
     if (t === 'copa') { title = 'GRUPOS E MATA-MATA'; const g = groupTables(D); html = g.length ? g.map(x => heading('GRUPO ' + esc(x.name)) + fullTbl(x.st)).join('') : empty('Fase de grupos ainda não gerada.'); }
@@ -112,18 +114,24 @@ function renderParticipant(id) {
   const p = D.participants.find(x => x.id === id), root = $('participantView');
   if (!p) { root.innerHTML = `<div class="page-title"><h1>Participante não encontrado</h1><a href="#table">Voltar à tabela</a></div>`; return; }
   const all = D.matches.filter(m => m.played && (m.home_id === id || m.away_id === id));
-  const current = all; // O banco atual ainda não possui arquivo de temporadas.
-  const ms = profileMode === 'current' ? current : all;
-  const wins = ms.filter(m => (m.home_id === id ? m.home_score > m.away_score : m.away_score > m.home_score)).length;
+  const ms = all; // Até existir arquivo de temporadas, ambas as opções mostram todo o histórico disponível.
+  const wins = ms.filter(m => m.home_id === id ? m.home_score > m.away_score : m.away_score > m.home_score).length;
   const draws = ms.filter(m => m.home_score === m.away_score).length, losses = ms.length - wins - draws;
   const goals = ms.reduce((n,m) => n + (m.home_id === id ? m.home_score : m.away_score), 0);
-  const scored = ms.map(m => m.home_id === id ? m.home_score : m.away_score), conceded = ms.map(m => m.home_id === id ? m.away_score : m.home_score);
-  const against = D.participants.filter(x => x.id !== id).map(x => ({p:x, games:ms.filter(m => m.home_id === x.id || m.away_id === x.id).length, wins:ms.filter(m => (m.home_id === id && m.away_id === x.id && m.home_score > m.away_score) || (m.away_id === id && m.home_id === x.id && m.away_score > m.home_score)).length})).filter(x=>x.games).sort((a,b)=>b.games-a.games);
+  const conceded = ms.reduce((n,m) => n + (m.home_id === id ? m.away_score : m.home_score), 0);
+  const records = D.participants.filter(x => x.id !== id).map(x => {
+    const h = ms.filter(m => (m.home_id === id && m.away_id === x.id) || (m.away_id === id && m.home_id === x.id));
+    let v=0,d=0; h.forEach(m=>{const own=m.home_id===id?m.home_score:m.away_score, opp=m.home_id===id?m.away_score:m.home_score;if(own>opp)v++;else if(own<opp)d++;});
+    return {p:x,v,d,diff:v-d,games:h.length};
+  }).filter(x=>x.games);
+  const best = records.filter(x=>x.diff>0).sort((a,b)=>b.diff-a.diff||b.v-a.v||b.games-a.games)[0];
+  const worst = records.filter(x=>x.diff<0).sort((a,b)=>a.diff-b.diff||b.d-a.d||b.games-a.games)[0];
   const rows = ms.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const rivalCard = (label,x,mode) => `<div class="card"><div class="cardhead"><h2>${label}</h2></div><div class="cardbody">${x?`<div class="player"><div><b><a href="#participant/${x.p.id}">${esc(x.p.name)}</a></b><small>${mode==='best'?'Maior saldo de vitórias do participante':'Maior saldo de derrotas do participante'}</small></div><span class="number"><b class="res-w">${x.v}</b> - <b class="res-l">${x.d}</b></span></div>`:empty('Ainda não há saldo positivo/negativo contra um adversário.')}</div></div>`;
   root.innerHTML = `<div class="page-title"><div><div class="eyebrow"><a href="#table">CLASSIFICAÇÃO</a> / PERFIL</div><h1>${esc(p.name)}</h1><div class="sub">Técnico responsável: ${esc(p.coach_name || 'Não informado')}</div></div></div>
   <div class="inline" style="margin-bottom:8px"><button class="btn ${profileMode==='current'?'primary':''}" data-pmode="current">Temporada atual</button><button class="btn ${profileMode==='history'?'primary':''}" data-pmode="history">Histórico completo</button></div><p class="admin-help" style="margin-bottom:12px">Como o portal ainda não possui temporadas arquivadas separadamente, as duas opções exibem todas as partidas atualmente cadastradas.</p>
-  <div class="cols3"><div class="card"><div class="cardhead"><h2>PARTIDAS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>${ms.length}</b><span>Jogos</span></div><div class="stat"><b>${wins}</b><span>Vitórias</span></div><div class="stat"><b>${draws}</b><span>Empates</span></div></div><div class="player"><b>Derrotas</b><span class="number">${losses}</span></div></div></div><div class="card"><div class="cardhead"><h2>GOLS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>${goals}</b><span>Marcados</span></div><div class="stat"><b>${conceded.reduce((a,b)=>a+b,0)}</b><span>Sofridos</span></div><div class="stat"><b>${ms.length ? (goals/ms.length).toFixed(1).replace('.',',') : '0,0'}</b><span>Média</span></div></div></div></div><div class="card"><div class="cardhead"><h2>CONFRONTOS</h2></div><div class="cardbody">${against.length ? against.slice(0,5).map(x=>`<div class="player"><a href="#participant/${x.p.id}">${esc(x.p.name)}</a><span class="number">${x.games} J</span></div>`).join('') : empty('Sem confrontos registrados.')}</div></div></div>
-  <div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE PARTIDAS</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${rows.length ? rows.map(m=>`<div class="result-row"><div class="round-label">${m.category==='friendly'?'AM.':'OF.'}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(roundLabel(m.round))} • ${fd(m.date)} • ${esc(m.home.coach_name||'—')} / ${esc(m.away.coach_name||'—')}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join('') : empty('Nenhuma partida disputada.')}</div></div>
+  <div class="cols3 profile-stats"><div class="card"><div class="cardhead"><h2>PARTIDAS</h2></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${ms.length}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${wins}</b><span>Vitórias</span></div><div class="stat"><b>${draws}</b><span>Empates</span></div><div class="stat"><b class="res-l">${losses}</b><span>Derrotas</span></div></div></div></div><div class="card"><div class="cardhead"><h2>GOLS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>${goals}</b><span>Marcados</span></div><div class="stat"><b>${conceded}</b><span>Sofridos</span></div><div class="stat"><b>${ms.length ? (goals/ms.length).toFixed(1).replace('.',',') : '0,0'}</b><span>Média</span></div></div></div></div>${rivalCard('MAIOR FREGUÊS',best,'best')}${rivalCard('MAIOR CARRASCO',worst,'worst')}</div>
+  <div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE PARTIDAS</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${rows.length ? rows.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':'OFIC'}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${esc(roundLabel(m.round))} • ${fd(m.date)} • ${esc(m.home.coach_name||'—')} / ${esc(m.away.coach_name||'—')}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join('') : empty('Nenhuma partida disputada.')}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR PARTICIPANTES</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Adversário</label><select id="compareWith"><option value="">Selecione</option>${D.participants.filter(x=>x.id!==id).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div></div><div id="compareResult" class="admin-help" style="margin-top:10px">Selecione um participante para ver o confronto direto.</div></div></div>`;
   root.querySelectorAll('[data-pmode]').forEach(b=>b.onclick=()=>{profileMode=b.dataset.pmode;renderParticipant(id)});
   const sel=root.querySelector('#compareWith'), out=root.querySelector('#compareResult');

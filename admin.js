@@ -144,8 +144,8 @@ function advance() {
 }
 
 // ---------- Jogos: rodadas, placares, gols e confrontos numa tela só ----------
-let showNew = false;
-const curMatches = () => D.matches.filter(m => m.round_id === selRound).sort((a, b) => a.seq - b.seq);
+let showNew = false, activeCategory = 'official';
+const curMatches = () => D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === activeCategory).sort((a, b) => a.seq - b.seq);
 function rowPayload(id) {
   const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
   if (h === '' && a === '') return { skip: true };
@@ -187,20 +187,22 @@ function goalsPanel(m) {
    ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>Gol</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>Assistência</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Times.</div>'}</div>`;
 }
 function vJogos() {
-  if (!D.rounds.some(r => r.id === selRound)) selRound = D.rounds.length ? currentRound(D.rounds, D.matches).id : null;
+  const categoryRounds = D.rounds.filter(x => { const linked = D.matches.filter(m => m.round_id === x.id); return !linked.length || linked.some(m => (m.category || 'official') === activeCategory); });
+  if (!categoryRounds.some(r => r.id === selRound)) selRound = categoryRounds.length ? categoryRounds[categoryRounds.length - 1].id : null;
   const r = D.rounds.find(x => x.id === selRound), ST = { liga: 'Liga', grupos: 'Grupos', mata: 'Mata-mata' };
   const next = D.rounds.length ? Math.max(...D.rounds.map(x => x.number)) + 1 : 1;
   const newForm = showNew ? `<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número</label><input id="rn" type="number" min="1" value="${next}"></div><div class="field"><label>Fase</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>Nome (opcional)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>Data</label><input id="rd" type="date"></div><button class="btn sm primary" data-rcreate="1">CRIAR RODADA</button></div></div>` : '';
-  const list = D.rounds.map(x => { const ms = D.matches.filter(m => m.round_id === x.id); return `<button data-sel="${x.id}" class="${x.id === selRound ? 'on' : ''}"><span>${esc(roundLabel(x))}</span><small>${ms.filter(m => m.played).length}/${ms.length}</small></button>`; }).join('') || '<div class="empty">Nenhuma rodada.</div>';
+  const list = categoryRounds.map(x => { const ms = D.matches.filter(m => m.round_id === x.id && (m.category || 'official') === activeCategory); return `<button data-sel="${x.id}" class="${x.id === selRound ? 'on' : ''}"><span>${esc(roundLabel(x))}</span><small>${ms.filter(m => m.played).length}/${ms.length}</small></button>`; }).join('') || `<div class="empty">Nenhuma partida ${activeCategory === 'friendly' ? 'amistosa' : 'oficial'} cadastrada. Crie uma rodada para começar.</div>`;
   const ms = r ? curMatches() : [];
   const right = r ? `<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))} <span class="pill">${ST[r.stage]}</span></h2><span class="inline" style="align-items:center"><input type="date" id="rdt" value="${r.date || ''}"><button class="btn sm" data-rdsave="1">SALVAR DATA</button><button class="btn sm danger" data-rx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">
     ${ms.length ? `<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>` + ms.map(rowHTML).join('') : '<div class="empty">Sem confrontos nesta rodada.</div>'}
-    <div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(D.participants, null, p => p.name)}</select></div><span style="padding-bottom:9px">x</span><div class="field"><label>&nbsp;</label><select id="ma">${opts(D.participants, null, p => p.name)}</select></div>${r.stage === 'grupos' ? '<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>' : ''}${r.stage === 'mata' ? '<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>' : ''}<div class="field"><label>Categoria</label><select id="mcat"><option value="official">Oficial</option><option value="friendly">Amistoso</option></select></div><div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date || ''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`
+    <div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Novo confronto</label><select id="mh">${opts(D.participants, null, p => p.name)}</select></div><span style="padding-bottom:9px">x</span><div class="field"><label>&nbsp;</label><select id="ma">${opts(D.participants, null, p => p.name)}</select></div>${r.stage === 'grupos' ? '<div class="field"><label>Grupo</label><input id="mg" style="width:64px" maxlength="2"></div>' : ''}${r.stage === 'mata' ? '<div class="field"><label>Jogo</label><select id="ml"><option value="1">Jogo 1</option><option value="2">Jogo 2</option></select></div>' : ''}<div class="field"><label>Data</label><input type="date" id="mdt" value="${r.date || ''}"></div><button class="btn sm primary" data-add="1">ADICIONAR</button></div></div></div>`
     : '<div class="empty">Gere o calendário na aba Campeonato ou crie uma rodada ao lado.</div>';
-  $('view').innerHTML = `<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew ? 'FECHAR' : '+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
+  $('view').innerHTML = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><span class="admin-help">${activeCategory==='friendly'?'Cadastro e resultados de partidas amistosas.':'Cadastro e resultados das competições oficiais CBPES.'}</span></div></div><div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-new="1">${showNew ? 'FECHAR' : '+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
   $('view').onkeydown = e => { if (e.key === 'Enter' && e.target.dataset.m) saveOne(e.target.dataset.m); };
   $('view').onclick = e => {
     const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
+    if (d.category) { activeCategory = d.category; selRound = null; showNew = false; openGoals = null; return vJogos(); }
     if (d.sel) { selRound = d.sel; openGoals = null; return vJogos(); }
     if (d.new) { showNew = !showNew; return vJogos(); }
     if (d.rcreate) { const n = +$('rn').value; if (n > 0) { showNew = false; run(sb.from('rounds').insert({ number: n, stage: $('rst').value, name: $('rnm').value.trim() || null, date: $('rd').value || null }), 'Rodada criada.'); } return; }
@@ -209,7 +211,7 @@ function vJogos() {
     if (d.mx) { if (confirm('Excluir este jogo?')) run(sb.from('matches').delete().eq('id', d.mx), 'Jogo excluído.'); return; }
     if (d.add) {
       const h = $('mh').value, a = $('ma').value; if (!h || !a) return say('Cadastre os participantes primeiro.', false); if (h === a) return say('Escolha participantes diferentes.', false);
-      return run(sb.from('matches').insert({ round_id: selRound, home_id: h, away_id: a, played_on: $('mdt').value || null, group_name: $('mg') ? $('mg').value.trim().toUpperCase() || null : null, leg: $('ml') ? +$('ml').value : 1, category: $('mcat').value }), 'Confronto adicionado.');
+      return run(sb.from('matches').insert({ round_id: selRound, home_id: h, away_id: a, played_on: $('mdt').value || null, group_name: $('mg') ? $('mg').value.trim().toUpperCase() || null : null, leg: $('ml') ? +$('ml').value : 1, category: activeCategory }), 'Confronto adicionado.');
     }
     if (d.saveall) return saveAll();
     if (d.s) return saveOne(d.s);
