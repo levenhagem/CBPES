@@ -426,6 +426,26 @@ function histPart(p) {
   if (!ms.length) return '<div class="empty">Sem partidas disputadas.</div>';
   return ms.map(m => { const home = m.home_id === p.id, g = home ? m.home_score : m.away_score, c = home ? m.away_score : m.home_score, r = g > c ? ['V', 'res-w'] : g < c ? ['D', 'res-l'] : ['E', 'res-d']; return `<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':pad(m.round?.number||0)}</div><div class="result-teams">${esc(m.home.name)} x ${esc(m.away.name)}<small>${m.category==='friendly'?'Amistoso':m.category==='weekly'?esc(m.weekly?.name||'Semanal'):esc(roundLabel(m.round))+' • '}${fd(m.date)}</small></div><div class="result-score">${m.home_score} – ${m.away_score} <span class="${r[1]}">${r[0]}</span></div></div>`; }).join('');
 }
+function validateCrestSvg(raw){
+ if(/<!DOCTYPE|<!ENTITY/i.test(raw))throw Error('SVG com DOCTYPE ou entidades não é permitido.');
+ const doc=new DOMParser().parseFromString(raw,'image/svg+xml'),root=doc.documentElement;
+ if(doc.querySelector('parsererror')||root.localName!=='svg'||root.namespaceURI!=='http://www.w3.org/2000/svg')throw Error('SVG inválido.');
+ const forbidden=new Set(['script','foreignObject','iframe','object','embed','image','animate','animateMotion','animateTransform','set','a','feImage']);
+ for(const el of [root,...root.querySelectorAll('*')]){
+  if(forbidden.has(el.localName))throw Error('SVG contém elemento não permitido: '+el.localName);
+  for(const attr of [...el.attributes]){
+   const name=attr.name.toLowerCase(),value=attr.value.trim();
+   if(name.startsWith('on'))throw Error('SVG contém evento não permitido.');
+   if(name==='href'||name.endsWith(':href')){
+    if(!/^#[a-zA-Z_][\\w.:-]*$/.test(value))throw Error('SVG contém referência externa.');
+    continue;
+   }
+   const noLocalUrls=value.replace(/url\\(\\s*(['"]?)#[a-zA-Z_][\\w.:-]*\\1\\s*\\)/gi,'');
+   if(/url\\s*\\(|javascript:|data:|@import|expression\\s*\\(|-moz-binding/i.test(noLocalUrls))throw Error('SVG contém referência externa ou estilo inseguro.');
+  }
+ }
+ return new Blob([new XMLSerializer().serializeToString(root)],{type:'image/svg+xml'});
+}
 async function saveCrest(id){
  const p=D.participants.find(x=>String(x.id)===String(id));if(!p)return;
  const file=$('crestFile'+id)?.files?.[0],input=$('crestUrl'+id)?.value.trim()||'';
@@ -437,16 +457,7 @@ async function saveCrest(id){
   let uploadFile=file;
   if(svg){
     const raw=await file.text();
-    if(/<!DOCTYPE|<!ENTITY/i.test(raw))return say('SVG com entidades ou DOCTYPE não é permitido.',false);
-    const doc=new DOMParser().parseFromString(raw,'image/svg+xml');
-    const root=doc.documentElement;
-    if(doc.querySelector('parsererror')||root.localName!=='svg'||root.namespaceURI!=='http://www.w3.org/2000/svg')return say('Arquivo SVG inválido.',false);
-    const forbidden=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','animateMotion','animateTransform','set','a','style','filter','feImage']);
-    const nodes=[root,...root.querySelectorAll('*')];
-    if(nodes.some(el=>forbidden.has(el.localName)))return say('O SVG contém elementos não permitidos. Exporte um SVG simples.',false);
-    if(nodes.some(el=>[...el.attributes].some(a=>a.name.toLowerCase().startsWith('on')||a.name.toLowerCase()==='style'||a.name.toLowerCase()==='href'||a.name.toLowerCase().endsWith(':href')||/url\s*\(|javascript:|data:|@import/i.test(a.value))))return say('O SVG contém referências ou estilos não permitidos.',false);
-    const safe=new XMLSerializer().serializeToString(root);
-    uploadFile=new Blob([safe],{type:'image/svg+xml'});
+    uploadFile=validateCrestSvg(raw);
   }
   const ext=svg?'svg':file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
   const path=`${id}/${Date.now()}.${ext}`;
@@ -487,12 +498,7 @@ async function uploadCrestsBulk(files){
   try{
    if(file.size>2097152)throw Error('Arquivo maior que 2 MB');
    const raw=await file.text();
-   if(/<!DOCTYPE|<!ENTITY/i.test(raw))throw Error('DOCTYPE/ENTITY não permitido');
-   const doc=new DOMParser().parseFromString(raw,'image/svg+xml'),root=doc.documentElement;
-   if(doc.querySelector('parsererror')||root.localName!=='svg'||root.namespaceURI!=='http://www.w3.org/2000/svg')throw Error('SVG inválido');
-   const forbidden=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','animateMotion','animateTransform','set','a','style','filter','feImage']);
-   if([root,...root.querySelectorAll('*')].some(el=>forbidden.has(el.localName)||[...el.attributes].some(a=>a.name.toLowerCase().startsWith('on')||['style','href'].includes(a.name.toLowerCase())||a.name.toLowerCase().endsWith(':href')||/url\s*\(|javascript:|data:|@import/i.test(a.value))))throw Error('Elementos ou referências não permitidos');
-   const blob=new Blob([new XMLSerializer().serializeToString(root)],{type:'image/svg+xml'});
+   const blob=validateCrestSvg(raw);
    const key=team.id+'/'+Date.now()+'-'+count+'.svg';
    const {error:ue}=await sb.storage.from('club-crests').upload(key,blob,{contentType:'image/svg+xml',upsert:false});
    if(ue)throw ue;
