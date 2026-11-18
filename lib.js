@@ -36,21 +36,21 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 }
 
 async function load() {
-  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'coach_profiles', 'coach_trophies'];
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'coach_profiles', 'coach_trophies'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
-  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, coachProfiles, coachTrophies] = res.map(x => x.data);
+  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, coachProfiles, coachTrophies] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
   if (s[0]) SET = s[0];
-  const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x]));
+  const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x])), WR = Object.fromEntries((weeklyRounds || []).map(x => [x.id, x]));
   const matches = m.map(x => ({
-    ...x, home: P[x.home_id], away: P[x.away_id], round: R[x.round_id] || null,
-    category: x.category || 'official', weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
+    ...x, home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
+    category: x.category || 'official', weeklyRound: WR[x.weekly_round_id] || null, weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
     played: x.home_score !== null && x.away_score !== null,
-    date: x.played_on || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
+    date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
   })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
@@ -66,15 +66,15 @@ function standings(ps, ms, cfg = cfgOf()) {
   return Object.values(t).map(x => ({ ...x, sg: x.gp - x.gc, ap: x.j ? Math.round(x.pts / (x.j * cfg.ptsW) * 100) : 0 }))
     .sort((a, b) => b.pts - a.pts || b.v - a.v || b.sg - a.sg || b.gp - a.gp || a.p.name.localeCompare(b.p.name));
 }
-const leagueMatches = D => D.matches.filter(m => m.category !== 'friendly' && m.round && m.round.stage === 'liga');
+const leagueMatches = D => D.matches.filter(m => m.category === 'official' && m.round && m.round.stage === 'liga');
 function groupTables(D) {
-  const ms = D.matches.filter(m => m.category !== 'friendly' && m.round && m.round.stage === 'grupos' && m.group_name);
+  const ms = D.matches.filter(m => m.category === 'official' && m.round && m.round.stage === 'grupos' && m.group_name);
   return [...new Set(ms.map(m => m.group_name))].sort().map(n => {
     const gm = ms.filter(m => m.group_name === n), ids = new Set(gm.flatMap(m => [m.home_id, m.away_id]));
     return { name: n, matches: gm, st: standings(D.participants.filter(p => ids.has(p.id) && p.participates_in_competition !== false), gm) };
   });
 }
-const koRounds = D => D.rounds.filter(r => r.stage === 'mata');
+const koRounds = D => D.rounds.filter(r => !r.weekly_id && r.stage === 'mata');
 function tiesOf(ms) { // confrontos (ida/volta agregados) de uma fase de mata-mata
   const map = new Map();
   ms.slice().sort((a, b) => a.leg - b.leg || a.seq - b.seq).forEach(m => {
@@ -105,7 +105,7 @@ function nextMatches(ms) {
   return ms.filter(m => !m.played).sort((a, b) => ((a.round?.number || 999999) - (b.round?.number || 999999)) || (a.date || '9').localeCompare(b.date || '9') || (a.seq || 0) - (b.seq || 0));
 }
 function currentRound(rounds, ms) {
-  const official = ms.filter(m => m.category !== 'friendly' && m.round);
+  const official = ms.filter(m => m.category === 'official' && m.round);
   const nx = nextMatches(official)[0]; if (nx) return nx.round;
   const lp = latestPlayed(official)[0]; return lp ? lp.round : rounds[rounds.length - 1] || null;
 }

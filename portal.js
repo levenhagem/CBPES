@@ -79,7 +79,7 @@ function renderHome() {
 function renderGames() {
   document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('selected', b.dataset.f === filter));
   const ms = D.matches.filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
-  const official = ms.filter(m => m.category !== 'friendly' && m.round);
+  const official = ms.filter(m => m.category === 'official' && m.round);
   const friendlies = ms.filter(m => m.category === 'friendly');
   const weeklies = ms.filter(m => m.category === 'weekly');
   const rs = [...new Map(official.map(m => [m.round.id, m.round])).values()].sort((a,b) => filter === 'next' ? a.number-b.number : b.number-a.number);
@@ -89,7 +89,7 @@ function renderGames() {
     return heading(`${esc(roundLabel(r).toUpperCase())}${r.date ? ' • ' + fd(r.date) : ''}`) + list.map(matchRow).join('');
   }).join('');
   const friendlyHtml = friendlies.length ? heading('PARTIDAS AMISTOSAS') + friendlies.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(matchRow).join('') : '';
-  const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const title=edition?`${esc(edition.name)} • ${fd(edition.event_date)}`:'CAMPEONATO SEMANAL';return heading(title)+weeklies.filter(m=>m.weekly_id===id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('');}).join('');
+  const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const games=weeklies.filter(m=>m.weekly_id===id);const title=edition?`${esc(edition.name)} • ${fd(edition.event_date)}`:'CAMPEONATO SEMANAL';const rounds=[...new Map(games.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const roundHtml=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+games.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('');const unassigned=games.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return heading(title)+roundHtml+(unassigned.length?heading('PARTIDAS SEM RODADA')+unassigned.map(matchRow).join(''):'');}).join('');
   $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml || empty('Nenhuma partida encontrada.');
 }
 function renderTable() {
@@ -103,7 +103,7 @@ function renderTable() {
     $('tblTitle').textContent=w?.name||'CAMPEONATO SEMANAL'; $('tblPill').textContent=`${fd(w?.event_date)} • ${ms.filter(m=>m.played).length} JOGOS`; 
     const champion=w?.champion_id?D.participants.find(p=>p.id===w.champion_id):null;
     const info=`<div class="notice"><b>Formato:</b> ${esc(w?.format_description||'Não informado')}<br><b>Participantes:</b> ${w?.participant_count||roster.length||ids.size}${champion?`<br><b>Campeão:</b> <a href="#team/${champion.id}">${esc(champion.name)}</a>${w.champion_coach_name?' • '+coachLink(w.champion_coach_name):''}`:'<br><b>Campeão:</b> ainda não definido'}</div>`;
-    const results=ms.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('');
+    const rounds=[...new Map(ms.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const results=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+ms.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('')+(ms.some(m=>!m.weekly_round_id)?heading('PARTIDAS SEM RODADA')+ms.filter(m=>!m.weekly_round_id).map(matchRow).join(''):'');
     $('fullTable').innerHTML=info+(st.length?`<div class="eyebrow" style="margin:12px 0 4px">RESUMO ESTATÍSTICO DA EDIÇÃO (RESUMO: 3 PTS POR VITÓRIA, 1 POR EMPATE)</div>${fullTbl(st)}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
     return;
   }
@@ -130,8 +130,9 @@ function renderWeeklies() {
     const teams = D.participants.filter(p => ids.has(p.id) || roster.includes(p.id));
     const table = standings(teams, ms, {ptsW:3, ptsD:1});
     const champion = w.champion_id ? D.participants.find(p => p.id === w.champion_id) : null;
-    const rows = ms.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('');
-    return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count || teams.length} PARTICIPANTES</small></div><span class="pill">${ms.filter(m=>m.played).length} JOGOS</span></div><div class="cardbody">${w.format_description ? `<p class="sub">${esc(w.format_description)}</p>` : ''}${champion ? `<div class="notice"><b>CAMPEÃO:</b> <a href="#team/${champion.id}">${esc(champion.name)}</a>${w.champion_coach_name ? ' • ' + coachLink(w.champion_coach_name) : ''}</div>` : `<div class="notice">Campeão ainda não definido.</div>`}${table.length ? `<h3>CLASSIFICAÇÃO DA EDIÇÃO</h3>${fullTbl(table)}` : empty('Aguardando partidas e participantes.') }<h3 style="margin-top:16px">PARTIDAS E RESULTADOS</h3>${rows || empty('Nenhuma partida cadastrada nesta edição.')}</div></div>`;
+    const rounds=[...new Map(ms.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);
+    const rows=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+ms.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('')+ (ms.some(m=>!m.weekly_round_id)?heading('PARTIDAS SEM RODADA')+ms.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join(''):'');
+    return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count || teams.length} PARTICIPANTES</small></div><span class="pill">${ms.filter(m=>m.played).length} JOGOS • ${rounds.length} RODADAS</span></div><div class="cardbody">${w.format_description ? `<p class="sub">${esc(w.format_description)}</p>` : ''}${champion ? `<div class="notice"><b>CAMPEÃO:</b> <a href="#team/${champion.id}">${esc(champion.name)}</a>${w.champion_coach_name ? ' • ' + coachLink(w.champion_coach_name) : ''}</div>` : `<div class="notice">Campeão ainda não definido.</div>`}${table.length ? `<h3>CLASSIFICAÇÃO DA EDIÇÃO</h3>${fullTbl(table)}` : empty('Aguardando partidas e participantes.') }<h3 style="margin-top:16px">PARTIDAS E RESULTADOS</h3>${rows || empty('Nenhuma partida cadastrada nesta edição.')}</div></div>`;
   }).join('');
 }
 
@@ -227,11 +228,43 @@ function renderCoach(name) {
   const coachTrophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.awarded_on||'').localeCompare(a.awarded_on||''));
   const profile=(D.coachProfiles||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase()===key);
   const career=assignments.length?assignments.map(h=>{const t=D.participants.find(p=>p.id===h.participant_id);return `<div class="player"><div><b>${t?`<a href="#team/${t.id}">${esc(t.name)}</a>`:'Time removido'}</b><small>${fd(h.started_on)} – ${h.ended_on?fd(h.ended_on):'Atual'}</small></div><span class="pill">${h.ended_on?'ANTERIOR':'ATUAL'}</span></div>`;}).join(''):empty('Nenhum vínculo histórico cadastrado para este técnico.');
+  const coachNames=[...new Set([
+    ...(D.coachProfiles||[]).map(x=>x.name), ...(D.coachHistory||[]).map(x=>x.coach_name),
+    ...D.participants.map(x=>x.coach_name), ...D.matches.flatMap(m=>[m.home_coach_name,m.away_coach_name]),
+    ...(D.coachTrophies||[]).map(x=>x.coach_name)
+  ].map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const coachCompareOptions=coachNames.filter(n=>n.toLocaleLowerCase()!==key).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const coachSummary=(coachName)=>{
+    const k=coachName.toLocaleLowerCase();
+    const games=D.matches.filter(m=>m.played && [m.home_coach_name,m.away_coach_name].some(n=>String(n||'').trim().toLocaleLowerCase()===k));
+    let wins=0,draws=0,losses=0;
+    games.forEach(m=>{const isHome=String(m.home_coach_name||'').trim().toLocaleLowerCase()===k;const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;if(own>other)wins++;else if(own<other)losses++;else draws++;});
+    const trophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===k);
+    const teams=(D.coachHistory||[]).filter(h=>String(h.coach_name||'').trim().toLocaleLowerCase()===k).map(h=>D.participants.find(t=>t.id===h.participant_id)?.name).filter(Boolean);
+    return {games:games.length,wins,draws,losses,trophies,teams:[...new Set(teams)]};
+  };
+  const renderCoachComparison=(otherName)=>{
+    const out=root.querySelector('#coachCompareResult'); if(!out)return;
+    if(!otherName){out.innerHTML='<div class="admin-help">Selecione outro técnico para comparar as carreiras.</div>';return;}
+    const a=coachSummary(name), b=coachSummary(otherName), otherKey=otherName.toLocaleLowerCase();
+    let directW=0,directD=0,directL=0,directGames=0;
+    D.matches.filter(m=>m.played).forEach(m=>{
+      const h=String(m.home_coach_name||'').trim().toLocaleLowerCase(), aw=String(m.away_coach_name||'').trim().toLocaleLowerCase();
+      if(!((h===key&&aw===otherKey)||(h===otherKey&&aw===key)))return;
+      directGames++; const own=h===key?m.home_score:m.away_score, opp=h===key?m.away_score:m.home_score;
+      if(own>opp)directW++;else if(own<opp)directL++;else directD++;
+    });
+    const summary=(coachName,x)=>`<div class="card"><div class="cardhead"><h3>${esc(coachName)}</h3></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${x.games}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${x.wins}</b><span>Vitórias</span></div><div class="stat"><b>${x.draws}</b><span>Empates</span></div><div class="stat"><b class="res-l">${x.losses}</b><span>Derrotas</span></div></div><div class="player"><b>🏆 Troféus</b><span class="number">${x.trophies.length}</span></div><div class="player"><b>Times comandados</b><span class="number">${x.teams.length}</span></div><small>${x.teams.length?x.teams.map(esc).join(' • '):'Histórico de equipes não cadastrado'}</small><div class="player"><b>Conquistas</b><span class="number">${x.trophies.length}</span></div><small>${x.trophies.length?x.trophies.map(t=>esc(t.title)).join(' • '):'Nenhum troféu registrado'}</small></div></div>`;
+    out.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px">${summary(name,a)}${summary(otherName,b)}</div><div class="notice" style="margin-top:12px"><b>CONFRONTO DIRETO</b><br>${directGames?`${esc(name)}: ${directW} vitórias • ${directD} empates • ${directL} derrotas (${directGames} jogos)`:'Nenhum confronto direto registrado entre os dois técnicos.'}</div>`;
+  };
   root.innerHTML=`<div class="page-title"><div><div class="eyebrow"><a href="#table">CLASSIFICAÇÃO</a> / PERFIL DO TÉCNICO</div><h1>${esc(name)}</h1><div class="sub">Trajetória e desempenho na carreira</div>${profile?.bio?`<p class="sub">${esc(profile.bio)}</p>`:''}</div></div>
   <div class="card"><div class="cardhead"><h2>ESTATÍSTICAS DA CARREIRA</h2><span class="pill">${matches.length} JOGOS</span></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${matches.length}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${v}</b><span>Vitórias</span></div><div class="stat"><b>${e}</b><span>Empates</span></div><div class="stat"><b class="res-l">${d}</b><span>Derrotas</span></div></div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>RETROSPECTO CONTRA OUTROS TÉCNICOS</h2></div><div class="cardbody"><div class="stats four-stats">${coachRivalryCard('MAIOR FREGUÊS',bestVictim,'Sem retrospecto positivo definido.')}${coachRivalryCard('MAIOR CARRASCO',biggestNemesis,'Sem retrospecto negativo definido.')}</div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
+  <div class="card" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"><div class="admin-help">Compare retrospecto, títulos, equipes comandadas e confrontos diretos.</div></div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
+  const compareSelect=root.querySelector('#coachCompareWith');
+  if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
 
 function renderAll() { renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }

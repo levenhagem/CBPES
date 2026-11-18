@@ -146,7 +146,7 @@ function advance() {
 
 // ---------- Jogos: rodadas, placares, gols e confrontos numa tela só ----------
 let showNew = false, activeCategory = 'official';
-const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : activeCategory === 'weekly' ? D.matches.filter(m => m.category === 'weekly' && m.weekly_id === selWeekly).sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : D.matches.filter(m => m.round_id === selRound && (m.category || 'official') === 'official').sort((a, b) => a.seq - b.seq);
+const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : D.matches.filter(m => (activeCategory === 'weekly' ? m.weekly_round_id === selRound : m.round_id === selRound) && (m.category || 'official') === activeCategory && (activeCategory !== 'weekly' || m.weekly_id === selWeekly)).sort((a, b) => (a.seq||0) - (b.seq||0));
 function rowPayload(id) {
   const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
   if (h === '' && a === '') return { skip: true };
@@ -210,29 +210,40 @@ function vJogos() {
   if (activeCategory === 'weekly') {
     if (!selWeekly || !D.weeklies.some(w => w.id === selWeekly)) selWeekly = D.weeklies[0]?.id || null;
     const edition = D.weeklies.find(w => w.id === selWeekly);
-    const ms = curMatches();
+    const weeklyRounds = (D.weeklyRounds||[]).filter(r => r.weekly_id === selWeekly).sort((a,b)=>a.number-b.number);
+    if (!weeklyRounds.some(r => r.id === selRound)) selRound = weeklyRounds.length ? weeklyRounds[weeklyRounds.length-1].id : null;
+    const r = weeklyRounds.find(x=>x.id===selRound) || null;
+    const ms = r ? D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selWeekly&&m.weekly_round_id===r.id) : [];
     const picker = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><div class="field"><label>Campeonato semanal</label><select id="weeklyPick">${D.weeklies.map(w=>`<option value="${w.id}" ${w.id===selWeekly?'selected':''}>${esc(w.name)} • ${fd(w.event_date)}</option>`).join('')}</select></div><button class="btn" data-goweekly="1">ABRIR SEMANAIS</button></div></div>`;
-    if (!edition) { $('view').innerHTML = switcher + picker + '<div class="empty">Cadastre uma edição na aba SEMANAIS antes de registrar partidas.</div>'; $('view').onclick=e=>{if(e.target.closest('[data-goweekly]')){tab='weekly';render();}}; return; }
-    const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVA PARTIDA — ${esc(edition.name)}</h2><span class="pill">${fd(edition.event_date)}</span></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="wh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="wa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data do jogo</label><input type="date" id="wdt" value="${edition.event_date}"></div><button class="btn primary" data-wadd="1">CADASTRAR PARTIDA SEMANAL</button></div></div></div>`;
-    const rows = ms.length ? ms.map(rowHTML).join('') : '<div class="empty">Nenhuma partida cadastrada nesta edição.</div>';
-    $('view').innerHTML = switcher + picker + form + `<div class="card"><div class="cardhead"><h2>PARTIDAS DA EDIÇÃO (${ms.length})</h2></div><div class="cardbody">${rows}</div></div>`;
-    $('view').onchange=e=>{if(e.target.id==='weeklyPick'){selWeekly=e.target.value;vJogos();}};
+    if (!edition) { $('view').innerHTML = switcher + picker + '<div class="empty">Cadastre uma edição na aba SEMANAIS antes de registrar rodadas.</div>'; $('view').onclick=e=>{if(e.target.closest('[data-goweekly]')){tab='weekly';render();}}; return; }
+    const next = weeklyRounds.length ? Math.max(...weeklyRounds.map(x=>x.number))+1 : 1;
+    const newForm = showNew ? `<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número da rodada</label><input id="wrn" type="number" min="1" value="${next}"></div><div class="field"><label>Nome (opcional)</label><input id="wrnm" placeholder="Ex.: Semifinal ou Final"></div><div class="field"><label>Data</label><input id="wrd" type="date" value="${edition.event_date||''}"></div><button class="btn sm primary" data-wrcreate="1">CRIAR RODADA</button></div></div>` : '';
+    const list = weeklyRounds.map(x=>{const a=D.matches.filter(m=>m.weekly_round_id===x.id&&m.category==='weekly');return `<button data-wsel="${x.id}" class="${x.id===selRound?'on':''}"><span>${esc(roundLabel(x))}</span><small>${a.filter(m=>m.played).length}/${a.length}</small></button>`;}).join('') || '<div class="empty">Nenhuma rodada criada nesta edição.</div>';
+    const right = r ? `<div class="card"><div class="cardhead"><h2>${esc(roundLabel(r))}</h2><span class="inline" style="align-items:center"><input type="date" id="wrdt" value="${r.date||''}"><button class="btn sm" data-wrdsave="1">SALVAR DATA</button><button class="btn sm danger" data-wrx="${r.id}">EXCLUIR RODADA</button></span></div><div class="cardbody">${ms.length?`<div style="text-align:right;margin:8px 0"><button class="btn primary" data-saveall="1">SALVAR TODOS OS PLACARES</button></div>`+ms.map(rowHTML).join(''):'<div class="empty">Sem partidas nesta rodada.</div>'}<div class="inline" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="field"><label>Mandante</label><select id="wh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="wa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data do jogo</label><input type="date" id="wdt" value="${r.date||edition.event_date}"></div><button class="btn sm primary" data-wadd="1">ADICIONAR PARTIDA</button></div></div></div>` : '<div class="empty">Crie ou selecione uma rodada para cadastrar partidas.</div>';
+    $('view').innerHTML = switcher + picker + `<div class="split"><div><button class="btn primary" style="width:100%;margin-bottom:8px" data-wnew="1">${showNew?'FECHAR':'+ NOVA RODADA'}</button>${newForm}<div class="rlist">${list}</div></div><div>${right}</div></div>`;
+    $('view').onchange=e=>{if(e.target.id==='weeklyPick'){selWeekly=e.target.value;selRound=null;showNew=false;vJogos();}};
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
-      if(d.category){activeCategory=d.category;selRound=null;return vJogos();}
+      if(d.category){activeCategory=d.category;selRound=null;showNew=false;return vJogos();}
       if(d.goweekly){tab='weekly';render();return;}
-      if(d.wadd){const h=$('wh').value,a=$('wa').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,weekly_id:selWeekly,home_id:h,away_id:a,played_on:$('wdt').value||edition.event_date,category:'weekly'}),'Partida vinculada à edição semanal.');}
+      if(d.wnew){showNew=!showNew;return vJogos();}
+      if(d.wsel){selRound=d.wsel;openGoals=null;return vJogos();}
+      if(d.wrcreate){const n=+$('wrn').value;if(n<1)return say('Informe um número de rodada válido.',false);showNew=false;return run(sb.from('weekly_rounds').insert({number:n,name:$('wrnm').value.trim()||null,date:$('wrd').value||edition.event_date,weekly_id:selWeekly}),'Rodada semanal criada.');}
+      if(d.wrdsave)return run(sb.from('weekly_rounds').update({date:$('wrdt').value||null}).eq('id',selRound).eq('weekly_id',selWeekly),'Data da rodada semanal salva.');
+      if(d.wrx){const count=D.matches.filter(m=>m.weekly_round_id===d.wrx).length;if(count)return say('Esta rodada ainda possui partidas. Exclua ou mova as partidas antes de excluir a rodada.',false);if(confirm('Excluir esta rodada semanal?')){selRound=null;return run(sb.from('weekly_rounds').delete().eq('id',d.wrx).eq('weekly_id',selWeekly),'Rodada semanal excluída.');}}
+      if(d.wadd){const h=$('wh').value,a=$('wa').value;if(!selRound)return say('Selecione uma rodada.',false);if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,weekly_round_id:selRound,weekly_id:selWeekly,home_id:h,away_id:a,played_on:$('wdt').value||r.date||edition.event_date,category:'weekly'}),'Partida vinculada à rodada semanal.');}
       if(d.s)return saveOne(d.s);if(d.mx&&confirm('Excluir esta partida semanal?'))return run(sb.from('matches').delete().eq('id',d.mx),'Partida excluída.');
       if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
       if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
       if(d.c&&confirm('Apagar o placar desta partida?'))sb.from('match_events').delete().eq('match_id',d.c).then(()=>run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null}).eq('id',d.c),'Placar removido.'));
+      if(d.saveall)return saveAll();
     };
     return;
   }
   const categoryRounds = D.rounds.filter(x => { const linked=D.matches.filter(m=>m.round_id===x.id);return !linked.length||linked.some(m=>(m.category||'official')==='official'); });
   if(!categoryRounds.some(r=>r.id===selRound))selRound=categoryRounds.length?categoryRounds[categoryRounds.length-1].id:null;
   const r=D.rounds.find(x=>x.id===selRound),ST={liga:'Liga',grupos:'Grupos',mata:'Mata-mata'};
-  const next=D.rounds.length?Math.max(...D.rounds.map(x=>x.number))+1:1;
+  const officialRounds=D.rounds; const next=officialRounds.length?Math.max(...officialRounds.map(x=>x.number))+1:1;
   const newForm=showNew?`<div class="card" style="margin-bottom:8px"><div class="cardbody" style="padding:10px;display:grid;gap:8px"><div class="field"><label>Número</label><input id="rn" type="number" min="1" value="${next}"></div><div class="field"><label>Fase</label><select id="rst"><option value="liga">Liga</option><option value="grupos">Grupos</option><option value="mata">Mata-mata</option></select></div><div class="field"><label>Nome (opcional)</label><input id="rnm" placeholder="Ex.: Semifinais"></div><div class="field"><label>Data</label><input id="rd" type="date"></div><button class="btn sm primary" data-rcreate="1">CRIAR RODADA</button></div></div>`:'';
   const list=categoryRounds.map(x=>{const a=D.matches.filter(m=>m.round_id===x.id&&(m.category||'official')==='official');return `<button data-sel="${x.id}" class="${x.id===selRound?'on':''}"><span>${esc(roundLabel(x))}</span><small>${a.filter(m=>m.played).length}/${a.length}</small></button>`;}).join('')||'<div class="empty">Nenhuma rodada oficial cadastrada.</div>';
   const ms=r?curMatches():[];
