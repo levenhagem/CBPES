@@ -213,3 +213,21 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #home .friendly-match .friendly-tag,#games .friendly-match .friendly-tag,#table .friendly-match .friendly-tag,#weeklies .friendly-match .friendly-tag{top:5px!important;left:9px!important;font-size:9px!important}
 #home .friendly-match .friendly-date,#games .friendly-match .friendly-date,#table .friendly-match .friendly-date,#weeklies .friendly-match .friendly-date{font-size:10px!important;padding-top:0!important}
 @media(max-width:900px){.cbpes-competition-layout{grid-template-columns:1fr;gap:14px}.cbpes-results-panel{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}
+
+/* CBPES V20 — placar editorial compacto e retrospectos */
+.cbpes-match{background:linear-gradient(115deg,var(--match-color,#174e83),color-mix(in srgb,var(--match-color,#174e83) 86%,#ffffff));color:#fff;padding:8px 14px 11px;margin-bottom:5px;min-width:0}
+.cbpes-match-top{display:flex;align-items:center;justify-content:space-between;min-height:15px;margin-bottom:4px;gap:12px}
+.cbpes-match-category{font-size:9px;font-weight:750;letter-spacing:.55px;text-transform:uppercase;opacity:.88}
+.cbpes-match .match-date{font-size:10px;opacity:.8}
+.cbpes-match-main{display:grid;grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr);gap:12px;align-items:center;min-height:42px}
+.cbpes-match-team{display:flex;flex-direction:column;justify-content:center;min-height:42px;gap:3px;min-width:0;text-align:center;align-items:center}
+.cbpes-match-team .cbpes-team-name{font-family:var(--f,Inter,sans-serif);font-size:13px;font-weight:450;line-height:1.2;text-decoration:none;color:#fff;overflow-wrap:anywhere}
+.cbpes-match-team.winner .cbpes-team-name{font-weight:800}
+.cbpes-match-team small{font-size:10px;font-weight:400;opacity:.78;line-height:1.2}
+.cbpes-match-team small a{color:inherit;text-decoration:none;font-weight:400}
+.cbpes-match-score{font-size:21px;font-weight:800;line-height:1;white-space:nowrap;text-align:center;font-variant-numeric:tabular-nums}
+.cbpes-rivalry{display:flex;flex-direction:column;justify-content:center;gap:7px}
+.cbpes-rivalry .cbpes-rivalry-title{font-size:12px;font-weight:850;letter-spacing:.5px;color:var(--navy,#002b36)}
+.cbpes-rivalry .cbpes-rivalry-name{font-size:17px;font-weight:600;line-height:1.2}
+.cbpes-rivalry small{font-size:12px}.cbpes-rivalry .res-w{color:#16804b}.cbpes-rivalry .res-l{color:#c63d3d}
+@media(max-width:620px){.cbpes-match{padding:7px 8px 10px}.cbpes-match-main{grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);gap:5px}.cbpes-match-team .cbpes-team-name{font-size:12px}.cbpes-match-score{font-size:19px}}
