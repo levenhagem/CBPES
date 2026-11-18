@@ -147,3 +147,51 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
  .match{grid-template-columns:1fr 70px 1fr;font-size:13px}.crest{width:22px;height:22px}
  .table th,.table td{padding:7px 4px}
 }
+
+/* Links para perfis dos participantes */
+.participant-link{color:var(--blue);font-weight:700;text-decoration:none;text-decoration-thickness:1px;text-underline-offset:2px}
+.participant-link:hover{color:var(--green);text-decoration:underline}
+.latest-match .participant-link{color:#fff}
+.latest-match .participant-link:hover{color:var(--yellow)}
+.sc .participant-link{color:inherit}
+.sc .participant-link:hover{color:var(--green)}
+
+/* Perfil público do participante */
+.participant-hero{display:flex;align-items:center;gap:18px;background:var(--navy);color:#fff;padding:20px;margin-bottom:12px;border-left:5px solid var(--yellow)}
+.participant-crest{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.55);font-family:var(--fc);font-weight:700;font-size:22px;flex:none}
+.participant-hero-main h2{font-family:var(--fc);font-size:30px;line-height:1.05;text-transform:uppercase}
+.participant-hero-main>span{display:block;color:#b9cbd0;font-size:12px;margin-top:5px}
+.participant-hero .eyebrow{color:var(--yellow);margin-bottom:3px}
+.participant-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:#fff;border:1px solid var(--line);margin-bottom:16px}
+.participant-stats .stat{border-right:1px solid var(--line);padding:12px 5px}
+.participant-stats .stat b{font-family:var(--fc);font-size:30px;color:var(--navy);font-variant-numeric:tabular-nums}
+.participant-stats .stat span{font-size:9px}
+.participant-columns{grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr)}
+.participant-match{grid-template-columns:38px minmax(0,1fr) auto;gap:8px}
+.participant-match-right{text-align:right;white-space:nowrap}
+.participant-match-right>small{display:block;font-size:9px;font-weight:800;letter-spacing:.5px;margin-top:2px}
+.compare-scope{margin-top:10px}
+.comparison-content{margin-top:12px}
+.compare-summary{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:13px 8px;margin-bottom:10px;text-align:center}
+.compare-side{display:grid;gap:2px;min-width:0}
+.compare-side>b{font-size:12px;overflow-wrap:anywhere}
+.compare-side .participant-link,.compare-head .participant-link{color:#fff}
+.compare-side strong,.compare-total strong{font-family:var(--fc);font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
+.compare-side small,.compare-total small{font-size:9px;letter-spacing:.7px;color:#b9cbd0;text-transform:uppercase}
+.compare-total{display:grid;gap:2px;padding:0 10px;border-left:1px solid rgba(255,255,255,.2);border-right:1px solid rgba(255,255,255,.2)}
+.compare-grid{border:1px solid var(--line);margin-bottom:12px;font-variant-numeric:tabular-nums}
+.compare-head,.compare-metric{display:grid;grid-template-columns:minmax(90px,1.2fr) repeat(2,minmax(55px,1fr));gap:6px;align-items:center;padding:8px}
+.compare-head{background:var(--soft);font-size:9px;font-weight:800;letter-spacing:.4px}
+.compare-head b{text-align:right;overflow-wrap:anywhere}
+.compare-metric{border-top:1px solid var(--line);font-size:12px}
+.compare-metric span{color:var(--muted)}
+.compare-metric b{text-align:right;font-family:var(--fc);font-size:18px}
+.compare-games{margin-top:10px}
+.history-note{font-size:11px;margin:0 0 10px;padding:8px 10px}
+@media(max-width:820px){.participant-columns{grid-template-columns:1fr}}
+@media(max-width:600px){
+ .participant-hero{padding:14px;gap:12px}.participant-crest{width:48px;height:48px;font-size:17px}.participant-hero-main h2{font-size:24px}
+ .participant-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.participant-stats .stat:nth-child(3){border-right:0}.participant-stats .stat:nth-child(n+4){border-top:1px solid var(--line)}
+ .participant-match{grid-template-columns:30px minmax(0,1fr) auto;gap:5px}.participant-match .result-teams{font-size:12px}.participant-match .result-teams small{font-size:9px}.participant-match .result-score{font-size:17px}
+ .compare-head,.compare-metric{grid-template-columns:minmax(78px,1fr) repeat(2,minmax(48px,.8fr));gap:4px;padding:7px 5px}.compare-head{font-size:8px}.compare-metric{font-size:11px}.compare-metric b{font-size:16px}
+}
