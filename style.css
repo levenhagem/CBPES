@@ -818,40 +818,47 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 @media(max-width:850px){.table.cbpes-liga-pro-table{min-width:580px}.table.cbpes-liga-pro-mini{min-width:0}}
 
 
-/* Liga Pro v2: electric-blue dominance, uniform rows, LED classification zones.
-   Restore original theme by reverting the scoped Liga Pro overrides. */
+/* Liga Pro v3 — match-card palette: deep navy with electric-blue light.
+   Single LED strip per zone (no overlapping border and pseudo-element). */
 .table.cbpes-liga-pro-table{
-  background:#073a89!important;border-color:#2485ff!important;
-  border-top:3px solid #2c9dff!important;
-  box-shadow:0 2px 18px rgba(19,110,255,.14);
+  background:linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;
+  color:#fff!important;
+  border:1px solid #1754a3!important;
+  border-top:3px solid #328cff!important;
+  box-shadow:0 3px 14px rgba(4,35,91,.16);
 }
 .table.cbpes-liga-pro-table thead,
 .table.cbpes-liga-pro-table th{
-  background:#0751ae!important;color:#f3faff!important;
-  border-bottom-color:#329bff!important;
+  background:rgba(5,20,55,.58)!important;
+  color:#b9d9ff!important;
+  border-bottom:1px solid rgba(95,164,255,.38)!important;
 }
 .table.cbpes-liga-pro-table tbody tr,
 .table.cbpes-liga-pro-table tbody tr:nth-child(odd),
 .table.cbpes-liga-pro-table tbody tr:nth-child(even){
-  background:#0860bc!important;
+  background:transparent!important;
 }
-.table.cbpes-liga-pro-table tbody tr:hover{background:#0b74d7!important}
+.table.cbpes-liga-pro-table tbody tr:hover{
+  background:rgba(44,137,255,.20)!important;
+}
 .table.cbpes-liga-pro-table td{
-  border-bottom:1px solid rgba(174,217,255,.20)!important;
+  background:transparent!important;
+  border-bottom:1px solid rgba(132,188,255,.18)!important;
+  color:#fff!important;
 }
 .table.cbpes-liga-pro-table td.cbpes-zone-position{
-  position:relative;border-left:4px solid var(--zone-color,transparent)!important;
-  box-shadow:inset 5px 0 8px -6px var(--zone-color,transparent);
+  position:relative;
+  border-left:0!important;
+  box-shadow:none!important;
   text-shadow:none;
 }
 .table.cbpes-liga-pro-table td.cbpes-zone-position::before{
   content:"";position:absolute;pointer-events:none;
-  left:0;top:12%;bottom:12%;width:4px;
+  left:0;top:12%;bottom:12%;width:3px;
   background:var(--zone-color,transparent);
-  box-shadow:0 0 5px 1px var(--zone-color,transparent),0 0 12px 2px var(--zone-color,transparent);
+  box-shadow:0 0 6px 1px var(--zone-color,transparent),0 0 13px 2px var(--zone-color,transparent);
 }
 .table.cbpes-liga-pro-table .table-coach,
-.table.cbpes-liga-pro-table .coach-link{color:#d1eaff!important}
-.table.cbpes-liga-pro-table .cbpes-zone-legend{color:#dceeff}
-.table.cbpes-liga-pro-table .cbpes-form-dot.pending{background:#8cb7e1}
+.table.cbpes-liga-pro-table .coach-link{color:#b9d9ff!important}
+.table.cbpes-liga-pro-table .cbpes-form-dot.pending{background:#698cb6}
 @media(prefers-reduced-motion:reduce){.table.cbpes-liga-pro-table *{transition:none!important}}
