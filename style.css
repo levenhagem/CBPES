@@ -1442,3 +1442,20 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   line-height:1.05!important;
   text-transform:uppercase!important;
 }
+
+
+/* Fonte fornecida para o título da Liga PRO, sem afetar a tabela ou a navbar.
+   Disponibilize o arquivo em /fonts/squadra-light.otf no deploy. */
+@font-face{
+  font-family:"Squadra CBPES";
+  src:url("./fonts/squadra-light.otf") format("opentype");
+  font-style:normal;
+  font-weight:300;
+  font-display:swap;
+}
+#table[data-liga-pro="true"] #tableCompetitionName{
+  font-family:"Squadra CBPES","Arial",sans-serif!important;
+  font-weight:300!important;
+  font-stretch:normal!important;
+  letter-spacing:.25px!important;
+}
