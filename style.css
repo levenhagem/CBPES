@@ -1460,6 +1460,20 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   letter-spacing:.25px!important;
 }
 
+/* Nova versão Squadra Medium enviada pelo usuário. */
+@font-face{
+  font-family:"Squadra Medium CBPES";
+  src:url("/squadra-medium.otf") format("opentype");
+  font-style:normal;
+  font-weight:500;
+  font-display:swap;
+}
+#table[data-liga-pro="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName{
+  font-family:"Squadra Medium CBPES","Squadra CBPES",sans-serif!important;
+  font-weight:500!important;
+}
+
 /* Força a fonte apenas no título da Liga Pro, mesmo após troca de fase. */
 body.cbpes-liga-pro-page #tableCompetitionName,
 #table[data-liga-pro="true"] .cbpes-competition-heading #tableCompetitionName{
@@ -1468,3 +1482,7 @@ body.cbpes-liga-pro-page #tableCompetitionName,
   font-style:normal!important;
   font-synthesis:none;
 }
+
+/* Prioridade final: título Liga Pro em Squadra Medium. */
+#table[data-liga-pro="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Squadra Medium CBPES","Squadra CBPES",sans-serif!important;font-weight:500!important}
