@@ -135,11 +135,11 @@ function renderTable() {
   const selectedEdition=editions.find(e=>String(e.id)===String(selectedWeeklyTable));
   const selectedCompetition=competitions.find(c=>String(c.id)===String(selectedEdition?.competition_id));
   const selectedWeekly=(D.weeklies||[]).find(w=>String(w.id)===String(selectedWeeklyTable));
-  const isMaster=/copa\\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
+  const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   let masterNotice=$('copaMasterDrawNotice');
   if(!masterNotice){masterNotice=document.createElement('div');masterNotice.id='copaMasterDrawNotice';masterNotice.className='copa-master-draw-notice';$('tableCompetition').insertAdjacentElement('afterend',masterNotice);}
   masterNotice.textContent='SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.';
-  masterNotice.hidden=!isMaster;
+  masterNotice.hidden=true;
   $('tableCompetition').innerHTML = editions.map(e=>`<option value="${e.id}" ${selectedWeeklyTable===e.id?'selected':''}>${esc((competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)}</option>`).join('') || '<option value="current">Nenhuma competição cadastrada</option>';
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
@@ -222,8 +222,8 @@ function renderTable() {
     html=ms.length?heading('PARTIDAS DA COMPETIÇÃO')+rs.map(r=>heading(esc(roundLabel(r).toUpperCase()))+ms.filter(m=>String(m.round_id)===String(r.id)).map(m=>matchRow(m,true)).join('')).join('')+ms.filter(m=>!m.round_id).map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida vinculada a esta edição.');
     pill=ms.filter(m=>m.played).length+' PARTIDAS DISPUTADAS';
   }
-  const isCopaMaster=/copa\\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
-  const drawNotice='';
+  const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
+  const drawNotice=isCopaMaster?'<div class="copa-master-draw-notice">SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.</div>':'';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = pill.toUpperCase(); $('fullTable').innerHTML = drawNotice+html;
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
