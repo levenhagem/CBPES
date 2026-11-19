@@ -687,3 +687,43 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #table select#tableCompetition,
 #table .competition-select-wrap select#tableCompetition,
 #table .competition-select-wrap > .competition-native-select{display:none!important;appearance:none!important;position:absolute!important;left:-9999px!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;visibility:hidden!important}
+
+
+/* Liga Pro — identidade azul elétrico e azul-marinho inspirada no escudo oficial.
+   Aplicada somente aos cartões de partidas identificados como Liga Pro. */
+.cbpes-match.cbpes-match-liga-pro,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:
+    radial-gradient(ellipse 75% 150% at 102% -35%,rgba(61,160,255,.38),transparent 65%),
+    linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;
+  color:#fff!important;
+  border:1px solid #1754a3!important;
+  border-left:4px solid #328cff!important;
+}
+.cbpes-match.cbpes-match-liga-pro:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:180px;height:180px;right:-58px;top:-82px;
+  border:24px solid rgba(70,155,255,.12);border-radius:50%;
+  transform:rotate(-23deg) skewX(-15deg);
+}
+.cbpes-match.cbpes-match-liga-pro:after{
+  content:"";position:absolute;pointer-events:none;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,#1274ff 0 22%,transparent 22% 42%,#66baff 42% 70%,transparent 70%);
+}
+.cbpes-match.cbpes-match-liga-pro .cbpes-team-name,
+.cbpes-match.cbpes-match-liga-pro .coach-link,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro .cbpes-team-name,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro .coach-link{
+  color:#fff!important;
+}
+.cbpes-match.cbpes-match-liga-pro .cbpes-match-category,
+.cbpes-match.cbpes-match-liga-pro .match-date,
+.cbpes-match.cbpes-match-liga-pro .cbpes-match-team small,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro .cbpes-match-category,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro .match-date,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-liga-pro .cbpes-match-team small{
+  color:#b9d9ff!important;opacity:1;
+}
+.cbpes-match.cbpes-match-liga-pro .cbpes-match-score{color:#fff!important;text-shadow:0 1px 8px rgba(0,0,0,.15)}
+.cbpes-match.cbpes-match-liga-pro .cbpes-match-details span{color:#b9d9ff!important}
