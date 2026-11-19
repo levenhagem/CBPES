@@ -1119,3 +1119,34 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-team-name{
 }
 #table .round-switcher>.phase-arrow:first-child{justify-self:start}
 #table .round-switcher>.phase-arrow:last-child{justify-self:end}
+
+
+/* Todas as competições: aproximar os clubes do placar sem deslocar o placar. */
+#table .cbpes-match-main,
+#table .cbpes-results-panel .cbpes-match-main,
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;
+  gap:5px!important;
+}
+#table .cbpes-match-main>.cbpes-match-team.home{
+  align-items:flex-end!important;
+}
+#table .cbpes-match-main>.cbpes-match-team.away{
+  align-items:flex-start!important;
+}
+#table .cbpes-match-main .cbpes-match-score{
+  text-align:center!important;
+  white-space:nowrap;
+}
+#table .cbpes-match-main .cbpes-match-club,
+#table .cbpes-match-main .cbpes-match-club-text{
+  min-width:0;
+}
+@media(max-width:620px){
+  #table .cbpes-match-main,
+  #table .cbpes-results-panel .cbpes-match-main,
+  body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
+    grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr)!important;
+    gap:3px!important;
+  }
+}
