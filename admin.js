@@ -156,8 +156,9 @@ async function generateEditionGroupRounds(){
     if(size<2 || (size&(size-1))!==0)return say('No mata-mata direto, use 2, 4, 8, 16 ou 32 participantes. Para outras quantidades, configure fases e vagas manualmente.',false);
     const ids=roster.slice().sort((a,b)=>a.slot-b.slot).map(x=>x.participant_id);
     const pairs=[];for(let i=0;i<ids.length;i+=2)pairs.push([ids[i],ids[i+1]]);
-    fixturesByRound.push(pairs.map(([home_id,away_id])=>({home_id,away_id,group_name:null,leg:1})));
-    if(legs===2)fixturesByRound.push(pairs.map(([home_id,away_id])=>({home_id:away_id,away_id:home_id,group_name:null,leg:2})));
+    const fixtures=pairs.map(([home_id,away_id])=>({home_id,away_id,group_name:null,leg:1}));
+    if(legs===2)fixtures.push(...pairs.map(([home_id,away_id])=>({home_id:away_id,away_id:home_id,group_name:null,leg:2})));
+    fixturesByRound.push(fixtures);
   } else if(format==='league'){
     const ids=roster.slice().sort((a,b)=>a.slot-b.slot).map(x=>x.participant_id);
     const schedule=roundRobin(ids);
@@ -170,13 +171,13 @@ async function generateEditionGroupRounds(){
     if(legs===2)schedule.push(...schedule.map(round=>round.map(([h,a])=>[a,h])));
     schedule.forEach((round,i)=>{if(!fixturesByRound[i])fixturesByRound[i]=[];round.forEach(([h,a])=>fixturesByRound[i].push({home_id:h,away_id:a,group_name:g}));});
   }
-  const phase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(editionId)&&p.phase_type===(format==='knockout'?'knockout':format==='league'?'groups':'groups'));
+  const phase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(editionId)&&p.phase_type===(format==='knockout'?'knockout':'groups'));
   const base=D.rounds.length?Math.max(...D.rounds.map(r=>Number(r.number)||0)):0;
-  const rounds=fixturesByRound.map((_,i)=>({number:base+i+1,stage:format==='knockout'?'mata':format==='league'?'liga':'grupos',name:(format==='knockout'?'Mata-mata — Jogo ':format==='league'?'Liga — Rodada ':'Fase de grupos — Rodada ')+(i+1),official_edition_id:editionId,phase_id:phase?.id||null}));
+  const rounds=fixturesByRound.map((_,i)=>({number:base+i+1,stage:format==='knockout'?'mata':format==='league'?'liga':'grupos',name:(format==='knockout'?'Mata-mata — '+(size===2?'Final':size===4?'Semifinais':size===8?'Quartas de final':size===16?'Oitavas de final':'Primeira fase'):format==='league'?'Liga — Rodada '+(i+1):'Fase de grupos — Rodada '+(i+1)),official_edition_id:editionId,phase_id:phase?.id||null}));
   const count=fixturesByRound.reduce((n,x)=>n+x.length,0);
   if(!confirm('Gerar '+rounds.length+' rodadas e '+count+' partidas somente para '+edition.name+'?'))return;
   const rr=await sb.from('rounds').insert(rounds).select();if(rr.error)return say(traduz(rr.error),false);
-  const fixtures=fixturesByRound.flatMap((round,i)=>round.map(x=>({...x,round_id:rr.data[i].id,official_edition_id:editionId,category:'official'})));
+  const fixtures=fixturesByRound.flatMap((round,i)=>round.map(x=>({...x,round_id:rr.data[i].id,official_edition_id:editionId,category:'official',leg:x.leg||1})));
   const result=await sb.from('matches').insert(fixtures);
   if(result.error){await sb.from('rounds').delete().in('id',rr.data.map(x=>x.id));return say(traduz(result.error),false);}
   say('Calendário criado: '+rounds.length+' rodadas e '+fixtures.length+' partidas nesta edição.',true);await refresh();
@@ -220,6 +221,7 @@ function vCamp() {
   const groupQual=Math.max(1,Math.min(groupSize,Number(editionConfig.qualifiers_per_group)||2));
   const groupLegs=Number(editionConfig.legs)===2?2:1;
   const groups=Array.from({length:groupCount},(_,i)=>String.fromCharCode(65+i));
+  const availableEditionTeams=D.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
   const groupManager='<div class="card cbpes-format-manager" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E PARTICIPANTES DA EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Escolha o sistema de disputa desta edição. Cada edição tem seus próprios participantes, fases e calendário.</p><div class="inline" style="margin-bottom:14px;align-items:end">'+
   '<div class="field"><label>SISTEMA DE DISPUTA</label><select id="editionFormat"><option value="groups" '+(editionFormat==='groups'?'selected':'')+'>Grupos + eliminatórias</option><option value="league" '+(editionFormat==='league'?'selected':'')+'>Pontos corridos</option><option value="knockout" '+(editionFormat==='knockout'?'selected':'')+'>Mata-mata direto</option><option value="custom" '+(editionFormat==='custom'?'selected':'')+'>Personalizado (fases manuais)</option></select></div>'+
   '<div class="field" data-format-groups><label>NÚMERO DE GRUPOS</label><input id="editionGroupCount" type="number" min="1" max="16" value="'+groupCount+'" style="width:90px"></div>'+
@@ -227,7 +229,7 @@ function vCamp() {
   '<div class="field" data-format-groups><label>CLASSIFICADOS POR GRUPO</label><input id="editionGroupQual" type="number" min="1" max="'+groupSize+'" value="'+groupQual+'" style="width:90px"></div>'+
   '<div class="field"><label>CONFRONTOS</label><select id="editionGroupLegs"><option value="1" '+(groupLegs===1?'selected':'')+'>Jogo único / turno único</option><option value="2" '+(groupLegs===2?'selected':'')+'>Ida e volta</option></select></div>'+
   '<button class="btn" id="applyEditionGroupConfig">SALVAR FORMATO</button></div>'+
-  '<p class="admin-help" id="editionFormatHint"></p><div class="cols3" style="gap:10px">'+groups.map(g=>'<div class="card"><div class="cardhead"><h2>'+(editionFormat==='groups'?'GRUPO '+g:'PARTICIPANTES')+'</h2></div><div class="cardbody">'+Array.from({length:groupSize},(_,i)=>i+1).map(slot=>{const current=registered.find(x=>x.group_name===g&&Number(x.slot)===slot);return '<div class="field" style="margin-bottom:8px"><label>TIME '+slot+'</label><select data-group-slot="'+g+'-'+slot+'"><option value="">Selecionar time</option>'+D.participants.map(p=>'<option value="'+p.id+'" '+(String(current?.participant_id)===String(p.id)?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>'}).join('')+'</div></div>').join('')+'</div><div class="inline" style="margin-top:12px"><button class="btn primary" id="saveOfficialGroups">SALVAR PARTICIPANTES</button><span class="admin-help">'+registered.length+'/'+(groupCount*groupSize)+' times inscritos'+(editionFormat==='groups'?' • '+(groupCount*groupQual)+' vagas de classificação':'')+'</span></div></div></div>';
+  '<p class="admin-help" id="editionFormatHint"></p><div class="inline" style="margin-bottom:12px;align-items:end"><div class="field"><label>BUSCAR TIME CADASTRADO</label><input id="editionTeamSearch" placeholder="Digite o nome do time" autocomplete="off"></div><button class="btn" id="refreshEditionTeams">ATUALIZAR LISTA DE TIMES</button><span class="admin-help">'+availableEditionTeams.length+' times cadastrados (ativos e inativos)</span></div><div class="cols3" style="gap:10px">'+groups.map(g=>'<div class="card"><div class="cardhead"><h2>'+(editionFormat==='groups'?'GRUPO '+g:'PARTICIPANTES')+'</h2></div><div class="cardbody">'+Array.from({length:groupSize},(_,i)=>i+1).map(slot=>{const current=registered.find(x=>x.group_name===g&&Number(x.slot)===slot);return '<div class="field" style="margin-bottom:8px"><label>TIME '+slot+'</label><select data-group-slot="'+g+'-'+slot+'"><option value="">Selecionar time</option>'+availableEditionTeams.map(p=>'<option value="'+p.id+'" '+(String(current?.participant_id)===String(p.id)?'selected':'')+'>'+esc(p.name)+(p.participates_in_competition===false?' (inativo)':'')+'</option>').join('')+'</select></div>'}).join('')+'</div></div>').join('')+'</div><div class="inline" style="margin-top:12px"><button class="btn primary" id="saveOfficialGroups">SALVAR PARTICIPANTES</button><span class="admin-help">'+registered.length+'/'+(groupCount*groupSize)+' times inscritos'+(editionFormat==='groups'?' • '+(groupCount*groupQual)+' vagas de classificação':'')+'</span></div></div></div>';
   const legacyPhasePanel=legacyPhases.length?'<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES ANTIGAS SEM EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Associe cada fase já criada à edição selecionada acima.</p>'+legacyPhases.map(p=>'<div class="player"><b>'+esc(p.name)+'</b><button class="btn sm" data-link-legacy-phase="'+p.id+'">VINCULAR À EDIÇÃO</button></div>').join('')+'</div></div>':'';
   const currentEdition=oe.find(e=>String(e.id)===String(selOfficialEdition));
   const currentCompetition=oc.find(c=>String(c.id)===String(currentEdition?.competition_id));
@@ -245,8 +247,10 @@ function vCamp() {
   if($('phaseEditionPick'))$('phaseEditionPick').onchange=e=>{selOfficialEdition=e.target.value;vCamp();};
   const syncEditionFormat=()=>{const f=$('editionFormat')?.value;document.querySelectorAll('[data-format-groups]').forEach(el=>el.style.display=f==='groups'?'':'none');const hint=$('editionFormatHint');if(hint)hint.textContent=({groups:'Grupos com classificação independente. Adicione as eliminatórias em Fases da Competição.',league:'Tabela única por pontos. O calendário gera todos contra todos.',knockout:'Gera a primeira etapa eliminatória; as fases seguintes podem ser criadas no gerenciador de fases.',custom:'Monte as fases manualmente abaixo. O calendário automático não será gerado.'})[f]||'';};
   if($('editionFormat')){$('editionFormat').onchange=syncEditionFormat;syncEditionFormat();}
+  if($('editionTeamSearch'))$('editionTeamSearch').oninput=e=>{const q=e.target.value.trim().toLocaleLowerCase('pt-BR');document.querySelectorAll('[data-group-slot]').forEach(sel=>{const current=sel.value;[...sel.options].forEach(opt=>{opt.hidden=!!q&&!!opt.value&&!opt.textContent.toLocaleLowerCase('pt-BR').includes(q)&&opt.value!==current;});});};
   $('view').onclick = async e => {
     if(e.target.id==='backOfficialList'){officialWorkspaceOpen=false;selOfficialEdition=null;draft=null;vCamp();return;}
+    if(e.target.id==='refreshEditionTeams'){await refresh();return;}
     if(e.target.id==='generateEditionGroups'){await generateEditionGroupRounds();return;}
     if(e.target.id==='applyEditionGroupConfig'){
       const format=$('editionFormat').value,groups=format==='groups'?Number($('editionGroupCount').value):1,size=Number($('editionGroupSize').value),qual=format==='groups'?Number($('editionGroupQual').value):1,legs=Number($('editionGroupLegs').value);
