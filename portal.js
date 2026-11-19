@@ -29,7 +29,7 @@ const coachLink = name => name ? `<a class="coach-link" href="#coach/${encodeURI
 const zonesFor = (type,weeklyId,phaseId) => (D?.standingsZones||[]).filter(z=>z.competition_type===type && (type==='official'||String(z.weekly_id)===String(weeklyId)) && (phaseId ? String(z.phase_id)===String(phaseId) : !z.phase_id)).sort((a,b)=>a.position_start-b.position_start);
 const zoneAt = (zones,position) => zones.find(z=>position>=z.position_start&&position<=z.position_end);
 const zoneLegend = zones => zones.length ? `<div class="cbpes-zone-legend">${zones.map(z=>`<span><i style="background:${z.color}"></i>${esc(z.label)}</span>`).join('')}</div>` : '';
-const miniTable = st => `<table class="table"><thead><tr><th>TIME</th><th>PTS</th><th>J</th><th>SG</th></tr></thead><tbody>${st.map((x, i) => `<tr><td><span class="pos">${i + 1}</span><span class="club">${participantLink(x.p)}<small class="table-coach">${x.p.coach_name ? coachLink(x.p.coach_name) : ''}</small></span></td><td class="points">${x.pts}</td><td>${x.j}</td><td>${sgf(x.sg)}</td></tr>`).join('')}</tbody></table>`;
+const miniTable = (st,zones=[]) => `<table class="table"><thead><tr><th>TIME</th><th>PTS</th><th>J</th><th>SG</th></tr></thead><tbody>${st.map((x, i) => `<tr style="--zone-color:${zoneAt(zones,i+1)?.color||'transparent'}"><td class="cbpes-zone-position"><span class="pos">${i + 1}</span><span class="club">${participantLink(x.p)}<small class="table-coach">${x.p.coach_name ? coachLink(x.p.coach_name) : ''}</small></span></td><td class="points">${x.pts}</td><td>${x.j}</td><td>${sgf(x.sg)}</td></tr>`).join('')}</tbody></table>${zoneLegend(zones)}`;
 const fullTbl = (st,zones=[]) => st.length ? `<table class="table"><thead><tr><th>POS.</th><th>TIME</th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th></tr></thead><tbody>${st.map((x, i) => `<tr style="--zone-color:${zoneAt(zones,i+1)?.color||'transparent'}"><td class="cbpes-zone-position">${i + 1}</td><td class="club">${participantLink(x.p)}<small class="table-coach">${x.p.coach_name ? coachLink(x.p.coach_name) : ''}</small></td><td class="points">${x.pts}</td><td>${x.j}</td><td>${x.v}</td><td>${x.e}</td><td>${x.d}</td><td>${x.gp}</td><td>${x.gc}</td><td>${sgf(x.sg)}</td><td>${x.ap}</td></tr>`).join('')}</tbody></table>${zoneLegend(zones)}` : empty('Sem participantes nesta tabela.');
 const heading = t => `<div class="eyebrow" style="margin:12px 0 4px">${t}</div>`;
 
@@ -103,7 +103,7 @@ function renderHome() {
   const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
   const proStanding=standings(proTeams,proLeagueMatches);
   $('miniTitle').textContent=proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO';
-  $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6))+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
+  $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6),zonesFor('official',null,(D.phases||[]).find(p=>String(p.official_edition_id)===String(proEdition.id)&&p.counts_in_standings)?.id))+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
   const proRecent=latestPlayed(proMatches).slice(0,3);
   $('leagueRecent').innerHTML=proRecent.length?proRecent.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida da Liga Pro finalizada.');
   const proPlayed=proMatches.filter(m=>m.played);
