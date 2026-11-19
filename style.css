@@ -628,3 +628,6 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* Copa Master: understated draw announcement */
 .copa-master-draw-notice{margin:4px 0 18px;padding:14px 16px;background:#f5f7f8;border-left:3px solid #123844;color:#123844;font-size:14px;font-weight:800;letter-spacing:.025em;line-height:1.5;text-align:center}
+
+/* Copa Master: centered notice in place of empty group and round panels */
+.copa-master-draw-centered{display:flex;align-items:center;justify-content:center;min-height:130px;margin:0;background:transparent;border:0;text-align:center;font-size:15px;font-weight:800;letter-spacing:.035em}
