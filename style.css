@@ -727,3 +727,36 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 }
 .cbpes-match.cbpes-match-liga-pro .cbpes-match-score{color:#fff!important;text-shadow:0 1px 8px rgba(0,0,0,.15)}
 .cbpes-match.cbpes-match-liga-pro .cbpes-match-details span{color:#b9d9ff!important}
+
+
+/* Semanal CBPES — verde profundo, detalhes dourados discretos.
+   Especificidade superior ao tema neutro das competições. */
+.cbpes-match.cbpes-match-semanal,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:linear-gradient(115deg,#073b2b 0%,#0a553b 55%,#126e49 100%)!important;
+  color:#fff!important;
+  border:1px solid #246b4d!important;
+  border-left:3px solid #c5a45a!important;
+}
+.cbpes-match.cbpes-match-semanal:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:155px;height:155px;right:-75px;top:-92px;
+  border:1px solid rgba(212,180,100,.15);border-radius:50%;
+}
+.cbpes-match.cbpes-match-semanal:after{
+  content:"";position:absolute;pointer-events:none;
+  left:0;bottom:0;width:52px;height:2px;background:#c5a45a;
+}
+.cbpes-match.cbpes-match-semanal .cbpes-team-name,
+.cbpes-match.cbpes-match-semanal .coach-link,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .cbpes-team-name,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .coach-link{color:#fff!important}
+.cbpes-match.cbpes-match-semanal .cbpes-match-category,
+.cbpes-match.cbpes-match-semanal .match-date,
+.cbpes-match.cbpes-match-semanal .cbpes-match-team small,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .cbpes-match-category,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .match-date,
+.cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .cbpes-match-team small{color:#d2e7dc!important;opacity:1}
+.cbpes-match.cbpes-match-semanal .cbpes-match-score{color:#fff!important}
+.cbpes-match.cbpes-match-semanal .cbpes-match-details span{color:#dfc889!important}
