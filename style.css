@@ -649,3 +649,9 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 /* Center the selected competition name on the standings page (desktop and mobile) */
 #table #tableCompetition{text-align:center;text-align-last:center}
 #table #tableCompetition option{text-align:center}
+
+/* Reliable centered selected competition label; native dropdown remains usable */
+#table .competition-select-wrap{position:relative;width:100%;max-width:420px;margin-bottom:14px}
+#table .competition-select-wrap #tableCompetition{display:block;width:100%!important;max-width:none!important;margin:0!important;color:transparent!important;text-shadow:none!important;cursor:pointer}
+#table .competition-select-wrap #tableCompetition option{color:var(--navy,#062b36)!important;text-align:left}
+#table .competition-select-centered{position:absolute;inset:0 30px 0 30px;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;color:var(--navy,#062b36);font:inherit;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
