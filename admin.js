@@ -185,10 +185,33 @@ async function generateEditionGroupRounds(){
 function vCamp() {
   const ocList=D.officialCompetitions||[], oeList=D.officialEditions||[];
   if(!officialWorkspaceOpen){
-    $('view').innerHTML='<div class="card"><div class="cardhead"><h2>GERENCIAR COMPETIÇÕES</h2></div><div class="cardbody"><p class="admin-help">Escolha a edição que deseja editar. Cada edição possui suas próprias fases, times, grupos e partidas.</p>'+ocList.map(c=>'<div class="card" style="margin:12px 0"><div class="cardhead"><h2>'+esc(c.name)+'</h2></div><div class="cardbody"><div class="inline" style="margin-bottom:12px"><div class="field" style="flex:1"><label>URL DO LOGOTIPO</label><input type="url" data-comp-logo="'+esc(c.id)+'" value="'+esc(c.logo_url||'')+'" placeholder="https://exemplo.com/logo.png"></div><button class="btn primary sm" data-save-comp-logo="'+esc(c.id)+'">SALVAR LOGO</button></div>'+oeList.filter(e=>e.competition_id===c.id).map(e=>'<div class="player"><div><b>'+esc(e.name)+'</b><small>'+esc(e.season||'')+'</small></div><button class="btn primary sm" data-open-edition="'+e.id+'">GERENCIAR EDIÇÃO</button></div>').join('')+'</div></div>').join('')+'<div class="inline" style="margin-top:16px"><div class="field"><label>NOVA COMPETIÇÃO</label><input id="newOfficialComp" placeholder="Ex.: Copa CBPES"></div><button class="btn primary" id="createOfficialComp">CRIAR</button></div><div class="inline" style="margin-top:12px"><div class="field"><label>COMPETIÇÃO</label><select id="newOfficialCompPick">'+opts(ocList,null,x=>x.name)+'</select></div><div class="field"><label>NOVA EDIÇÃO</label><input id="newOfficialEdition" placeholder="Ex.: 2027"></div><div class="field"><label>TEMPORADA</label><input id="newOfficialSeason" placeholder="2027"></div><button class="btn primary" id="createOfficialEdition">CRIAR EDIÇÃO</button></div></div></div>';
+    $('view').innerHTML='<div class="card"><div class="cardhead"><h2>GERENCIAR COMPETIÇÕES</h2></div><div class="cardbody"><p class="admin-help">Escolha a edição que deseja editar. Cada edição possui suas próprias fases, times, grupos e partidas.</p>'+ocList.map(c=>'<div class="card" style="margin:12px 0"><div class="cardhead"><h2>'+esc(c.name)+'</h2></div><div class="cardbody"><div class="inline" style="margin-bottom:12px"><div class="field" style="flex:1"><label>URL DO LOGOTIPO</label><input type="url" data-comp-logo="'+esc(c.id)+'" value="'+esc(c.logo_url||'')+'" placeholder="https://exemplo.com/logo.png"><label style="margin-top:9px">OU ENVIAR IMAGEM (PNG, JPG, WEBP OU SVG, ATÉ 2 MB)</label><input type="file" data-comp-logo-file="'+esc(c.id)+'" accept=".png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml"><small>Escolha um arquivo ou use uma URL. O upload salva o logotipo automaticamente.</small></div><button class="btn primary sm" data-save-comp-logo="'+esc(c.id)+'">SALVAR LOGO</button></div>'+oeList.filter(e=>e.competition_id===c.id).map(e=>'<div class="player"><div><b>'+esc(e.name)+'</b><small>'+esc(e.season||'')+'</small></div><button class="btn primary sm" data-open-edition="'+e.id+'">GERENCIAR EDIÇÃO</button></div>').join('')+'</div></div>').join('')+'<div class="inline" style="margin-top:16px"><div class="field"><label>NOVA COMPETIÇÃO</label><input id="newOfficialComp" placeholder="Ex.: Copa CBPES"></div><button class="btn primary" id="createOfficialComp">CRIAR</button></div><div class="inline" style="margin-top:12px"><div class="field"><label>COMPETIÇÃO</label><select id="newOfficialCompPick">'+opts(ocList,null,x=>x.name)+'</select></div><div class="field"><label>NOVA EDIÇÃO</label><input id="newOfficialEdition" placeholder="Ex.: 2027"></div><div class="field"><label>TEMPORADA</label><input id="newOfficialSeason" placeholder="2027"></div><button class="btn primary" id="createOfficialEdition">CRIAR EDIÇÃO</button></div></div></div>';
     $('view').onclick=async e=>{
       const open=e.target.closest('[data-open-edition]');if(open){selOfficialEdition=open.dataset.openEdition;officialWorkspaceOpen=true;draft=null;vCamp();return;}
-      const logoBtn=e.target.closest('[data-save-comp-logo]');if(logoBtn){const id=logoBtn.dataset.saveCompLogo;const url=$('view').querySelector('[data-comp-logo="'+id+'"]').value.trim();if(url && !/^https:\/\//i.test(url))return say('Use uma URL HTTPS válida.',false);return run(sb.from('official_competitions').update({logo_url:url||null}).eq('id',id),'Logotipo atualizado.');}
+      const logoBtn=e.target.closest('[data-save-comp-logo]');if(logoBtn){
+        const id=logoBtn.dataset.saveCompLogo;
+        const urlInput=$('view').querySelector('[data-comp-logo="'+id+'"]');
+        const fileInput=$('view').querySelector('[data-comp-logo-file="'+id+'"]');
+        const file=fileInput?.files?.[0], input=urlInput?.value.trim()||'';
+        if(file&&input&&input!==String((ocList.find(c=>String(c.id)===String(id))||{}).logo_url||''))return say('Escolha o arquivo OU informe uma nova URL.',false);
+        let url=input;
+        if(file){
+          const svg=file.type==='image/svg+xml'||/\.svg$/i.test(file.name);
+          if((!['image/png','image/jpeg','image/webp'].includes(file.type)&&!svg)||file.size>2097152)return say('Use PNG, JPG, WebP ou SVG de até 2 MB.',false);
+          let uploadFile=file;
+          try{if(svg)uploadFile=validateCrestSvg(await file.text());}catch(err){return say(err.message||'SVG inválido.',false);}
+          const ext=svg?'svg':file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+          const path='competitions/'+id+'/'+Date.now()+'.'+ext;
+          logoBtn.disabled=true;logoBtn.textContent='ENVIANDO...';
+          try{
+            const {error}=await sb.storage.from('club-crests').upload(path,uploadFile,{contentType:svg?'image/svg+xml':file.type,upsert:false});
+            if(error)return say('Falha no upload: '+traduz(error),false);
+            url=sb.storage.from('club-crests').getPublicUrl(path).data.publicUrl;
+          }finally{logoBtn.disabled=false;logoBtn.textContent='SALVAR LOGO';}
+        }
+        if(url&&!/^https:\/\//i.test(url))return say('Use uma URL HTTPS válida.',false);
+        return run(sb.from('official_competitions').update({logo_url:url||null}).eq('id',id),url?'Logotipo salvo.':'Logotipo removido.');
+      }
       if(e.target.id==='createOfficialComp'){const name=$('newOfficialComp').value.trim();if(!name)return say('Informe o nome da competição.',false);return run(sb.from('official_competitions').insert({name}),'Competição criada.');}
       if(e.target.id==='createOfficialEdition'){const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');}
     };return;
