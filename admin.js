@@ -143,23 +143,31 @@ async function zoneAction(d,type,weeklyId) {
  return run(sb.from('standings_zones').insert({...payload,competition_type:type,weekly_id:type==='weekly'?weeklyId:null,phase_id:phaseId}),'Zona adicionada.');
 }
 async function generateEditionGroupRounds(){
-  const editionId=selOfficialEdition, roster=(D.officialGroupTeams||[]).filter(x=>String(x.official_edition_id)===String(editionId));
-  if(roster.length!==12||new Set(roster.map(x=>x.participant_id)).size!==12)return say('Salve 12 times distribuídos em 4 grupos antes de gerar rodadas.',false);
-  if(D.rounds.some(r=>String(r.official_edition_id)===String(editionId))||D.matches.some(m=>String(m.official_edition_id)===String(editionId)))return say('Esta edição já possui calendário. Não é possível gerar novamente sem revisar as partidas existentes.',false);
+  const editionId=selOfficialEdition, edition=(D.officialEditions||[]).find(e=>String(e.id)===String(editionId));
+  if(!edition)return say('Selecione uma edição.',false);
+  const cfg=edition.group_config||{}, groupCount=Math.max(1,Math.min(16,Number(cfg.groups)||4)),size=Math.max(2,Math.min(32,Number(cfg.teams_per_group)||3)),legs=Number(cfg.legs)===2?2:1;
+  const roster=(D.officialGroupTeams||[]).filter(x=>String(x.official_edition_id)===String(editionId));
+  if(roster.length!==groupCount*size||new Set(roster.map(x=>x.participant_id)).size!==roster.length)return say('Salve todos os times dos grupos antes de gerar o calendário.',false);
+  if(D.rounds.some(r=>String(r.official_edition_id)===String(editionId))||D.matches.some(m=>String(m.official_edition_id)===String(editionId)))return say('Esta edição já possui calendário. Revise as partidas existentes.',false);
+  const groups=Array.from({length:groupCount},(_,i)=>String.fromCharCode(65+i));
+  const fixturesByRound=[];
+  for(const g of groups){
+    const ids=roster.filter(x=>x.group_name===g).sort((a,b)=>a.slot-b.slot).map(x=>x.participant_id);
+    if(ids.length!==size)return say('Grupo '+g+' incompleto.',false);
+    const schedule=roundRobin(ids);
+    if(legs===2)schedule.push(...schedule.map(round=>round.map(([h,a])=>[a,h])));
+    schedule.forEach((round,i)=>{if(!fixturesByRound[i])fixturesByRound[i]=[];round.forEach(([h,a])=>fixturesByRound[i].push({home_id:h,away_id:a,group_name:g}));});
+  }
   const phase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(editionId)&&p.phase_type==='groups');
   const base=D.rounds.length?Math.max(...D.rounds.map(r=>Number(r.number)||0)):0;
-  const rounds=Array.from({length:3},(_,i)=>({number:base+i+1,stage:'grupos',name:'Fase de grupos — Rodada '+(i+1),official_edition_id:editionId,phase_id:phase?.id||null}));
-  if(!confirm('Gerar 3 rodadas para os 4 grupos da edição selecionada? Esta ação criará 12 partidas somente nesta edição.'))return;
+  const rounds=fixturesByRound.map((_,i)=>({number:base+i+1,stage:'grupos',name:'Fase de grupos — Rodada '+(i+1),official_edition_id:editionId,phase_id:phase?.id||null}));
+  const count=fixturesByRound.reduce((n,x)=>n+x.length,0);
+  if(!confirm('Gerar '+rounds.length+' rodadas e '+count+' partidas somente para '+edition.name+'?'))return;
   const rr=await sb.from('rounds').insert(rounds).select();if(rr.error)return say(traduz(rr.error),false);
-  const fixtures=[];
-  for(const g of ['A','B','C','D']){
-    const ids=roster.filter(x=>x.group_name===g).sort((a,b)=>a.slot-b.slot).map(x=>x.participant_id);
-    if(ids.length!==3)return say('Grupo '+g+' incompleto.',false);
-    [[0,1],[1,2],[2,0]].forEach(([h,a],i)=>fixtures.push({home_id:ids[h],away_id:ids[a],round_id:rr.data[i].id,official_edition_id:editionId,category:'official',group_name:g}));
-  }
+  const fixtures=fixturesByRound.flatMap((round,i)=>round.map(x=>({...x,round_id:rr.data[i].id,official_edition_id:editionId,category:'official'})));
   const result=await sb.from('matches').insert(fixtures);
   if(result.error){await sb.from('rounds').delete().in('id',rr.data.map(x=>x.id));return say(traduz(result.error),false);}
-  say('Calendário criado: 3 rodadas e 12 partidas, somente nesta edição.',true);await refresh();
+  say('Calendário criado: '+rounds.length+' rodadas e '+fixtures.length+' partidas nesta edição.',true);await refresh();
 }
 function vCamp() {
   const ocList=D.officialCompetitions||[], oeList=D.officialEditions||[];
