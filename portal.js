@@ -118,7 +118,16 @@ function renderGames() {
   const official = ms.filter(m => m.category === 'official' && m.round);
   const friendlies = ms.filter(m => m.category === 'friendly');
   const weeklies = ms.filter(m => m.category === 'weekly');
-  const rs = [...new Map(official.map(m => [m.round.id, m.round])).values()].sort((a,b) => filter === 'next' ? a.number-b.number : b.number-a.number);
+  const latestResultInRound = round => official.filter(m=>String(m.round_id)===String(round.id)&&m.played).reduce((latest,m)=>{
+    const stamp=m.updated_at||m.played_on||m.date||'';
+    return stamp>latest?stamp:latest;
+  },'');
+  const rs = [...new Map(official.map(m => [m.round.id, m.round])).values()].sort((a,b) => {
+    if(filter==='next')return a.number-b.number;
+    const aLatest=latestResultInRound(a), bLatest=latestResultInRound(b);
+    if(aLatest!==bLatest)return bLatest.localeCompare(aLatest);
+    return b.number-a.number;
+  });
   const officialHtml = rs.map(r => {
     const list = official.filter(m => m.round_id === r.id).sort((a,b)=>byDisplayOrder(a,b)||(a.seq||0)-(b.seq||0));
     if (!list.length) return '';
