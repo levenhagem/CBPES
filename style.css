@@ -631,3 +631,17 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* Copa Master: centered notice in place of empty group and round panels */
 .copa-master-draw-centered{display:flex;align-items:center;justify-content:center;min-height:130px;margin:0;background:transparent;border:0;text-align:center;font-size:15px;font-weight:800;letter-spacing:.035em}
+
+/* Desktop: remove redundant horizontal scrollbars from standings tables.
+   Mobile retains horizontal scrolling for wide tables. */
+@media (min-width: 901px){
+  #table .scroll,
+  #table .cbpes-standings-panel > .scroll,
+  #table .cbpes-standings-panel > .table,
+  #table .cbpes-competition-neutral .scroll{
+    overflow-x:visible!important;
+    scrollbar-width:none;
+  }
+  #table .scroll::-webkit-scrollbar,
+  #table .cbpes-standings-panel > .scroll::-webkit-scrollbar{display:none}
+}
