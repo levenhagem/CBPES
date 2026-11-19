@@ -372,6 +372,20 @@ async function setFeatured(id,checked){
   if(error)return say(traduz(error),false);
   say(checked?'Partida fixada na página inicial.':'Destaque removido.',true);await refresh();
 }
+function championTagControl(m) {
+  const selected = String(m.champion_team_id || '');
+  return `<label class="admin-help">TAG CAMPEÃO <select data-champion="${m.id}" aria-label="Selecionar campeão da partida"><option value="">Sem tag</option><option value="${m.home_id}" ${selected===String(m.home_id)?'selected':''}>${esc(m.home.name)}</option><option value="${m.away_id}" ${selected===String(m.away_id)?'selected':''}>${esc(m.away.name)}</option></select></label>`;
+}
+async function setChampionTag(id, teamId) {
+  const m = D.matches.find(x=>String(x.id)===String(id));
+  if(!m)return say('Partida não encontrada.',false);
+  if(teamId && ![String(m.home_id),String(m.away_id)].includes(String(teamId)))return say('Selecione um dos times da partida.',false);
+  if(teamId && !m.played)return say('Registre o resultado antes de marcar o campeão.',false);
+  const {error}=await sb.from('matches').update({champion_team_id:teamId||null}).eq('id',id);
+  if(error)return say(traduz(error),false);
+  say(teamId?'Tag CAMPEÃO ativada.':'Tag CAMPEÃO removida.',true);
+  await refresh();
+}
 const displaySort = (a,b) => (a.display_order == null ? 1000000 : a.display_order) - (b.display_order == null ? 1000000 : b.display_order);
 const displayOrderControls = (m,list) => `<span class="cbpes-order-controls"><button class="btn sm" data-order-up="${m.id}" title="Subir partida" ${list[0]?.id===m.id?'disabled':''}>↑</button><button class="btn sm" data-order-down="${m.id}" title="Descer partida" ${list[list.length-1]?.id===m.id?'disabled':''}>↓</button></span>`;
 async function moveMatchOrder(id,direction,list) {
@@ -384,7 +398,7 @@ async function moveMatchOrder(id,direction,list) {
 function rowHTML(m) {
   const ko = !!(m.round && m.round.stage === 'mata'), id = m.id;
   return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${id}" data-m="${id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${id}" data-m="${id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
-   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${matchExtras(m)}${featuredToggle(m)}${displayOrderControls(m,curMatches())}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
+   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${matchExtras(m)}${featuredToggle(m)}${championTagControl(m)}${displayOrderControls(m,curMatches())}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
 }
 function goalsPanel(m) {
   const ev = D.events.filter(e => e.match_id === m.id), pls = D.players.filter(p => [m.home_id, m.away_id].includes(p.participant_id));
@@ -397,6 +411,7 @@ function goalsPanel(m) {
    ${pls.length ? `<div class="inline" style="margin-top:8px"><div class="field"><label>Gol</label><select id="gs">${optsP(false)}</select></div><div class="field"><label>Assistência</label><select id="ga">${optsP(true)}</select></div><button class="btn sm primary" data-ga="${m.id}">ADICIONAR GOL</button></div>` : '<div class="empty">Cadastre jogadores desses times na aba Times.</div>'}</div>`;
 }
 document.addEventListener('change', async e=>{if(e.target.matches('[data-featured]'))await setFeatured(e.target.dataset.featured,e.target.checked);});
+document.addEventListener('change', async e=>{if(e.target.matches('[data-champion]'))await setChampionTag(e.target.dataset.champion,e.target.value);});
 function officialEditionSelect(){
  const ed=D.officialEditions||[], comps=D.officialCompetitions||[];
  if(!selOfficialEdition||!ed.some(e=>e.id===selOfficialEdition))selOfficialEdition=ed[0]?.id||null;
