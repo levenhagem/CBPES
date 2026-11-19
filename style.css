@@ -1417,3 +1417,16 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
 #nav .nav-competition-menu a:focus-visible small{
   color:#ffffff!important;
 }
+
+
+/* Cabeçalho da tabela: nome e emblema da competição selecionada. */
+#table .cbpes-competition-heading{display:flex;align-items:center;gap:13px;min-width:0}
+#table .cbpes-competition-emblem{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 46px;
+  width:46px;height:46px;border:1px solid #3387df;border-radius:10px;
+  background:linear-gradient(145deg,#083776,#0b64be);color:#fff;
+  font:800 15px var(--fc);letter-spacing:.4px;overflow:hidden;
+}
+#table .cbpes-competition-emblem img{width:100%;height:100%;object-fit:contain}
+#table .cbpes-competition-heading>span:last-child{min-width:0}
+@media(max-width:620px){#table .cbpes-competition-emblem{width:38px;height:38px;flex-basis:38px}#table .cbpes-competition-heading{gap:9px}}
