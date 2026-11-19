@@ -801,7 +801,7 @@ function vTimes() {
   $('openTeamImporter').onclick=()=>{importDialog.showModal();$('teamImportNames').focus();};
   $('cancelTeamImport').onclick=()=>importDialog.close();
   importDialog.onclick=e=>{if(e.target===importDialog)importDialog.close();};
-  const getImportNames=()=>[...new Map($('teamImportNames').value.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean).map(x=>[x.toLocaleLowerCase('pt-BR'),x])).values()];
+  const getImportNames=()=>[...new Map($('teamImportNames').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(x=>[x.toLocaleLowerCase('pt-BR'),x])).values()];
   $('teamImportNames').oninput=()=>{const names=getImportNames();const existing=new Set(D.participants.map(p=>p.name.trim().toLocaleLowerCase('pt-BR')));$('teamImportPreview').textContent=names.filter(n=>!existing.has(n.toLocaleLowerCase('pt-BR'))).length+' novos times • '+names.filter(n=>existing.has(n.toLocaleLowerCase('pt-BR'))).length+' já cadastrados';};
   $('submitTeamImport').onclick=async()=>{
     const names=getImportNames(),existing=new Set(D.participants.map(p=>p.name.trim().toLocaleLowerCase('pt-BR'))),fresh=names.filter(n=>!existing.has(n.toLocaleLowerCase('pt-BR')));
