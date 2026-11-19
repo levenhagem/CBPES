@@ -682,3 +682,8 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* Only the centered custom competition picker is visible */
 #table .competition-select-wrap > select#tableCompetition.competition-native-select{display:none!important;visibility:hidden!important;position:absolute!important;width:0!important;height:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;opacity:0!important}
+
+/* Definitively hide the original select: only the centered custom picker is visible */
+#table select#tableCompetition,
+#table .competition-select-wrap select#tableCompetition,
+#table .competition-select-wrap > .competition-native-select{display:none!important;appearance:none!important;position:absolute!important;left:-9999px!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;visibility:hidden!important}
