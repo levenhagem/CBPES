@@ -760,3 +760,10 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-competition-neutral .cbpes-match.cbpes-match-semanal .cbpes-match-team small{color:#d2e7dc!important;opacity:1}
 .cbpes-match.cbpes-match-semanal .cbpes-match-score{color:#fff!important}
 .cbpes-match.cbpes-match-semanal .cbpes-match-details span{color:#dfc889!important}
+
+
+/* Liga Pro e Semanal — sombra suave apenas nos escudos das partidas. */
+.cbpes-match.cbpes-match-liga-pro .cbpes-match-team .cbpes-crest,
+.cbpes-match.cbpes-match-semanal .cbpes-match-team .cbpes-crest{
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.30));
+}
