@@ -151,8 +151,12 @@ function renderTable() {
   masterNotice.textContent='SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.';
   masterNotice.hidden=true;
   $('tableCompetition').innerHTML = editions.map(e=>`<option value="${e.id}" ${selectedWeeklyTable===e.id?'selected':''}>${esc((competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)}</option>`).join('') || '<option value="current">Nenhuma competição cadastrada</option>';
-  const centeredCompetition=$('tableCompetitionCentered');
-  if(centeredCompetition)centeredCompetition.textContent=$('tableCompetition').selectedOptions[0]?.textContent||'';
+  const compButton=$('tableCompetitionButton'), compOptions=$('tableCompetitionOptions');
+  if(compButton&&compOptions){
+    compButton.textContent=$('tableCompetition').selectedOptions[0]?.textContent||'Selecionar competição';
+    compOptions.innerHTML=[...$('tableCompetition').options].map(o=>'<button type="button" role="option" aria-selected="'+(o.selected?'true':'false')+'" data-competition-id="'+esc(o.value)+'">'+esc(o.textContent)+'</button>').join('');
+    compOptions.hidden=true;compButton.setAttribute('aria-expanded','false');
+  }
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
@@ -245,6 +249,13 @@ function renderTable() {
 }
 const tableCompetitionSelect = $('tableCompetition');
 if (tableCompetitionSelect) tableCompetitionSelect.onchange = e => { selectedWeeklyTable=e.target.value; renderTable(); };
+const competitionPickerButton=$('tableCompetitionButton'), competitionPickerOptions=$('tableCompetitionOptions');
+if(competitionPickerButton&&competitionPickerOptions){
+  competitionPickerButton.onclick=()=>{const open=competitionPickerOptions.hidden;competitionPickerOptions.hidden=!open;competitionPickerButton.setAttribute('aria-expanded',String(open));};
+  competitionPickerOptions.onclick=e=>{const option=e.target.closest('[data-competition-id]');if(!option)return;selectedWeeklyTable=option.dataset.competitionId;renderTable();};
+  document.addEventListener('click',e=>{if(!e.target.closest('.competition-select-wrap')){competitionPickerOptions.hidden=true;competitionPickerButton.setAttribute('aria-expanded','false');}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){competitionPickerOptions.hidden=true;competitionPickerButton.setAttribute('aria-expanded','false');}});
+}
 
 function renderWeeklies() {
   const root = $('weeklyList');
