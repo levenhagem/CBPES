@@ -1306,3 +1306,32 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   display:flex;align-items:center;justify-content:center;
   width:100%;height:100%;
 }
+
+
+/* Tabelas de todas as competições: o contexto já identifica o torneio. */
+#table .cbpes-results-panel .cbpes-match-top .cbpes-match-category{
+  display:none!important;
+}
+#table .cbpes-results-panel .cbpes-match-top:has(.cbpes-match-category:only-child){
+  display:none!important;
+}
+#table .cbpes-results-panel .cbpes-match-top{
+  min-height:0!important;
+}
+#table .cbpes-results-panel .cbpes-match-top .match-date{
+  font-size:10px;
+}
+/* Sem placar antes do apito inicial; mantém zeros reais em partidas jogadas. */
+#table .cbpes-results-panel .cbpes-match:not(:has(.cbpes-score-inline)) .cbpes-score-stacked{visibility:hidden}
+#table .cbpes-results-panel .cbpes-score-stacked>span{
+  font-size:24px;
+}
+/* Técnico em segundo plano, mais leve e menor que o nome do clube. */
+#table .cbpes-results-panel .cbpes-match-club-text small,
+#table .cbpes-results-panel .cbpes-match-club-text small .coach-link{
+  font-size:10px!important;
+  font-weight:300!important;
+  letter-spacing:.1px;
+  line-height:1.3!important;
+  color:#c5d5e8!important;
+}
