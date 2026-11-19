@@ -176,7 +176,7 @@ function renderTable() {
   const selectedWeekly=(D.weeklies||[]).find(w=>String(w.id)===String(selectedWeeklyTable));
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
   document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
-  document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1)==='table' && isLigaProTable);
+  document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1).split('/')[0]==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
