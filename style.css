@@ -1293,3 +1293,16 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   height:100%!important;
   align-content:stretch!important;
 }
+
+
+/* Placar compacto: gols maiores, sem alterar o alinhamento das equipes. */
+#table .cbpes-results-panel .cbpes-match .cbpes-score-stacked{
+  font-size:24px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums;
+}
+#table .cbpes-results-panel .cbpes-match .cbpes-score-stacked>span{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
+}
