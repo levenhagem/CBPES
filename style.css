@@ -881,3 +881,107 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 }
 .cbpes-form-dot.win{background:#00e65c!important}
 .cbpes-form-dot.loss{background:#ff3048!important}
+
+
+/* CBPES public portal theme — Liga Pro navy/electric blue.
+   The header/nav/topline are intentionally excluded.
+   Revert index.html body class to restore the previous portal theme. */
+body.cbpes-portal-blue{
+  --ink:#edf5ff;--muted:#abc5e7;--line:#244d84;
+  --bg:#06142f;--white:#091e49;--soft:#102b57;--blue:#65b4ff;--navy:#dbeaff;
+  background:radial-gradient(ellipse 95% 40% at 88% 4%,#0d397a 0%,transparent 70%),#06142f;
+  color:#edf5ff;
+}
+.cbpes-portal-blue main{color:#edf5ff}
+.cbpes-portal-blue main .page-title{border-bottom-color:#28518a}
+.cbpes-portal-blue main .page-title h1,
+.cbpes-portal-blue main .cardhead h2,
+.cbpes-portal-blue main .round-switcher b,
+.cbpes-portal-blue main .stat b{color:#fff}
+.cbpes-portal-blue main .eyebrow,
+.cbpes-portal-blue main .link{color:#71baff}
+.cbpes-portal-blue main .sub,
+.cbpes-portal-blue main .table-coach{color:#b3c9e7}
+.cbpes-portal-blue main .card,
+.cbpes-portal-blue main .notice{
+  background:linear-gradient(115deg,#071b42 0%,#092859 60%,#0b3976 100%);
+  border-color:#244c84;color:#eef5ff;
+}
+.cbpes-portal-blue main .cardhead{
+  border-top-color:#328cff;border-bottom-color:#27558f;
+  background:rgba(5,19,49,.22);
+}
+.cbpes-portal-blue main .pill,
+.cbpes-portal-blue main .round-label{
+  background:#12376c;color:#b9d9ff;border-color:#3064a6;
+}
+.cbpes-portal-blue main .btn,
+.cbpes-portal-blue main .filters button,
+.cbpes-portal-blue main .phase-arrow{
+  background:#10366f;color:#e8f3ff;border-color:#3264a4;
+}
+.cbpes-portal-blue main .btn:hover,
+.cbpes-portal-blue main .filters button:hover,
+.cbpes-portal-blue main .filters button.selected{
+  background:#1553a1;color:#fff;border-color:#4c9fff;
+}
+.cbpes-portal-blue main .btn.primary{background:#1468cc;color:#fff;border-color:#388dff}
+.cbpes-portal-blue main .strip{
+  background:#091e49;border-color:#28518a;color:#eaf3ff;
+}
+.cbpes-portal-blue main .sc{border-right-color:#28518a}
+.cbpes-portal-blue main .sc:hover{background:#174278}
+.cbpes-portal-blue main .sc-meta,
+.cbpes-portal-blue main .sc-row.l span{color:#b6cce9}
+.cbpes-portal-blue main .sc-row.w span,
+.cbpes-portal-blue main .sc-row.w b{color:#fff}
+.cbpes-portal-blue main .stat{border-color:#28518a}
+.cbpes-portal-blue main .stat span{color:#b9d9ff}
+.cbpes-portal-blue main .table:not(.cbpes-liga-pro-table){color:#edf5ff}
+.cbpes-portal-blue main .table:not(.cbpes-liga-pro-table) th{
+  color:#b9d9ff;border-bottom-color:#3d85d8;
+}
+.cbpes-portal-blue main .table:not(.cbpes-liga-pro-table) td{
+  color:#edf5ff;border-bottom-color:rgba(138,184,246,.2);
+}
+.cbpes-portal-blue main .table:not(.cbpes-liga-pro-table) tbody tr:hover{
+  background:rgba(45,123,220,.14);
+}
+.cbpes-portal-blue main .table .club a,
+.cbpes-portal-blue main .table .club,
+.cbpes-portal-blue main .table .pos{color:#fff}
+.cbpes-portal-blue main .table .coach-link{color:#b9d9ff}
+.cbpes-portal-blue main .cbpes-zone-legend{color:#b9d9ff}
+.cbpes-portal-blue main .result-row{border-bottom-color:#254d82}
+.cbpes-portal-blue main .result-teams small{color:#aac6e9}
+.cbpes-portal-blue main .competition-select-button,
+.cbpes-portal-blue main .competition-select-options{
+  background:#0c2b5d;color:#fff;border-color:#3768a8;
+}
+.cbpes-portal-blue main .competition-select-options button{
+  background:#0c2b5d;color:#fff;
+}
+.cbpes-portal-blue main .competition-select-options button:hover,
+.cbpes-portal-blue main .competition-select-options button[aria-selected=true]{
+  background:#1656a4;color:#fff;
+}
+.cbpes-portal-blue main input,
+.cbpes-portal-blue main select,
+.cbpes-portal-blue main textarea{
+  background:#0c2b5d;color:#fff;border-color:#3768a8;
+}
+.cbpes-portal-blue main input::placeholder{color:#9cb9df}
+.cbpes-portal-blue main .cbpes-results-panel{border-left-color:#28518a}
+.cbpes-portal-blue main .cbpes-phase-summary{
+  background:#102e5e;border-color:#28518a;color:#eaf3ff;
+}
+.cbpes-portal-blue main .champ{background:#0a316b;color:#fff;border-left-color:#328cff}
+.cbpes-portal-blue main .notice{border-left-color:#328cff}
+.cbpes-portal-blue footer{color:#a9c7e9;border-top-color:#244d84}
+/* Keep already-branded fixtures (Liga Pro, Semanal) in their original palettes. */
+.cbpes-portal-blue main .cbpes-match.cbpes-match-liga-pro{
+  background:radial-gradient(ellipse 75% 150% at 102% -35%,rgba(61,160,255,.38),transparent 65%),linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;
+}
+.cbpes-portal-blue main .cbpes-match.cbpes-match-semanal{
+  background:linear-gradient(115deg,#073b2b 0%,#0a553b 55%,#126e49 100%)!important;
+}
