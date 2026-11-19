@@ -439,13 +439,23 @@ async function setFeatured(id,checked){
   if(error)return say(traduz(error),false);
   say(checked?'Partida fixada na página inicial.':'Destaque removido.',true);await refresh();
 }
+function canAssignChampionTag(m) {
+  if(!m || m.category==='friendly')return false;
+  const round=m.category==='weekly'
+    ? (D.weeklyRounds||[]).find(r=>String(r.id)===String(m.weekly_round_id))
+    : (D.rounds||[]).find(r=>String(r.id)===String(m.round_id));
+  const phase=(D.phases||[]).find(p=>String(p.id)===String(round?.phase_id));
+  return phase?.phase_type==='final';
+}
 function championTagControl(m) {
+  if(!canAssignChampionTag(m))return '';
   const selected = String(m.champion_team_id || '');
   return `<label class="admin-help">TAG CAMPEÃO <select data-champion="${m.id}" aria-label="Selecionar campeão da partida"><option value="">Sem tag</option><option value="${m.home_id}" ${selected===String(m.home_id)?'selected':''}>${esc(m.home.name)}</option><option value="${m.away_id}" ${selected===String(m.away_id)?'selected':''}>${esc(m.away.name)}</option></select></label>`;
 }
 async function setChampionTag(id, teamId) {
   const m = D.matches.find(x=>String(x.id)===String(id));
   if(!m)return say('Partida não encontrada.',false);
+  if(!canAssignChampionTag(m))return say('A tag CAMPEÃO só pode ser atribuída a partidas de final.',false);
   if(teamId && ![String(m.home_id),String(m.away_id)].includes(String(teamId)))return say('Selecione um dos times da partida.',false);
   if(teamId && !m.played)return say('Registre o resultado antes de marcar o campeão.',false);
   const {error}=await sb.from('matches').update({champion_team_id:teamId||null}).eq('id',id);
