@@ -193,9 +193,18 @@ function vCamp() {
   const duplicateManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>DUPLICAR FORMATO DE COMPETIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Copie as fases, a ordem, as regras dos playoffs e os modelos de confrontos de uma edição existente para uma nova edição. Não copia partidas, resultados, classificação ou participantes.</p><div class="inline"><div class="field"><label>EDIÇÃO DE ORIGEM</label><select id="cloneSourceEdition">'+oe.map(e=>'<option value="'+e.id+'">'+esc((oc.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)+'</option>').join('')+'</select></div><div class="field"><label>COMPETIÇÃO DE DESTINO</label><select id="cloneDestinationComp">'+opts(oc,null,x=>x.name)+'</select></div><div class="field"><label>NOME DA NOVA EDIÇÃO</label><input id="cloneEditionName" placeholder="Ex.: Liga Pro 2027/28"></div><div class="field"><label>TEMPORADA</label><input id="cloneEditionSeason" placeholder="2027/28"></div><button class="btn primary" id="cloneCompetitionFormat">DUPLICAR FORMATO</button></div></div></div>';
   const phaseEditionPicker='<div class="card" style="margin-bottom:12px"><div class="cardbody"><div class="field"><label>EDIÇÃO PARA GERENCIAR AS FASES</label><select id="phaseEditionPick">'+oe.map(e=>'<option value="'+e.id+'" '+(e.id===selOfficialEdition?'selected':'')+'>'+esc((oc.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)+'</option>').join('')+'</select></div></div></div>';
   const registered=(D.officialGroupTeams||[]).filter(x=>String(x.official_edition_id)===String(selOfficialEdition));
-  const groups=['A','B','C','D'];
-  const groupManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>PARTICIPANTES E GRUPOS DA EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Selecione 12 times cadastrados e distribua em 4 grupos de 3. Cada equipe pode participar de apenas um grupo nesta edição. As inscrições são independentes das demais competições.</p>'+
-    (selOfficialEdition?'<div class="cols3" style="gap:10px">'+groups.map(g=>'<div class="card"><div class="cardhead"><h2>GRUPO '+g+'</h2></div><div class="cardbody">'+[1,2,3].map(slot=>{const current=registered.find(x=>x.group_name===g&&Number(x.slot)===slot);return '<div class="field" style="margin-bottom:8px"><label>TIME '+slot+'</label><select data-group-slot="'+g+'-'+slot+'"><option value="">Selecionar time</option>'+D.participants.map(p=>'<option value="'+p.id+'" '+(String(current?.participant_id)===String(p.id)?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>'}).join('')+'</div></div>').join('')+'</div><div class="inline" style="margin-top:12px"><button class="btn primary" id="saveOfficialGroups">SALVAR GRUPOS</button><span class="admin-help">'+registered.length+'/12 times inscritos</span></div>':'<p class="admin-help">Crie ou selecione uma edição para organizar seus grupos.</p>')+'</div></div>';
+  const editionConfig=oe.find(e=>String(e.id)===String(selOfficialEdition))?.group_config||{};
+  const groupCount=Math.max(1,Math.min(16,Number(editionConfig.groups)||4));
+  const groupSize=Math.max(2,Math.min(32,Number(editionConfig.teams_per_group)||3));
+  const groupQual=Math.max(1,Math.min(groupSize,Number(editionConfig.qualifiers_per_group)||2));
+  const groupLegs=Number(editionConfig.legs)===2?2:1;
+  const groups=Array.from({length:groupCount},(_,i)=>String.fromCharCode(65+i));
+  const groupManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>PARTICIPANTES E GRUPOS DA EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Configure o formato da edição e distribua manualmente os times. As alterações ficam restritas a esta edição.</p><div class="inline" style="margin-bottom:14px">'+
+  '<div class="field"><label>NÚMERO DE GRUPOS</label><input id="editionGroupCount" type="number" min="1" max="16" value="'+groupCount+'" style="width:90px"></div>'+
+  '<div class="field"><label>TIMES POR GRUPO</label><input id="editionGroupSize" type="number" min="2" max="32" value="'+groupSize+'" style="width:90px"></div>'+
+  '<div class="field"><label>CLASSIFICADOS POR GRUPO</label><input id="editionGroupQual" type="number" min="1" max="'+groupSize+'" value="'+groupQual+'" style="width:90px"></div>'+
+  '<div class="field"><label>CONFRONTOS</label><select id="editionGroupLegs"><option value="1" '+(groupLegs===1?'selected':'')+'>Turno único</option><option value="2" '+(groupLegs===2?'selected':'')+'>Ida e volta</option></select></div>'+
+  '<button class="btn" id="applyEditionGroupConfig">APLICAR FORMATO</button></div><div class="cols3" style="gap:10px">'+groups.map(g=>'<div class="card"><div class="cardhead"><h2>GRUPO '+g+'</h2></div><div class="cardbody">'+Array.from({length:groupSize},(_,i)=>i+1).map(slot=>{const current=registered.find(x=>x.group_name===g&&Number(x.slot)===slot);return '<div class="field" style="margin-bottom:8px"><label>TIME '+slot+'</label><select data-group-slot="'+g+'-'+slot+'"><option value="">Selecionar time</option>'+D.participants.map(p=>'<option value="'+p.id+'" '+(String(current?.participant_id)===String(p.id)?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>'}).join('')+'</div></div>').join('')+'</div><div class="inline" style="margin-top:12px"><button class="btn primary" id="saveOfficialGroups">SALVAR GRUPOS</button><span class="admin-help">'+registered.length+'/'+(groupCount*groupSize)+' times inscritos • '+(groupCount*groupQual)+' vagas de classificação</span></div></div></div>';
   const legacyPhasePanel=legacyPhases.length?'<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES ANTIGAS SEM EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Associe cada fase já criada à edição selecionada acima.</p>'+legacyPhases.map(p=>'<div class="player"><b>'+esc(p.name)+'</b><button class="btn sm" data-link-legacy-phase="'+p.id+'">VINCULAR À EDIÇÃO</button></div>').join('')+'</div></div>':'';
   const currentEdition=oe.find(e=>String(e.id)===String(selOfficialEdition));
   const currentCompetition=oc.find(c=>String(c.id)===String(currentEdition?.competition_id));
@@ -208,25 +217,33 @@ function vCamp() {
   $('view').onchange = e => {
     if (e.target.name === 'fmt') { capture(); const keep = { ptsW: draft.config.ptsW, ptsD: draft.config.ptsD }; draft.format = e.target.value; draft.config = { ...keep, ...PRESETS[draft.format].cfg }; vCamp(); }
   };
-  $('createOfficialComp').onclick=()=>{const name=$('newOfficialComp').value.trim();if(!name)return say('Informe o nome da competição.',false);return run(sb.from('official_competitions').insert({name}),'Competição criada.');};
-  $('createOfficialEdition').onclick=()=>{const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');};
-  $('phaseEditionPick').onchange=e=>{selOfficialEdition=e.target.value;vCamp();};
+  if($('createOfficialComp'))$('createOfficialComp').onclick=()=>{const name=$('newOfficialComp').value.trim();if(!name)return say('Informe o nome da competição.',false);return run(sb.from('official_competitions').insert({name}),'Competição criada.');};
+  if($('createOfficialEdition'))$('createOfficialEdition').onclick=()=>{const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');};
+  if($('phaseEditionPick'))$('phaseEditionPick').onchange=e=>{selOfficialEdition=e.target.value;vCamp();};
   $('view').onclick = async e => {
     if(e.target.id==='backOfficialList'){officialWorkspaceOpen=false;selOfficialEdition=null;draft=null;vCamp();return;}
     if(e.target.id==='generateEditionGroups'){await generateEditionGroupRounds();return;}
+    if(e.target.id==='applyEditionGroupConfig'){
+      const groups=Number($('editionGroupCount').value),size=Number($('editionGroupSize').value),qual=Number($('editionGroupQual').value),legs=Number($('editionGroupLegs').value);
+      if(!Number.isInteger(groups)||groups<1||groups>16||!Number.isInteger(size)||size<2||size>32||!Number.isInteger(qual)||qual<1||qual>size)return say('Formato inválido. Confira os números de grupos, times e classificados.',false);
+      if(D.matches.some(m=>String(m.official_edition_id)===String(selOfficialEdition)))return say('Esta edição já possui jogos. Não altere o formato dos grupos após gerar o calendário.',false);
+      const upd=await sb.from('official_editions').update({group_config:{groups,teams_per_group:size,qualifiers_per_group:qual,legs}}).eq('id',selOfficialEdition);
+      if(upd.error)return say(traduz(upd.error),false);
+      say('Formato dos grupos atualizado.',true);await refresh();return;
+    }
     if(e.target.id==='saveOfficialGroups'){
       if(!selOfficialEdition)return say('Selecione uma edição.',false);
       const fields=[...$('view').querySelectorAll('[data-group-slot]')];
       const chosen=fields.map(f=>({participant_id:f.value,group_name:f.dataset.groupSlot.split('-')[0],slot:Number(f.dataset.groupSlot.split('-')[1])})).filter(x=>x.participant_id);
-      if(chosen.length!==12)return say('Preencha os 12 times: 3 em cada um dos 4 grupos.',false);
-      if(new Set(chosen.map(x=>x.participant_id)).size!==12)return say('Um time não pode aparecer em mais de um grupo.',false);
+      if(chosen.length!==groupCount*groupSize)return say('Preencha todos os '+(groupCount*groupSize)+' times antes de salvar.',false);
+      if(new Set(chosen.map(x=>x.participant_id)).size!==chosen.length)return say('Um time não pode aparecer em mais de um grupo.',false);
       const old=registered.map(x=>({participant_id:String(x.participant_id),group_name:x.group_name,slot:Number(x.slot)}));
       if(D.matches.some(m=>String(m.official_edition_id)===String(selOfficialEdition)) && JSON.stringify(old.sort((a,b)=>a.group_name.localeCompare(b.group_name)||a.slot-b.slot))!==JSON.stringify(chosen.sort((a,b)=>a.group_name.localeCompare(b.group_name)||a.slot-b.slot)) && !confirm('Esta edição já possui partidas. Alterar os grupos não altera confrontos existentes. Continuar?'))return;
       const del=await sb.from('official_group_teams').delete().eq('official_edition_id',selOfficialEdition);
       if(del.error)return say(traduz(del.error),false);
       const ins=await sb.from('official_group_teams').insert(chosen.map(x=>({...x,official_edition_id:selOfficialEdition})));
       if(ins.error)return say(traduz(ins.error),false);
-      say('Quatro grupos salvos com sucesso.',true);await refresh();return;
+      say('Grupos salvos com sucesso.',true);await refresh();return;
     }
     const link=e.target.closest('[data-link-legacy-phase]');
     if(link){
