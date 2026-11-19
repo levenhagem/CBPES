@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
 let selOfficialEdition = null;
+let officialWorkspaceOpen = false;
 let D, tab = 'camp', selRound = null, openPart = null, openGoals = null, draft = null, firstLoad = true, importRows = [], selWeekly = null, weeklyDraft = null; 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -141,7 +142,36 @@ async function zoneAction(d,type,weeklyId) {
  if(old)return run(sb.from('standings_zones').update(payload).eq('id',old.id),'Zona atualizada.');
  return run(sb.from('standings_zones').insert({...payload,competition_type:type,weekly_id:type==='weekly'?weeklyId:null,phase_id:phaseId}),'Zona adicionada.');
 }
+async function generateEditionGroupRounds(){
+  const editionId=selOfficialEdition, roster=(D.officialGroupTeams||[]).filter(x=>String(x.official_edition_id)===String(editionId));
+  if(roster.length!==12||new Set(roster.map(x=>x.participant_id)).size!==12)return say('Salve 12 times distribuídos em 4 grupos antes de gerar rodadas.',false);
+  if(D.rounds.some(r=>String(r.official_edition_id)===String(editionId))||D.matches.some(m=>String(m.official_edition_id)===String(editionId)))return say('Esta edição já possui calendário. Não é possível gerar novamente sem revisar as partidas existentes.',false);
+  const phase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(editionId)&&p.phase_type==='groups');
+  const base=D.rounds.length?Math.max(...D.rounds.map(r=>Number(r.number)||0)):0;
+  const rounds=Array.from({length:3},(_,i)=>({number:base+i+1,stage:'grupos',name:'Fase de grupos — Rodada '+(i+1),official_edition_id:editionId,phase_id:phase?.id||null}));
+  if(!confirm('Gerar 3 rodadas para os 4 grupos da edição selecionada? Esta ação criará 12 partidas somente nesta edição.'))return;
+  const rr=await sb.from('rounds').insert(rounds).select();if(rr.error)return say(traduz(rr.error),false);
+  const fixtures=[];
+  for(const g of ['A','B','C','D']){
+    const ids=roster.filter(x=>x.group_name===g).sort((a,b)=>a.slot-b.slot).map(x=>x.participant_id);
+    if(ids.length!==3)return say('Grupo '+g+' incompleto.',false);
+    [[0,1],[1,2],[2,0]].forEach(([h,a],i)=>fixtures.push({home_id:ids[h],away_id:ids[a],round_id:rr.data[i].id,official_edition_id:editionId,category:'official',group_name:g}));
+  }
+  const result=await sb.from('matches').insert(fixtures);
+  if(result.error){await sb.from('rounds').delete().in('id',rr.data.map(x=>x.id));return say(traduz(result.error),false);}
+  say('Calendário criado: 3 rodadas e 12 partidas, somente nesta edição.',true);await refresh();
+}
 function vCamp() {
+  const ocList=D.officialCompetitions||[], oeList=D.officialEditions||[];
+  if(!officialWorkspaceOpen){
+    $('view').innerHTML='<div class="card"><div class="cardhead"><h2>GERENCIAR COMPETIÇÕES</h2></div><div class="cardbody"><p class="admin-help">Escolha a edição que deseja editar. Cada edição possui suas próprias fases, times, grupos e partidas.</p>'+ocList.map(c=>'<div class="card" style="margin:12px 0"><div class="cardhead"><h2>'+esc(c.name)+'</h2></div><div class="cardbody">'+oeList.filter(e=>e.competition_id===c.id).map(e=>'<div class="player"><div><b>'+esc(e.name)+'</b><small>'+esc(e.season||'')+'</small></div><button class="btn primary sm" data-open-edition="'+e.id+'">GERENCIAR EDIÇÃO</button></div>').join('')+'</div></div>').join('')+'<div class="inline" style="margin-top:16px"><div class="field"><label>NOVA COMPETIÇÃO</label><input id="newOfficialComp" placeholder="Ex.: Copa CBPES"></div><button class="btn primary" id="createOfficialComp">CRIAR</button></div><div class="inline" style="margin-top:12px"><div class="field"><label>COMPETIÇÃO</label><select id="newOfficialCompPick">'+opts(ocList,null,x=>x.name)+'</select></div><div class="field"><label>NOVA EDIÇÃO</label><input id="newOfficialEdition" placeholder="Ex.: 2027"></div><div class="field"><label>TEMPORADA</label><input id="newOfficialSeason" placeholder="2027"></div><button class="btn primary" id="createOfficialEdition">CRIAR EDIÇÃO</button></div></div></div>';
+    $('view').onclick=async e=>{
+      const open=e.target.closest('[data-open-edition]');if(open){selOfficialEdition=open.dataset.openEdition;officialWorkspaceOpen=true;draft=null;vCamp();return;}
+      if(e.target.id==='createOfficialComp'){const name=$('newOfficialComp').value.trim();if(!name)return say('Informe o nome da competição.',false);return run(sb.from('official_competitions').insert({name}),'Competição criada.');}
+      if(e.target.id==='createOfficialEdition'){const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');}
+    };return;
+  }
+  if(!oeList.some(e=>String(e.id)===String(selOfficialEdition))){officialWorkspaceOpen=false;return vCamp();}
   const S = D.settings;
   if (!draft) draft = { name: S.name, season: S.season, format: S.format, config: { ...cfgOf(S) } };
   const c = draft.config, t = PRESETS[draft.format].type;
@@ -167,22 +197,18 @@ function vCamp() {
   const groupManager='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>PARTICIPANTES E GRUPOS DA EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Selecione 12 times cadastrados e distribua em 4 grupos de 3. Cada equipe pode participar de apenas um grupo nesta edição. As inscrições são independentes das demais competições.</p>'+
     (selOfficialEdition?'<div class="cols3" style="gap:10px">'+groups.map(g=>'<div class="card"><div class="cardhead"><h2>GRUPO '+g+'</h2></div><div class="cardbody">'+[1,2,3].map(slot=>{const current=registered.find(x=>x.group_name===g&&Number(x.slot)===slot);return '<div class="field" style="margin-bottom:8px"><label>TIME '+slot+'</label><select data-group-slot="'+g+'-'+slot+'"><option value="">Selecionar time</option>'+D.participants.map(p=>'<option value="'+p.id+'" '+(String(current?.participant_id)===String(p.id)?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>'}).join('')+'</div></div>').join('')+'</div><div class="inline" style="margin-top:12px"><button class="btn primary" id="saveOfficialGroups">SALVAR GRUPOS</button><span class="admin-help">'+registered.length+'/12 times inscritos</span></div>':'<p class="admin-help">Crie ou selecione uma edição para organizar seus grupos.</p>')+'</div></div>';
   const legacyPhasePanel=legacyPhases.length?'<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES ANTIGAS SEM EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Associe cada fase já criada à edição selecionada acima.</p>'+legacyPhases.map(p=>'<div class="player"><b>'+esc(p.name)+'</b><button class="btn sm" data-link-legacy-phase="'+p.id+'">VINCULAR À EDIÇÃO</button></div>').join('')+'</div></div>':'';
-  $('view').innerHTML = compManager+duplicateManager+phaseEditionPicker+groupManager+legacyPhasePanel+`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
+  const currentEdition=oe.find(e=>String(e.id)===String(selOfficialEdition));
+  const currentCompetition=oc.find(c=>String(c.id)===String(currentEdition?.competition_id));
+  const workspaceHeader='<div class="card" style="margin-bottom:14px;border:2px solid var(--green)"><div class="cardbody"><button class="btn sm" id="backOfficialList">← TODAS AS COMPETIÇÕES</button><h2 style="margin:12px 0 3px">'+esc(currentCompetition?.name||'Competição')+' — '+esc(currentEdition?.name||'Edição')+'</h2><span class="admin-help">Você está editando exclusivamente esta edição. Fases, participantes, grupos e calendário abaixo pertencem a ela.</span></div></div>';
+  const safeCalendar='<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>CALENDÁRIO DESTA EDIÇÃO</h2></div><div class="cardbody"><p class="admin-help">Geração vinculada somente à edição selecionada. Não altera calendários de outras competições.</p><button class="btn primary" id="generateEditionGroups">GERAR RODADAS DOS GRUPOS</button><div style="margin-top:12px">'+D.rounds.filter(r=>String(r.official_edition_id)===String(selOfficialEdition)).map(r=>'<div class="player"><b>'+esc(r.name||'Rodada '+r.number)+'</b><small>'+D.matches.filter(m=>String(m.round_id)===String(r.id)).length+' jogos</small></div>').join('')+'</div></div></div>';
+  $('view').innerHTML = workspaceHeader+groupManager+legacyPhasePanel+`<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FORMATO E REGRAS</h2></div><div class="cardbody">
    <div class="inline" style="margin-bottom:12px">${field('NOME DO CAMPEONATO', `<input id="cn" value="${esc(draft.name)}" maxlength="60">`)}${field('TEMPORADA', `<input id="cs" value="${esc(draft.season)}" style="width:90px" maxlength="12">`)}${field('PTS VITÓRIA', `<input id="pw" type="number" min="1" max="9" value="${c.ptsW}" style="width:70px">`)}${field('PTS EMPATE', `<input id="pd" type="number" min="0" max="9" value="${c.ptsD}" style="width:70px">`)}</div>
    ${Object.entries(PRESETS).map(([k, p]) => `<label style="display:block;padding:8px 10px;border:1px solid ${k === draft.format ? 'var(--green)' : '#d9dfe2'};margin-bottom:6px;cursor:pointer"><input type="radio" name="fmt" value="${k}" ${k === draft.format ? 'checked' : ''}> <b>${p.label}</b><div class="admin-help">${p.desc}</div></label>`).join('')}
    <div class="inline" style="margin-top:10px">${o}</div>
    <div class="form-actions"><button class="btn primary" id="cSave">SALVAR CONFIGURAÇÃO</button></div></div></div>
   <div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>FASES DA COMPETIÇÃO OFICIAL</h2><button class="btn sm primary" id="opAdd">ADICIONAR FASE</button></div><div class="cardbody">${editionPhases.slice().sort((a,b)=>a.sort_order-b.sort_order).map(p=>`<div class="player"><div><b>${esc(p.name)}</b><small>${p.phase_type==='playoff'?'Playoff • '+(p.playoff_config?.direct??2)+' diretos / posições '+(p.playoff_config?.from??3)+'–'+(p.playoff_config?.to??6):(p.counts_in_standings?'Entra na classificação':'Fora da classificação')}</small></div><span>${['playoff','knockout','final'].includes(p.phase_type)?`<button class="btn sm" data-op-template="${p.id}">MODELO DE CONFRONTOS</button> `:''}${p.phase_type==='playoff'?`<button class="btn sm primary" data-op-playoff="${p.id}">GERAR PLAYOFF</button>`:''}${p.phase_type!=='playoff' && editionPhases.slice().sort((a,b)=>a.sort_order-b.sort_order).some((q,i,arr)=>q.id===p.id&&i>0&&arr[i-1].phase_type==='playoff')?`<button class="btn sm primary" data-op-advance="${p.id}">AVANÇAR VENCEDORES</button>`:''} <button class="btn sm" data-opedit="${p.id}">EDITAR</button> <button class="btn sm danger" data-opdel="${p.id}">EXCLUIR</button></span></div>`).join('')||'<div class="empty">Nenhuma fase cadastrada.</div>'}<p class="admin-help">A classificação considera somente fases classificatórias. Playoffs são gerados pela classificação e podem ser ajustados na aba Jogos; depois, use AVANÇAR VENCEDORES para montar a fase seguinte.</p></div></div>
   ${zoneManager('official',null)}
-  <div class="card"><div class="cardhead"><h2>CALENDÁRIO DE JOGOS</h2><span class="admin-help">${D.rounds.length} rodadas • ${D.matches.length} partidas • ${competitionParticipants().length} participantes ativos</span></div><div class="cardbody">
-   ${saved ? '' : '<div class="msg err">Salve a configuração antes de gerar o calendário.</div>'}
-   <label class="admin-help"><input type="checkbox" id="draw" checked> Sortear a ordem/grupos (desmarcado: ordem alfabética)</label>
-   <div class="inline" style="margin-top:10px">
-   ${t0 === 'liga' ? P('gLiga', 'GERAR CALENDÁRIO') : ''}
-   ${t0 === 'mata' ? P('gKo1', 'GERAR 1ª FASE') + P('gAdv', 'AVANÇAR FASE') : ''}
-   ${t0 === 'copa' ? P('gGrp', 'SORTEAR GRUPOS E GERAR JOGOS') + P('gKoG', 'GERAR MATA-MATA') + P('gAdv', 'AVANÇAR FASE') : ''}
-   ${P('gDel', 'APAGAR CALENDÁRIO', 'danger')}</div>
-   <p class="admin-help">Após gerar, ajuste datas na aba Rodadas e lance placares em Resultados. Mata-mata exige 2, 4, 8, 16 ou 32 times.</p></div></div>`;
+  ${safeCalendar}`;
   $('view').onchange = e => {
     if (e.target.name === 'fmt') { capture(); const keep = { ptsW: draft.config.ptsW, ptsD: draft.config.ptsD }; draft.format = e.target.value; draft.config = { ...keep, ...PRESETS[draft.format].cfg }; vCamp(); }
   };
@@ -190,6 +216,8 @@ function vCamp() {
   $('createOfficialEdition').onclick=()=>{const name=$('newOfficialEdition').value.trim(),competition_id=$('newOfficialCompPick').value;if(!name||!competition_id)return say('Escolha a competição e informe a edição.',false);return run(sb.from('official_editions').insert({competition_id,name,season:$('newOfficialSeason').value.trim()||null}),'Edição criada.');};
   $('phaseEditionPick').onchange=e=>{selOfficialEdition=e.target.value;vCamp();};
   $('view').onclick = async e => {
+    if(e.target.id==='backOfficialList'){officialWorkspaceOpen=false;selOfficialEdition=null;draft=null;vCamp();return;}
+    if(e.target.id==='generateEditionGroups'){await generateEditionGroupRounds();return;}
     if(e.target.id==='saveOfficialGroups'){
       if(!selOfficialEdition)return say('Selecione uma edição.',false);
       const fields=[...$('view').querySelectorAll('[data-group-slot]')];
