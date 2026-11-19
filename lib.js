@@ -38,6 +38,8 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 async function load() {
   const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'competition_phases', 'coach_profiles', 'coach_trophies', 'standings_zones', 'official_competitions', 'official_editions'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
+  const groupRes = await sb.from('official_group_teams').select('*');
+  if(groupRes.error && !/does not exist|schema cache|could not find/i.test(groupRes.error.message||''))throw groupRes.error;
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
   const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, phases, coachProfiles, coachTrophies, standingsZones, officialCompetitions, officialEditions] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
@@ -53,7 +55,7 @@ async function load() {
     date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
   })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, phases: phases || [], weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], standingsZones: standingsZones || [], officialCompetitions: officialCompetitions || [], officialEditions: officialEditions || [], settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, phases: phases || [], weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], standingsZones: standingsZones || [], officialCompetitions: officialCompetitions || [], officialEditions: officialEditions || [], officialGroupTeams: groupRes.data || [], settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
