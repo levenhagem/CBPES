@@ -660,3 +660,14 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #table .competition-select-wrap{width:100%;max-width:none;margin-bottom:14px}
 #table .competition-select-wrap #tableCompetition{width:100%!important;max-width:none!important}
 #table .competition-select-centered{inset:0 34px 0 34px;justify-content:center;text-align:center}
+
+/* Competition picker: one centered label, centered dropdown options */
+#table .competition-select-wrap{position:relative;width:100%;max-width:none;margin-bottom:14px}
+#table .competition-select-wrap .competition-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important}
+#table .competition-select-button{display:flex;align-items:center;justify-content:center;position:relative;width:100%;min-height:36px;padding:9px 34px;border:1px solid #cbd8df;border-radius:2px;background:#fff;color:var(--navy,#062b36);font-family:inherit;font-size:12px;font-weight:700;text-align:center;cursor:pointer}
+#table .competition-select-button:after{content:'';position:absolute;right:14px;top:50%;width:8px;height:8px;border-right:2px solid #355c70;border-bottom:2px solid #355c70;transform:translateY(-70%) rotate(45deg)}
+#table .competition-select-button:focus-visible{outline:2px solid #1b5d80;outline-offset:1px}
+#table .competition-select-options{position:absolute;top:100%;left:0;right:0;z-index:20;max-height:300px;overflow-y:auto;background:#fff;border:1px solid #cbd8df;box-shadow:0 5px 12px rgba(0,0,0,.12)}
+#table .competition-select-options[hidden]{display:none!important}
+#table .competition-select-options button{display:block;width:100%;padding:11px 12px;border:0;border-left:3px solid transparent;background:#fff;color:var(--navy,#062b36);font-family:inherit;font-size:12px;font-weight:600;text-align:center;cursor:pointer}
+#table .competition-select-options button:hover,#table .competition-select-options button[aria-selected=true]{background:#e5f2ee;color:#007a48;border-left-color:#008a52}
