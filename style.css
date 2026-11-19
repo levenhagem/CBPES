@@ -1090,3 +1090,32 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-team-name{
     gap:4px;
   }
 }
+
+
+/* All competition standings: more room for fixtures, without changing full-width knockout. */
+@media(min-width:901px){
+  #table .cbpes-competition-layout,
+  body.cbpes-liga-pro-page #table .cbpes-competition-layout{
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+  #table .cbpes-competition-layout .cbpes-results-panel{
+    padding-left:10px!important;
+  }
+}
+/* Keep phase title geometrically centered between the two navigation arrows. */
+#table .round-switcher{
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr) 36px!important;
+  align-items:center!important;
+  gap:8px;
+}
+#table .round-switcher>b,
+#table .round-switcher>strong,
+#table .round-switcher>.round-title{
+  justify-self:center!important;
+  text-align:center!important;
+  min-width:0;
+}
+#table .round-switcher>.phase-arrow:first-child{justify-self:start}
+#table .round-switcher>.phase-arrow:last-child{justify-self:end}
