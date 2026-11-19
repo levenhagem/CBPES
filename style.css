@@ -1150,3 +1150,30 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
     gap:3px!important;
   }
 }
+
+
+/* Correção: mandante encostado ao placar, sem alterar a posição do visitante.
+   A grade interna do clube ocupava 100% e mantinha escudo/nome à esquerda. */
+#table .cbpes-match-main>.cbpes-match-team.home{
+  transform:none!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+}
+#table .cbpes-match-main>.cbpes-match-team.home .cbpes-match-club{
+  width:max-content!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:0!important;
+  grid-template-columns:36px minmax(0,max-content)!important;
+  justify-content:end!important;
+}
+#table .cbpes-match-main>.cbpes-match-team.away{
+  transform:none!important;
+}
+#table .cbpes-match-main>.cbpes-match-team.away .cbpes-match-club{
+  width:max-content!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  grid-template-columns:36px minmax(0,max-content)!important;
+}
