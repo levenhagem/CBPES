@@ -608,3 +608,6 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #latest .featured-juventus-name-row{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start;gap:6px;max-width:100%;white-space:nowrap}
 #latest .featured-juventus-name-row .cbpes-team-name{display:inline!important;flex:0 1 auto}
 #latest .featured-juventus-name-row .featured-juventus-trophy{display:inline-flex!important;flex:0 0 auto;margin:0!important;align-items:center;justify-content:center;line-height:1}
+
+/* Larger Juventus trophy, still aligned to the right of the club name */
+#latest .featured-juventus-name-row .featured-juventus-trophy{font-size:28px!important;line-height:1!important}
