@@ -82,17 +82,17 @@ function renderHome() {
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
   const featured = !!m?.is_featured;
-  const renatoTrophy = name => /\\brenato\\b/i.test(String(name||'')) ? '<span class="featured-renato-trophy" aria-label="Campeão" title="Campeão">🏆</span>' : '';
+  const juventusTrophy = team => /juventus/i.test(String(team?.name||'')) ? '<span class="featured-juventus-trophy" aria-label="Campeão" title="Campeão">🏆</span>' : '';
   const featuredRow = () => {
     let html=matchRow(m);
-    for(const name of [m.home_coach_name || m.home?.coach_name, m.away_coach_name || m.away?.coach_name]){
-      if(!renatoTrophy(name))continue;
-      const anchor='<a class="coach-link" href="#coach/'+encodeURIComponent(name)+'">'+esc(name)+'</a>';
-      if(html.includes(anchor))html=html.replace(anchor,anchor+renatoTrophy(name));
+    for(const team of [m.home,m.away]){
+      if(!juventusTrophy(team))continue;
+      const anchor='<a class="cbpes-team-name" href="#team/'+team.id+'">'+esc(team.name)+'</a>';
+      if(html.includes(anchor))html=html.replace(anchor,anchor+juventusTrophy(team));
     }
     return html;
   };
-  $('latest').innerHTML = m ? (m.category !== 'official' ? `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}` : `<div class="latest-match" style="--match-color:${matchColor(m)};background:${matchColor(m)}"><div class="latest-top"><b>${featured?'PARTIDA EM DESTAQUE':'Última partida'}</b><span>${esc(SET.name)}</span></div><div class="latest-main"><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.home_id}">${esc(m.home.name)}</a>${renatoTrophy(m.home_coach_name || m.home.coach_name)}</div><small>${coachLink(m.home_coach_name || m.home.coach_name)}</small></div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span></div><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.away_id}">${esc(m.away.name)}</a>${renatoTrophy(m.away_coach_name || m.away.coach_name)}</div><small>${coachLink(m.away_coach_name || m.away.coach_name)}</small></div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.season)}</span></div></div>`) : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
+  $('latest').innerHTML = m ? (m.category !== 'official' ? `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}` : `<div class="latest-match" style="--match-color:${matchColor(m)};background:${matchColor(m)}"><div class="latest-top"><b>${featured?'PARTIDA EM DESTAQUE':'Última partida'}</b><span>${esc(SET.name)}</span></div><div class="latest-main"><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.home_id}">${esc(m.home.name)}</a>${juventusTrophy(m.home)}</div><small>${coachLink(m.home_coach_name || m.home.coach_name)}</small></div></div><div class="latest-score"><span>${m.home_score} : ${m.away_score}</span></div><div class="latest-team"><div class="latest-teamtext"><div><a href="#team/${m.away_id}">${esc(m.away.name)}</a>${juventusTrophy(m.away)}</div><small>${coachLink(m.away_coach_name || m.away.coach_name)}</small></div></div></div><div class="latest-foot"><span>${fd(m.date)}</span><span>${esc(SET.season)}</span></div></div>`) : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
   const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
