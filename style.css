@@ -782,3 +782,37 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #home .cbpes-home-league-compact .cbpes-form{gap:3px;min-width:58px}
 #home .cbpes-home-league-compact .cbpes-form-dot{width:8px;height:8px;flex-basis:8px}
 @media(max-width:900px){#table .cbpes-competition-layout{grid-template-columns:1fr}}
+
+
+/* Liga Pro standings experiment — scoped theme.
+   Revert commit 4fdadfaa and this CSS commit to restore the original white tables. */
+.table.cbpes-liga-pro-table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  background:#091e49;color:#eaf3ff;border:1px solid #2255a1;
+  border-top:3px solid #368eff;border-radius:5px;overflow:hidden;
+}
+.table.cbpes-liga-pro-table thead{background:#071638}
+.table.cbpes-liga-pro-table th{
+  background:#071638!important;color:#9fc5ff!important;
+  border-bottom:1px solid #2c5897!important;font-weight:700;letter-spacing:.4px;
+}
+.table.cbpes-liga-pro-table tbody tr{background:#091e49!important}
+.table.cbpes-liga-pro-table tbody tr:nth-child(odd){background:#102d61!important}
+.table.cbpes-liga-pro-table tbody tr:hover{background:#19417e!important}
+.table.cbpes-liga-pro-table td{
+  background:transparent!important;color:#eaf3ff!important;
+  border-bottom:1px solid rgba(130,178,241,.17)!important;
+}
+.table.cbpes-liga-pro-table td.points{color:#fff!important;font-weight:800}
+.table.cbpes-liga-pro-table td.cbpes-zone-position{border-left:3px solid var(--zone-color,transparent)!important}
+.table.cbpes-liga-pro-table .club,
+.table.cbpes-liga-pro-table .club a,
+.table.cbpes-liga-pro-table .club a span,
+.table.cbpes-liga-pro-table .pos{color:#fff!important}
+.table.cbpes-liga-pro-table .table-coach,
+.table.cbpes-liga-pro-table .coach-link{color:#a8c6ed!important}
+.table.cbpes-liga-pro-table .cbpes-crest{filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.table.cbpes-liga-pro-table .cbpes-form-dot.pending{background:#526c8e}
+.table.cbpes-liga-pro-table .cbpes-form-dot.draw{background:#9eafc8}
+#miniTable .table.cbpes-liga-pro-mini{border-radius:3px}
+@media(max-width:850px){.table.cbpes-liga-pro-table{min-width:580px}.table.cbpes-liga-pro-mini{min-width:0}}
