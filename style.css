@@ -846,17 +846,22 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   border-bottom:1px solid rgba(132,188,255,.18)!important;
   color:#fff!important;
 }
+.table.cbpes-liga-pro-table{
+  overflow:hidden!important;
+}
 .table.cbpes-liga-pro-table td.cbpes-zone-position{
   position:relative;
   border-left:0!important;
-  box-shadow:none!important;
+  overflow:hidden;
+  /* Glow interno: não ultrapassa a área da tabela e mantém a faixa contínua. */
+  box-shadow:inset 9px 0 12px -9px var(--zone-color,transparent)!important;
   text-shadow:none;
 }
 .table.cbpes-liga-pro-table td.cbpes-zone-position::before{
   content:"";position:absolute;pointer-events:none;
-  left:0;top:12%;bottom:12%;width:3px;
+  left:0;top:0;bottom:0;width:3px;
   background:var(--zone-color,transparent);
-  box-shadow:0 0 6px 1px var(--zone-color,transparent),0 0 13px 2px var(--zone-color,transparent);
+  box-shadow:inset -1px 0 1px rgba(255,255,255,.28);
 }
 .table.cbpes-liga-pro-table .table-coach,
 .table.cbpes-liga-pro-table .coach-link{color:#b9d9ff!important}
