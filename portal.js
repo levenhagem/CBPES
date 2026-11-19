@@ -146,15 +146,11 @@ function renderTable() {
   const selectedCompetition=competitions.find(c=>String(c.id)===String(selectedEdition?.competition_id));
   const selectedWeekly=(D.weeklies||[]).find(w=>String(w.id)===String(selectedWeeklyTable));
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
-  let masterNotice=$('copaMasterDrawNotice');
-  if(!masterNotice){masterNotice=document.createElement('div');masterNotice.id='copaMasterDrawNotice';masterNotice.className='copa-master-draw-notice';$('tableCompetition').insertAdjacentElement('afterend',masterNotice);}
-  masterNotice.textContent='SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.';
-  masterNotice.hidden=true;
-  $('tableCompetition').innerHTML = editions.map(e=>`<option value="${e.id}" ${selectedWeeklyTable===e.id?'selected':''}>${esc((competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)}</option>`).join('') || '<option value="current">Nenhuma competição cadastrada</option>';
   const compButton=$('tableCompetitionButton'), compOptions=$('tableCompetitionOptions');
+  const compChoices=editions.map(e=>({id:String(e.id),label:(competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name}));
   if(compButton&&compOptions){
-    compButton.textContent=$('tableCompetition').selectedOptions[0]?.textContent||'Selecionar competição';
-    compOptions.innerHTML=[...$('tableCompetition').options].map(o=>'<button type="button" role="option" aria-selected="'+(o.selected?'true':'false')+'" data-competition-id="'+esc(o.value)+'">'+esc(o.textContent)+'</button>').join('');
+    compButton.textContent=compChoices.find(o=>o.id===String(selectedWeeklyTable))?.label||compChoices[0]?.label||'Nenhuma competição cadastrada';
+    compOptions.innerHTML=compChoices.map(o=>'<button type="button" role="option" aria-selected="'+(o.id===String(selectedWeeklyTable)?'true':'false')+'" data-competition-id="'+esc(o.id)+'">'+esc(o.label)+'</button>').join('');
     compOptions.hidden=true;compButton.setAttribute('aria-expanded','false');
   }
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
@@ -247,8 +243,6 @@ function renderTable() {
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
-const tableCompetitionSelect = $('tableCompetition');
-if (tableCompetitionSelect) tableCompetitionSelect.onchange = e => { selectedWeeklyTable=e.target.value; renderTable(); };
 const competitionPickerButton=$('tableCompetitionButton'), competitionPickerOptions=$('tableCompetitionOptions');
 if(competitionPickerButton&&competitionPickerOptions){
   competitionPickerButton.onclick=()=>{const open=competitionPickerOptions.hidden;competitionPickerOptions.hidden=!open;competitionPickerButton.setAttribute('aria-expanded',String(open));};
