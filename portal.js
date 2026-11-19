@@ -225,7 +225,7 @@ function renderTable() {
     }
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
     const placeholderHtml=['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
-      '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match" style="--match-color:#bfcbd3">
+      '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match ${isLigaProTable?'cbpes-match-liga-pro':''}" style="--match-color:#bfcbd3">
         ${active.phase_type==='final'?'':`<div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>`}
         <div class="cbpes-match-main">
           <div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[0]||'A definir'))}</span></div></div></div>
