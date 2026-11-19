@@ -1056,3 +1056,37 @@ body.cbpes-liga-pro-page main .cbpes-playoff-template .cbpes-match-liga-pro{
 /* Footer contrast on the Liga Pro page, including its CBPES signature. */
 body.cbpes-liga-pro-page footer,
 body.cbpes-liga-pro-page footer b{color:#fff!important}
+
+
+/* Liga Pro: give the fixture column more horizontal room and prevent long
+   visiting-team names (e.g. Manchester United) from clipping. */
+@media(min-width:901px){
+  body.cbpes-liga-pro-page main .cbpes-competition-layout{
+    grid-template-columns:minmax(0,1.12fr) minmax(0,1fr)!important;
+    gap:12px;
+  }
+  body.cbpes-liga-pro-page main .cbpes-results-panel{padding-left:10px}
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main>.cbpes-match-team.away{
+  transform:none!important;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
+  grid-template-columns:minmax(0,1fr) 56px minmax(0,1.25fr);
+  gap:6px;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-team,
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-club,
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-club-text{
+  min-width:0;max-width:100%;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-team-name{
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+}
+@media(max-width:900px){
+  body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
+    grid-template-columns:minmax(0,1fr) 48px minmax(0,1.15fr);
+    gap:4px;
+  }
+}
