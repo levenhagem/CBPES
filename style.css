@@ -1013,3 +1013,34 @@ body.cbpes-liga-pro-page{
   padding-right:8px!important;
   font-variant-numeric:tabular-nums;
 }
+
+
+/* Liga Pro knockout phases: same card language as Liga Pro fixtures.
+   Limited to the selected Liga Pro page; other competitions remain unchanged. */
+body.cbpes-liga-pro-page main .cbpes-knockout-full .result-row,
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row{
+  background:
+    radial-gradient(ellipse 75% 150% at 102% -35%,rgba(61,160,255,.38),transparent 65%),
+    linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;
+  color:#fff!important;
+  border:1px solid #1754a3!important;
+  border-left:4px solid #328cff!important;
+  margin-bottom:6px;
+  padding:12px 14px;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row a,
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row .result-score,
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row .result-teams{
+  color:#fff!important;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row small{
+  color:#b9d9ff!important;
+}
+body.cbpes-liga-pro-page main .cbpes-results-panel .result-row .round-label{
+  background:rgba(12,60,126,.8)!important;
+  color:#b9d9ff!important;
+  border-color:#328cff!important;
+}
+body.cbpes-liga-pro-page main .cbpes-playoff-template .cbpes-match-liga-pro{
+  min-height:82px;
+}
