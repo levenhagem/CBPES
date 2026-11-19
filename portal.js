@@ -151,6 +151,8 @@ function renderTable() {
   masterNotice.textContent='SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.';
   masterNotice.hidden=true;
   $('tableCompetition').innerHTML = editions.map(e=>`<option value="${e.id}" ${selectedWeeklyTable===e.id?'selected':''}>${esc((competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name)}</option>`).join('') || '<option value="current">Nenhuma competição cadastrada</option>';
+  const centeredCompetition=$('tableCompetitionCentered');
+  if(centeredCompetition)centeredCompetition.textContent=$('tableCompetition').selectedOptions[0]?.textContent||'';
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
