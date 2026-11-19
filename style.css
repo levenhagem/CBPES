@@ -1000,3 +1000,16 @@ body.cbpes-liga-pro-page{
 #nav .nav-competition-menu a:hover,#nav .nav-competition-menu a:focus-visible{background:#13549d;outline:none}
 #nav .nav-competition-menu small{font-size:11px;font-weight:500;color:#a9c8e9}
 #nav .nav-competition-empty{display:block;padding:12px 15px;color:#c5d9ef;font-size:12px}
+
+
+/* Liga Pro: center rank numbers in their own column, away from the LED strip. */
+.table.cbpes-liga-pro-table th:first-child,
+.table.cbpes-liga-pro-table td.cbpes-zone-position{
+  width:48px!important;
+  min-width:48px!important;
+  box-sizing:border-box;
+  text-align:center!important;
+  padding-left:12px!important;
+  padding-right:8px!important;
+  font-variant-numeric:tabular-nums;
+}
