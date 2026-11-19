@@ -767,3 +767,18 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-match.cbpes-match-semanal .cbpes-match-team .cbpes-crest{
   filter:drop-shadow(0 3px 4px rgba(0,0,0,.30));
 }
+
+
+/* Últimos cinco jogos — classificação completa e tabela compacta da home */
+.cbpes-form{display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;white-space:nowrap;min-width:68px}
+.cbpes-form-dot{display:inline-block;width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#d4d8db}
+.cbpes-form-dot.win{background:#39a52d}
+.cbpes-form-dot.loss{background:#e23c45}
+.cbpes-form-dot.draw{background:#b8bec3}
+.cbpes-form-dot.pending{background:#e6e8ea}
+.table th:last-child,.table td:last-child{white-space:nowrap}
+#table .cbpes-competition-layout{grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr)}
+#table .cbpes-competition-layout .scroll{overflow-x:auto}
+#home .cbpes-home-league-compact .cbpes-form{gap:3px;min-width:58px}
+#home .cbpes-home-league-compact .cbpes-form-dot{width:8px;height:8px;flex-basis:8px}
+@media(max-width:900px){#table .cbpes-competition-layout{grid-template-columns:1fr}}
