@@ -1366,3 +1366,14 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
     font-size:15px!important;
   }
 }
+
+
+/* Phase headings (PRIMEIRA FASE, PLAYOFFS etc): actual markup is .phase-switcher. */
+#table .phase-switcher > b{
+  font-size:17px!important;
+  font-weight:800!important;
+  letter-spacing:.75px!important;
+  line-height:1.4!important;
+  text-align:center!important;
+}
+@media(max-width:620px){#table .phase-switcher > b{font-size:16px!important}}
