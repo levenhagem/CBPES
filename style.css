@@ -867,3 +867,17 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .table.cbpes-liga-pro-table .coach-link{color:#b9d9ff!important}
 .table.cbpes-liga-pro-table .cbpes-form-dot.pending{background:#698cb6}
 @media(prefers-reduced-motion:reduce){.table.cbpes-liga-pro-table *{transition:none!important}}
+
+
+/* Forma: cabeçalho centralizado e resultados com cores mais vivas. */
+.table th:last-child:has(+ th){text-align:inherit}
+.table.cbpes-liga-pro-table th:last-child,
+.table.cbpes-liga-pro-table td:last-child{
+  text-align:center!important;
+}
+.table.cbpes-liga-pro-table td:last-child .cbpes-form{
+  justify-content:center!important;
+  width:100%;
+}
+.cbpes-form-dot.win{background:#00e65c!important}
+.cbpes-form-dot.loss{background:#ff3048!important}
