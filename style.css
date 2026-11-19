@@ -985,3 +985,18 @@ body.cbpes-liga-pro-page{
 .cbpes-liga-pro-page main .cbpes-match.cbpes-match-semanal{
   background:linear-gradient(115deg,#073b2b 0%,#0a553b 55%,#126e49 100%)!important;
 }
+
+/* Navigation competition dropdown — only the TABELA item. */
+#nav .nav-competition-wrap{position:relative;display:flex;align-self:stretch;z-index:90}
+#nav .nav-competition-wrap>button{height:100%;white-space:nowrap}
+#nav .nav-competition-wrap>button span{font-size:11px;margin-left:5px}
+#nav .nav-competition-menu{
+  position:absolute;top:100%;left:0;min-width:255px;max-width:min(340px,90vw);
+  max-height:65vh;overflow-y:auto;background:#071e3c;border:1px solid #315b88;
+  border-top:3px solid #3691ff;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:5px 0;
+}
+#nav .nav-competition-menu[hidden]{display:none!important}
+#nav .nav-competition-menu a{display:flex;flex-direction:column;gap:3px;padding:11px 15px;color:#fff;text-decoration:none;font:700 13px Barlow,sans-serif;border-bottom:1px solid rgba(180,213,255,.12)}
+#nav .nav-competition-menu a:hover,#nav .nav-competition-menu a:focus-visible{background:#13549d;outline:none}
+#nav .nav-competition-menu small{font-size:11px;font-weight:500;color:#a9c8e9}
+#nav .nav-competition-empty{display:block;padding:12px 15px;color:#c5d9ef;font-size:12px}
