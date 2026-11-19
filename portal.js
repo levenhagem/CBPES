@@ -175,6 +175,19 @@ function renderTable() {
   const selectedCompetition=competitions.find(c=>String(c.id)===String(selectedEdition?.competition_id));
   const selectedWeekly=(D.weeklies||[]).find(w=>String(w.id)===String(selectedWeeklyTable));
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
+  const headingName=selectedCompetition?.name||selectedEdition?.name||selectedWeekly?.name||'Tabela do campeonato';
+  const heading=$('tableCompetitionName'), emblem=$('tableCompetitionEmblem');
+  if(heading)heading.textContent=headingName;
+  if(emblem){
+    const logo=selectedCompetition?.logo_url||selectedCompetition?.logo||selectedEdition?.logo_url||selectedEdition?.logo;
+    emblem.textContent='';
+    if(typeof logo==='string' && /^https:\/\//i.test(logo)){
+      const img=document.createElement('img');img.src=logo;img.alt='';img.loading='lazy';
+      img.onerror=()=>{emblem.textContent=headingName.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();};
+      emblem.appendChild(img);
+    }else emblem.textContent=headingName.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  }
+
   document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
   document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1).split('/')[0]==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
