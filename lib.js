@@ -160,7 +160,7 @@ function matchRow(m, hideDate = false) {
   const color = matchColor(m);
   const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
   const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
-  const isLigaPro=(m.category||'official')==='official'&&/liga\\s*pro/i.test((competition?.name||'')+' '+(edition?.name||''));
+  const isLigaPro=(m.category||'official')==='official'&&/liga\s*pro/i.test((competition?.name||'')+' '+(edition?.name||''));
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
   return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
