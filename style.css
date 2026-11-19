@@ -1406,3 +1406,14 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   font-weight:500!important;
 }
 #nav .nav-competition-empty{color:#c3d1d6!important}
+
+
+/* Legibilidade do menu de competições: nomes e temporadas em branco. */
+#nav .nav-competition-menu a,
+#nav .nav-competition-menu a:hover,
+#nav .nav-competition-menu a:focus-visible,
+#nav .nav-competition-menu a small,
+#nav .nav-competition-menu a:hover small,
+#nav .nav-competition-menu a:focus-visible small{
+  color:#ffffff!important;
+}
