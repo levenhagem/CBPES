@@ -655,3 +655,8 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #table .competition-select-wrap #tableCompetition{display:block;width:100%!important;max-width:none!important;margin:0!important;color:transparent!important;text-shadow:none!important;cursor:pointer}
 #table .competition-select-wrap #tableCompetition option{color:var(--navy,#062b36)!important;text-align:left}
 #table .competition-select-centered{position:absolute;inset:0 30px 0 30px;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;color:var(--navy,#062b36);font:inherit;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Competition picker: original rectangle width, centered label only */
+#table .competition-select-wrap{width:100%;max-width:none;margin-bottom:14px}
+#table .competition-select-wrap #tableCompetition{width:100%!important;max-width:none!important}
+#table .competition-select-centered{inset:0 34px 0 34px;justify-content:center;text-align:center}
