@@ -1448,7 +1448,7 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
    Disponibilize o arquivo em /fonts/squadra-light.otf no deploy. */
 @font-face{
   font-family:"Squadra CBPES";
-  src:url("./fonts/squadra-light.otf") format("opentype");
+  src:url("./squadra-light.otf") format("opentype");
   font-style:normal;
   font-weight:300;
   font-display:swap;
