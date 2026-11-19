@@ -1448,7 +1448,7 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
    Disponibilize o arquivo em /fonts/squadra-light.otf no deploy. */
 @font-face{
   font-family:"Squadra CBPES";
-  src:url("./squadra-light.otf") format("opentype");
+  src:url("/squadra-light.otf?v=2") format("opentype");
   font-style:normal;
   font-weight:300;
   font-display:swap;
@@ -1458,4 +1458,13 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   font-weight:300!important;
   font-stretch:normal!important;
   letter-spacing:.25px!important;
+}
+
+/* Força a fonte apenas no título da Liga Pro, mesmo após troca de fase. */
+body.cbpes-liga-pro-page #tableCompetitionName,
+#table[data-liga-pro="true"] .cbpes-competition-heading #tableCompetitionName{
+  font-family:"Squadra CBPES",sans-serif!important;
+  font-weight:300!important;
+  font-style:normal!important;
+  font-synthesis:none;
 }
