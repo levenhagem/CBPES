@@ -1348,3 +1348,21 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   font-weight:300!important;
   color:#b6cbe6;
 }
+
+
+/* Títulos das fases em destaque, mantendo a centralização entre as setas. */
+#table .round-switcher > b,
+#table .round-switcher > strong,
+#table .round-switcher > .round-title{
+  font-size:16px!important;
+  font-weight:800!important;
+  letter-spacing:.7px!important;
+  line-height:1.35!important;
+}
+@media(max-width:620px){
+  #table .round-switcher > b,
+  #table .round-switcher > strong,
+  #table .round-switcher > .round-title{
+    font-size:15px!important;
+  }
+}
