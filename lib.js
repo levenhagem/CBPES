@@ -154,14 +154,15 @@ function matchRow(m, hideDate = false) {
   const homeWon = m.played && (m.home_score > m.away_score || (winnerByPens&&m.home_pen>m.away_pen));
   const awayWon = m.played && (m.away_score > m.home_score || (winnerByPens&&m.away_pen>m.home_pen));
   const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : esc(SET.name || 'OFICIAL');
+  const championTag = id => String(m.champion_team_id||'')===String(id) ? '<span class="featured-juventus-champion">CAMPEÃO</span>' : '';
   const color = matchColor(m);
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
   return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
-      <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
+      <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a>${championTag(m.home_id)}</span><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
       <div class="cbpes-match-score">${score}${detailHTML}</div>
-      <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
+      <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a>${championTag(m.away_id)}</span><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
     </div>
   </div>`;
 }
