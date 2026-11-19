@@ -671,3 +671,11 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 #table .competition-select-options[hidden]{display:none!important}
 #table .competition-select-options button{display:block;width:100%;padding:11px 12px;border:0;border-left:3px solid transparent;background:#fff;color:var(--navy,#062b36);font-family:inherit;font-size:12px;font-weight:600;text-align:center;cursor:pointer}
 #table .competition-select-options button:hover,#table .competition-select-options button[aria-selected=true]{background:#e5f2ee;color:#007a48;border-left-color:#008a52}
+
+/* Bulk team import dialog */
+.cbpes-team-import-dialog{width:min(560px,calc(100vw - 28px));max-height:calc(100vh - 40px);overflow:auto;padding:0;border:1px solid #cbd8df;border-top:4px solid #00313d;border-radius:4px;background:#fff;color:#002d39;box-shadow:0 14px 55px rgba(0,0,0,.22)}
+.cbpes-team-import-dialog::backdrop{background:rgba(0,24,33,.58)}
+.cbpes-team-import-dialog .cardhead{padding:15px 18px;border-bottom:1px solid #e1e8ec}
+.cbpes-team-import-dialog .cardbody{padding:18px}
+.cbpes-team-import-dialog textarea{display:block;width:100%;box-sizing:border-box;min-height:190px;resize:vertical;padding:12px;border:1px solid #cbd8df;font:inherit;line-height:1.55}
+.cbpes-team-import-dialog select{width:100%;max-width:260px}
