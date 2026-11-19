@@ -8,7 +8,9 @@ const empty = t => `<div class="empty">${t}</div>`;
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
-  const id = profile ? parts[0] : (PAGES.includes(raw) ? raw : 'home');
+  const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (PAGES.includes(raw) ? raw : 'home'));
+  if(id==='table' && parts[1] && D){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested))selectedWeeklyTable=requested;renderTable();}
+  closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id));
@@ -20,7 +22,23 @@ function route() {
   }
   window.scrollTo(0, 0);
 }
-document.querySelectorAll('#nav button').forEach(b => b.onclick = () => location.hash = b.dataset.page);
+function closeNavCompetitionMenu(){const m=$('navCompetitionMenu'),b=$('navCompetitionButton');if(m)m.hidden=true;if(b)b.setAttribute('aria-expanded','false');}
+function renderNavCompetitions(){
+  const menu=$('navCompetitionMenu');if(!menu||!D)return;
+  const editions=D.officialEditions||[],competitions=D.officialCompetitions||[];
+  menu.innerHTML=editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'<span class="nav-competition-empty">Nenhuma competição cadastrada</span>';
+}
+const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
+if(navCompetitionWrap&&navCompetitionButton){
+  const menu=$('navCompetitionMenu');
+  navCompetitionButton.onclick=()=>{const open=menu.hidden;menu.hidden=!open;navCompetitionButton.setAttribute('aria-expanded',String(open));};
+  navCompetitionWrap.addEventListener('mouseenter',()=>{if(D){menu.hidden=false;navCompetitionButton.setAttribute('aria-expanded','true');}});
+  navCompetitionWrap.addEventListener('mouseleave',closeNavCompetitionMenu);
+  navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget))closeNavCompetitionMenu();});
+  document.addEventListener('click',e=>{if(!navCompetitionWrap.contains(e.target))closeNavCompetitionMenu();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNavCompetitionMenu();navCompetitionButton.focus();}});
+}
+document.querySelectorAll('#nav button:not(#navCompetitionButton)').forEach(b => b.onclick = () => location.hash = b.dataset.page);
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => location.hash = b.dataset.go);
 window.addEventListener('hashchange', route);
 $('filters').onclick = e => { if (e.target.dataset.f) { filter = e.target.dataset.f; renderGames(); } };
@@ -160,13 +178,6 @@ function renderTable() {
   document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
   document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1)==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
-  const compButton=$('tableCompetitionButton'), compOptions=$('tableCompetitionOptions');
-  const compChoices=editions.map(e=>({id:String(e.id),label:(competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name}));
-  if(compButton&&compOptions){
-    compButton.textContent=compChoices.find(o=>o.id===String(selectedWeeklyTable))?.label||compChoices[0]?.label||'Nenhuma competição cadastrada';
-    compOptions.innerHTML=compChoices.map(o=>'<button type="button" role="option" aria-selected="'+(o.id===String(selectedWeeklyTable)?'true':'false')+'" data-competition-id="'+esc(o.id)+'">'+esc(o.label)+'</button>').join('');
-    compOptions.hidden=true;compButton.setAttribute('aria-expanded','false');
-  }
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
@@ -257,14 +268,6 @@ function renderTable() {
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
-const competitionPickerButton=$('tableCompetitionButton'), competitionPickerOptions=$('tableCompetitionOptions');
-if(competitionPickerButton&&competitionPickerOptions){
-  competitionPickerButton.onclick=()=>{const open=competitionPickerOptions.hidden;competitionPickerOptions.hidden=!open;competitionPickerButton.setAttribute('aria-expanded',String(open));};
-  competitionPickerOptions.onclick=e=>{const option=e.target.closest('[data-competition-id]');if(!option)return;selectedWeeklyTable=option.dataset.competitionId;renderTable();};
-  document.addEventListener('click',e=>{if(!e.target.closest('.competition-select-wrap')){competitionPickerOptions.hidden=true;competitionPickerButton.setAttribute('aria-expanded','false');}});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){competitionPickerOptions.hidden=true;competitionPickerButton.setAttribute('aria-expanded','false');}});
-}
-
 function renderWeeklies() {
   const root = $('weeklyList');
   const editions = D.weeklies || [];
@@ -442,7 +445,7 @@ function renderCoach(name) {
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
 
-function renderAll() { renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   route();
   try {
