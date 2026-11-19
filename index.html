@@ -9,7 +9,7 @@
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
- <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><button data-page="table">TABELA</button><button data-page="stats">ESTATÍSTICAS</button><button data-page="weeklies">SEMANAIS</button></nav>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><button data-page="stats">ESTATÍSTICAS</button><button data-page="weeklies">SEMANAIS</button></nav>
  <span class="season" id="season"></span>
 </div></header>
 <main>
@@ -40,7 +40,7 @@
 
 <section id="table" class="section">
  <div class="page-title"><div><div class="eyebrow">Classificação</div><h1>Tabela do campeonato</h1></div></div>
- <div class="card"><div class="cardhead" id="tableHeaderMeta" style="display:none"><h2 id="tblTitle">Tabela geral</h2><span class="pill" id="tblPill"></span></div><div class="cardbody"><label for="tableCompetitionButton" style="display:block;font-size:12px;font-weight:600;margin-bottom:6px">COMPETIÇÃO</label><div class="competition-select-wrap"><button type="button" id="tableCompetitionButton" class="competition-select-button" aria-haspopup="listbox" aria-expanded="false"></button><div id="tableCompetitionOptions" class="competition-select-options" role="listbox" hidden></div></div></div><div class="cardbody scroll" id="fullTable"></div></div>
+ <div class="card"><div class="cardhead" id="tableHeaderMeta" style="display:none"><h2 id="tblTitle">Tabela geral</h2><span class="pill" id="tblPill"></span></div><div class="cardbody scroll" id="fullTable"></div></div>
 </section>
 
 <section id="stats" class="section">
