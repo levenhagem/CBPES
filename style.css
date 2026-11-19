@@ -600,3 +600,6 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .cbpes-match.cbpes-match-evo .cbpes-match-score{text-shadow:0 1px 12px rgba(68,153,255,.45)}
 .cbpes-match.cbpes-match-evo .cbpes-match-team small{color:#d1e6ff;opacity:.86}
 .cbpes-match.cbpes-match-evo .cbpes-match-top{border-bottom:1px solid rgba(150,198,255,.16);padding-bottom:4px}
+
+/* Trophy aligned with Renato's coach label in the featured match */
+#latest .featured-renato-trophy{display:inline-block;margin-left:6px;font-size:18px;line-height:1;vertical-align:middle;white-space:nowrap}
