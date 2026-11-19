@@ -645,3 +645,7 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
   #table .scroll::-webkit-scrollbar,
   #table .cbpes-standings-panel > .scroll::-webkit-scrollbar{display:none}
 }
+
+/* Center the selected competition name on the standings page (desktop and mobile) */
+#table #tableCompetition{text-align:center;text-align-last:center}
+#table #tableCompetition option{text-align:center}
