@@ -1335,3 +1335,16 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .cbpes-match-main{
   line-height:1.3!important;
   color:#c5d5e8!important;
 }
+
+
+/* Placar vertical: apenas o vencedor em negrito; traços leves. */
+#table .cbpes-results-panel .cbpes-match .cbpes-score-stacked>span{
+  font-weight:400!important;
+}
+#table .cbpes-results-panel .cbpes-match .cbpes-score-stacked>span.score-winner{
+  font-weight:800!important;
+}
+#table .cbpes-results-panel .cbpes-match .cbpes-score-stacked>span.pending{
+  font-weight:300!important;
+  color:#b6cbe6;
+}
