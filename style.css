@@ -816,3 +816,42 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 .table.cbpes-liga-pro-table .cbpes-form-dot.draw{background:#9eafc8}
 #miniTable .table.cbpes-liga-pro-mini{border-radius:3px}
 @media(max-width:850px){.table.cbpes-liga-pro-table{min-width:580px}.table.cbpes-liga-pro-mini{min-width:0}}
+
+
+/* Liga Pro v2: electric-blue dominance, uniform rows, LED classification zones.
+   Restore original theme by reverting the scoped Liga Pro overrides. */
+.table.cbpes-liga-pro-table{
+  background:#073a89!important;border-color:#2485ff!important;
+  border-top:3px solid #2c9dff!important;
+  box-shadow:0 2px 18px rgba(19,110,255,.14);
+}
+.table.cbpes-liga-pro-table thead,
+.table.cbpes-liga-pro-table th{
+  background:#0751ae!important;color:#f3faff!important;
+  border-bottom-color:#329bff!important;
+}
+.table.cbpes-liga-pro-table tbody tr,
+.table.cbpes-liga-pro-table tbody tr:nth-child(odd),
+.table.cbpes-liga-pro-table tbody tr:nth-child(even){
+  background:#0860bc!important;
+}
+.table.cbpes-liga-pro-table tbody tr:hover{background:#0b74d7!important}
+.table.cbpes-liga-pro-table td{
+  border-bottom:1px solid rgba(174,217,255,.20)!important;
+}
+.table.cbpes-liga-pro-table td.cbpes-zone-position{
+  position:relative;border-left:4px solid var(--zone-color,transparent)!important;
+  box-shadow:inset 5px 0 8px -6px var(--zone-color,transparent);
+  text-shadow:none;
+}
+.table.cbpes-liga-pro-table td.cbpes-zone-position::before{
+  content:"";position:absolute;pointer-events:none;
+  left:0;top:12%;bottom:12%;width:4px;
+  background:var(--zone-color,transparent);
+  box-shadow:0 0 5px 1px var(--zone-color,transparent),0 0 12px 2px var(--zone-color,transparent);
+}
+.table.cbpes-liga-pro-table .table-coach,
+.table.cbpes-liga-pro-table .coach-link{color:#d1eaff!important}
+.table.cbpes-liga-pro-table .cbpes-zone-legend{color:#dceeff}
+.table.cbpes-liga-pro-table .cbpes-form-dot.pending{background:#8cb7e1}
+@media(prefers-reduced-motion:reduce){.table.cbpes-liga-pro-table *{transition:none!important}}
