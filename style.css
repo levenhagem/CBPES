@@ -611,3 +611,12 @@ select:focus,input:focus{outline:2px solid var(--yellow);outline-offset:-1px;bor
 
 /* Larger Juventus trophy, still aligned to the right of the club name */
 #latest .featured-juventus-name-row .featured-juventus-trophy{font-size:28px!important;line-height:1!important}
+
+/* Featured Juventus champion tag: rectangular gold, right of club name */
+#latest .featured-juventus-name-row .featured-juventus-champion{
+ display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 auto;
+ padding:3px 7px;margin:0;border:1px solid #e8bd54;border-radius:3px;
+ background:linear-gradient(135deg,#ffe59a 0%,#e9b942 48%,#c88c18 100%);
+ color:#533706;font-size:10px;font-weight:900;letter-spacing:.055em;line-height:1.15;
+ white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.48),0 1px 3px rgba(0,0,0,.17)
+}
