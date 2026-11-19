@@ -9,6 +9,7 @@ function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (PAGES.includes(raw) ? raw : 'home');
+  document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id));
   if (profile && D) {
@@ -156,6 +157,8 @@ function renderTable() {
   const selectedCompetition=competitions.find(c=>String(c.id)===String(selectedEdition?.competition_id));
   const selectedWeekly=(D.weeklies||[]).find(w=>String(w.id)===String(selectedWeeklyTable));
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
+  document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
+  document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1)==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   const compButton=$('tableCompetitionButton'), compOptions=$('tableCompetitionOptions');
   const compChoices=editions.map(e=>({id:String(e.id),label:(competitions.find(c=>c.id===e.competition_id)?.name||'Competição')+' — '+e.name}));
