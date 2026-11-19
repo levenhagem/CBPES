@@ -1044,3 +1044,15 @@ body.cbpes-liga-pro-page main .cbpes-results-panel .result-row .round-label{
 body.cbpes-liga-pro-page main .cbpes-playoff-template .cbpes-match-liga-pro{
   min-height:82px;
 }
+
+/* Match identity accent relocated from bottom to the top edge. */
+.cbpes-match.cbpes-match-liga-pro::after{
+  top:0!important;bottom:auto!important;height:2px!important;
+  background:linear-gradient(90deg,#328cff 0%,#66baff 55%,transparent 100%)!important;
+}
+.cbpes-match.cbpes-match-semanal::after{
+  top:0!important;bottom:auto!important;left:0!important;width:52px!important;height:2px!important;
+}
+/* Footer contrast on the Liga Pro page, including its CBPES signature. */
+body.cbpes-liga-pro-page footer,
+body.cbpes-liga-pro-page footer b{color:#fff!important}
