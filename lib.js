@@ -162,7 +162,7 @@ function matchRow(m, hideDate = false) {
   const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
   const isLigaPro=(m.category||'official')==='official'&&/liga\s*pro/i.test((competition?.name||'')+' '+(edition?.name||''));
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
-  return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""}" style="--match-color:${color}">
+  return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a>${championTag(m.home_id)}</span><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
