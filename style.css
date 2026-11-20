@@ -2505,3 +2505,35 @@ button,.btn,input,select,textarea,
  padding-left:65px!important;
  }
 }
+
+/* Histórico v5: escudos do mandante em coluna fixa junto ao placar.
+   O tamanho do nome não altera a posição horizontal do escudo. */
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child{
+ width:100%!important;min-width:0!important;
+ display:flex!important;align-items:flex-end!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
+ display:flex!important;flex-direction:row-reverse!important;
+ justify-content:flex-start!important;align-items:center!important;
+ gap:7px!important;width:100%!important;min-width:0!important;
+ text-align:right!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img{
+ display:block!important;flex:0 0 23px!important;
+ width:23px!important;height:23px!important;
+ max-width:23px!important;max-height:23px!important;
+ object-fit:contain!important;margin:0!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+ flex:0 0 23px!important;width:23px!important;height:23px!important;
+}
+@media(max-width:640px){
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{gap:4px!important}
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+ flex-basis:18px!important;width:18px!important;height:18px!important;
+ max-width:18px!important;max-height:18px!important;
+ }
+}
