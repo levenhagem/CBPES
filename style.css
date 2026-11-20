@@ -1740,3 +1740,40 @@ body.cbpes-copa-master-page{--ink:#f5e9d1;--muted:#b9a782;--line:#5b4627;--bg:#1
 .cbpes-master-trophy{position:relative;z-index:1;flex:0 0 31%;max-width:205px;filter:drop-shadow(0 14px 24px rgba(233,175,62,.22))}
 .cbpes-master-trophy svg{width:100%;height:auto;display:block}
 @media(max-width:700px){.cbpes-master-hero{min-height:210px;padding:24px 18px;margin-bottom:14px}.cbpes-master-hero-content{max-width:77%}.cbpes-master-hero-title{font-size:clamp(34px,10vw,55px)}.cbpes-master-trophy{flex-basis:25%;margin-right:-8px}.cbpes-master-kicker{font-size:9px;letter-spacing:.08em}.cbpes-master-hero-sub{font-size:12px}}
+
+/* Copa Master refinement — amarelo vivo, acabamento fosco, sem neon. */
+body.cbpes-copa-master-page{
+  --blue:#f5cc19;
+  --navy:#f8df55;
+  --line:#5e522c;
+  background:#171713;
+}
+.cbpes-copa-master-page #table .cbpes-competition-heading{color:#ffe052}
+.cbpes-copa-master-page #table .cbpes-competition-emblem{
+  background:#f5cf24!important;color:#27230f!important;border-color:#dfb914!important;
+}
+.cbpes-copa-master-page #table .cardhead{background:#29281d;color:#ffe052}
+.cbpes-copa-master-page #table .table th{background:#34301d!important;color:#ffe052!important}
+.cbpes-copa-master-page #table .eyebrow,
+.cbpes-copa-master-page #table .round-switcher,
+.cbpes-copa-master-page #table .phase-arrow{color:#ffe052}
+.cbpes-copa-master-page #table .cbpes-match{
+  background:#28271e!important;
+  border-color:#665a2c!important;
+  box-shadow:none!important;
+}
+.cbpes-copa-master-page #table .copa-master-draw-centered{color:#ffe052;text-shadow:none}
+.cbpes-master-hero{
+  background:linear-gradient(110deg,#121410 0%,#20221a 55%,#37331c 100%);
+  border-color:#8c7926;
+  border-top-color:#f8d51f;
+  box-shadow:none;
+}
+.cbpes-master-hero::after{border-top-color:rgba(255,218,54,.14)}
+.cbpes-master-kicker,.cbpes-master-hero-edition{color:#ffe052}
+.cbpes-master-kicker-line,.cbpes-master-hero-rule{background:#f8d51f}
+.cbpes-master-hero-title{color:#fffdf0}
+.cbpes-master-hero-title strong{color:#ffdb24;text-shadow:none}
+.cbpes-master-hero-sub{color:#e1dfd2}
+.cbpes-master-trophy{filter:none}
+.cbpes-master-trophy svg{filter:none}
