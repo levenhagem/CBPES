@@ -1797,3 +1797,32 @@ body.cbpes-copa-master-page{--blue:#e8ba52;--navy:#f2d28c;--line:#5c4c31;backgro
 .cbpes-master-hero-title strong{color:#eec56e;text-shadow:none}
 .cbpes-master-hero-sub{color:#dfd6c5}
 .cbpes-master-trophy{filter:none}
+
+/* Copa Master: ouro âmbar (entre amarelo e laranja), sem mostarda ou neon. */
+body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;background:#171615}
+.cbpes-copa-master-page #table .cbpes-competition-heading{color:#ffbe43}
+.cbpes-copa-master-page #table .cbpes-competition-emblem{background:linear-gradient(135deg,#ffd071,#f4a522)!important;color:#2b1d0d!important;border-color:#f3ae38!important}
+.cbpes-copa-master-page #table .cardhead{color:#ffbd45}
+.cbpes-copa-master-page #table .table th{color:#ffc45c!important}
+.cbpes-copa-master-page #table .eyebrow,.cbpes-copa-master-page #table .round-switcher,.cbpes-copa-master-page #table .phase-arrow{color:#ffba3f}
+.cbpes-copa-master-page #table .cbpes-match{border-color:#936324!important}
+.cbpes-copa-master-page #table .copa-master-draw-centered{color:#ffbd45}
+.cbpes-master-hero{border-color:#8f622b;border-top-color:#f6ac2a;background:linear-gradient(110deg,#121312 0%,#222019 58%,#3a2b1b 100%)}
+.cbpes-master-kicker,.cbpes-master-hero-edition{color:#ffbc49}
+.cbpes-master-kicker-line,.cbpes-master-hero-rule{background:#f5ab27}
+.cbpes-master-hero-title strong{color:#ffb52e}
+.cbpes-master-preview{margin:22px 0 8px}
+.cbpes-master-preview-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;color:#ffc45d;font-size:12px;font-weight:800;letter-spacing:.09em}
+.cbpes-master-preview-heading span{color:#b7a58a;font-size:10px;font-weight:600;letter-spacing:.02em}
+.cbpes-master-match-demo{position:relative;overflow:hidden;border:1px solid #a16a28;border-left:4px solid #f6ad2b;background:linear-gradient(110deg,#171b1c 0%,#27251f 55%,#3b2b1b 100%);color:#fff7e8;padding:12px 18px 18px}
+.cbpes-master-match-demo::before{content:"";position:absolute;right:-65px;top:-110px;width:270px;height:270px;border:1px solid rgba(255,180,57,.12);border-radius:50%;pointer-events:none}
+.cbpes-master-match-meta{display:flex;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(246,173,43,.2);color:#f6b441;font-size:10px;font-weight:800;letter-spacing:.07em}
+.cbpes-master-match-meta span:last-child{color:#a99a83}
+.cbpes-master-match-main{display:grid;grid-template-columns:minmax(0,1fr) 130px minmax(0,1fr);align-items:center;gap:10px;padding-top:18px}
+.cbpes-master-demo-team{display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right}
+.cbpes-master-demo-team.away{align-items:flex-start;text-align:left}
+.cbpes-master-demo-team strong{font-size:17px;font-weight:800;color:#fff8ed}
+.cbpes-master-demo-team small{font-size:11px;color:#b7ac9c}
+.cbpes-master-demo-score{text-align:center;color:#fff7e9;font-size:28px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cbpes-master-demo-score span{color:#f4ad24;font-size:18px;margin:0 9px}
+@media(max-width:620px){.cbpes-master-match-demo{padding:10px 11px 15px}.cbpes-master-match-main{grid-template-columns:minmax(0,1fr) 85px minmax(0,1fr);gap:5px}.cbpes-master-demo-team strong{font-size:13px}.cbpes-master-demo-score{font-size:23px}.cbpes-master-demo-score span{margin:0 4px;font-size:13px}}
