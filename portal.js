@@ -581,9 +581,9 @@ function renderCoach(name) {
     const b=mode==='direct'?{games:direct.games,wins:direct.losses,draws:direct.draws,losses:direct.wins,goalsFor:direct.goalsAgainst,goalsAgainst:direct.goalsFor}:coachSummary(otherName);
     const rate=x=>x.games?Math.round((x.wins*3+x.draws)/(x.games*3)*1000)/10:0;
     const metrics=[['JOGOS',a.games,b.games],['VITÓRIAS',a.wins,b.wins],['EMPATES',a.draws,b.draws],['DERROTAS',a.losses,b.losses],['GOLS PRÓ',a.goalsFor,b.goalsFor],['GOLS SOFRIDOS',a.goalsAgainst,b.goalsAgainst],['APROVEITAMENTO',rate(a),rate(b),'%']];
-    const bars=metrics.map(([label,av,bv,suffix=''])=>{
+    const bars=(mode==='direct'?metrics.filter(([label])=>label!=='DERROTAS'):metrics).map(([label,av,bv,suffix=''])=>{
       const total=av+bv,left=total?av/total*100:50,right=100-left;
-      return `<div class="cbpes-compare-metric"><div class="cbpes-compare-metric-head"><b>${av}${suffix}</b><span>${label}</span><b>${bv}${suffix}</b></div><div class="cbpes-compare-track" role="img" aria-label="${label}: ${esc(name)} ${av}${suffix}; ${esc(otherName)} ${bv}${suffix}"><span class="cbpes-compare-left" style="width:${left}%"></span><span class="cbpes-compare-right" style="width:${right}%"></span></div></div>`;
+      return `<div class="cbpes-compare-metric"><div class="cbpes-compare-metric-head"><b class="${av<bv?'cbpes-compare-lower':''}">${av}${suffix}</b><span>${label}</span><b class="${bv<av?'cbpes-compare-lower':''}">${bv}${suffix}</b></div><div class="cbpes-compare-track" role="img" aria-label="${label}: ${esc(name)} ${av}${suffix}; ${esc(otherName)} ${bv}${suffix}"><span class="cbpes-compare-left" style="width:${left}%"></span><span class="cbpes-compare-right" style="width:${right}%"></span></div></div>`;
     }).join('');
     const trophiesA=coachSummary(name).trophies,trophiesB=coachSummary(otherName).trophies;
     const trophies=(items)=>items.length?items.map(t=>`<div class="cbpes-compare-achievement">🏆 ${esc(t.title)}</div>`).join(''):'Nenhuma conquista registrada';
