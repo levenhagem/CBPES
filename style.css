@@ -1560,3 +1560,21 @@ body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Squadra Medium CBPES
   #latest .latest-match-liga-pro .latest-score{min-width:0!important}
   #latest .latest-match-liga-pro .latest-score span{font-size:clamp(30px,7vw,44px)!important}
 }
+
+
+/* Identificação centralizada acima do cartão de partida em destaque. */
+#latest .cbpes-home-featured-match .cbpes-featured-label{
+  display:table;
+  margin:0 auto 9px;
+  padding:5px 13px;
+  border:1px solid #328cff;
+  border-radius:4px;
+  background:#08265c;
+  color:#fff;
+  font-family:var(--fc);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  line-height:1.2;
+  text-align:center;
+}
