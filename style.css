@@ -1637,3 +1637,7 @@ body.cbpes-liga-pro-page #tableCompetitionName{
    As cores, tamanhos, pesos e layout continuam definidos pelos estilos existentes. */
 :root{--f:"Akt",system-ui,sans-serif;--fc:"Akt",system-ui,sans-serif}
 html,body,button,input,select,textarea{font-family:"Akt",system-ui,sans-serif}
+
+/* Experimento Lexend: tipografia principal do portal; Akt permanece carregada. */
+:root{--f:"Lexend",system-ui,sans-serif;--fc:"Lexend",system-ui,sans-serif}
+html,body,button,input,select,textarea{font-family:"Lexend",system-ui,sans-serif}
