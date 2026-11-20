@@ -2002,3 +2002,39 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
  #coachView .cbpes-coach-rivalry-record small{font-size:9px}
  #coachView .cbpes-coach-rivalry-name{font-size:16px}
 }
+
+/* Técnicos — estatísticas limpas e rivalidades em formato de placar compacto. */
+#coachView .cbpes-coach-kpi::before{content:none!important;display:none!important}
+#coachView .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+#coachView .cbpes-coach-rivalry-card,
+#coachView .cbpes-coach-rivalry-card.nemesis{
+ display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto;
+ align-items:center;gap:12px 13px;min-height:0;padding:17px;
+ border:1px solid #dce6e8;border-radius:12px;
+ background:#fff;box-shadow:0 2px 8px rgba(16,41,47,.035);
+}
+#coachView .cbpes-coach-rivalry-card.victim{border-top:3px solid #169965}
+#coachView .cbpes-coach-rivalry-card.nemesis{border-top:3px solid #c65a59}
+#coachView .cbpes-coach-rivalry-icon,
+#coachView .nemesis .cbpes-coach-rivalry-icon{
+ grid-column:1;grid-row:1;display:grid;place-items:center;
+ width:42px;height:42px;flex-basis:auto;border-radius:10px;
+ background:#f1f5f5;font-size:24px
+}
+#coachView .cbpes-coach-rivalry-info{grid-column:2;grid-row:1;min-width:0}
+#coachView .cbpes-coach-rivalry-label{font-size:10px;letter-spacing:.075em}
+#coachView .cbpes-coach-rivalry-name{font-size:19px;margin:5px 0 0}
+#coachView .cbpes-coach-rivalry-record{
+ grid-column:1 / -1;grid-row:2;display:flex;align-items:center;justify-content:center;
+ border-left:0;border-top:1px solid #e9eef0;padding:13px 0 0;
+ background:none;gap:12px
+}
+#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){
+ font-size:28px;line-height:1.1;display:block;font-weight:850
+}
+#coachView .cbpes-coach-rivalry-record .cbpes-coach-record-divider{font-size:20px;color:#a5b2b8}
+@media(max-width:640px){
+ #coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}
+ #coachView .cbpes-coach-rivalry-card,#coachView .cbpes-coach-rivalry-card.nemesis{padding:14px}
+ #coachView .cbpes-coach-rivalry-record{justify-content:flex-start;padding-left:55px}
+}
