@@ -1578,3 +1578,47 @@ body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Squadra Medium CBPES
   line-height:1.2;
   text-align:center;
 }
+
+
+/* Classificação compacta da home: colunas e escudos alinhados. */
+#miniTable .cbpes-liga-pro-mini{
+  width:100%!important;table-layout:fixed!important;
+}
+#miniTable .cbpes-liga-pro-mini th:first-child,
+#miniTable .cbpes-liga-pro-mini td:first-child{width:40%!important}
+#miniTable .cbpes-liga-pro-mini th:nth-child(2),
+#miniTable .cbpes-liga-pro-mini td:nth-child(2){width:12%!important}
+#miniTable .cbpes-liga-pro-mini th:nth-child(3),
+#miniTable .cbpes-liga-pro-mini td:nth-child(3){width:9%!important}
+#miniTable .cbpes-liga-pro-mini th:nth-child(4),
+#miniTable .cbpes-liga-pro-mini td:nth-child(4){width:11%!important}
+#miniTable .cbpes-liga-pro-mini th:nth-child(5),
+#miniTable .cbpes-liga-pro-mini td:nth-child(5){width:28%!important}
+#miniTable .cbpes-liga-pro-mini th,
+#miniTable .cbpes-liga-pro-mini td{box-sizing:border-box;text-align:center!important;padding:9px 5px!important;vertical-align:middle!important}
+#miniTable .cbpes-liga-pro-mini td.cbpes-zone-position{
+  width:40%!important;min-width:0!important;text-align:left!important;padding:7px 6px 7px 10px!important;
+}
+#miniTable .cbpes-mini-team-cell{display:flex;align-items:center;gap:7px;min-width:0;width:100%}
+#miniTable .cbpes-mini-team-cell .pos{
+  flex:0 0 20px;min-width:20px!important;margin:0!important;text-align:center!important
+}
+#miniTable .cbpes-mini-team-cell .club{
+  flex:1;display:flex!important;flex-direction:column;align-items:flex-start;
+  gap:2px;min-width:0;text-align:left!important
+}
+#miniTable .cbpes-mini-team-cell .club>a{
+  display:flex;align-items:center;gap:5px;min-width:0;max-width:100%;
+  font-size:12px;line-height:1.2;text-decoration:none
+}
+#miniTable .cbpes-mini-team-cell .club>a .cbpes-crest{flex:none}
+#miniTable .cbpes-mini-team-cell .table-coach{padding-left:25px;line-height:1.15}
+#miniTable .cbpes-liga-pro-mini .cbpes-form{justify-content:center;gap:3px;min-width:0}
+@media(max-width:450px){
+  #miniTable .cbpes-liga-pro-mini th:first-child,
+  #miniTable .cbpes-liga-pro-mini td:first-child{width:43%!important}
+  #miniTable .cbpes-liga-pro-mini th:nth-child(5),
+  #miniTable .cbpes-liga-pro-mini td:nth-child(5){width:25%!important}
+  #miniTable .cbpes-mini-team-cell{gap:3px}
+  #miniTable .cbpes-mini-team-cell .club>a{font-size:11px}
+}
