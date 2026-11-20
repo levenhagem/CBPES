@@ -2331,3 +2331,84 @@ button,.btn,input,select,textarea,
  #coachView .cbpes-coach-match-club{font-size:11px}
  #coachView .cbpes-coach-match-club .crest,#coachView .cbpes-coach-match-club .cbpes-crest{width:19px;height:19px}
 }
+
+/* Histórico do técnico v2 — placar rigidamente centralizado, independentemente
+   do comprimento dos nomes, com miniaturas dos temas das partidas. */
+#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px!important;
+ align-items:center!important;min-height:49px!important;
+ padding:5px 8px!important;margin:0 8px!important;gap:0!important;
+ width:auto!important;max-width:none!important;transform:none!important;
+ border:0;border-bottom:1px solid #e7edeb;box-shadow:none!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ grid-column:2!important;display:grid!important;
+ grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)!important;
+ width:100%!important;max-width:660px!important;margin:0 auto!important;
+ align-items:center!important;justify-content:stretch!important;
+ gap:0!important;text-align:initial!important;min-width:0;
+}
+#coachView .cbpes-coach-match-line>span:first-child,
+#coachView .cbpes-coach-match-side:first-child{
+ justify-self:stretch!important;align-items:flex-end!important;
+ text-align:right!important;min-width:0;
+}
+#coachView .cbpes-coach-match-line>span:last-child,
+#coachView .cbpes-coach-match-side:last-child{
+ justify-self:stretch!important;align-items:flex-start!important;
+ text-align:left!important;min-width:0;
+}
+#coachView .cbpes-coach-match-line>span:not(.cbpes-coach-match-side){
+ display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ grid-column:2!important;justify-self:center!important;align-self:center!important;
+ width:60px;min-width:60px;text-align:center!important;
+ font-size:15px!important;line-height:24px!important;letter-spacing:0;
+ font-variant-numeric:tabular-nums;font-weight:850!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side{display:flex!important;gap:2px!important}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-club{
+ display:inline-flex;max-width:100%;min-width:0;gap:5px;
+ align-items:center;white-space:nowrap;font-size:12px;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-club img{width:21px!important;height:21px!important;object-fit:contain}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side small{
+ max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{justify-self:start;font-size:9px}
+/* Mini tema oficial: azul escuro e detalhes frios, sem efeitos pesados. */
+#coachView .cbpes-coach-match-row.cbpes-coach-match-official{
+ background:linear-gradient(90deg,#112c4b,#183c65 50%,#112c4b)!important;
+ border-bottom-color:#335372!important;color:#f5f9ff;
+}
+#coachView .cbpes-coach-match-official .cbpes-coach-match-club,
+#coachView .cbpes-coach-match-official .cbpes-coach-match-score{color:#fff!important}
+#coachView .cbpes-coach-match-official .cbpes-coach-match-side small,
+#coachView .cbpes-coach-match-official .cbpes-coach-match-meta{color:#c5d7eb!important}
+/* Mini tema semanal: verde CBPES e acento amarelo. */
+#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{
+ background:linear-gradient(90deg,#074932,#086343 50%,#074932)!important;
+ border-bottom-color:#2a7755!important;color:#fff;
+}
+#coachView .cbpes-coach-match-weekly .cbpes-coach-match-club,
+#coachView .cbpes-coach-match-weekly .cbpes-coach-match-score{color:#fff!important}
+#coachView .cbpes-coach-match-weekly .cbpes-coach-match-side small,
+#coachView .cbpes-coach-match-weekly .cbpes-coach-match-meta{color:#d4eadb!important}
+#coachView .cbpes-coach-match-weekly .cbpes-coach-match-score{border-bottom:2px solid #e7bc48}
+/* Amistosos seguem neutros e leves. */
+#coachView .cbpes-coach-match-row.cbpes-coach-match-friendly{background:#fff!important}
+@media(max-width:640px){
+ #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ grid-template-columns:28px minmax(0,1fr) 0px!important;
+ padding:5px 3px!important;margin:0 3px!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ width:46px;min-width:46px;font-size:13px!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-club{font-size:10px;gap:3px}
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-club img{width:17px!important;height:17px!important}
+}
