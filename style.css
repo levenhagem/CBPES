@@ -1968,3 +1968,37 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 #coachView .cbpes-coach-record-l{color:#c34e4e}
 #coachView .cbpes-coach-record-divider{color:#b9c2c7}
 @media(max-width:700px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}#coachView .cbpes-coach-kpi{padding:14px 12px}#coachView .cbpes-coach-rivalry-card{padding:17px}}
+
+/* Técnico: rivalidades em faixas horizontais, com emojis e placar V–D. */
+#coachView .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+#coachView .cbpes-coach-rivalry-card{
+ display:flex;align-items:center;gap:16px;min-height:104px;padding:17px 20px;
+ border:1px solid #dfe8e6;border-left:4px solid #159965;border-top:1px solid #dfe8e6;
+ border-radius:12px;background:linear-gradient(105deg,#f0f9f5 0%,#fff 55%);
+ box-shadow:none;min-width:0
+}
+#coachView .cbpes-coach-rivalry-card.nemesis{
+ border-left-color:#c85a59;border-top:1px solid #ece2e2;
+ background:linear-gradient(105deg,#fff3f2 0%,#fff 55%)
+}
+#coachView .cbpes-coach-rivalry-icon{
+ flex:0 0 54px;width:54px;height:54px;display:grid;place-items:center;
+ border-radius:14px;background:#dff2e8;font-size:27px;line-height:1
+}
+#coachView .nemesis .cbpes-coach-rivalry-icon{background:#fae4e2}
+#coachView .cbpes-coach-rivalry-info{flex:1;min-width:0}
+#coachView .cbpes-coach-rivalry-label{display:block;color:#627681;font-size:10px;font-weight:850;letter-spacing:.09em}
+#coachView .cbpes-coach-rivalry-name{margin:7px 0 0;font-size:clamp(17px,2.2vw,23px);font-weight:850;line-height:1.2;color:#18343e;overflow-wrap:anywhere}
+#coachView .cbpes-coach-rivalry-empty{display:block;margin-top:6px;color:#72838b}
+#coachView .cbpes-coach-rivalry-record{display:flex;flex:0 0 auto;align-items:center;gap:10px;border-left:1px solid #e2e8e8;padding-left:20px}
+#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){display:flex;align-items:baseline;gap:4px;font-size:27px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
+#coachView .cbpes-coach-rivalry-record small{font-size:11px;font-weight:800;color:#72838b}
+#coachView .cbpes-coach-record-divider{color:#aeb9be;font-size:20px}
+@media(max-width:500px){
+ #coachView .cbpes-coach-rivalry-card{gap:10px;padding:13px 11px;min-height:85px}
+ #coachView .cbpes-coach-rivalry-icon{flex-basis:40px;width:40px;height:40px;border-radius:10px;font-size:22px}
+ #coachView .cbpes-coach-rivalry-record{gap:5px;padding-left:9px}
+ #coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:20px;gap:2px}
+ #coachView .cbpes-coach-rivalry-record small{font-size:9px}
+ #coachView .cbpes-coach-rivalry-name{font-size:16px}
+}
