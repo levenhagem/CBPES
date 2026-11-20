@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="cbpes-preboot">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBPES | Portal Oficial</title>
 <link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=liga-pro-squadra-2">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<style>
+/* Estilo crítico: impede o layout sem CSS e os cards vazios durante a inicialização. */
+html.cbpes-preboot body{background:#f2f4f5}
+html.cbpes-preboot header,html.cbpes-preboot .topline,html.cbpes-preboot main,html.cbpes-preboot footer{visibility:hidden!important}
+html.cbpes-preboot body::before{content:"";position:fixed;z-index:99999;inset:0;background:#f2f4f5}
+html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border:3px solid #d9e4df;border-top-color:#078a45;border-radius:50%;animation:cbpes-start-spin .9s linear infinite}
+@keyframes cbpes-start-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){html.cbpes-preboot body::after{animation:none;border-top-color:#078a45}}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -14,7 +23,7 @@
  <span class="season" id="season"></span>
 </div></header>
 <main>
-<div id="status" class="notice">Carregando dados do campeonato…</div>
+<div id="status" class="notice hidden" role="alert"></div>
 
 <section id="home" class="section">
  <div class="strip" id="strip"></div>
