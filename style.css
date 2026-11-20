@@ -1665,3 +1665,12 @@ body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Lato",Arial,sans-ser
 #strip .sc.sc-weekly{background:#002b36!important;border-left:3px solid #f2c500}
 #strip .sc.sc-friendly{background:#176b45!important;border-left:3px solid #49c38b}
 #strip .sc.sc-official{border-left:3px solid rgba(255,255,255,.6)}
+
+/* Mobile: competition menu is portaled to body to avoid nav horizontal-scroll clipping. */
+@media(max-width:700px){
+  body>#navCompetitionMenu.nav-competition-menu{position:fixed;z-index:1000;max-height:min(60vh,420px);overflow-y:auto;background:#071e3c;border:1px solid #315b88;border-top:3px solid #3691ff;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:5px 0}
+  body>#navCompetitionMenu.nav-competition-menu[hidden]{display:none!important}
+  body>#navCompetitionMenu.nav-competition-menu a{display:flex;flex-direction:column;gap:3px;padding:12px 15px;color:#fff;text-decoration:none;font:700 13px Barlow,sans-serif;border-bottom:1px solid rgba(180,213,255,.12)}
+  body>#navCompetitionMenu.nav-competition-menu small{font-size:11px;font-weight:500;color:#a9c8e9}
+  body>#navCompetitionMenu .nav-competition-empty{display:block;padding:12px 15px;color:#c5d9ef}
+}
