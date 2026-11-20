@@ -1647,3 +1647,21 @@ html,body,button,input,select,textarea{font-family:"Lexend",system-ui,sans-serif
 html,body,button,input,select,textarea{font-family:"Lato",Arial,sans-serif}
 #table[data-liga-pro="true"] #tableCompetitionName,
 body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Lato",Arial,sans-serif!important}
+
+
+/* Faixa de últimos resultados: identidade da competição em cada cartão. */
+#strip .sc.sc-themed{position:relative;isolation:isolate;overflow:hidden;color:#fff;border-right:3px solid rgba(255,255,255,.35);background:var(--strip-match-color,#002b36)}
+#strip .sc.sc-themed a,#strip .sc.sc-themed .sc-row b{color:inherit}
+#strip .sc.sc-themed .sc-meta{color:rgba(255,255,255,.8)}
+#strip .sc.sc-themed:hover{filter:brightness(1.1)}
+#strip .sc.sc-liga-pro{
+  background:radial-gradient(ellipse 85% 150% at 110% -35%,rgba(61,160,255,.32),transparent 65%),linear-gradient(115deg,#06143d,#08265c 47%,#06449c)!important;
+  border-left:3px solid #328cff;border-right:1px solid #1754a3;
+}
+#strip .sc.sc-liga-pro:before{
+  content:"";position:absolute;z-index:-1;right:-43px;top:-42px;width:105px;height:105px;
+  border:14px solid rgba(70,155,255,.12);border-radius:50%;pointer-events:none;
+}
+#strip .sc.sc-weekly{background:#002b36!important;border-left:3px solid #f2c500}
+#strip .sc.sc-friendly{background:#176b45!important;border-left:3px solid #49c38b}
+#strip .sc.sc-official{border-left:3px solid rgba(255,255,255,.6)}
