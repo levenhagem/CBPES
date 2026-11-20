@@ -2228,3 +2228,45 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 #coachView .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
 #coachView .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
+
+/* Perfil do técnico: empate é neutro, nunca verde. */
+#coachView .cbpes-coach-kpi.draws strong,
+#coachView .cbpes-coach-kpi.draws b{color:#77848c!important}
+
+/* Remapeamento do portal padrão: superfície plana, sem blocos de cor
+   ou "sombra sólida" atrás de elementos. Exclui home, técnicos e
+   páginas de competições personalizadas. */
+#games>.card,#stats .card,#weeklies .card,
+#participantView .card,#teamView .card{
+ background:#fff;border:1px solid #dce2e5;box-shadow:none;
+}
+#games>.card>.cardhead,#stats .card>.cardhead,
+#weeklies .card>.cardhead,#participantView .card>.cardhead,
+#teamView .card>.cardhead{
+ background:#fff;color:#17313a;border-top:1px solid #dce2e5;
+ border-bottom:1px solid #e4e8eb;box-shadow:none;
+}
+#games>.card>.cardhead h2,#stats .card>.cardhead h2,
+#weeklies .card>.cardhead h2,#participantView .card>.cardhead h2,
+#teamView .card>.cardhead h2{color:#17313a}
+#games .page-title,#stats .page-title,#weeklies .page-title,
+#participantView .page-title,#teamView .page-title{
+ background:transparent;border-left:0;border-bottom:1px solid #dce2e5;
+ box-shadow:none;padding:0 0 10px;
+}
+#games .page-title h1,#stats .page-title h1,#weeklies .page-title h1,
+#participantView .page-title h1,#teamView .page-title h1{color:#17313a}
+#games .cardbody,#stats .cardbody,#weeklies .cardbody,
+#participantView .cardbody,#teamView .cardbody{background:#fff}
+#games .btn,#stats .btn,#weeklies .btn,
+#participantView .btn,#teamView .btn{box-shadow:none}
+#games .filters button,#stats .filters button,#weeklies .filters button{
+ box-shadow:none;
+}
+#games .filters button.selected,#stats .filters button.selected,
+#weeklies .filters button.selected{
+ background:#eef2f4;color:#18343e;border-color:#c9d2d7;
+}
+/* Não neutralizar cards com identidade visual própria de competição. */
+#weeklies [class*="competition"],#weeklies [class*="copa-master"],
+#weeklies [class*="liga-pro"]{box-shadow:initial}
