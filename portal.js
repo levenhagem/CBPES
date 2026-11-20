@@ -567,25 +567,28 @@ function renderCoach(name) {
     const teams=(D.coachHistory||[]).filter(h=>String(h.coach_name||'').trim().toLocaleLowerCase()===k).map(h=>D.participants.find(t=>t.id===h.participant_id)?.name).filter(Boolean);
     return {games:games.length+imported.length,wins,draws,losses,trophies,teams:[...new Set(teams)]};
   };
-  const renderCoachComparison=(otherName)=>{
-    const out=root.querySelector('#coachCompareResult'); if(!out)return;
-    if(!otherName){out.innerHTML='<div class="admin-help">Selecione outro técnico para comparar as carreiras.</div>';return;}
-    const a=coachSummary(name), b=coachSummary(otherName), otherKey=otherName.toLocaleLowerCase();
-    let directW=0,directD=0,directL=0,directGames=0;
-    D.matches.filter(m=>m.played).forEach(m=>{
-      const h=String(m.home_coach_name||'').trim().toLocaleLowerCase(), aw=String(m.away_coach_name||'').trim().toLocaleLowerCase();
-      if(!((h===key&&aw===otherKey)||(h===otherKey&&aw===key)))return;
-      directGames++; const own=h===key?m.home_score:m.away_score, opp=h===key?m.away_score:m.home_score;
-      if(own>opp)directW++;else if(own<opp)directL++;else directD++;
-    });
-    careerArchive.forEach(m=>{
-      const h=String(m.home_coach||'').trim().toLocaleLowerCase(),aw=String(m.away_coach||'').trim().toLocaleLowerCase();
-      if(!((h===key&&aw===otherKey)||(h===otherKey&&aw===key)))return;
-      directGames++;const own=h===key?m.home_score:m.away_score,opp=h===key?m.away_score:m.home_score;
-      if(own>opp)directW++;else if(own<opp)directL++;else directD++;
-    });
-    const summary=(coachName,x)=>`<div class="card"><div class="cardhead"><h3>${esc(coachName)}</h3></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${x.games}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${x.wins}</b><span>Vitórias</span></div><div class="stat"><b>${x.draws}</b><span>Empates</span></div><div class="stat"><b class="res-l">${x.losses}</b><span>Derrotas</span></div></div><div class="player"><b>🏆 Troféus</b><span class="number">${x.trophies.length}</span></div><div class="player"><b>Times comandados</b><span class="number">${x.teams.length}</span></div><small>${x.teams.length?x.teams.map(esc).join(' • '):'Histórico de equipes não cadastrado'}</small><div class="player"><b>Conquistas</b><span class="number">${x.trophies.length}</span></div><small>${x.trophies.length?x.trophies.map(t=>esc(t.title)).join(' • '):'Nenhum troféu registrado'}</small></div></div>`;
-    out.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px">${summary(name,a)}${summary(otherName,b)}</div><div class="notice" style="margin-top:12px"><b>CONFRONTO DIRETO</b><br>${directGames?`${esc(name)}: ${directW} vitórias • ${directD} empates • ${directL} derrotas (${directGames} jogos)`:'Nenhum confronto direto registrado entre os dois técnicos.'}</div>`;
+  const renderCoachComparison=(otherName,mode='career')=>{
+    const out=root.querySelector('#coachCompareResult');if(!out)return;
+    if(!otherName){out.innerHTML='<div class="admin-help">Selecione outro técnico para comparar as estatísticas.</div>';return;}
+    const otherKey=otherName.trim().toLocaleLowerCase();
+    const allDirect=[
+      ...D.matches.filter(m=>m.played).map(m=>({h:String(m.home_coach_name||'').trim().toLocaleLowerCase(),a:String(m.away_coach_name||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score})),
+      ...careerArchive.map(m=>({h:String(m.home_coach||'').trim().toLocaleLowerCase(),a:String(m.away_coach||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score}))
+    ].filter(m=>(m.h===key&&m.a===otherKey)||(m.h===otherKey&&m.a===key));
+    const direct={games:allDirect.length,wins:0,draws:0,losses:0};
+    allDirect.forEach(m=>{const own=m.h===key?m.hs:m.as,opp=m.h===key?m.as:m.hs;if(own>opp)direct.wins++;else if(own<opp)direct.losses++;else direct.draws++;});
+    const a=mode==='direct'?direct:coachSummary(name);
+    const b=mode==='direct'?{games:direct.games,wins:direct.losses,draws:direct.draws,losses:direct.wins}:coachSummary(otherName);
+    const rate=x=>x.games?Math.round((x.wins*3+x.draws)/(x.games*3)*1000)/10:0;
+    const metrics=[['JOGOS',a.games,b.games],['VITÓRIAS',a.wins,b.wins],['EMPATES',a.draws,b.draws],['DERROTAS',a.losses,b.losses],['APROVEITAMENTO',rate(a),rate(b),'%']];
+    const bars=metrics.map(([label,av,bv,suffix=''])=>{
+      const total=av+bv,left=total?av/total*100:50,right=100-left;
+      return `<div class="cbpes-compare-metric"><div class="cbpes-compare-metric-head"><b>${av}${suffix}</b><span>${label}</span><b>${bv}${suffix}</b></div><div class="cbpes-compare-track" role="img" aria-label="${label}: ${esc(name)} ${av}${suffix}; ${esc(otherName)} ${bv}${suffix}"><span class="cbpes-compare-left" style="width:${left}%"></span><span class="cbpes-compare-right" style="width:${right}%"></span></div></div>`;
+    }).join('');
+    const trophiesA=coachSummary(name).trophies,trophiesB=coachSummary(otherName).trophies;
+    const trophies=(items)=>items.length?items.map(t=>`<div class="cbpes-compare-achievement">🏆 ${esc(t.title)}</div>`).join(''):'Nenhuma conquista registrada';
+    out.innerHTML=`<div class="cbpes-compare-modes" role="group" aria-label="Tipo de comparação"><button type="button" class="${mode==='career'?'active':''}" data-compare-mode="career" aria-pressed="${mode==='career'}">CARREIRA COMPLETA</button><button type="button" class="${mode==='direct'?'active':''}" data-compare-mode="direct" aria-pressed="${mode==='direct'}">CONFRONTO DIRETO</button></div><div class="cbpes-compare-board"><div class="cbpes-compare-names"><strong>${coachLink(name)}</strong><span>VS</span><strong>${coachLink(otherName)}</strong></div>${bars}<div class="cbpes-compare-legend"><span>■ ${esc(name)}</span><span>■ ${esc(otherName)}</span></div></div>${mode==='direct'&&!direct.games?'<div class="admin-help">Nenhuma partida entre estes técnicos foi registrada. As barras de comparação ficam neutras.</div>':''}<div class="cbpes-compare-achievements"><h3>CONQUISTAS</h3><div class="cbpes-compare-achievements-grid"><div><b>${esc(name)}</b>${trophies(trophiesA)}</div><div><b>${esc(otherName)}</b>${trophies(trophiesB)}</div></div></div>`;
+    out.querySelectorAll('[data-compare-mode]').forEach(btn=>btn.addEventListener('click',()=>renderCoachComparison(otherName,btn.dataset.compareMode)));
   };
   root.innerHTML=`<div class="page-title"><div><div class="eyebrow"><a href="#table">CLASSIFICAÇÃO</a> / PERFIL DO TÉCNICO</div><h1>${esc(name)}</h1><div class="sub">Trajetória e desempenho na carreira</div>${profile?.bio?`<p class="sub">${esc(profile.bio)}</p>`:''}</div></div>
   <div class="card cbpes-coach-performance"><div class="cardhead"><h2>ESTATÍSTICAS DA CARREIRA</h2></div><div class="cardbody"><div class="cbpes-coach-filter" role="group" aria-label="Filtrar estatísticas por categoria"><span>FILTRAR POR</span><label><input type="checkbox" data-coach-category="friendly" checked> AMISTOSOS</label><label><input type="checkbox" data-coach-category="official" checked> OFICIAIS</label><label><input type="checkbox" data-coach-category="weekly" checked> SEMANAIS</label></div><div class="cbpes-coach-kpi-grid"><div class="cbpes-coach-kpi games"><span class="cbpes-coach-kpi-label">JOGOS</span><strong>${careerGames}</strong><small>Partidas disputadas</small></div><div class="cbpes-coach-kpi wins"><span class="cbpes-coach-kpi-label">VITÓRIAS</span><strong>${v}</strong><small>${careerGames?Math.round(v/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi draws"><span class="cbpes-coach-kpi-label">EMPATES</span><strong>${e}</strong><small>${careerGames?Math.round(e/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi losses"><span class="cbpes-coach-kpi-label">DERROTAS</span><strong>${d}</strong><small>${careerGames?Math.round(d/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi efficiency"><span class="cbpes-coach-kpi-label">APROVEITAMENTO</span><strong>0%</strong><small></small></div></div><div class="cbpes-coach-performance-bar" aria-label="Distribuição de resultados"><span class="wins" style="width:${careerGames?v/careerGames*100:0}%"></span><span class="draws" style="width:${careerGames?e/careerGames*100:0}%"></span><span class="losses" style="width:${careerGames?d/careerGames*100:0}%"></span></div></div></div>
@@ -593,25 +596,31 @@ function renderCoach(name) {
   <div class="card cbpes-coach-trophies" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card cbpes-coach-teams" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card cbpes-coach-compare" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"><div class="admin-help">Compare retrospecto, títulos, equipes comandadas e confrontos diretos.</div></div></div></div>
   <div class="card cbpes-coach-history" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score"><span class="coach-career-result" style="color:${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#16804b':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#c63d3d':'inherit'}">${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'V':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'D':'E'}</span> ${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
-  // Histórico único: partidas cadastradas e registros importados, limitado a cinco inicialmente.
-  const historyCard=[...root.querySelectorAll('.card')].find(c=>c.querySelector('.cardhead h2')?.textContent?.includes('PARTIDAS NA CARREIRA'));
+  // Separa partidas competitivas e amistosos, cada categoria com sua própria expansão.
+  const historyCard=root.querySelector('.cbpes-coach-history');
   if(historyCard){
     const body=historyCard.querySelector('.cardbody');
-    if(body && historicResults)body.insertAdjacentHTML('beforeend',historicResults);
-    const rows=[...historyCard.querySelectorAll('.result-row')];
-    rows.forEach((row,i)=>{if(i>=5){row.hidden=true;row.classList.add('cbpes-coach-history-extra');}});
-    if(rows.length>5){
-      const more=document.createElement('button');
-      more.type='button';more.className='cbpes-coach-history-toggle';more.textContent='EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';
-      more.setAttribute('aria-expanded','false');
-      more.addEventListener('click',()=>{
-        const expanded=more.getAttribute('aria-expanded')!=='true';
-        rows.slice(5).forEach(row=>{row.hidden=!expanded;});
-        more.setAttribute('aria-expanded',String(expanded));
-        more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';
-      });
-      body.appendChild(more);
-    }
+    const existing=[...body.querySelectorAll('.result-row')];
+    const officialRows=existing.filter((row,i)=>matches[i]?.category!=='friendly');
+    const friendlyRows=existing.filter((row,i)=>matches[i]?.category==='friendly');
+    const makeSection=(title,rows)=>{
+      const section=document.createElement('section');section.className='cbpes-coach-history-section';
+      const heading=document.createElement('h3');heading.textContent=title;section.appendChild(heading);
+      rows.forEach((row,i)=>{row.hidden=i>=5;section.appendChild(row);});
+      if(rows.length>5){
+        const more=document.createElement('button');more.type='button';more.className='cbpes-coach-history-toggle';
+        more.textContent='EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';more.setAttribute('aria-expanded','false');
+        more.addEventListener('click',()=>{const expanded=more.getAttribute('aria-expanded')!=='true';rows.slice(5).forEach(row=>row.hidden=!expanded);more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';});
+        section.appendChild(more);
+      }
+      if(!rows.length){const emptyText=document.createElement('p');emptyText.className='cbpes-coach-history-empty';emptyText.textContent='Nenhuma partida registrada nesta categoria.';section.appendChild(emptyText);}
+      body.appendChild(section);
+    };
+    body.innerHTML='';
+    makeSection('PARTIDAS OFICIAIS / SEMANAIS',officialRows);
+    const imported=document.createElement('div');imported.innerHTML=historicResults;
+    makeSection('PARTIDAS AMISTOSAS',[...friendlyRows,...imported.querySelectorAll('.result-row')]);
+    historyCard.querySelector('.cardhead h2').textContent='HISTÓRICO DO TÉCNICO';
   }
   root.insertAdjacentHTML('beforeend',careerArchiveNotice());
   const updateCoachCareerStats=()=>{
