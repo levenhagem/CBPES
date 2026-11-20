@@ -658,11 +658,21 @@ function renderCoach(name) {
 
 function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
-  route();
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
-    D = await load(); await loadCareerArchive(); $('status').classList.add('hidden'); renderAll();
-  } catch (e) { $('status').textContent = 'Não foi possível carregar os dados: ' + (e.message || e); }
+    D = await load();
+    // O arquivo de histórico é complementar: não deve bloquear a exibição do portal.
+    try { await loadCareerArchive(); } catch (archiveError) { console.warn('Histórico complementar indisponível:', archiveError); }
+    renderAll();
+    route();
+    $('status').classList.add('hidden');
+  } catch (e) {
+    const status=$('status');
+    status.textContent='Não foi possível carregar os dados: ' + (e.message || e);
+    status.classList.remove('hidden');
+  } finally {
+    document.documentElement.classList.remove('cbpes-preboot');
+  }
 }
 boot();
 setInterval(async () => { if (D && !document.hidden) { try { D = await load(); await loadCareerArchive(); renderAll(); } catch (e) {} } }, 60000);
