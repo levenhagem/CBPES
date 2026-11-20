@@ -2412,3 +2412,60 @@ button,.btn,input,select,textarea,
  #coachView .cbpes-coach-match-row .cbpes-coach-match-club{font-size:10px;gap:3px}
  #coachView .cbpes-coach-match-row .cbpes-coach-match-club img{width:17px!important;height:17px!important}
 }
+
+/* Histórico técnico v3: linhas retas, competição à esquerda, placar estável. */
+#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ grid-template-columns:minmax(110px,190px) minmax(0,1fr)!important;
+ border-radius:0!important;margin:0!important;padding:6px 12px!important;
+ min-height:51px!important;column-gap:12px!important;
+ box-shadow:none!important;overflow:hidden;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ grid-column:1;display:block;min-width:0;max-width:100%;
+ font-size:10px!important;font-weight:750;line-height:1.25;
+ letter-spacing:0!important;white-space:normal;overflow-wrap:break-word;
+ text-align:left!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ grid-column:2!important;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;
+ max-width:none!important;min-width:0!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-line>span:first-child{
+ justify-self:stretch!important;text-align:right!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-line>span:last-child{
+ justify-self:stretch!important;text-align:left!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ grid-column:2!important;justify-self:center!important;
+ width:62px!important;min-width:62px!important;
+ border-radius:0!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-club,
+#coachView .cbpes-coach-match-row .cbpes-coach-match-side,
+#coachView .cbpes-coach-match-row .cbpes-coach-match-club img{
+ border-radius:0!important;box-shadow:none!important;
+}
+#coachView .cbpes-coach-match-row.cbpes-coach-match-official,
+#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{
+ border-left:3px solid #a5c5d9!important;
+}
+#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{border-left-color:#e0b947!important}
+#coachView .cbpes-coach-match-row.cbpes-coach-match-friendly{
+ grid-template-columns:minmax(110px,190px) minmax(0,1fr)!important;
+ border-left:0!important;
+}
+#coachView .cbpes-coach-match-friendly .cbpes-coach-match-meta:empty{display:block}
+@media(max-width:640px){
+ #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ grid-template-columns:minmax(65px,90px) minmax(0,1fr)!important;
+ column-gap:5px!important;padding:6px 5px!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-meta{font-size:8px!important}
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr)!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ width:43px!important;min-width:43px!important;
+ }
+}
