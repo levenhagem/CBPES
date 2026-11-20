@@ -1826,3 +1826,39 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 .cbpes-master-demo-score{text-align:center;color:#fff7e9;font-size:28px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cbpes-master-demo-score span{color:#f4ad24;font-size:18px;margin:0 9px}
 @media(max-width:620px){.cbpes-master-match-demo{padding:10px 11px 15px}.cbpes-master-match-main{grid-template-columns:minmax(0,1fr) 85px minmax(0,1fr);gap:5px}.cbpes-master-demo-team strong{font-size:13px}.cbpes-master-demo-score{font-size:23px}.cbpes-master-demo-score span{margin:0 4px;font-size:13px}}
+
+/* Copa Master — estrela monumental em marca-d'água nos cards de partida. */
+.cbpes-copa-master-page #table .cbpes-match,
+.cbpes-copa-master-page #table .cbpes-master-match-demo{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+.cbpes-copa-master-page #table .cbpes-match::before,
+.cbpes-copa-master-page #table .cbpes-master-match-demo::after{
+  content:"★";
+  position:absolute;
+  z-index:0;
+  right:-22px;
+  top:50%;
+  transform:translateY(-50%) rotate(45deg);
+  font-family:Georgia,serif;
+  font-size:clamp(130px,22vw,260px);
+  line-height:1;
+  color:rgba(244,173,36,.105);
+  pointer-events:none;
+  user-select:none;
+}
+.cbpes-copa-master-page #table .cbpes-match > *,
+.cbpes-copa-master-page #table .cbpes-master-match-demo > *{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:620px){
+  .cbpes-copa-master-page #table .cbpes-match::before,
+  .cbpes-copa-master-page #table .cbpes-master-match-demo::after{
+    right:-25px;
+    font-size:155px;
+    color:rgba(244,173,36,.085);
+  }
+}
