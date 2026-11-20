@@ -1631,3 +1631,9 @@ body.cbpes-liga-pro-page #tableCompetitionName{
   font-style:normal!important;
   font-synthesis:none;
 }
+
+
+/* Experimento tipográfico global: Akt em todo o portal CBPES.
+   As cores, tamanhos, pesos e layout continuam definidos pelos estilos existentes. */
+:root{--f:"Akt",system-ui,sans-serif;--fc:"Akt",system-ui,sans-serif}
+html,body,button,input,select,textarea{font-family:"Akt",system-ui,sans-serif}
