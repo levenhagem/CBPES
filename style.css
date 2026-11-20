@@ -2038,3 +2038,25 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
  #coachView .cbpes-coach-rivalry-card,#coachView .cbpes-coach-rivalry-card.nemesis{padding:14px}
  #coachView .cbpes-coach-rivalry-record{justify-content:flex-start;padding-left:55px}
 }
+
+/* Filtros multisseleção e quinto indicador da carreira. */
+#coachView .cbpes-coach-filter{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-bottom:17px}
+#coachView .cbpes-coach-filter>span{font-size:10px;font-weight:850;letter-spacing:.09em;color:#70818a;margin-right:5px}
+#coachView .cbpes-coach-filter label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:8px 11px;border:1px solid #dce6e9;border-radius:8px;background:#f7f9fa;color:#29414c;font-size:11px;font-weight:800;letter-spacing:.035em}
+#coachView .cbpes-coach-filter label:has(input:checked){border-color:#9dcfbb;background:#eaf6f0;color:#08784c}
+#coachView .cbpes-coach-filter input{accent-color:#0b9458;margin:0;width:14px;height:14px;cursor:pointer}
+#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+#coachView .cbpes-coach-kpi.efficiency strong{color:#176c91}
+#coachView .cbpes-coach-rivalry-card,
+#coachView .cbpes-coach-rivalry-card.nemesis{
+ display:flex;align-items:center;gap:12px;padding:17px 18px;min-height:85px
+}
+#coachView .cbpes-coach-rivalry-icon{flex:0 0 42px}
+#coachView .cbpes-coach-rivalry-info{flex:1;min-width:0}
+#coachView .cbpes-coach-rivalry-record{
+ flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;
+ border-top:0;border-left:1px solid #e8eef0;padding:0 0 0 14px;gap:7px
+}
+#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:24px}
+@media(max-width:900px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}#coachView .cbpes-coach-rivalry-record{padding-left:10px}#coachView .cbpes-coach-filter>span{width:100%}}
