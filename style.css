@@ -2211,3 +2211,15 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-compare-board{border-color:#cddfd2}
 #coachView .cbpes-compare-achievements{border-color:#d5e6da}
 #coachView .cbpes-coach-history-toggle{background:#087b4d;color:#fff}
+
+/* Confronto direto: jogos e empates são iguais para ambos, barra neutra. */
+#coachView .cbpes-compare-track.cbpes-compare-track-neutral{
+ background:#fff;border:1px solid #087b4d;height:13px;
+}
+#coachView .cbpes-compare-track-neutral .cbpes-compare-left,
+#coachView .cbpes-compare-track-neutral .cbpes-compare-right{
+ background:transparent!important;
+}
+#coachView .cbpes-compare-track-neutral .cbpes-compare-left{
+ border-right:1px solid #087b4d;
+}
