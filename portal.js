@@ -485,10 +485,30 @@ function renderCoach(name) {
     const rec=coachOpponents.get(opponentKey), own=ownHome?m.home_score:m.away_score, other=ownHome?m.away_score:m.home_score;
     if(own>other)rec.wins++;else if(own<other)rec.losses++;else rec.draws++;
   });
+  historicCoach.forEach(m => {
+    const homeKey=String(m.home_coach||'').trim().toLocaleLowerCase();
+    const awayKey=String(m.away_coach||'').trim().toLocaleLowerCase();
+    const ownHome=homeKey===key, ownAway=awayKey===key;
+    if(ownHome===ownAway)return;
+    const opponent=ownHome?String(m.away_coach||'').trim():String(m.home_coach||'').trim();
+    if(!opponent)return;
+    const opponentKey=opponent.toLocaleLowerCase();
+    if(!coachOpponents.has(opponentKey))coachOpponents.set(opponentKey,{name:opponent,wins:0,losses:0,draws:0});
+    const rec=coachOpponents.get(opponentKey),own=ownHome?m.home_score:m.away_score,other=ownHome?m.away_score:m.home_score;
+    if(own>other)rec.wins++;else if(own<other)rec.losses++;else rec.draws++;
+  });
   const opponentRecords=[...coachOpponents.values()].filter(x=>x.wins+x.losses+x.draws>0);
   const bestVictim=opponentRecords.filter(x=>x.wins>x.losses).sort((a,b)=>(b.wins-b.losses)-(a.wins-a.losses)||b.wins-a.wins||a.name.localeCompare(b.name))[0];
   const biggestNemesis=opponentRecords.filter(x=>x.losses>x.wins).sort((a,b)=>(b.losses-b.wins)-(a.losses-a.wins)||b.losses-a.losses||a.name.localeCompare(b.name))[0];
   const coachRivalryCard=(title,rec,emptyText)=>`<div class="stat cbpes-rivalry"><span class="cbpes-rivalry-title">${title}</span><b class="cbpes-rivalry-name">${rec?esc(rec.name):'—'}</b><small>${rec?`<strong class="res-w">${rec.wins} V</strong> · <strong class="res-l">${rec.losses} D</strong>`:emptyText}</small></div>`;
+  const historicResults=historicCoach.map(m=>{
+    const isHome=String(m.home_coach||'').trim().toLocaleLowerCase()===key;
+    const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;
+    const result=own>other?'V':own<other?'D':'E';
+    const opponent=isHome?m.away_coach:m.home_coach;
+    const club=isHome?m.home_club:m.away_club;
+    return `<div class="result-row"><div class="round-label tag-friendly">AMIS</div><div class="result-teams"><b>${esc(name)}</b> x ${coachLink(opponent)}<small>Amistoso histórico${club?' • '+esc(club):''}</small></div><div class="result-score"><span class="${result==='V'?'res-w':result==='D'?'res-l':''}">${result}</span> ${own} – ${other}</div></div>`;
+  }).join('');
   const coachTrophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.awarded_on||'').localeCompare(a.awarded_on||''));
   const profile=(D.coachProfiles||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase()===key);
   const career=assignments.length?assignments.map(h=>{const t=D.participants.find(p=>p.id===h.participant_id);return `<div class="player"><div><b>${t?`<a href="#team/${t.id}">${esc(t.name)}</a>`:'Time removido'}</b><small>${fd(h.started_on)} – ${h.ended_on?fd(h.ended_on):'Atual'}</small></div><span class="pill">${h.ended_on?'ANTERIOR':'ATUAL'}</span></div>`;}).join(''):empty('Nenhum vínculo histórico cadastrado para este técnico.');
@@ -503,9 +523,11 @@ function renderCoach(name) {
     const games=D.matches.filter(m=>m.played && [m.home_coach_name,m.away_coach_name].some(n=>String(n||'').trim().toLocaleLowerCase()===k));
     let wins=0,draws=0,losses=0;
     games.forEach(m=>{const isHome=String(m.home_coach_name||'').trim().toLocaleLowerCase()===k;const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;if(own>other)wins++;else if(own<other)losses++;else draws++;});
+    const imported=careerArchive.filter(m=>[m.home_coach,m.away_coach].some(n=>String(n||'').trim().toLocaleLowerCase()===k));
+    imported.forEach(m=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===k;const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;if(own>opp)wins++;else if(own<opp)losses++;else draws++;});
     const trophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===k);
     const teams=(D.coachHistory||[]).filter(h=>String(h.coach_name||'').trim().toLocaleLowerCase()===k).map(h=>D.participants.find(t=>t.id===h.participant_id)?.name).filter(Boolean);
-    return {games:games.length,wins,draws,losses,trophies,teams:[...new Set(teams)]};
+    return {games:games.length+imported.length,wins,draws,losses,trophies,teams:[...new Set(teams)]};
   };
   const renderCoachComparison=(otherName)=>{
     const out=root.querySelector('#coachCompareResult'); if(!out)return;
@@ -518,6 +540,12 @@ function renderCoach(name) {
       directGames++; const own=h===key?m.home_score:m.away_score, opp=h===key?m.away_score:m.home_score;
       if(own>opp)directW++;else if(own<opp)directL++;else directD++;
     });
+    careerArchive.forEach(m=>{
+      const h=String(m.home_coach||'').trim().toLocaleLowerCase(),aw=String(m.away_coach||'').trim().toLocaleLowerCase();
+      if(!((h===key&&aw===otherKey)||(h===otherKey&&aw===key)))return;
+      directGames++;const own=h===key?m.home_score:m.away_score,opp=h===key?m.away_score:m.home_score;
+      if(own>opp)directW++;else if(own<opp)directL++;else directD++;
+    });
     const summary=(coachName,x)=>`<div class="card"><div class="cardhead"><h3>${esc(coachName)}</h3></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${x.games}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${x.wins}</b><span>Vitórias</span></div><div class="stat"><b>${x.draws}</b><span>Empates</span></div><div class="stat"><b class="res-l">${x.losses}</b><span>Derrotas</span></div></div><div class="player"><b>🏆 Troféus</b><span class="number">${x.trophies.length}</span></div><div class="player"><b>Times comandados</b><span class="number">${x.teams.length}</span></div><small>${x.teams.length?x.teams.map(esc).join(' • '):'Histórico de equipes não cadastrado'}</small><div class="player"><b>Conquistas</b><span class="number">${x.trophies.length}</span></div><small>${x.trophies.length?x.trophies.map(t=>esc(t.title)).join(' • '):'Nenhum troféu registrado'}</small></div></div>`;
     out.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px">${summary(name,a)}${summary(otherName,b)}</div><div class="notice" style="margin-top:12px"><b>CONFRONTO DIRETO</b><br>${directGames?`${esc(name)}: ${directW} vitórias • ${directD} empates • ${directL} derrotas (${directGames} jogos)`:'Nenhum confronto direto registrado entre os dois técnicos.'}</div>`;
   };
@@ -527,7 +555,7 @@ function renderCoach(name) {
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"><div class="admin-help">Compare retrospecto, títulos, equipes comandadas e confrontos diretos.</div></div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score"><span class="coach-career-result" style="color:${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#16804b':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#c63d3d':'inherit'}">${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'V':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'D':'E'}</span> ${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
-  root.insertAdjacentHTML('beforeend',careerArchiveNotice()+archiveCard(historicCoach,m=>String(m.home_coach||'').trim().toLocaleLowerCase()===key?'home':'away','PARTIDAS HISTÓRICAS IMPORTADAS'));
+  if(historicResults) { const cards=root.querySelectorAll('.card'); const historyCard=[...cards].find(c=>c.querySelector('.cardhead h2')?.textContent?.includes('HISTÓRICO DE PARTIDAS')); if(historyCard){const body=historyCard.querySelector('.cardbody'); if(body)body.insertAdjacentHTML('beforeend',historicResults); const pill=historyCard.querySelector('.pill');if(pill)pill.textContent=careerGames+' JOGOS';} else root.insertAdjacentHTML('beforeend',`<div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE PARTIDAS</h2><span class="pill">${careerGames} JOGOS</span></div><div class="cardbody">${historicResults}</div></div>`); } root.insertAdjacentHTML('beforeend',careerArchiveNotice());
   const compareSelect=root.querySelector('#coachCompareWith');
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
