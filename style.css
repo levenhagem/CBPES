@@ -2145,3 +2145,38 @@ button,.btn,input,select,textarea,
 /* Elementos redondos funcionais (avatares, indicadores circulares) permanecem circulares. */
 .avatar,.avatar img,[class*="avatar"],[class*="Avatar"],.status-dot,.online-dot,
 [class*="spinner"],[class*="Spinner"]{border-radius:50%!important}
+
+/* Técnico: histórico separado e comparação em barras proporcionais. */
+#coachView .cbpes-coach-history-section{margin-bottom:19px;border:1px solid #e0e8e7;border-radius:4px;overflow:hidden}
+#coachView .cbpes-coach-history-section:last-child{margin-bottom:0}
+#coachView .cbpes-coach-history-section>h3{margin:0;padding:13px 14px;background:#f2f7f4;border-bottom:1px solid #dfe9e3;color:#173c2c;font-size:12px;font-weight:850;letter-spacing:.04em}
+#coachView .cbpes-coach-history-section>.result-row{margin:0 12px}
+#coachView .cbpes-coach-history-section>.result-row[hidden]{display:none!important}
+#coachView .cbpes-coach-history-empty{padding:15px;color:#71828a;font-size:12px;margin:0}
+#coachView .cbpes-coach-history-section .cbpes-coach-history-toggle{width:calc(100% - 24px);margin:12px}
+#coachView .cbpes-compare-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+#coachView .cbpes-compare-modes button{padding:10px 13px;border:1px solid #d2dfd9;border-radius:4px;background:#f3f6f5;color:#466255;font-size:11px;font-weight:850;cursor:pointer}
+#coachView .cbpes-compare-modes button.active{background:#086b43;border-color:#086b43;color:white}
+#coachView .cbpes-compare-board{padding:18px;border:1px solid #dce7e2;border-radius:4px;background:#fff}
+#coachView .cbpes-compare-names{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:23px;color:#17333d}
+#coachView .cbpes-compare-names strong{font-size:17px;overflow-wrap:anywhere}
+#coachView .cbpes-compare-names strong:last-child{text-align:right}
+#coachView .cbpes-compare-names>span{font-size:10px;font-weight:850;color:#82918b}
+#coachView .cbpes-compare-metric{margin-bottom:19px}
+#coachView .cbpes-compare-metric-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:8px;margin-bottom:8px}
+#coachView .cbpes-compare-metric-head b{font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;color:#086b43}
+#coachView .cbpes-compare-metric-head b:last-child{text-align:right;color:#b88418}
+#coachView .cbpes-compare-metric-head span{font-size:10px;font-weight:850;color:#637881;letter-spacing:.055em}
+#coachView .cbpes-compare-track{display:flex;width:100%;height:13px;overflow:hidden;background:#e7eeeb;border-radius:3px}
+#coachView .cbpes-compare-left{background:#087b4d;height:100%}
+#coachView .cbpes-compare-right{background:#e3aa36;height:100%}
+#coachView .cbpes-compare-legend{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:750;color:#657b79}
+#coachView .cbpes-compare-legend span:first-child{color:#087b4d}
+#coachView .cbpes-compare-legend span:last-child{color:#b88418}
+#coachView .cbpes-compare-achievements{margin-top:16px;padding:17px;border:1px solid #dce7e2;border-radius:4px}
+#coachView .cbpes-compare-achievements h3{margin:0 0 14px;font-size:12px;color:#17333d}
+#coachView .cbpes-compare-achievements-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#coachView .cbpes-compare-achievements-grid>div{min-width:0}
+#coachView .cbpes-compare-achievements-grid>div>b{display:block;margin-bottom:9px;font-size:12px;color:#23433d}
+#coachView .cbpes-compare-achievement{padding:9px 10px;margin-bottom:7px;background:#f6f9f7;border:1px solid #e2ebe5;border-radius:4px;font-size:12px;overflow-wrap:anywhere}
+@media(max-width:640px){#coachView .cbpes-compare-board{padding:12px}#coachView .cbpes-compare-achievements-grid{gap:9px}#coachView .cbpes-compare-names strong{font-size:14px}#coachView .cbpes-coach-history-section>.result-row{margin:0 6px}}
