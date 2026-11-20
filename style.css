@@ -2537,3 +2537,43 @@ button,.btn,input,select,textarea,
  max-width:18px!important;max-height:18px!important;
  }
 }
+
+/* Temas das competições: transição suave somente no conteúdo.
+   A navegação mantém SEMPRE a identidade original do CBPES. */
+body{transition:background-color .35s ease,color .25s ease}
+main{transition:background-color .35s ease,color .3s ease}
+main>.section.active{animation:cbpes-theme-enter .34s cubic-bezier(.2,.65,.3,1) both}
+@keyframes cbpes-theme-enter{
+ from{opacity:.35;transform:translateY(7px)}
+ to{opacity:1;transform:translateY(0)}
+}
+/* Isola os tokens da navegação dos tokens sobrescritos pelos temas. */
+body>header{
+ --navy:#002b36;--ink:#14232b;--muted:#66767f;
+ --line:#dde2e5;--bg:#f2f4f5;--white:#fff;--soft:#eef2f4;
+ --blue:#173d70;--green:#078a45;--yellow:#f2c500;
+ background:#002b36!important;color:#fff!important;
+ transition:none!important;
+}
+body>.topline{
+ background:linear-gradient(112deg,#078a45 0 34%,#f2c500 34% 62%,#002b36 62%)!important;
+}
+body>header .brand,body>header .brandname{color:#fff!important}
+body>header .brand small,body>header .season{color:#9db4bb!important}
+body>header #nav button{
+ background:transparent!important;color:#c3d1d6!important;
+ border-bottom-color:transparent!important;box-shadow:none!important;
+}
+body>header #nav button:hover{color:#fff!important}
+body>header #nav button.active{
+ color:#fff!important;border-bottom-color:#f2c500!important;
+}
+body>header #navCompetitionMenu{
+ --navy:#002b36;--ink:#14232b;--muted:#66767f;
+ --line:#dde2e5;--bg:#f2f4f5;--white:#fff;--soft:#eef2f4;
+ --blue:#173d70;--green:#078a45;--yellow:#f2c500;
+}
+@media(prefers-reduced-motion:reduce){
+ body,main{transition:none!important}
+ main>.section.active{animation:none!important}
+}
