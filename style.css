@@ -2186,3 +2186,29 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-compare-metric-head b.cbpes-compare-lower:last-child{
  font-size:15px;font-weight:650;color:#92a0a3;opacity:.82;
 }
+
+/* EXPERIMENTO CBPES: identidade verde mais presente no portal.
+   Não modifica a identidade própria das competições nem cards temáticos. */
+body:not(.cbpes-copa-master-page){--green:#087b4d}
+body:not(.cbpes-copa-master-page) header{background:#063c30}
+body:not(.cbpes-copa-master-page) nav button.active{border-bottom-color:#29b76b;background:rgba(25,153,91,.15)}
+body:not(.cbpes-copa-master-page) nav button:hover{background:rgba(32,161,99,.12)}
+body:not(.cbpes-copa-master-page) .page-title{border-bottom:2px solid #b7d9c8}
+body:not(.cbpes-copa-master-page) .page-title h1{color:#0a5137}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"])>.cardhead{border-top-color:#087b4d}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"])>.cardhead h2{color:#075a3a}
+body:not(.cbpes-copa-master-page) .btn.primary{background:#087b4d;border-color:#087b4d}
+body:not(.cbpes-copa-master-page) .btn.primary:hover{background:#055f3a;border-color:#055f3a}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]){border-color:#d5e4dc}
+body:not(.cbpes-copa-master-page) .strip{border-top:3px solid #087b4d}
+body:not(.cbpes-copa-master-page) .sc:hover{background:#eff8f2}
+body:not(.cbpes-copa-master-page) .sc-end{color:#087b4d}
+body:not(.cbpes-copa-master-page) .link{color:#087b4d}
+body:not(.cbpes-copa-master-page) .btn:not(.primary):not(.danger):hover{border-color:#087b4d;color:#087b4d;background:#f0f8f3}
+body:not(.cbpes-copa-master-page) input:focus-visible,
+body:not(.cbpes-copa-master-page) select:focus-visible,
+body:not(.cbpes-copa-master-page) textarea:focus-visible,
+body:not(.cbpes-copa-master-page) button:focus-visible{outline:2px solid #087b4d;outline-offset:2px}
+body:not(.cbpes-copa-master-page) .latest-match{border-left:5px solid #11975b}
+body:not(.cbpes-copa-master-page) .latest-match:before{background:linear-gradient(110deg,transparent 0 30%,rgba(7,138,69,.8) 30% 55%,rgba(242,197,0,.36) 55% 70%,transparent 70%)}
+body:not(.cbpes-copa-master-page) footer{border-top-color:#b7d9c8}
