@@ -2212,3 +2212,34 @@ body:not(.cbpes-copa-master-page) button:focus-visible{outline:2px solid #087b4d
 body:not(.cbpes-copa-master-page) .latest-match{border-left:5px solid #11975b}
 body:not(.cbpes-copa-master-page) .latest-match:before{background:linear-gradient(110deg,transparent 0 30%,rgba(7,138,69,.8) 30% 55%,rgba(242,197,0,.36) 55% 70%,transparent 70%)}
 body:not(.cbpes-copa-master-page) footer{border-top-color:#b7d9c8}
+
+/* CBPES — segunda etapa: superfícies verdes em vez de apenas detalhes.
+   Reversível; preserva temas de competição e cards de partidas coloridos. */
+body:not(.cbpes-copa-master-page){background:#e8f1eb}
+body:not(.cbpes-copa-master-page) main{background:transparent}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]):not([class*="competition"]){background:#f7fbf8;border-color:#bfd8c9}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]):not([class*="competition"])>.cardhead{
+ background:#086b43;border-top-color:#0ca063;border-bottom-color:#086b43;color:#fff
+}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]):not([class*="competition"])>.cardhead h2,
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]):not([class*="competition"])>.cardhead h3{color:#fff}
+body:not(.cbpes-copa-master-page) .card:not(.cbpes-match):not([class*="copa-master"]):not([class*="liga-pro"]):not([class*="competition"])>.cardbody{background:#f7fbf8}
+body:not(.cbpes-copa-master-page) .page-title{background:linear-gradient(90deg,#d4e9db,#edf6ef 75%);padding:14px 16px;border-left:5px solid #087b4d;border-bottom:1px solid #bfd8c9}
+body:not(.cbpes-copa-master-page) .strip{background:#f1f8f3;border-color:#b9d7c5}
+body:not(.cbpes-copa-master-page) .sc{background:#f1f8f3;border-right-color:#c8ddcf}
+body:not(.cbpes-copa-master-page) .sc:hover{background:#d8eedf}
+body:not(.cbpes-copa-master-page) .notice:not([class*="copa-master"]):not([class*="liga-pro"]){background:#edf7ef;border-color:#c5dfcd;border-left-color:#0b8b50}
+body:not(.cbpes-copa-master-page) .pill:not([class*="copa-master"]):not([class*="liga-pro"]){background:#dcefe3;color:#08613e}
+body:not(.cbpes-copa-master-page) .latest-match{background:#064734}
+body:not(.cbpes-copa-master-page) .latest-top{color:#bde0c9}
+body:not(.cbpes-copa-master-page) .latest-score small{color:#bde0c9}
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-performance>.cardhead,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-trophies>.cardhead,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-teams>.cardhead,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-compare>.cardhead,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-history>.cardhead{background:#086b43;color:#fff}
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-performance>.cardhead h2,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-trophies>.cardhead h2,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-teams>.cardhead h2,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-compare>.cardhead h2,
+body:not(.cbpes-copa-master-page) #coachView .cbpes-coach-history>.cardhead h2{color:#fff}
