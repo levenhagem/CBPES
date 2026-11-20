@@ -559,13 +559,13 @@ function renderCoach(name) {
   const coachSummary=(coachName)=>{
     const k=coachName.toLocaleLowerCase();
     const games=D.matches.filter(m=>m.played && [m.home_coach_name,m.away_coach_name].some(n=>String(n||'').trim().toLocaleLowerCase()===k));
-    let wins=0,draws=0,losses=0;
-    games.forEach(m=>{const isHome=String(m.home_coach_name||'').trim().toLocaleLowerCase()===k;const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;if(own>other)wins++;else if(own<other)losses++;else draws++;});
+    let wins=0,draws=0,losses=0,goalsFor=0,goalsAgainst=0;
+    games.forEach(m=>{const isHome=String(m.home_coach_name||'').trim().toLocaleLowerCase()===k;const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;goalsFor+=Number(own)||0;goalsAgainst+=Number(other)||0;if(own>other)wins++;else if(own<other)losses++;else draws++;});
     const imported=careerArchive.filter(m=>[m.home_coach,m.away_coach].some(n=>String(n||'').trim().toLocaleLowerCase()===k));
-    imported.forEach(m=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===k;const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;if(own>opp)wins++;else if(own<opp)losses++;else draws++;});
+    imported.forEach(m=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===k;const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;goalsFor+=Number(own)||0;goalsAgainst+=Number(opp)||0;if(own>opp)wins++;else if(own<opp)losses++;else draws++;});
     const trophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===k);
     const teams=(D.coachHistory||[]).filter(h=>String(h.coach_name||'').trim().toLocaleLowerCase()===k).map(h=>D.participants.find(t=>t.id===h.participant_id)?.name).filter(Boolean);
-    return {games:games.length+imported.length,wins,draws,losses,trophies,teams:[...new Set(teams)]};
+    return {games:games.length+imported.length,wins,draws,losses,goalsFor,goalsAgainst,trophies,teams:[...new Set(teams)]};
   };
   const renderCoachComparison=(otherName,mode='career')=>{
     const out=root.querySelector('#coachCompareResult');if(!out)return;
@@ -575,12 +575,12 @@ function renderCoach(name) {
       ...D.matches.filter(m=>m.played).map(m=>({h:String(m.home_coach_name||'').trim().toLocaleLowerCase(),a:String(m.away_coach_name||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score})),
       ...careerArchive.map(m=>({h:String(m.home_coach||'').trim().toLocaleLowerCase(),a:String(m.away_coach||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score}))
     ].filter(m=>(m.h===key&&m.a===otherKey)||(m.h===otherKey&&m.a===key));
-    const direct={games:allDirect.length,wins:0,draws:0,losses:0};
-    allDirect.forEach(m=>{const own=m.h===key?m.hs:m.as,opp=m.h===key?m.as:m.hs;if(own>opp)direct.wins++;else if(own<opp)direct.losses++;else direct.draws++;});
+    const direct={games:allDirect.length,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0};
+    allDirect.forEach(m=>{const own=m.h===key?m.hs:m.as,opp=m.h===key?m.as:m.hs;direct.goalsFor+=Number(own)||0;direct.goalsAgainst+=Number(opp)||0;if(own>opp)direct.wins++;else if(own<opp)direct.losses++;else direct.draws++;});
     const a=mode==='direct'?direct:coachSummary(name);
-    const b=mode==='direct'?{games:direct.games,wins:direct.losses,draws:direct.draws,losses:direct.wins}:coachSummary(otherName);
+    const b=mode==='direct'?{games:direct.games,wins:direct.losses,draws:direct.draws,losses:direct.wins,goalsFor:direct.goalsAgainst,goalsAgainst:direct.goalsFor}:coachSummary(otherName);
     const rate=x=>x.games?Math.round((x.wins*3+x.draws)/(x.games*3)*1000)/10:0;
-    const metrics=[['JOGOS',a.games,b.games],['VITÓRIAS',a.wins,b.wins],['EMPATES',a.draws,b.draws],['DERROTAS',a.losses,b.losses],['APROVEITAMENTO',rate(a),rate(b),'%']];
+    const metrics=[['JOGOS',a.games,b.games],['VITÓRIAS',a.wins,b.wins],['EMPATES',a.draws,b.draws],['DERROTAS',a.losses,b.losses],['GOLS PRÓ',a.goalsFor,b.goalsFor],['GOLS SOFRIDOS',a.goalsAgainst,b.goalsAgainst],['APROVEITAMENTO',rate(a),rate(b),'%']];
     const bars=metrics.map(([label,av,bv,suffix=''])=>{
       const total=av+bv,left=total?av/total*100:50,right=100-left;
       return `<div class="cbpes-compare-metric"><div class="cbpes-compare-metric-head"><b>${av}${suffix}</b><span>${label}</span><b>${bv}${suffix}</b></div><div class="cbpes-compare-track" role="img" aria-label="${label}: ${esc(name)} ${av}${suffix}; ${esc(otherName)} ${bv}${suffix}"><span class="cbpes-compare-left" style="width:${left}%"></span><span class="cbpes-compare-right" style="width:${right}%"></span></div></div>`;
