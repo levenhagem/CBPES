@@ -2127,3 +2127,21 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 #coachView>.card{box-shadow:none}
 #coachView .cbpes-coach-kpi{box-shadow:none}
 #coachView .page-title{background:linear-gradient(110deg,#f2f7f5,#fff 75%)}
+
+/* CBPES GLOBAL SQUARE DESIGN EXPERIMENT — reversible */
+/* Teste visual global: cantos retos sem alterar layout, cores ou funcionalidades. */
+:root{--cbpes-square-radius:4px}
+.card,.panel,.stat-card,.competition-card,.match-card,.game-card,.team-card,.coach-card,
+.player,.result-row,.pill,.badge,.tag,.round-label,
+button,.btn,input,select,textarea,
+.modal,.modal-content,.dialog,.dropdown,.menu,.notice,.alert,
+.cardhead,.cardbody,.table-wrap,.filter-chip,.filter-btn,
+[class*="card"],[class*="Card"],[class*="badge"],[class*="Badge"],
+[class*="pill"],[class*="Pill"],[class*="chip"],[class*="Chip"],
+[class*="button"],[class*="Button"],[class*="modal"],[class*="Modal"],
+[class*="filter"],[class*="Filter"]{
+ border-radius:var(--cbpes-square-radius)!important;
+}
+/* Elementos redondos funcionais (avatares, indicadores circulares) permanecem circulares. */
+.avatar,.avatar img,[class*="avatar"],[class*="Avatar"],.status-dot,.online-dot,
+[class*="spinner"],[class*="Spinner"]{border-radius:50%!important}
