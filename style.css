@@ -2270,3 +2270,23 @@ button,.btn,input,select,textarea,
 /* Não neutralizar cards com identidade visual própria de competição. */
 #weeklies [class*="competition"],#weeklies [class*="copa-master"],
 #weeklies [class*="liga-pro"]{box-shadow:initial}
+
+/* Técnico: primeiro elemento institucional verde, com time e escudos. */
+#coachView .cbpes-coach-hero{
+ background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%);
+ color:#fff;padding:23px 26px;margin:4px 0 16px;
+ border-left:4px solid #e1bb46;position:relative;overflow:hidden;
+}
+#coachView .cbpes-coach-hero-label{font-size:10px;font-weight:800;letter-spacing:.13em;color:#bce7d0;margin-bottom:8px}
+#coachView .cbpes-coach-hero h1{font-size:clamp(25px,3.2vw,38px);font-weight:850;letter-spacing:.01em;line-height:1.1;margin:0 0 15px;color:#fff}
+#coachView .cbpes-coach-current-team{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:13px}
+#coachView .cbpes-coach-current-team>span:first-child{font-size:10px;font-weight:800;letter-spacing:.09em;color:#bce7d0}
+#coachView .cbpes-coach-team-link{display:inline-flex;align-items:center;gap:9px;font-weight:750}
+#coachView .cbpes-coach-current-team .cbpes-coach-team-link{color:#fff}
+#coachView .cbpes-coach-current-team .cbpes-coach-team-link:hover{text-decoration:underline}
+#coachView .cbpes-coach-current-team .crest,#coachView .cbpes-coach-current-team .cbpes-crest{width:33px;height:33px;flex:none}
+#coachView .cbpes-coach-hero-bio{font-size:12px;color:#d6eee0;margin-top:13px;max-width:650px}
+#coachView .cbpes-coach-team-row .cbpes-coach-team-link{color:#174b38}
+#coachView .cbpes-coach-team-row .crest,#coachView .cbpes-coach-team-row .cbpes-crest{width:31px;height:31px;flex:none}
+#coachView .cbpes-coach-team-row .player{box-shadow:none}
+@media(max-width:640px){#coachView .cbpes-coach-hero{padding:19px 16px}}
