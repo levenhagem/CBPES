@@ -2223,3 +2223,8 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-compare-track-neutral .cbpes-compare-left{
  border-right:1px solid #087b4d;
 }
+
+/* Jogos e empates no confronto direto: uma única contagem centralizada. */
+#coachView .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+#coachView .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
+#coachView .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
