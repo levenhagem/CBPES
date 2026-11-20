@@ -423,10 +423,15 @@ function statsSquares(ms, sideFn) {
 }
 // Histórico importado do PES6, separado das partidas das competições.
 let careerArchive = [];
+let careerArchiveError = '';
 async function loadCareerArchive() {
   const {data,error} = await sb.from('career_matches').select('*');
-  if(error){careerArchive=[];return;}
-  careerArchive=data||[];
+  careerArchiveError = error ? (error.message || 'Falha ao consultar career_matches') : '';
+  careerArchive = error ? [] : (data || []);
+  if(error) console.error('CBPES: falha no histórico de carreira',error);
+}
+function careerArchiveNotice() {
+  return careerArchiveError ? `<div class="notice" style="margin-top:16px"><b>HISTÓRICO INDISPONÍVEL</b><p>O Supabase não permitiu carregar as partidas históricas: ${esc(careerArchiveError)}. Confira as permissões de leitura da tabela career_matches.</p></div>` : '';
 }
 function archiveStats(rows, side) {
   let w=0,e=0,l=0,gf=0,ga=0;
@@ -453,7 +458,7 @@ function renderTeam(id) {
   <div class="card"><div class="cardhead"><h2>DESEMPENHO DO TIME</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${statsSquares(ms,m=>m.home_id===id?'home':'away')}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>TROFÉUS SEMANAIS (${weeklyTitles.length})</h2></div><div class="cardbody">${weeklyTitles.length?weeklyTitles.map(w=>`<div class="player"><b>${esc(w.name)}</b><span>${fd(w.event_date)}</span></div>`).join(''):empty('Nenhum título semanal registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE TÉCNICOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE PARTIDAS</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${ms.length?ms.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${m.category==='friendly'?'Amistoso':m.category==='weekly'?esc(m.weekly?.name||'Semanal'):esc(SET.name)} • ${fd(m.date)} • ${coachLink(m.home_coach_name||m.home.coach_name)} / ${coachLink(m.away_coach_name||m.away.coach_name)}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('Nenhuma partida disputada.')}</div></div>`;
-  root.insertAdjacentHTML('beforeend',archiveCard(historicClub,m=>String(m.home_club||'').trim().toLocaleLowerCase()===String(p.name||'').trim().toLocaleLowerCase()?'home':'away','HISTÓRICO IMPORTADO DO CLUBE'));
+  root.insertAdjacentHTML('beforeend',careerArchiveNotice()+archiveCard(historicClub,m=>String(m.home_club||'').trim().toLocaleLowerCase()===String(p.name||'').trim().toLocaleLowerCase()?'home':'away','HISTÓRICO IMPORTADO DO CLUBE'));
 }
 function renderCoach(name) {
   const root=$('coachView'), key=String(name||'').trim().toLocaleLowerCase();
@@ -522,7 +527,7 @@ function renderCoach(name) {
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"><div class="admin-help">Compare retrospecto, títulos, equipes comandadas e confrontos diretos.</div></div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score"><span class="coach-career-result" style="color:${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#16804b':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#c63d3d':'inherit'}">${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'V':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'D':'E'}</span> ${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
-  root.insertAdjacentHTML('beforeend',archiveCard(historicCoach,m=>String(m.home_coach||'').trim().toLocaleLowerCase()===key?'home':'away','PARTIDAS HISTÓRICAS IMPORTADAS'));
+  root.insertAdjacentHTML('beforeend',careerArchiveNotice()+archiveCard(historicCoach,m=>String(m.home_coach||'').trim().toLocaleLowerCase()===key?'home':'away','PARTIDAS HISTÓRICAS IMPORTADAS'));
   const compareSelect=root.querySelector('#coachCompareWith');
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
