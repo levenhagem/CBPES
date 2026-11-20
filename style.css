@@ -2070,3 +2070,39 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 #coachView .cbpes-coach-history-extra[hidden]{display:none!important}
 #coachView .cbpes-coach-history-toggle{display:block;width:100%;margin-top:13px;padding:12px 14px;border:1px solid #cbded5;border-radius:9px;background:#f0f8f3;color:#09683f;font-size:11px;font-weight:850;letter-spacing:.04em;cursor:pointer;text-align:center}
 #coachView .cbpes-coach-history-toggle:hover{background:#e2f2e9;border-color:#8fc3a8}
+
+/* Perfil do técnico — linguagem visual uniforme em todas as seções. */
+#coachView{--coach-border:#dce6e8;--coach-ink:#17333d;--coach-muted:#6a7e87;--coach-green:#086b43}
+#coachView .page-title{margin-bottom:19px;padding:20px 22px;background:linear-gradient(110deg,#f0f7f4,#fff 72%);border:1px solid var(--coach-border);border-radius:14px}
+#coachView .page-title h1{color:var(--coach-ink);letter-spacing:-.035em}
+#coachView .page-title .eyebrow{font-size:10px;font-weight:800;letter-spacing:.075em;color:var(--coach-green)}
+#coachView .page-title .sub{color:var(--coach-muted)}
+#coachView>.card{border:1px solid var(--coach-border);border-radius:13px;overflow:hidden;box-shadow:0 2px 9px rgba(16,41,47,.035);background:#fff}
+#coachView>.card>.cardhead{padding:17px 20px;background:#f7faf9;border-bottom:1px solid #e6eeeb;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#coachView>.card>.cardhead h2{font-size:13px;letter-spacing:.045em;font-weight:850;color:var(--coach-ink);margin:0}
+#coachView>.card>.cardbody{padding:18px 20px}
+#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 12px;border:1px solid #e6edee;border-radius:9px;margin:0 0 9px;background:#fbfcfc}
+#coachView .cbpes-coach-trophies .player:last-child,#coachView .cbpes-coach-teams .player:last-child{margin-bottom:0}
+#coachView .cbpes-coach-trophies .player b,#coachView .cbpes-coach-teams .player b{font-size:13px;color:#193641}
+#coachView .cbpes-coach-trophies .player small,#coachView .cbpes-coach-teams .player small{display:block;margin-top:5px;color:#71838c;font-size:11px}
+#coachView .cbpes-coach-trophies .pill,#coachView .cbpes-coach-teams .pill{font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;border:1px solid #c7e2d4;background:#eaf6ef;color:#096c44}
+#coachView .cbpes-coach-compare .field{max-width:440px}
+#coachView .cbpes-coach-compare .field label{font-size:11px;font-weight:800;color:#607781;margin-bottom:7px}
+#coachView .cbpes-coach-compare select{width:100%;min-height:43px;border:1px solid #cbdcda;border-radius:9px;background:#f9fbfa;color:#1a3942;padding:9px 12px}
+#coachView .cbpes-coach-compare select:focus{outline:2px solid #4ca781;outline-offset:1px}
+#coachView .cbpes-coach-compare #coachCompareResult>.admin-help{background:#f4f8f6;border:1px dashed #d5e5dd;border-radius:9px;padding:13px;color:#617b73;font-size:12px}
+#coachView .cbpes-coach-compare #coachCompareResult>.notice{border-radius:9px;background:#f0f7f3;border:1px solid #d6e9dd;padding:15px;color:#214a39}
+#coachView .cbpes-coach-compare #coachCompareResult .card{border:1px solid #e0e9e9;border-radius:10px;overflow:hidden;box-shadow:none}
+#coachView .cbpes-coach-compare #coachCompareResult .cardhead{background:#f7faf9;border-bottom:1px solid #e6eeeb;padding:13px 15px}
+#coachView .cbpes-coach-compare #coachCompareResult .cardbody{padding:14px}
+#coachView .cbpes-coach-history .result-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-bottom:1px solid #eaf0f0;background:#fff}
+#coachView .cbpes-coach-history .result-row:last-of-type{border-bottom:0}
+#coachView .cbpes-coach-history .result-row:hover{background:#f8fbfa}
+#coachView .cbpes-coach-history .result-teams{flex:1;min-width:0;font-size:13px;color:#193641}
+#coachView .cbpes-coach-history .result-teams small{display:block;color:#7a8991;font-size:11px;margin-top:4px}
+#coachView .cbpes-coach-history .result-score{flex:0 0 auto;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;color:#183541}
+#coachView .cbpes-coach-history .round-label{font-size:10px;font-weight:850;letter-spacing:.03em;min-width:40px;text-align:center}
+#coachView .cbpes-coach-history .coach-career-result{margin-right:5px;font-weight:850}
+#coachView .cbpes-coach-history-toggle{background:#086b43;color:#fff;border-color:#086b43;transition:background .15s}
+#coachView .cbpes-coach-history-toggle:hover{background:#065735;color:#fff;border-color:#065735}
+@media(max-width:640px){#coachView .page-title{padding:16px}#coachView>.card>.cardhead{padding:14px}#coachView>.card>.cardbody{padding:14px}#coachView .cbpes-coach-history .result-row{gap:8px;padding:12px 4px}#coachView .cbpes-coach-history .result-teams{font-size:12px}#coachView .cbpes-coach-history .result-score{font-size:13px}#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{padding:12px 9px}}
