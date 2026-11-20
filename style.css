@@ -1862,3 +1862,22 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
     color:rgba(244,173,36,.085);
   }
 }
+
+/* Copa Master — layout de partida como Liga Pro: mandante e visitante em linhas. */
+.cbpes-copa-master-page #table .cbpes-master-match-demo::before{display:none!important}
+.cbpes-copa-master-page #table .cbpes-master-match-demo{border-left:1px solid #a16a28;padding:19px 20px}
+.cbpes-copa-master-page #table .cbpes-master-match-main{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:20px;align-items:center;padding:0}
+.cbpes-copa-master-page #table .cbpes-master-demo-teams,
+.cbpes-copa-master-page #table .cbpes-master-demo-scores{display:flex;flex-direction:column;justify-content:center;gap:17px}
+.cbpes-copa-master-page #table .cbpes-master-demo-team,
+.cbpes-copa-master-page #table .cbpes-master-demo-team.away{align-items:flex-start;text-align:left;gap:3px}
+.cbpes-copa-master-page #table .cbpes-master-demo-scores{align-items:center;color:#fff8ed;font-size:23px;font-variant-numeric:tabular-nums}
+.cbpes-copa-master-page #table .cbpes-master-demo-scores strong{line-height:1.2}
+.cbpes-copa-master-page #table .cbpes-match-top{display:none!important}
+.cbpes-copa-master-page #table .cbpes-match::after{display:none!important}
+.cbpes-copa-master-page #table .cbpes-match.cbpes-match-liga-pro::before{content:"★";border:0;border-radius:0;width:auto;height:auto;top:50%;right:-22px;transform:translateY(-50%) rotate(45deg);font-size:190px;background:none}
+.cbpes-copa-master-page #table .cbpes-match-main{display:grid!important;grid-template-columns:minmax(0,1fr) 46px!important;grid-template-rows:auto auto!important;gap:10px 12px!important;align-items:center!important}
+.cbpes-copa-master-page #table .cbpes-match-team.home{grid-column:1;grid-row:1;text-align:left!important;justify-content:flex-start!important}
+.cbpes-copa-master-page #table .cbpes-match-team.away{grid-column:1;grid-row:2;text-align:left!important;justify-content:flex-start!important}
+.cbpes-copa-master-page #table .cbpes-match-score{grid-column:2;grid-row:1 / 3;justify-self:end;text-align:right}
+@media(max-width:620px){.cbpes-copa-master-page #table .cbpes-master-match-demo{padding:15px}.cbpes-copa-master-page #table .cbpes-master-match-main{grid-template-columns:minmax(0,1fr) 36px}}
