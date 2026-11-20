@@ -9,7 +9,7 @@ function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (PAGES.includes(raw) ? raw : 'home'));
-  if(id==='table' && parts[1] && D){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested))selectedWeeklyTable=requested;renderTable();}
+  if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
@@ -52,7 +52,17 @@ if(navCompetitionWrap&&navCompetitionButton){
   navCompetitionWrap.addEventListener('mouseenter',()=>{if(D&&window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
-  menu.addEventListener('click',e=>{if(e.target.closest('a'))closeNavCompetitionMenu();});
+  menu.addEventListener('click',e=>{
+    const link=e.target.closest('a[href^="#table/"]');
+    if(!link)return;
+    e.preventDefault();
+    const editionId=decodeURIComponent(link.getAttribute('href').slice('#table/'.length));
+    selectedWeeklyTable=editionId;
+    closeNavCompetitionMenu();
+    const targetHash='#table/'+encodeURIComponent(editionId);
+    if(location.hash===targetHash){renderTable();route();}
+    else location.hash=targetHash;
+  });
   document.addEventListener('click',e=>{if(!navCompetitionWrap.contains(e.target)&&!menu.contains(e.target))closeNavCompetitionMenu();});
   window.addEventListener('resize',closeNavCompetitionMenu);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNavCompetitionMenu();navCompetitionButton.focus();}});
@@ -227,7 +237,7 @@ function renderGames() {
 }
 function renderTable() {
   const editions=D.officialEditions||[], competitions=D.officialCompetitions||[];
-  const valid=editions.some(e=>e.id===selectedWeeklyTable);
+  const valid=editions.some(e=>String(e.id)===String(selectedWeeklyTable));
   if(!valid)selectedWeeklyTable=editions[0]?.id||'current';
   const selectedEdition=editions.find(e=>String(e.id)===String(selectedWeeklyTable));
   const selectedCompetition=competitions.find(c=>String(c.id)===String(selectedEdition?.competition_id));
@@ -261,7 +271,7 @@ function renderTable() {
     $('fullTable').innerHTML=info+`<div class="admin-help">A classificação considera somente as fases classificatórias. Partidas de mata-mata são exibidas separadamente e não somam pontos.</div>`+(st.length?`<div class="eyebrow" style="margin:12px 0 4px">RESUMO ESTATÍSTICO DA EDIÇÃO (RESUMO: 3 PTS POR VITÓRIA, 1 POR EMPATE)</div>${fullTbl(st,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id),allMs.filter(m=>m.round?.phase?.counts_in_standings))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
     return;
   }
-  const edition=editions.find(e=>e.id===selectedWeeklyTable);
+  const edition=editions.find(e=>String(e.id)===String(selectedWeeklyTable));
   // A aba Jogos exibe partidas oficiais mesmo quando registros antigos não têm edição.
   // A classificação também deve reconhecê-las pela edição da rodada.
   // Compatibilidade com dados legados só é aplicada automaticamente se existir uma única edição.
