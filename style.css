@@ -1777,3 +1777,23 @@ body.cbpes-copa-master-page{
 .cbpes-master-hero-sub{color:#e1dfd2}
 .cbpes-master-trophy{filter:none}
 .cbpes-master-trophy svg{filter:none}
+
+/* Copa Master — dourado metálico quente, sem amarelo-mostarda e sem neon. */
+body.cbpes-copa-master-page{--blue:#e8ba52;--navy:#f2d28c;--line:#5c4c31;background:#171614}
+.cbpes-copa-master-page #table .cbpes-competition-heading{color:#edc46d}
+.cbpes-copa-master-page #table .cbpes-competition-emblem{background:linear-gradient(135deg,#f7dda0 0%,#d9a849 55%,#b88632 100%)!important;color:#241b0d!important;border-color:#d5a751!important}
+.cbpes-copa-master-page #table .cardhead{background:#29251e;color:#e9c16c}
+.cbpes-copa-master-page #table .table th{background:#332b20!important;color:#edc46d!important}
+.cbpes-copa-master-page #table .eyebrow,
+.cbpes-copa-master-page #table .round-switcher,
+.cbpes-copa-master-page #table .phase-arrow{color:#e9bf67}
+.cbpes-copa-master-page #table .cbpes-match{background:#29251f!important;border-color:#78603a!important;box-shadow:none!important}
+.cbpes-copa-master-page #table .copa-master-draw-centered{color:#eac16b;text-shadow:none}
+.cbpes-master-hero{background:linear-gradient(112deg,#121312 0%,#211f1a 57%,#383022 100%);border-color:#8e6e3c;border-top-color:#e6b75b;box-shadow:none}
+.cbpes-master-hero::after{border-top-color:rgba(227,181,88,.13)}
+.cbpes-master-kicker,.cbpes-master-hero-edition{color:#e9c478}
+.cbpes-master-kicker-line,.cbpes-master-hero-rule{background:#d9aa52}
+.cbpes-master-hero-title{color:#fff8e9}
+.cbpes-master-hero-title strong{color:#eec56e;text-shadow:none}
+.cbpes-master-hero-sub{color:#dfd6c5}
+.cbpes-master-trophy{filter:none}
