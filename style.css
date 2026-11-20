@@ -1705,3 +1705,38 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 body>#navCompetitionMenu.nav-competition-menu small{color:#acd4bc!important}
 #nav #navCompetitionMenu .nav-competition-empty,
 body>#navCompetitionMenu .nav-competition-empty{color:#c6ded0!important}
+
+/* Copa Master — visual premium preto e dourado, restrito à página da competição. */
+body.cbpes-copa-master-page{--ink:#f5e9d1;--muted:#b9a782;--line:#5b4627;--bg:#11100e;--white:#211d18;--soft:#292319;--blue:#e7bd55;--navy:#f2d38c;background:radial-gradient(ellipse 90% 45% at 80% 0%,#3b2a12,transparent 70%),#11100e;color:#f5e9d1}
+.cbpes-copa-master-page main{color:#f5e9d1}
+.cbpes-copa-master-page #table>.page-title{border-bottom:1px solid #71552a}
+.cbpes-copa-master-page #table .cbpes-competition-heading{color:#f6db9d}
+.cbpes-copa-master-page #table .cbpes-competition-emblem{background:linear-gradient(135deg,#f5e1a4,#a77623)!important;color:#241806!important;border:1px solid #d7ac54!important}
+.cbpes-copa-master-page #table>.card{background:#211d18;border:1px solid #594325}
+.cbpes-copa-master-page #table .cardbody{color:#f5e9d1}
+.cbpes-copa-master-page #table .cardhead{background:#2a2319;border-bottom-color:#5b4627;color:#f2d38c}
+.cbpes-copa-master-page #table .cbpes-competition-neutral{background:transparent;color:#f5e9d1}
+.cbpes-copa-master-page #table .phase-switcher{border-bottom-color:#66502d!important;color:#f2d38c}
+.cbpes-copa-master-page #table .phase-arrow{color:#f2d38c;border-color:#72572b}
+.cbpes-copa-master-page #table .eyebrow{color:#e8bf65}
+.cbpes-copa-master-page #table .table{background:#241f18;color:#f4e9d2}
+.cbpes-copa-master-page #table .table th{background:#382b19!important;color:#f6d88c!important;border-color:#604924}
+.cbpes-copa-master-page #table .table td{background:#241f18;color:#f4e9d2;border-color:#493b28}
+.cbpes-copa-master-page #table .table tr:nth-child(even) td{background:#29231b}
+.cbpes-copa-master-page #table .cbpes-match{border-color:#785a2b;background:linear-gradient(110deg,#272118,#37291a)!important;color:#fff0d1}
+.cbpes-copa-master-page #table .cbpes-match .cbpes-team-name,.cbpes-copa-master-page #table .cbpes-match-score{color:#fff0d1}
+.cbpes-copa-master-page #table .round-switcher{color:#f0d08a}
+.cbpes-copa-master-page #table .copa-master-draw-centered{color:#f5d68b;min-height:100px;font-size:clamp(14px,2vw,18px);letter-spacing:.07em;background:transparent;border:0}
+.cbpes-master-hero{position:relative;display:flex;align-items:center;justify-content:space-between;isolation:isolate;overflow:hidden;min-height:240px;margin:0 0 22px;padding:34px clamp(22px,5vw,52px);border:1px solid #89632a;border-top:4px solid #e7bd55;background:radial-gradient(ellipse 90% 75% at 90% 105%,rgba(217,157,53,.27),transparent 70%),repeating-linear-gradient(115deg,transparent 0 85px,rgba(255,208,109,.035) 86px 88px),linear-gradient(105deg,#090a0b 0%,#1b1b19 48%,#413018 100%);box-shadow:inset 0 0 55px rgba(0,0,0,.35)}
+.cbpes-master-hero::after{content:"";position:absolute;inset:auto -10% -45% 15%;height:80%;border-top:1px solid rgba(242,198,103,.2);border-radius:50%;transform:rotate(-8deg);pointer-events:none}
+.cbpes-master-hero-content{position:relative;z-index:1;max-width:70%}
+.cbpes-master-kicker{display:flex;align-items:center;gap:9px;color:#e4bd68;font-size:11px;font-weight:800;letter-spacing:.18em}
+.cbpes-master-kicker-line{width:24px;height:2px;background:#e4bd68}
+.cbpes-master-hero-title{margin:14px 0 6px;color:#fff4da;font-size:clamp(36px,6vw,75px);font-weight:900;letter-spacing:-.055em;line-height:.96}
+.cbpes-master-hero-title strong{display:block;color:#e8bb57;font-weight:900;text-shadow:0 2px 20px rgba(235,175,65,.23)}
+.cbpes-master-hero-sub{margin-top:16px;color:#e1d3b5;font-size:clamp(12px,1.6vw,15px);font-weight:500}
+.cbpes-master-hero-rule{width:58px;height:3px;background:#e5bb61;margin:18px 0 12px}
+.cbpes-master-hero-edition{color:#e8c47e;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.cbpes-master-trophy{position:relative;z-index:1;flex:0 0 31%;max-width:205px;filter:drop-shadow(0 14px 24px rgba(233,175,62,.22))}
+.cbpes-master-trophy svg{width:100%;height:auto;display:block}
+@media(max-width:700px){.cbpes-master-hero{min-height:210px;padding:24px 18px;margin-bottom:14px}.cbpes-master-hero-content{max-width:77%}.cbpes-master-hero-title{font-size:clamp(34px,10vw,55px)}.cbpes-master-trophy{flex-basis:25%;margin-right:-8px}.cbpes-master-kicker{font-size:9px;letter-spacing:.08em}.cbpes-master-hero-sub{font-size:12px}}
