@@ -124,7 +124,29 @@ function renderHome() {
         : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
-  const nextHome = [...nx.filter(m => m.category === 'official').slice(0, 5), ...nx.filter(m => m.category === 'friendly').slice(0, 5), ...nx.filter(m => m.category === 'weekly').slice(0, 5)].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
+  // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
+  const officialPending=nx.filter(m=>m.category==='official');
+  const editionOf=m=>String(m.official_edition_id||m.round?.official_edition_id||'');
+  const phaseOf=m=>String(m.round?.phase_id||'');
+  const roundOf=m=>String(m.round_id||m.round?.id||'');
+  const phaseIndex=id=>(D.phases||[]).findIndex(p=>String(p.id)===id);
+  const orderedOfficial=officialPending.slice().sort((a,b)=>{
+    const ea=editionOf(a),eb=editionOf(b);
+    if(ea!==eb)return ea.localeCompare(eb);
+    const pa=phaseIndex(phaseOf(a)),pb=phaseIndex(phaseOf(b));
+    if(pa!==pb&&pa>=0&&pb>=0)return pa-pb;
+    const na=Number(a.round?.number),nb=Number(b.round?.number);
+    if(Number.isFinite(na)&&Number.isFinite(nb)&&na!==nb)return na-nb;
+    const ra=roundOf(a),rb=roundOf(b);
+    if(ra!==rb){
+      const ia=(D.rounds||[]).findIndex(r=>String(r.id)===ra);
+      const ib=(D.rounds||[]).findIndex(r=>String(r.id)===rb);
+      if(ia>=0&&ib>=0&&ia!==ib)return ia-ib;
+    }
+    return (a.seq||0)-(b.seq||0)||(a.date||'9999').localeCompare(b.date||'9999');
+  });
+  const nextHome=[...orderedOfficial,...nx.filter(m=>m.category==='friendly'),...nx.filter(m=>m.category==='weekly')].slice(0,5);
   $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nextHome.length ? nextHome.map(matchRow).join('') : empty('Nenhuma partida agendada.');
   // Painel lateral da Liga Pro: classificação, últimos resultados e números exclusivos.
