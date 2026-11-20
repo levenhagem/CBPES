@@ -1622,3 +1622,12 @@ body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Squadra Medium CBPES
   #miniTable .cbpes-mini-team-cell{gap:3px}
   #miniTable .cbpes-mini-team-cell .club>a{font-size:11px}
 }
+
+/* Experimento Akt: somente título da Liga PRO. */
+#table[data-liga-pro="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName{
+  font-family:"Akt",sans-serif!important;
+  font-weight:700!important;
+  font-style:normal!important;
+  font-synthesis:none;
+}
