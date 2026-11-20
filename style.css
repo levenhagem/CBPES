@@ -1674,3 +1674,34 @@ body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Lato",Arial,sans-ser
   body>#navCompetitionMenu.nav-competition-menu small{font-size:11px;font-weight:500;color:#a9c8e9}
   body>#navCompetitionMenu .nav-competition-empty{display:block;padding:12px 15px;color:#c5d9ef}
 }
+
+/* CBPES — menu TABELA alinhado à identidade da navegação, desktop e mobile. */
+#nav #navCompetitionMenu.nav-competition-menu,
+body>#navCompetitionMenu.nav-competition-menu{
+  background:var(--navy,#002b36)!important;
+  border:1px solid #176044!important;
+  border-top:3px solid var(--green,#078a45)!important;
+  box-shadow:0 12px 26px rgba(0,25,26,.24)!important;
+  border-radius:0!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a,
+body>#navCompetitionMenu.nav-competition-menu a{
+  color:#f4f8f6!important;
+  border-bottom:1px solid rgba(96,178,132,.22)!important;
+  font-family:var(--fc)!important;
+  font-weight:650!important;
+  transition:background .15s ease,color .15s ease;
+}
+#nav #navCompetitionMenu.nav-competition-menu a:hover,
+#nav #navCompetitionMenu.nav-competition-menu a:focus-visible,
+body>#navCompetitionMenu.nav-competition-menu a:hover,
+body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
+  background:#08643f!important;
+  color:#fff!important;
+  outline:none;
+  box-shadow:inset 3px 0 0 var(--yellow,#f2c500);
+}
+#nav #navCompetitionMenu.nav-competition-menu small,
+body>#navCompetitionMenu.nav-competition-menu small{color:#acd4bc!important}
+#nav #navCompetitionMenu .nav-competition-empty,
+body>#navCompetitionMenu .nav-competition-empty{color:#c6ded0!important}
