@@ -22,7 +22,23 @@ function route() {
   }
   window.scrollTo(0, 0);
 }
-function closeNavCompetitionMenu(){const m=$('navCompetitionMenu'),b=$('navCompetitionButton');if(m)m.hidden=true;if(b)b.setAttribute('aria-expanded','false');}
+function closeNavCompetitionMenu(){
+  const m=$('navCompetitionMenu'),b=$('navCompetitionButton'),wrap=$('navCompetitionWrap');
+  if(m){m.hidden=true;if(wrap&&m.parentElement!==wrap)wrap.appendChild(m);m.style.removeProperty('top');m.style.removeProperty('left');m.style.removeProperty('right');m.style.removeProperty('width');m.style.removeProperty('max-width');}
+  if(b)b.setAttribute('aria-expanded','false');
+}
+function openNavCompetitionMenu(){
+  const m=$('navCompetitionMenu'),b=$('navCompetitionButton');if(!m||!b)return;
+  if(window.matchMedia('(max-width:700px)').matches){
+    document.body.appendChild(m);
+    const rect=b.getBoundingClientRect(),width=Math.min(340,window.innerWidth-24);
+    m.style.width=width+'px';m.style.maxWidth=width+'px';
+    m.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-width-12))+'px';
+    m.style.top=Math.min(rect.bottom+2,window.innerHeight-80)+'px';
+    m.style.right='auto';
+  }
+  m.hidden=false;b.setAttribute('aria-expanded','true');
+}
 function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const editions=D.officialEditions||[],competitions=D.officialCompetitions||[];
@@ -31,11 +47,13 @@ function renderNavCompetitions(){
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
   const menu=$('navCompetitionMenu');
-  navCompetitionButton.onclick=()=>{const open=menu.hidden;menu.hidden=!open;navCompetitionButton.setAttribute('aria-expanded',String(open));};
-  navCompetitionWrap.addEventListener('mouseenter',()=>{if(D){menu.hidden=false;navCompetitionButton.setAttribute('aria-expanded','true');}});
-  navCompetitionWrap.addEventListener('mouseleave',closeNavCompetitionMenu);
-  navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget))closeNavCompetitionMenu();});
-  document.addEventListener('click',e=>{if(!navCompetitionWrap.contains(e.target))closeNavCompetitionMenu();});
+  navCompetitionButton.onclick=e=>{e.stopPropagation();if(menu.hidden)openNavCompetitionMenu();else closeNavCompetitionMenu();};
+  navCompetitionWrap.addEventListener('mouseenter',()=>{if(D&&window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavCompetitionMenu();});
+  navCompetitionWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavCompetitionMenu();});
+  navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
+  menu.addEventListener('click',e=>{if(e.target.closest('a'))closeNavCompetitionMenu();});
+  document.addEventListener('click',e=>{if(!navCompetitionWrap.contains(e.target)&&!menu.contains(e.target))closeNavCompetitionMenu();});
+  window.addEventListener('resize',closeNavCompetitionMenu);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNavCompetitionMenu();navCompetitionButton.focus();}});
 }
 document.querySelectorAll('#nav button:not(#navCompetitionButton)').forEach(b => b.onclick = () => location.hash = b.dataset.page);
