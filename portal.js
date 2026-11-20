@@ -396,6 +396,7 @@ function renderParticipant(id) {
   const best = records.filter(x=>x.diff>0).sort((a,b)=>b.diff-a.diff||b.v-a.v||b.games-a.games)[0];
   const worst = records.filter(x=>x.diff<0).sort((a,b)=>a.diff-b.diff||b.d-a.d||b.games-a.games)[0];
   const rows = ms.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const historicClub=(careerArchive||[]).filter(m=>[m.home_club,m.away_club].some(c=>String(c||'').trim().toLocaleLowerCase()===String(p.name||'').trim().toLocaleLowerCase()));
   const weeklyTitles=(D.weeklies||[]).filter(w=>w.champion_id===id).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''));
   const rivalCard = (label,x,mode) => `<div class="card"><div class="cardhead"><h2>${label}</h2></div><div class="cardbody">${x?`<div class="player"><div><b><a href="#team/${x.p.id}">${esc(x.p.name)}</a></b><small>${mode==='best'?'Maior saldo de vitórias do participante':'Maior saldo de derrotas do participante'}</small></div><span class="number"><b class="res-w">${x.v}</b> - <b class="res-l">${x.d}</b></span></div>`:empty('Ainda não há saldo positivo/negativo contra um adversário.')}</div></div>`;
   root.innerHTML = `<div class="page-title"><div><div class="eyebrow"><a href="#table">CLASSIFICAÇÃO</a> / PERFIL</div><h1 class="cbpes-profile-name">${crestImg(p,'cbpes-crest-large')}${esc(p.name)}</h1><div class="sub">Técnico responsável: ${coachLink(p.coach_name)}</div></div></div>
@@ -420,6 +421,27 @@ function statsSquares(ms, sideFn) {
   ms.forEach(m=>{const s=sideFn(m), own=s==='home'?m.home_score:m.away_score, opp=s==='home'?m.away_score:m.home_score;if(own>opp)v++;else if(own<opp)d++;else e++;});
   return `<div class="stats four-stats"><div class="stat"><b>${ms.length}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${v}</b><span>Vitórias</span></div><div class="stat"><b>${e}</b><span>Empates</span></div><div class="stat"><b class="res-l">${d}</b><span>Derrotas</span></div></div>`;
 }
+// Histórico importado do PES6, separado das partidas das competições.
+let careerArchive = [];
+async function loadCareerArchive() {
+  const {data,error} = await sb.from('career_matches').select('*');
+  if(error){careerArchive=[];return;}
+  careerArchive=data||[];
+}
+function archiveStats(rows, side) {
+  let w=0,e=0,l=0,gf=0,ga=0;
+  rows.forEach(m=>{
+    const home=side(m)==='home', own=home?m.home_score:m.away_score,other=home?m.away_score:m.home_score;
+    gf+=own;ga+=other;
+    if(own>other)w++;else if(own<other)l++;else e++;
+  });
+  return {w,e,l,gf,ga};
+}
+function archiveCard(rows, side, title) {
+  if(!rows.length)return '';
+  const x=archiveStats(rows,side);
+  return `<div class="card" style="margin-top:16px"><div class="cardhead"><h2>${esc(title)}</h2><span class="pill">${rows.length} JOGOS</span></div><div class="cardbody"><div class="stats four-stats"><div class="stat"><b>${rows.length}</b><span>Jogos</span></div><div class="stat"><b class="res-w">${x.w}</b><span>Vitórias</span></div><div class="stat"><b>${x.e}</b><span>Empates</span></div><div class="stat"><b class="res-l">${x.l}</b><span>Derrotas</span></div></div><small>Gols marcados: ${x.gf} · Gols sofridos: ${x.ga} · Registros históricos importados, separados das competições.</small></div></div>`;
+}
 function renderTeam(id) {
   const p=D.participants.find(x=>x.id===id), root=$('teamView');
   if(!p){root.innerHTML=`<div class="page-title"><h1>Time não encontrado</h1><a href="#table">Voltar à tabela</a></div>`;return;}
@@ -431,9 +453,11 @@ function renderTeam(id) {
   <div class="card"><div class="cardhead"><h2>DESEMPENHO DO TIME</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${statsSquares(ms,m=>m.home_id===id?'home':'away')}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>TROFÉUS SEMANAIS (${weeklyTitles.length})</h2></div><div class="cardbody">${weeklyTitles.length?weeklyTitles.map(w=>`<div class="player"><b>${esc(w.name)}</b><span>${fd(w.event_date)}</span></div>`).join(''):empty('Nenhum título semanal registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE TÉCNICOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE PARTIDAS</h2><span class="pill">${ms.length} JOGOS</span></div><div class="cardbody">${ms.length?ms.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${m.category==='friendly'?'Amistoso':m.category==='weekly'?esc(m.weekly?.name||'Semanal'):esc(SET.name)} • ${fd(m.date)} • ${coachLink(m.home_coach_name||m.home.coach_name)} / ${coachLink(m.away_coach_name||m.away.coach_name)}</small></div><div class="result-score">${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('Nenhuma partida disputada.')}</div></div>`;
+  root.insertAdjacentHTML('beforeend',archiveCard(historicClub,m=>String(m.home_club||'').trim().toLocaleLowerCase()===String(p.name||'').trim().toLocaleLowerCase()?'home':'away','HISTÓRICO IMPORTADO DO CLUBE'));
 }
 function renderCoach(name) {
   const root=$('coachView'), key=String(name||'').trim().toLocaleLowerCase();
+  const historicCoach=(careerArchive||[]).filter(m=>[m.home_coach,m.away_coach].some(c=>String(c||'').trim().toLocaleLowerCase()===key));
   const assignments=(D.coachHistory||[]).filter(h=>String(h.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.started_on||'').localeCompare(a.started_on||''));
   const teams=assignments.map(h=>D.participants.find(p=>p.id===h.participant_id)).filter(Boolean);
   const matches=D.matches.filter(m=>m.played && [m.home_coach_name,m.away_coach_name].some(n=>String(n||'').trim().toLocaleLowerCase()===key)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -493,6 +517,7 @@ function renderCoach(name) {
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"><div class="admin-help">Compare retrospecto, títulos, equipes comandadas e confrontos diretos.</div></div></div></div>
   <div class="card" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row"><div class="round-label ${m.category==='friendly'||m.category==='weekly'?'tag-friendly':'tag-official'}">${m.category==='friendly'?'AMIS':m.category==='weekly'?'SEM':'OFIC'}</div><div class="result-teams"><a href="#team/${m.home_id}">${esc(m.home.name)}</a> x <a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${fd(m.date)} • ${coachLink(m.home_coach_name)} / ${coachLink(m.away_coach_name)}</small></div><div class="result-score"><span class="coach-career-result" style="color:${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#16804b':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'#c63d3d':'inherit'}">${(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)>(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'V':(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.home_score:m.away_score)<(String(m.home_coach_name||'').trim().toLocaleLowerCase()===key?m.away_score:m.home_score)?'D':'E'}</span> ${m.home_score} – ${m.away_score}</div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
+  root.insertAdjacentHTML('beforeend',archiveCard(historicCoach,m=>String(m.home_coach||'').trim().toLocaleLowerCase()===key?'home':'away','PARTIDAS HISTÓRICAS IMPORTADAS'));
   const compareSelect=root.querySelector('#coachCompareWith');
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
@@ -502,8 +527,8 @@ async function boot() {
   route();
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
-    D = await load(); $('status').classList.add('hidden'); renderAll();
+    D = await load(); await loadCareerArchive(); $('status').classList.add('hidden'); renderAll();
   } catch (e) { $('status').textContent = 'Não foi possível carregar os dados: ' + (e.message || e); }
 }
 boot();
-setInterval(async () => { if (D && !document.hidden) { try { D = await load(); renderAll(); } catch (e) {} } }, 60000);
+setInterval(async () => { if (D && !document.hidden) { try { D = await load(); await loadCareerArchive(); renderAll(); } catch (e) {} } }, 60000);
