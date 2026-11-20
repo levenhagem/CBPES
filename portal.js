@@ -12,6 +12,7 @@ function route() {
   if(id==='table' && parts[1] && D){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested))selectedWeeklyTable=requested;renderTable();}
   closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
+  document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id));
   if (profile && D) {
@@ -248,6 +249,8 @@ function renderTable() {
   document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
   document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1).split('/')[0]==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
+  document.getElementById('table').dataset.copaMaster=String(isMaster);
+  document.body.classList.toggle('cbpes-copa-master-page', location.hash.slice(1).split('/')[0]==='table' && isMaster);
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
@@ -333,6 +336,19 @@ function renderTable() {
   const drawNotice='';
   if(isCopaMaster && !officialMatches.length){
     html='<div class="copa-master-draw-notice copa-master-draw-centered">SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.</div>';
+  }
+  if(isCopaMaster){
+    const masterHero=`<div class="cbpes-master-hero" aria-label="Copa Master">
+      <div class="cbpes-master-hero-content">
+        <span class="cbpes-master-kicker"><span class="cbpes-master-kicker-line"></span> CBPES · COMPETIÇÃO OFICIAL</span>
+        <div class="cbpes-master-hero-title">COPA <strong>MASTER</strong></div>
+        <div class="cbpes-master-hero-sub">A disputa pela glória. Uma taça, um campeão.</div>
+        <div class="cbpes-master-hero-rule"></div>
+        <span class="cbpes-master-hero-edition">${esc(edition.name)}</span>
+      </div>
+      <div class="cbpes-master-trophy" aria-hidden="true"><svg viewBox="0 0 180 210" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="masterGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1b2"/><stop offset=".42" stop-color="#e8bd55"/><stop offset="1" stop-color="#956419"/></linearGradient></defs><path d="M52 22h76v37c0 44-17 68-38 68S52 103 52 59V22Z" fill="url(#masterGold)" stroke="#f7d780" stroke-width="3"/><path d="M52 36H28v17c0 25 15 41 36 44M128 36h24v17c0 25-15 41-36 44" stroke="#e7bb55" stroke-width="9" stroke-linejoin="round"/><path d="M90 128v32m-26 8h52m-66 18h80" stroke="url(#masterGold)" stroke-width="12" stroke-linecap="square"/><path d="m90 47 8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3 8-16Z" fill="#725017" opacity=".7"/></svg></div>
+    </div>`;
+    html=masterHero+html;
   }
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
