@@ -2106,3 +2106,24 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 #coachView .cbpes-coach-history-toggle{background:#086b43;color:#fff;border-color:#086b43;transition:background .15s}
 #coachView .cbpes-coach-history-toggle:hover{background:#065735;color:#fff;border-color:#065735}
 @media(max-width:640px){#coachView .page-title{padding:16px}#coachView>.card>.cardhead{padding:14px}#coachView>.card>.cardbody{padding:14px}#coachView .cbpes-coach-history .result-row{gap:8px;padding:12px 4px}#coachView .cbpes-coach-history .result-teams{font-size:12px}#coachView .cbpes-coach-history .result-score{font-size:13px}#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{padding:12px 9px}}
+
+/* Perfil dos técnicos — geometria mais quadrada, estilo painel esportivo. */
+#coachView .page-title,
+#coachView>.card,
+#coachView .cbpes-coach-rivalry-card,
+#coachView .cbpes-coach-rivalry-card.nemesis,
+#coachView .cbpes-coach-kpi,
+#coachView .cbpes-coach-rivalry-icon,
+#coachView .cbpes-coach-filter label,
+#coachView .cbpes-coach-trophies .player,
+#coachView .cbpes-coach-teams .player,
+#coachView .cbpes-coach-compare select,
+#coachView .cbpes-coach-compare #coachCompareResult>.admin-help,
+#coachView .cbpes-coach-compare #coachCompareResult>.notice,
+#coachView .cbpes-coach-compare #coachCompareResult .card,
+#coachView .cbpes-coach-history-toggle{border-radius:4px!important}
+#coachView .cbpes-coach-rivalry-card,
+#coachView .cbpes-coach-rivalry-card.nemesis{box-shadow:none}
+#coachView>.card{box-shadow:none}
+#coachView .cbpes-coach-kpi{box-shadow:none}
+#coachView .page-title{background:linear-gradient(110deg,#f2f7f5,#fff 75%)}
