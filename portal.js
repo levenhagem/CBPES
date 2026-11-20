@@ -106,8 +106,16 @@ function renderHome() {
   const cr = currentRound(rounds, matches);
   $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
 
-  const sc = m => `<div class="sc"><div class="sc-meta"><a href="#games">${m.category === 'friendly' ? 'AMISTOSO' : m.category === 'weekly' ? 'SEMANAL' : esc(SET.name)} • ${m.date ? fd(m.date).slice(0, 5) : 'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played ? m.home_score : ''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played ? m.away_score : ''}</b></div></div>`;
-  const sl = played.slice(0, 6).reverse();
+  const sc = m => {
+    const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
+    const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
+    const isPro=(m.category||'official')==='official' && /liga\\s*pro/i.test([competition?.name,edition?.name].filter(Boolean).join(' '));
+    const kind=m.category==='weekly'?'weekly':m.category==='friendly'?'friendly':isPro?'liga-pro':'official';
+    const title=m.category==='weekly'?'SEMANAL':m.category==='friendly'?'AMISTOSO':competition?.name||edition?.name||SET.name;
+    return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
+  };
+  // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
+  const sl = played.slice(0,6);
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
   const featured = !!m?.is_featured;
