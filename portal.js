@@ -109,7 +109,7 @@ function renderHome() {
   const sc = m => {
     const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
     const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
-    const isPro=(m.category||'official')==='official' && /liga\\s*pro/i.test([competition?.name,edition?.name].filter(Boolean).join(' '));
+    const isPro=(m.category||'official')==='official' && /liga\s*pro/i.test([competition?.name,edition?.name].filter(Boolean).join(' '));
     const kind=m.category==='weekly'?'weekly':m.category==='friendly'?'friendly':isPro?'liga-pro':'official';
     const title=m.category==='weekly'?'SEMANAL':m.category==='friendly'?'AMISTOSO':competition?.name||edition?.name||SET.name;
     return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
