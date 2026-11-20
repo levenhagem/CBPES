@@ -2608,3 +2608,33 @@ body>header #navCompetitionMenu{
   text-align:center!important;
  }
 }
+
+/* O dropdown TABELA pertence à NAV original, nunca aos temas das competições.
+   No celular ele é movido diretamente para body, por isso precisa dos mesmos
+   valores fixos fora do header. */
+#nav #navCompetitionMenu.nav-competition-menu,
+body>#navCompetitionMenu.nav-competition-menu{
+ --navy:#002b36;--green:#078a45;--yellow:#f2c500;
+ --ink:#14232b;--muted:#66767f;--line:#dde2e5;
+ --bg:#f2f4f5;--white:#fff;--soft:#eef2f4;--blue:#173d70;
+ background:#002b36!important;
+ border:1px solid #176044!important;
+ border-top:3px solid #078a45!important;
+ color:#f4f8f6!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a,
+body>#navCompetitionMenu.nav-competition-menu a{
+ color:#f4f8f6!important;
+ border-bottom-color:rgba(96,178,132,.22)!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a small,
+body>#navCompetitionMenu.nav-competition-menu a small{
+ color:#fff!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a:hover,
+#nav #navCompetitionMenu.nav-competition-menu a:focus-visible,
+body>#navCompetitionMenu.nav-competition-menu a:hover,
+body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
+ background:#08643f!important;color:#fff!important;
+ box-shadow:inset 3px 0 0 #f2c500!important;
+}
