@@ -2469,3 +2469,39 @@ button,.btn,input,select,textarea,
  width:43px!important;min-width:43px!important;
  }
 }
+
+/* Histórico v4: placar centralizado no card inteiro, não na área
+   restante depois do nome da competição. */
+#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ position:relative!important;
+ display:flex!important;align-items:center!important;
+ justify-content:center!important;
+ padding:6px 12px!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ position:absolute!important;left:12px;top:50%;
+ transform:translateY(-50%);width:clamp(75px,18%,170px);
+ grid-column:auto!important;z-index:1;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ flex:0 1 660px!important;width:min(100%,660px)!important;
+ margin:0 auto!important;grid-column:auto!important;
+ grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;
+ padding:0!important;box-sizing:border-box!important;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ border:0!important;border-bottom:0!important;
+ box-shadow:none!important;
+}
+@media(max-width:640px){
+ #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ padding:6px 5px!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ left:5px;width:65px;font-size:8px!important;
+ }
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ width:100%!important;grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr)!important;
+ padding-left:65px!important;
+ }
+}
