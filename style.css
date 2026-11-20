@@ -1486,3 +1486,29 @@ body.cbpes-liga-pro-page #tableCompetitionName,
 /* Prioridade final: título Liga Pro em Squadra Medium. */
 #table[data-liga-pro="true"] #tableCompetitionName,
 body.cbpes-liga-pro-page #tableCompetitionName{font-family:"Squadra Medium CBPES","Squadra CBPES",sans-serif!important;font-weight:500!important}
+
+
+/* Destaque da home: mesma identidade visual dos jogos da Liga Pro. */
+#latest .latest-match-liga-pro{
+  isolation:isolate;
+  background:radial-gradient(ellipse 75% 150% at 102% -35%,rgba(61,160,255,.38),transparent 65%),linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;
+  border:1px solid #1754a3;
+  border-left:4px solid #328cff;
+  color:#fff;
+}
+#latest .latest-match-liga-pro:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:180px;height:180px;right:-58px;top:-82px;bottom:auto;
+  border:24px solid rgba(70,155,255,.12);border-radius:50%;
+  background:none;opacity:1;transform:rotate(-23deg) skewX(-15deg);
+}
+#latest .latest-match-liga-pro:after{
+  content:"";position:absolute;pointer-events:none;
+  left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,#1274ff 0 22%,transparent 22% 42%,#66baff 42% 70%,transparent 70%);
+}
+#latest .latest-match-liga-pro .latest-top{color:#a8c9ef}
+#latest .latest-match-liga-pro .latest-top b{color:#66baff}
+#latest .latest-match-liga-pro .latest-foot,
+#latest .latest-match-liga-pro .latest-team small{color:#b4d2f2}
+#latest .latest-match-liga-pro .latest-team a{color:#fff}
