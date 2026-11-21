@@ -758,7 +758,23 @@ function renderCoach(name) {
     body.innerHTML='';
     makeSection('PARTIDAS OFICIAIS / SEMANAIS',officialRows);
     const imported=document.createElement('div');imported.innerHTML=historicResults;
-    makeSection('PARTIDAS AMISTOSAS',[...friendlyRows,...imported.querySelectorAll('.result-row')]);
+    // Une amistosos do portal e histórico PES6 em ordem cronológica decrescente,
+    // independentemente do adversário. Datas ausentes ficam por último.
+    const importedRows=[...imported.querySelectorAll('.result-row')];
+    const friendlyDated=[
+      ...friendlyRows.map(row=>({row,date:matches[existing.indexOf(row)]?.date||matches[existing.indexOf(row)]?.played_on||''})),
+      ...importedRows.map((row,i)=>({row,date:historicCoach[i]?.played_on||historicCoach[i]?.date||''}))
+    ];
+    const dateValue=value=>{
+      if(!value)return -Infinity;
+      const str=String(value).trim();
+      const br=str.match(/^(\\d{2})\\/(\\d{2})\\/(\\d{4})/);
+      const normalized=br?br[3]+'-'+br[2]+'-'+br[1]:str;
+      const timestamp=Date.parse(normalized);
+      return Number.isFinite(timestamp)?timestamp:-Infinity;
+    };
+    friendlyDated.sort((a,b)=>dateValue(b.date)-dateValue(a.date));
+    makeSection('PARTIDAS AMISTOSAS',friendlyDated.map(item=>item.row));
     historyCard.querySelector('.cardhead h2').textContent='HISTÓRICO DO TÉCNICO';
   }
   root.insertAdjacentHTML('beforeend',careerArchiveNotice());
