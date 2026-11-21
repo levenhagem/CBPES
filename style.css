@@ -4077,3 +4077,22 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   width:36px!important;height:36px!important;
  }
 }
+
+/* Perfil do técnico: escudo atual proporcional ao nome; categorias alinhadas à esquerda. */
+#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+ width:66px!important;height:66px!important;
+}
+#coachView .cbpes-coach-rivalry-label,
+#coachView .cbpes-coach-kpi-label{
+ text-align:left!important;
+}
+#coachView .cbpes-coach-filter > span{
+ text-align:left!important;
+}
+@media(max-width:620px){
+ #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+ #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+  width:58px!important;height:58px!important;
+ }
+}
