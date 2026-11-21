@@ -618,11 +618,11 @@ function renderCoach(name) {
     const makeSection=(title,rows)=>{
       const section=document.createElement('section');section.className='cbpes-coach-history-section';
       const heading=document.createElement('h3');heading.textContent=title;section.appendChild(heading);
-      rows.forEach((row,i)=>{row.hidden=i>=5;section.appendChild(row);});
+      rows.forEach((row,i)=>{row.hidden=i>=5;row.classList.toggle('cbpes-history-collapsed',i>=5);section.appendChild(row);});
       if(rows.length>5){
         const more=document.createElement('button');more.type='button';more.className='cbpes-coach-history-toggle';
         more.textContent='EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';more.setAttribute('aria-expanded','false');
-        more.addEventListener('click',()=>{const expanded=more.getAttribute('aria-expanded')!=='true';rows.slice(5).forEach(row=>row.hidden=!expanded);more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';});
+        more.addEventListener('click',()=>{const expanded=more.getAttribute('aria-expanded')!=='true';rows.slice(5).forEach(row=>{row.hidden=!expanded;row.classList.toggle('cbpes-history-collapsed',!expanded);});more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';});
         section.appendChild(more);
       }
       if(!rows.length){const emptyText=document.createElement('p');emptyText.className='cbpes-coach-history-empty';emptyText.textContent='Nenhuma partida registrada nesta categoria.';section.appendChild(emptyText);}
