@@ -3457,3 +3457,23 @@ body.cbpes-copa-master-page #tableCompetitionName{
  font-synthesis:weight!important;
  letter-spacing:.12px!important;
 }
+
+/* Copa Master: card de confronto acompanha a altura da tabela do mesmo grupo. */
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group{
+ align-self:stretch!important;
+ display:flex!important;flex-direction:column!important;
+ height:100%!important;min-height:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group > .cbpes-match.cbpes-match-copa-master{
+ flex:1 1 auto!important;display:flex!important;flex-direction:column!important;
+ justify-content:center!important;min-height:125px!important;
+ margin-bottom:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group > .cbpes-match.cbpes-match-copa-master .cbpes-match-main{
+ flex:1 1 auto!important;align-content:center!important;
+}
+@media(max-width:1100px){
+ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group > .cbpes-match.cbpes-match-copa-master{
+  min-height:135px!important;
+ }
+}
