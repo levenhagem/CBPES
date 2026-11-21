@@ -6,7 +6,12 @@ const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'te
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
-  return !!competition && competition.is_visible!==false;
+  if(!competition)return false;
+  // Proteção adicional para as competições em preparação, independente de cache de dados.
+  const hiddenIds=new Set(['31a4e67c-54fb-46f8-895b-35dfd876c211','810e323b-ed38-44d4-8460-1e21f02dd077']);
+  if(hiddenIds.has(String(competition.id)))return false;
+  if(/^(liga\\s*evo|torneio\\s*de\\s*abertura)$/i.test(String(competition.name||'').trim()))return false;
+  return competition.is_visible!==false;
 };
 const publicCompetitionMatch = m => {
   if((m.category||'official')!=='official')return true;
@@ -59,7 +64,7 @@ function renderNavCompetitions(){
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
   const menu=$('navCompetitionMenu');
-  navCompetitionButton.onclick=e=>{e.stopPropagation();if(menu.hidden)openNavCompetitionMenu();else closeNavCompetitionMenu();};
+  navCompetitionButton.onclick=e=>{e.stopPropagation();if(menu.hidden){renderNavCompetitions();openNavCompetitionMenu();}else closeNavCompetitionMenu();};
   navCompetitionWrap.addEventListener('mouseenter',()=>{if(D&&window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
