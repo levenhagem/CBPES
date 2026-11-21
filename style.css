@@ -3118,3 +3118,36 @@ body.cbpes-copa-master-page #table .cbpes-master-round-switcher{display:flex;ali
 body.cbpes-copa-master-page #table .cbpes-master-round-switcher b{font-size:14px;font-weight:800;color:#fff}
 body.cbpes-copa-master-page #table .cbpes-master-round-switcher .phase-arrow{min-width:34px;min-height:34px}
 body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder a{color:#fff;text-decoration:none}
+
+/* Copa Master: classificação à esquerda, rodadas à direita (padrão Liga PRO). */
+body.cbpes-copa-master-page #table .cbpes-master-two-column{
+ display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(310px,1fr)!important;
+ gap:20px!important;align-items:start!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-standings-column,
+body.cbpes-copa-master-page #table .cbpes-master-fixtures-column{min-width:0}
+body.cbpes-copa-master-page #table .cbpes-master-rounds{margin-top:0!important}
+body.cbpes-copa-master-page #table .cbpes-master-round-groups{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;margin-top:14px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group{
+ padding:0 12px 12px!important;border:1px solid #554621!important;
+ border-left:4px solid #ffc400!important;background:#211d15!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title{
+ margin:0 -12px 12px!important;padding:10px 12px!important;
+ background:#ffc400!important;color:#17130c!important;
+ font-weight:900!important;letter-spacing:.045em!important;font-size:12px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match{
+ margin:7px 0!important;max-width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder{
+ min-height:64px!important;background:#30291c!important;
+ border-left:0!important;
+}
+@media(max-width:1100px){
+ body.cbpes-copa-master-page #table .cbpes-master-two-column{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+}
