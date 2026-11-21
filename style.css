@@ -3870,3 +3870,8 @@ html body #table[data-copa-master="true"] .cbpes-competition-heading > #tableCom
  font-synthesis:weight!important;
  letter-spacing:.015em!important;
 }
+
+/* Confronto direto: totais neutros de jogos e empates em preto. */
+#coachView .cbpes-compare-metric-head-neutral > b{
+ color:#111111!important;
+}
