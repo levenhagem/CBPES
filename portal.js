@@ -9,7 +9,7 @@ function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (PAGES.includes(raw) ? raw : 'home'));
-  if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested))selectedWeeklyTable=requested;}renderTable();}
+  if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&(D.officialCompetitions||[]).find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
@@ -42,7 +42,8 @@ function openNavCompetitionMenu(){
 }
 function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
-  const editions=D.officialEditions||[],competitions=D.officialCompetitions||[];
+  const competitions=D.officialCompetitions||[];
+  const editions=(D.officialEditions||[]).filter(e=>competitions.find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false);
   menu.innerHTML=editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'<span class="nav-competition-empty">Nenhuma competição cadastrada</span>';
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
@@ -199,7 +200,7 @@ function renderHome() {
   const proTeamIds=new Set(proLeagueMatches.flatMap(m=>[String(m.home_id),String(m.away_id)]));
   const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
   const proStanding=standings(proTeams,proLeagueMatches);
-  $('miniTitle').innerHTML='<a class="cbpes-home-heading-link" href="#table">'+(proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO')+'</a>';
+  $('miniTitle').innerHTML='<a class="cbpes-home-heading-link" href="'+(proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table')+'">'+(proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO')+'</a>';
   $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6),zonesFor('official',null,(D.phases||[]).find(p=>String(p.official_edition_id)===String(proEdition.id)&&p.counts_in_standings)?.id),proLeagueMatches)+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
   const proRecent=latestPlayed(proMatches).slice(0,3);
   $('leagueRecent').innerHTML=proRecent.length?proRecent.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida da Liga Pro finalizada.');
@@ -236,7 +237,8 @@ function renderGames() {
   $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml || empty('Nenhuma partida encontrada.');
 }
 function renderTable() {
-  const editions=D.officialEditions||[], competitions=D.officialCompetitions||[];
+  const competitions=D.officialCompetitions||[];
+  const editions=(D.officialEditions||[]).filter(e=>competitions.find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false);
   const valid=editions.some(e=>String(e.id)===String(selectedWeeklyTable));
   if(!valid)selectedWeeklyTable=editions[0]?.id||'current';
   const selectedEdition=editions.find(e=>String(e.id)===String(selectedWeeklyTable));
