@@ -4,6 +4,10 @@ const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
 const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
+const publicEditionVisible = e => {
+  const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
+  return !!competition && competition.is_visible!==false;
+};
 const publicCompetitionMatch = m => {
   if((m.category||'official')!=='official')return true;
   const edition=(D?.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
@@ -15,7 +19,7 @@ function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (PAGES.includes(raw) ? raw : 'home'));
-  if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&(D.officialCompetitions||[]).find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false))selectedWeeklyTable=requested;}renderTable();}
+  if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
@@ -49,7 +53,7 @@ function openNavCompetitionMenu(){
 function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
-  const editions=(D.officialEditions||[]).filter(e=>competitions.find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false);
+  const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
   menu.innerHTML=editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'<span class="nav-competition-empty">Nenhuma competição cadastrada</span>';
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
@@ -246,7 +250,7 @@ function renderGames() {
 }
 function renderTable() {
   const competitions=D.officialCompetitions||[];
-  const editions=(D.officialEditions||[]).filter(e=>competitions.find(c=>String(c.id)===String(e.competition_id))?.is_visible!==false);
+  const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
   const valid=editions.some(e=>String(e.id)===String(selectedWeeklyTable));
   if(!valid)selectedWeeklyTable=editions[0]?.id||'current';
   const selectedEdition=editions.find(e=>String(e.id)===String(selectedWeeklyTable));
