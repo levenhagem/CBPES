@@ -4,6 +4,12 @@ const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
 const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
+const publicCompetitionMatch = m => {
+  if((m.category||'official')!=='official')return true;
+  const edition=(D?.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
+  const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
+  return competition?.is_visible!==false;
+};
 
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
@@ -131,7 +137,7 @@ const plCard = (title, rows, f, unit) => `<div class="card"><div class="cardhead
 const rankCard = (title, rows, f, unit = '') => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 8).map((x, i) => `<div class="player"><div><b><span class="rank-position">${densePosition(rows,i,f)}</span>${participantLink(x.p)}</b></div><span class="number">${f(x)}${unit}</span></div>`).join('') : empty('Sem dados ainda.')}</div></div>`;
 
 function renderHome() {
-  const { participants, rounds, matches } = D, played = latestPlayed(matches), nx = nextMatches(matches), S = stats(D, 'nonweekly'), t = typeOf();
+  const { participants, rounds } = D, matches=D.matches.filter(publicCompetitionMatch), played = latestPlayed(matches), nx = nextMatches(matches), S = stats(D, 'nonweekly'), t = typeOf();
   $('hSeason').textContent = (SET.name + ' • TEMPORADA ' + SET.season).toUpperCase();
   const cr = currentRound(rounds, matches);
   $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
@@ -214,7 +220,7 @@ function renderHome() {
 
 function renderGames() {
   document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('selected', b.dataset.f === filter));
-  const ms = D.matches.filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
+  const ms = D.matches.filter(publicCompetitionMatch).filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
   const official = ms.filter(m => m.category === 'official' && m.round);
   const visibleOfficialRounds = new Set(official.filter(m => m.played).map(m => String(m.round_id)));
   const friendlies = ms.filter(m => m.category === 'friendly');
