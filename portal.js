@@ -416,28 +416,30 @@ function renderTable() {
   }
   const drawNotice='';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
-  // Cada tabela e seu confronto compartilham a mesma linha do grid.
-  // Evita desalinhamento quando a altura dos cards de partidas varia por grupo.
+  // Copa Master: classificação por grupo à esquerda; confrontos de toda a rodada
+  // em lista única à direita, sem divisões ou cabeçalhos por grupo.
   if(isCopaMaster && masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id)){
     const root=$('fullTable').querySelector('.cbpes-master-two-column');
     if(root){
-      const standings=[...root.querySelectorAll('.cbpes-master-group')];
-      const fixtures=[...root.querySelectorAll('.cbpes-master-round-group')];
-      const nav=root.querySelector('.cbpes-master-round-switcher');
-      const legend=root.querySelector('.cbpes-zone-legend');
-      const aligned=document.createElement('div');
-      aligned.className='cbpes-master-aligned-groups';
-      if(nav){
-        const spacer=document.createElement('div');
-        spacer.className='cbpes-master-round-spacer';
-        aligned.append(spacer,nav);
+      const standings=root.querySelector('.cbpes-master-groups-preview');
+      const fixtures=root.querySelector('.cbpes-master-rounds');
+      const roundGroups=fixtures?.querySelector('.cbpes-master-round-groups');
+      if(roundGroups){
+        const allMatches=[...roundGroups.querySelectorAll('.cbpes-master-round-group > .cbpes-match')];
+        const empty=[...roundGroups.querySelectorAll('.cbpes-master-fixture-placeholder')];
+        roundGroups.replaceChildren(...(allMatches.length?allMatches:empty));
+        roundGroups.classList.add('cbpes-master-round-list');
       }
-      standings.forEach((table,i)=>{
-        const group=fixtures[i];
-        if(group)aligned.append(table,group);
-      });
-      if(legend)aligned.append(legend);
-      root.replaceWith(aligned);
+      root.classList.add('cbpes-master-round-layout');
+      // A tabela mantém os grupos A–D; apenas os confrontos são agrupados por rodada.
+      if(standings&&fixtures){
+        root.replaceChildren(
+          Object.assign(document.createElement('div'),{className:'cbpes-master-standings-column'}),
+          Object.assign(document.createElement('aside'),{className:'cbpes-master-fixtures-column'})
+        );
+        root.children[0].append(standings);
+        root.children[1].append(fixtures);
+      }
     }
   }
 
