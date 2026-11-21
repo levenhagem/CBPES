@@ -2931,3 +2931,10 @@ body.cbpes-copa-master-page #tableCompetitionName{
 body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
 #table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-master,
 body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
+
+/* Copa Master: fundo do emblema igual ao fundo original da logo (#342100). */
+#table[data-copa-master="true"] .cbpes-competition-emblem,
+body.cbpes-copa-master-page #table .cbpes-competition-emblem{
+ background:#342100!important;
+ border-color:#342100!important;
+}
