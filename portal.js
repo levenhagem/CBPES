@@ -504,7 +504,7 @@ function renderWeeklies() {
   root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next],[data-weekly-round-prev],[data-weekly-round-next]');if(!b)return;if(b.hasAttribute('data-weekly-round-prev')||b.hasAttribute('data-weekly-round-next')){const key=b.dataset.weeklyRoundPrev||b.dataset.weeklyRoundNext;const [edition,phase]=key.split('|');const rs=(D.weeklyRounds||[]).filter(r=>String(r.weekly_id)===edition&&(String(r.phase_id)===phase||(!r.phase_id&&phase==='legacy-groups'))).sort((a,c)=>a.number-c.number);selectedRoundByEdition[key]=changeRound(rs,selectedRoundByEdition[key],b.hasAttribute('data-weekly-round-next')?1:-1);renderWeeklies();return;}const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const allPhases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);const ps=allPhases.filter(p=>p.phase_type!=='third_place'||!allPhases.some(x=>x.phase_type==='final'));if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
 }
 
-const statCategoryLabels={official:'COMPETIÇÕES OFICIAIS',weekly:'SEMANAIS',friendly:'AMISTOSOS'};
+const statCategoryLabels={official:'COMPETIÇÕES OFICIAIS',weekly:'SEMANAIS',friendly:'AMISTOSOS — TÉCNICOS'};
 const statDefinitions=S=>[
   {key:'scorers',title:'ARTILHARIA',rows:S.artilheiros,value:x=>x.g,unit:'gols',players:true},
   {key:'assists',title:'ASSISTÊNCIAS',rows:S.garcons,value:x=>x.a,unit:'assist.',players:true},
@@ -524,9 +524,48 @@ const statData=category=>{
   const filtered={...D,matches:ms,events:D.events.filter(e=>ids.has(e.match_id))};
   return stats(filtered,category);
 };
+const friendlyCoachDefinitions=()=>{
+  const coaches=new Map();
+  const ensure=name=>{
+    const clean=String(name||'').trim(),key=clean.toLocaleLowerCase();
+    if(!key)return null;
+    if(!coaches.has(key))coaches.set(key,{name:clean,j:0,v:0,e:0,d:0,gp:0,gc:0,sg:0,ap:0});
+    return coaches.get(key);
+  };
+  const add=(home,away,hs,as)=>{
+    if(!Number.isFinite(Number(hs))||!Number.isFinite(Number(as)))return;
+    const h=ensure(home),a=ensure(away);
+    if(!h||!a||h===a)return;
+    [[h,Number(hs),Number(as)],[a,Number(as),Number(hs)]].forEach(([x,gf,ga])=>{
+      x.j++;x.gp+=gf;x.gc+=ga;
+      if(gf>ga)x.v++;else if(gf===ga)x.e++;else x.d++;
+    });
+  };
+  D.matches.filter(m=>m.played&&m.category==='friendly').forEach(m=>add(m.home_coach_name,m.away_coach_name,m.home_score,m.away_score));
+  (careerArchive||[]).forEach(m=>add(m.home_coach,m.away_coach,m.home_score,m.away_score));
+  const rows=[...coaches.values()].map(x=>({...x,sg:x.gp-x.gc,ap:x.j?Math.round((3*x.v+x.e)/(3*x.j)*1000)/10:0}));
+  const ranked=(value,ascending=false)=>rows.slice().sort((a,b)=>(ascending?value(a)-value(b):value(b)-value(a))||a.name.localeCompare(b.name,'pt-BR'));
+  const def=(key,title,value,unit='',ascending=false)=>({key,title,rows:ranked(value,ascending),value,unit,coaches:true});
+  return [
+    def('attack','MELHOR ATAQUE (GOLS/JOGO)',x=>fmt1(x.gp/x.j)),
+    def('defense','MELHOR DEFESA (MENOS SOFRIDOS)',x=>x.gc,'',true),
+    def('goals','GOLS MARCADOS',x=>x.gp),
+    def('efficiency','APROVEITAMENTO',x=>x.ap,'%'),
+    def('wins','VITÓRIAS',x=>x.v),
+    def('draws','EMPATES',x=>x.e),
+    def('losses','DERROTAS',x=>x.d),
+    def('goal-difference','SALDO DE GOLS',x=>sgf(x.sg))
+  ];
+};
+const visibleStatDefinitions=category=>{
+  if(category==='friendly')return friendlyCoachDefinitions();
+  const defs=statDefinitions(statData(category));
+  if(category==='official')return defs.filter(d=>!['wins','draws','losses','efficiency'].includes(d.key));
+  return defs.filter(d=>!d.players);
+};
 const statRowsHtml=(definition,limit=Infinity)=>{
   const rows=definition.rows.slice(0,limit);
-  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
+  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+statRowsHtml(definition,full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function renderStats(){
@@ -534,15 +573,15 @@ function renderStats(){
   const bigTxt=b?'<a href="#team/'+b.home_id+'">'+esc(b.home.name)+'</a> '+b.home_score+' x '+b.away_score+' <a href="#team/'+b.away_id+'">'+esc(b.away.name)+'</a>':'—';
   const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
   const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+S.jogos+'</b><span>Partidas</span></div><div class="stat"><b>'+S.gols+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(S.media)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
-  const definitions=statDefinitions(S).filter(d=>statsCategory==='official'||!d.players);
+  const definitions=visibleStatDefinitions(statsCategory);
   $('statsGrid').innerHTML=filter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
   $('statsGrid').onclick=e=>{const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
 function renderStatsDetail(category,key){
   const root=$('statsDetailView');if(!root)return;
   const valid=Object.hasOwn(statCategoryLabels,category)?category:'official';
-  const definition=statDefinitions(statData(valid)).find(d=>d.key===key);
-  if(!definition||(valid!=='official'&&definition.players)){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
+  const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
+  if(!definition){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
   root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1><div class="sub">Classificação completa da estatística selecionada.</div></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
 }
 
