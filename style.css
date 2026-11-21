@@ -2938,3 +2938,14 @@ body.cbpes-copa-master-page #table .cbpes-competition-emblem{
  background:#342100!important;
  border-color:#342100!important;
 }
+
+/* Copa Master: emblema da tabela no mesmo formato da Liga Pro,
+   usando branco e cinza, sem modificar a imagem do escudo. */
+#table[data-copa-master="true"] .cbpes-competition-emblem,
+body.cbpes-copa-master-page #table .cbpes-competition-emblem{
+ background:linear-gradient(145deg,#ffffff 0%,#e7e7e7 52%,#aeb4bb 100%)!important;
+ border:1px solid #c9cdd2!important;
+ border-radius:10px!important;
+ color:#242424!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 6px rgba(0,0,0,.18)!important;
+}
