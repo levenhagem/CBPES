@@ -553,11 +553,12 @@ function renderCoach(name) {
     const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
     return competition?.name||edition?.name||'PARTIDA OFICIAL';
   };
+  // Os registros importados são amistosos comuns na apresentação do perfil.
   const historicResults=historicCoach.map(m=>{
     const isHome=String(m.home_coach||'').trim().toLocaleLowerCase()===key;
     const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;
     const outcome=own>other?'win':own<other?'loss':'draw';
-    return `<div class="result-row cbpes-coach-match-row"><span class="cbpes-coach-match-meta">${m.date?esc(fd(m.date)):m.played_on?esc(fd(m.played_on)):"Data não informada"}</span><div class="cbpes-coach-match-line"><span>${coachLink(m.home_coach)}</span><strong class="cbpes-coach-match-score ${outcome}">${m.home_score}–${m.away_score}</strong><span>${coachLink(m.away_coach)}</span></div></div>`;
+    return `<div class="result-row cbpes-coach-match-row cbpes-coach-match-friendly"><span class="cbpes-coach-match-meta">${m.date?esc(fd(m.date)):m.played_on?esc(fd(m.played_on)):"Data não informada"}</span><div class="cbpes-coach-match-line"><span>${coachLink(m.home_coach)}</span><strong class="cbpes-coach-match-score ${outcome}">${m.home_score}–${m.away_score}</strong><span>${coachLink(m.away_coach)}</span></div></div>`;
   }).join('');
   const coachTrophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.awarded_on||'').localeCompare(a.awarded_on||''));
   const profile=(D.coachProfiles||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase()===key);
