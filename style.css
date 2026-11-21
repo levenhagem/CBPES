@@ -3477,3 +3477,20 @@ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-
   min-height:135px!important;
  }
 }
+
+/* Todos os campeonatos: título maior, sem alterar tabelas, cabeçalhos de grupos ou cards. */
+#table .cbpes-competition-heading #tableCompetitionName,
+#table[data-liga-pro="true"] #tableCompetitionName,
+#table[data-copa-master="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName,
+body.cbpes-copa-master-page #tableCompetitionName{
+ font-size:clamp(36px,4vw,54px)!important;
+ line-height:1.02!important;
+}
+@media(max-width:620px){
+ #table .cbpes-competition-heading #tableCompetitionName,
+ #table[data-liga-pro="true"] #tableCompetitionName,
+ #table[data-copa-master="true"] #tableCompetitionName{
+  font-size:clamp(28px,7vw,39px)!important;
+ }
+}
