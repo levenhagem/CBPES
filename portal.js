@@ -398,19 +398,16 @@ function renderTable() {
     const virtualRound=Math.max(0,Math.min(totalMasterRounds-1,Number(selectedOfficialRoundByPhase[virtualRoundKey])||0));
     const masterSelectedRound=masterGroupRounds[virtualRound]||null;
     const masterRoundNav='<div class="round-switcher cbpes-master-round-switcher"><button class="phase-arrow" data-master-round-prev="1" '+(virtualRound===0?'disabled':'')+' aria-label="Rodada anterior">‹</button><b>RODADA '+String(virtualRound+1).padStart(2,'0')+'</b><button class="phase-arrow" data-master-round-next="1" '+(virtualRound>=totalMasterRounds-1?'disabled':'')+' aria-label="Próxima rodada">›</button></div>';
-    const masterFixtures='<div class="cbpes-master-rounds">'+masterRoundNav+'<div class="cbpes-master-round-groups">'+masterGroupNames.map(g=>{
-      const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
-      const games=gm.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)).sort(byDisplayOrder);
-      const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
-      const groupIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
-      const pairings=masterCalendar[virtualRound]||[];
-      const templates=pairings.map(([home,away])=>{
-        const h=D.participants.find(p=>String(p.id)===groupIds[home-1]);
-        const a=D.participants.find(p=>String(p.id)===groupIds[away-1]);
-        return '<div class="cbpes-match cbpes-match-copa-master cbpes-master-template-match"><div class="cbpes-match-main"><div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">'+(h?participantLink(h):'TIME '+home)+'</span><small>'+(h?.coach_name?esc(h.coach_name):'Técnico a definir')+'</small></div></div></div><div class="cbpes-match-score">– : –</div><div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">'+(a?participantLink(a):'TIME '+away)+'</span><small>'+(a?.coach_name?esc(a.coach_name):'Técnico a definir')+'</small></div></div></div></div></div>';
-      }).join('');
-      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title"><span class="cbpes-master-group-heading"><span class="cbpes-master-group-label">GRUPO <b>'+g+'</b></span></span></div>'+(games.length?games.map(m=>matchRow(m,true)).join(''):templates||'<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+'</div>';
-    }).join('')+'</div></div>';
+    // Calendário da Copa Master: seis confrontos por rodada, sem divisão por grupos.
+    // Usa exclusivamente partidas reais cadastradas no Supabase.
+    const roundGames=masterGroupMatches
+      .filter(m=>String(m.round_id)===String(masterSelectedRound?.id))
+      .sort(byDisplayOrder);
+    const masterFixtures='<div class="cbpes-master-rounds">'+masterRoundNav+
+      '<div class="cbpes-master-round-groups cbpes-master-round-list">'+
+      (roundGames.length?roundGames.map(m=>matchRow(m,true)).join(''):
+       '<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+
+      '</div></div>';
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral cbpes-master-two-column"><div class="cbpes-master-standings-column">'+masterGroupsHtml+'</div><aside class="cbpes-master-fixtures-column">'+masterFixtures+'</aside></div>';
   }
