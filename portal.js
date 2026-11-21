@@ -246,7 +246,7 @@ function renderTable() {
   const headingName=selectedCompetition?.name||selectedEdition?.name||selectedWeekly?.name||'Tabela do campeonato';
   const heading=$('tableCompetitionName'), emblem=$('tableCompetitionEmblem');
   if(heading){
-    if(/copa\\s*master/i.test(headingName)){
+    if(/copa\s*master/i.test(headingName)){
       heading.innerHTML='<span class="cbpes-master-title-copa">COPA</span> <span class="cbpes-master-title-master">MASTER</span>';
     }else heading.textContent=headingName;
   }
