@@ -3112,3 +3112,9 @@ body.cbpes-copa-master-page #table .cbpes-master-round-group-title{font-weight:8
 body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#30291c;border-left:3px solid #ffc400;color:#fff;padding:18px 14px;font-size:13px;font-weight:700}
 body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder strong{color:#ffc400;font-size:19px}
 @media(max-width:750px){body.cbpes-copa-master-page #table .cbpes-master-round-groups{grid-template-columns:1fr}}
+
+/* Navegação do calendário gerado automaticamente. */
+body.cbpes-copa-master-page #table .cbpes-master-round-switcher{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid #514321}
+body.cbpes-copa-master-page #table .cbpes-master-round-switcher b{font-size:14px;font-weight:800;color:#fff}
+body.cbpes-copa-master-page #table .cbpes-master-round-switcher .phase-arrow{min-width:34px;min-height:34px}
+body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder a{color:#fff;text-decoration:none}
