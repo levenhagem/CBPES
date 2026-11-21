@@ -591,11 +591,29 @@ const statRowsHtml=(definition,limit=Infinity)=>{
   return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
+function generalStatsData(category){
+  const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m));
+  const records=matches.map(m=>({
+    home:m.home?.name||'Mandante',away:m.away?.name||'Visitante',
+    homeId:m.home_id,awayId:m.away_id,
+    hs:Number(m.home_score),as:Number(m.away_score),archive:false
+  }));
+  if(category==='friendly'){
+    (careerArchive||[]).forEach(m=>{
+      const hs=Number(m.home_score),as=Number(m.away_score);
+      if(!Number.isFinite(hs)||!Number.isFinite(as))return;
+      records.push({home:m.home_coach||m.home_club||'Mandante',away:m.away_coach||m.away_club||'Visitante',hs,as,archive:true});
+    });
+  }
+  const goals=records.reduce((sum,m)=>sum+m.hs+m.as,0);
+  const biggest=records.slice().sort((a,b)=>Math.abs(b.hs-b.as)-Math.abs(a.hs-a.as)||(b.hs+b.as)-(a.hs+a.as))[0];
+  return {games:records.length,goals,average:records.length?goals/records.length:0,biggest};
+}
 function renderStats(){
-  const S=statData(statsCategory),b=S.big;
-  const bigTxt=b?'<a href="#team/'+b.home_id+'">'+esc(b.home.name)+'</a> '+b.home_score+' x '+b.away_score+' <a href="#team/'+b.away_id+'">'+esc(b.away.name)+'</a>':'—';
+  const generalData=generalStatsData(statsCategory),b=generalData.biggest;
+  const bigTxt=b?(b.archive?coachLink(b.home):'<a href="#team/'+encodeURIComponent(b.homeId)+'">'+esc(b.home)+'</a>')+' '+b.hs+' x '+b.as+' '+(b.archive?coachLink(b.away):'<a href="#team/'+encodeURIComponent(b.awayId)+'">'+esc(b.away)+'</a>'):'—';
   const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
-  const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+S.jogos+'</b><span>Partidas</span></div><div class="stat"><b>'+S.gols+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(S.media)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
+  const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+generalData.games+'</b><span>Partidas</span></div><div class="stat"><b>'+generalData.goals+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(generalData.average)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
   const definitions=visibleStatDefinitions(statsCategory);
   $('statsGrid').innerHTML=filter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
   $('statsGrid').onclick=e=>{if(changeDefenseMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
