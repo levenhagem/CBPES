@@ -348,8 +348,8 @@ function renderTable() {
   }
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const masterGroupPreview=isCopaMaster && !officialMatches.length
-    ? '<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong><small>PRÉVIA ILUSTRATIVA · GRUPOS A DEFINIR</small></div><div class="cbpes-master-groups-grid">'+
-      ['A','B','C','D'].map(g=>'<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header">GRUPO '+g+'</div><table class="table"><thead><tr><th>CLUBE</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td><span class="cbpes-master-group-rank">'+n+'</span> A definir</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>').join('')+'</tbody></table></div>').join('')+
+    ? '<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong><small>PRÉVIA ILUSTRATIVA · 4 GRUPOS DE 3 EQUIPES</small></div><div class="cbpes-master-groups-grid">'+
+      ['A','B','C','D'].map(g=>'<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header">GRUPO '+g+'</div><div class="cbpes-master-group-scroll"><table class="table cbpes-master-group-table"><thead><tr><th class="cbpes-master-position"></th><th class="cbpes-master-club"></th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th><th>FORMA</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td class="cbpes-master-position"><span class="cbpes-master-group-rank">'+n+'</span></td><td class="cbpes-master-club"><strong>Equipe a definir</strong><small>Técnico a definir</small></td>'+[0,0,0,0,0,0,0,0,0].map(v=>'<td>'+v+'</td>').join('')+'<td class="cbpes-master-form"><span class="cbpes-master-form-dots">'+Array(5).fill('<i></i>').join('')+'</span></td></tr>').join('')+'</tbody></table></div></div>').join('')+
       '</div></section>' : '';
   const drawNotice='';
   if(isCopaMaster && !officialMatches.length){
