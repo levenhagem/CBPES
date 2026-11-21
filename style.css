@@ -3079,3 +3079,16 @@ body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr.cbpes-mast
  background:linear-gradient(to right,#19d66b 0 75%,#fff 75% 100%)!important;
  box-shadow:none!important;
 }
+
+/* Definitivo: 3º colocado não recebe qualquer faixa, pseudo-elemento ou borda. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-not-qualified,
+body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-not-qualified td:first-child{
+ border-left:0!important;box-shadow:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-not-qualified td:first-child::before,
+body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-not-qualified td:first-child::after{
+ content:none!important;display:none!important;background:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-qualified td.cbpes-zone-position{
+ border-left:0!important;box-shadow:none!important;
+}
