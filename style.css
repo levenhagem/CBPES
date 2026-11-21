@@ -3068,3 +3068,14 @@ body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-posit
 body.cbpes-copa-master-page #table .cbpes-master-groups-preview .cbpes-zone-legend i{
  box-shadow:none!important;filter:none!important;
 }
+
+/* Correção: apenas posições com zona de classificação configurada recebem a faixa. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr:not(.cbpes-master-qualified) td.cbpes-zone-position::before{
+ display:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr.cbpes-master-qualified td.cbpes-zone-position::before{
+ display:block!important;
+ width:4px!important;
+ background:linear-gradient(to right,#19d66b 0 75%,#fff 75% 100%)!important;
+ box-shadow:none!important;
+}
