@@ -4005,3 +4005,75 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   min-height:34px!important;font-size:20px!important;
  }
 }
+
+/* Copa Master: técnicos brancos, mas subordinados visualmente aos clubes. */
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-match-club-text small,
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-match-club-text small .coach-link{
+ color:#fff!important;opacity:.72!important;font-weight:400!important;
+ font-size:10px!important;letter-spacing:0!important;
+}
+/* Perfil do técnico: escudos soltos, junto ao nome, sem o cartão branco anterior. */
+#coachView .cbpes-coach-hero{
+ min-height:0!important;padding:28px 32px!important;
+}
+#coachView .cbpes-coach-hero-identity{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ flex-wrap:wrap!important;gap:14px!important;margin-top:12px!important;
+ padding:0!important;max-width:100%!important;min-width:0!important;
+}
+#coachView .cbpes-coach-hero-identity h1{
+ margin:0!important;font-size:clamp(32px,4vw,48px)!important;
+ line-height:1.12!important;flex:0 1 auto!important;min-width:0!important;
+}
+#coachView .cbpes-coach-hero-crest-line{
+ display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+ gap:12px!important;min-width:0!important;
+}
+#coachView .cbpes-coach-hero-current-crest,
+#coachView .cbpes-coach-hero-past-crest{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ background:none!important;border:0!important;box-shadow:none!important;padding:0!important;
+}
+#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100px!important;height:100px!important;background:none!important;
+ border:0!important;box-shadow:none!important;padding:0!important;
+}
+#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+ display:block!important;width:100px!important;height:100px!important;object-fit:contain!important;
+}
+#coachView .cbpes-coach-hero-past-crests{
+ display:inline-flex!important;align-items:center!important;flex-wrap:wrap!important;gap:9px!important;
+}
+#coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:46px!important;height:46px!important;background:none!important;
+ border:0!important;box-shadow:none!important;padding:0!important;
+}
+#coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
+ display:block!important;width:46px!important;height:46px!important;object-fit:contain!important;
+}
+#coachView .cbpes-coach-hero .cbpes-coach-current-team{
+ margin-top:12px!important;max-width:100%!important;
+}
+#coachView .cbpes-coach-rivalry-label,
+#coachView .cbpes-coach-kpi-label{
+ display:block!important;width:100%!important;text-align:center!important;
+ font-weight:850!important;letter-spacing:.075em!important;
+}
+#coachView .cbpes-coach-rivalry-info{min-width:0!important}
+#coachView .cbpes-coach-filter > span{
+ font-weight:850!important;text-align:center!important;
+}
+@media(max-width:620px){
+ #coachView .cbpes-coach-hero{padding:22px 18px!important}
+ #coachView .cbpes-coach-hero-identity{gap:10px!important}
+ #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+ #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+  width:76px!important;height:76px!important;
+ }
+ #coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest,
+ #coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
+  width:36px!important;height:36px!important;
+ }
+}
