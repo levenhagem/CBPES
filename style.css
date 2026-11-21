@@ -3969,3 +3969,39 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
  body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-match-club{gap:7px!important}
  body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-team-name{font-size:12px!important}
 }
+
+/* Copa Master: hierarquia clube > técnico e placar individual por equipe. */
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-team-name{
+ font-family:Lato,Arial,sans-serif!important;
+ font-weight:800!important;color:#fff!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-match-club-text small,
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-match-club-text small .coach-link{
+ font-family:Lato,Arial,sans-serif!important;
+ font-size:10px!important;font-weight:400!important;
+ color:#b7ae9d!important;opacity:.78!important;
+ line-height:1.25!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-score-inline{
+ display:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-score-stacked{
+ display:grid!important;visibility:visible!important;
+ grid-template-rows:repeat(2,minmax(38px,auto))!important;
+ align-items:center!important;justify-items:center!important;
+ gap:7px!important;width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-score-stacked > span{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;min-height:38px!important;
+ font-size:22px!important;font-weight:800!important;
+ line-height:1!important;color:#fff!important;
+}
+@media(max-width:620px){
+ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-score-stacked{
+  grid-template-rows:repeat(2,minmax(34px,auto))!important;gap:5px!important;
+ }
+ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match.cbpes-match-copa-master .cbpes-score-stacked > span{
+  min-height:34px!important;font-size:20px!important;
+ }
+}
