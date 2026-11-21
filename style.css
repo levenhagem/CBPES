@@ -2761,3 +2761,24 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView .cbpes-coach-hero-club .cbpes-coach-career-crest img{display:block!important;width:94px!important;height:94px!important;max-width:100%;object-fit:contain;}
 #coachView .cbpes-coach-hero-club .cbpes-coach-previous summary{color:#246c51;font-weight:600;}
 @media(max-width:520px){#coachView .cbpes-coach-hero-club{position:relative!important;top:auto!important;right:auto!important;margin-top:18px;width:155px!important}#coachView .cbpes-coach-hero-title{padding-right:0!important}}
+
+/* Técnico — painel horizontal de clube inspirado na referência enviada. */
+#coachView .cbpes-coach-hero-club{
+ position:absolute;top:20px;right:24px;display:flex;flex-direction:row;
+ align-items:center;gap:15px;width:310px;min-height:126px;
+ padding:13px 16px;background:linear-gradient(110deg,#fff 40%,#e7f4eb 100%);
+ color:#173e2c;border:1px solid #d6e5dc;border-radius:3px;
+ box-shadow:0 4px 14px rgba(0,0,0,.1);text-align:left;
+}
+#coachView .cbpes-coach-hero-club-crest{flex:0 0 100px;display:flex;align-items:center;justify-content:center}
+#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest{display:flex!important;width:100px!important;height:100px!important;align-items:center;justify-content:center}
+#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest img{width:100px!important;height:100px!important;object-fit:contain}
+#coachView .cbpes-coach-hero-club-info{flex:1;min-width:0}
+#coachView .cbpes-coach-hero-club-name{font-size:16px;font-weight:800;color:#087047;line-height:1.2}
+#coachView .cbpes-coach-hero-club-role{font-size:12px;font-weight:650;color:#254a37;margin-top:5px}
+#coachView .cbpes-coach-previous{position:relative;margin-top:13px;font-size:11px}
+#coachView .cbpes-coach-previous summary{cursor:pointer;color:#287453;font-weight:650}
+#coachView .cbpes-coach-previous-list{position:absolute;z-index:10;top:100%;right:0;min-width:180px;background:#fff;color:#263b30;padding:10px;border:1px solid #d9e4dc;box-shadow:0 8px 20px rgba(0,0,0,.12);border-radius:4px}
+#coachView .cbpes-coach-previous-list>div{padding:5px 0}
+@media(min-width:521px){#coachView .cbpes-coach-hero-title{padding-right:340px!important}#coachView .cbpes-coach-current-team{max-width:calc(100% - 340px)}}
+@media(max-width:520px){#coachView .cbpes-coach-hero-club{position:relative;top:auto;right:auto;margin-top:18px;width:100%;max-width:330px;min-height:116px}#coachView .cbpes-coach-hero-title{padding-right:0!important}#coachView .cbpes-coach-current-team{max-width:none}}
