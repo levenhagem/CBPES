@@ -3092,3 +3092,14 @@ body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-not
 body.cbpes-copa-master-page #table .cbpes-master-group-table tr.cbpes-master-qualified td.cbpes-zone-position{
  border-left:0!important;box-shadow:none!important;
 }
+
+/* Copa Master: faixa contínua somente verde, sem filete branco e sem neon. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr.cbpes-master-qualified td.cbpes-zone-position::before{
+ content:""!important;display:block!important;
+ position:absolute!important;left:0!important;top:0!important;bottom:0!important;
+ width:4px!important;background:#19d66b!important;
+ box-shadow:none!important;filter:none!important;border:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr.cbpes-master-not-qualified td:first-child::before{
+ display:none!important;content:none!important;
+}
