@@ -501,6 +501,8 @@ function renderCoach(name) {
   const coachTeamLink=t=>t?`<a href="#team/${encodeURIComponent(t.id)}" class="cbpes-coach-team-link">${teamWithCrest(t)}</a>`:'<span>Sem time atualmente</span>';
   const careerCrests=[...new Map([...assignments].reverse().map(h=>{const t=D.participants.find(p=>p.id===h.participant_id);return t?[String(t.id),t]:null;}).filter(Boolean)).values()];
   const crestOnly=t=>{const wrapper=document.createElement('span');wrapper.innerHTML=teamWithCrest(t);const img=wrapper.querySelector('img');return img?`<a class="cbpes-coach-career-crest" href="#team/${encodeURIComponent(t.id)}" title="${esc(t.name)}" aria-label="${esc(t.name)}">${img.outerHTML}</a>`:`<a class="cbpes-coach-career-crest cbpes-coach-crest-fallback" href="#team/${encodeURIComponent(t.id)}" title="${esc(t.name)}">${esc(String(t.name||'?').slice(0,2))}</a>`;};
+  // Amplia os escudos do cabeçalho para acompanhar o nome do técnico.
+  const largeCrest=t=>crestOnly(t).replace('class="cbpes-coach-career-crest', 'style="display:inline-flex;width:66px;height:66px;align-items:center;justify-content:center;font-size:22px" class="cbpes-coach-career-crest').replace('<img ', '<img style="width:64px;height:64px;max-width:100%;object-fit:contain" ');
   const matches=D.matches.filter(m=>m.played && [m.home_coach_name,m.away_coach_name].some(n=>String(n||'').trim().toLocaleLowerCase()===key)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   let v=0,e=0,d=0;
   matches.forEach(m=>{const home=String(m.home_coach_name||'').trim().toLocaleLowerCase()===key;const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;if(own>opp)v++;else if(own<opp)d++;else e++;});
@@ -625,7 +627,7 @@ function renderCoach(name) {
   const heroTeamCard=(t,label,small=false)=>t?`<div style="display:flex;align-items:center;gap:10px;${small?'opacity:.8;font-size:12px':'font-size:15px'}"><span style="flex:0 0 auto">${crestOnly(t)}</span><div style="min-width:0"><div style="font-weight:700">${coachTeamLink(t)}</div><div style="font-size:11px;opacity:.7;margin-top:3px">${label}</div></div></div>`:`<div style="font-size:13px;opacity:.65">Sem time atualmente</div>`;
   root.innerHTML=`<div class="cbpes-coach-hero" style="padding:32px 34px;min-height:205px">
     <div class="cbpes-coach-hero-label" style="font-size:12px;letter-spacing:.12em">PERFIL DO TÉCNICO</div>
-    <div class="cbpes-coach-hero-title" style="gap:22px;flex-wrap:wrap;align-items:center;margin-top:12px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1><div class="cbpes-coach-career-crests" style="transform:scale(1.15);transform-origin:left center;margin-left:8px">${careerCrests.map(crestOnly).join('')}</div></div>
+    <div class="cbpes-coach-hero-title" style="gap:22px;flex-wrap:wrap;align-items:center;margin-top:12px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1><div class="cbpes-coach-career-crests" style="display:flex;align-items:center;gap:16px;margin-left:8px;min-height:68px">${careerCrests.map(largeCrest).join('')}</div></div>
     <div class="cbpes-coach-current-team" style="margin-top:22px;font-size:16px"><span>TIME ATUAL:</span>${currentTeam?`<a href="#team/${encodeURIComponent(currentTeam.id)}">${esc(currentTeam.name)}</a>`:'Sem time atualmente'}</div>
     ${profile?.bio?`<p class="cbpes-coach-hero-bio" style="margin-top:14px">${esc(profile.bio)}</p>`:''}
   </div>
