@@ -625,10 +625,10 @@ function renderCoach(name) {
   const previousClubs=[...new Map(assignments.map(h=>D.participants.find(p=>String(p.id)===String(h.participant_id))).filter(t=>t&&String(t.id)!==String(currentTeam?.id)).map(t=>[String(t.id),t])).values()];
   root.innerHTML=`<div class="cbpes-coach-hero" style="padding:32px 34px;min-height:205px;position:relative">
     <div class="cbpes-coach-hero-label" style="font-size:12px;letter-spacing:.12em">PERFIL DO TÉCNICO</div>
-    <div class="cbpes-coach-hero-title" style="gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-right:125px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1></div>
+    <div class="cbpes-coach-hero-title" style="gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-right:205px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1></div>
     <div class="cbpes-coach-current-team" style="margin-top:22px;font-size:16px"><span>TIME ATUAL:</span>${currentTeam?`<a href="#team/${encodeURIComponent(currentTeam.id)}">${esc(currentTeam.name)}</a>`:'Sem time atualmente'}</div>
     ${profile?.bio?`<p class="cbpes-coach-hero-bio" style="margin-top:14px">${esc(profile.bio)}</p>`:''}
-    <div class="cbpes-coach-hero-club" style="position:absolute;top:24px;right:28px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;max-width:110px">
+    <div class="cbpes-coach-hero-club" style="position:absolute;top:18px;right:22px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;width:158px;min-height:165px;padding:16px 12px;background:#fff;color:#193c30;border:1px solid #dce6df;border-radius:9px;box-shadow:0 6px 18px rgba(0,0,0,.14)">
       ${currentTeam?crestOnly(currentTeam):'<span style="font-size:12px;opacity:.65">Sem clube</span>'}
       <span style="font-size:12px;font-weight:600">Técnico</span>
       ${previousClubs.length?`<details class="cbpes-coach-previous" style="position:relative;font-size:11px;margin-top:6px"><summary style="cursor:pointer;white-space:nowrap">Clubes anteriores</summary><div style="position:absolute;right:0;top:100%;z-index:5;background:#fff;color:#222;border:1px solid #dce3e9;border-radius:8px;padding:10px 12px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,.12);text-align:left">${previousClubs.map(t=>`<div style="padding:5px 0">${coachTeamLink(t)}</div>`).join('')}</div></details>`:''}
