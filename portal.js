@@ -768,7 +768,7 @@ function renderCoach(name) {
     const dateValue=value=>{
       if(!value)return -Infinity;
       const str=String(value).trim();
-      const br=str.match(/^(\\d{2})\\/(\\d{2})\\/(\\d{4})/);
+      const br=str.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
       const normalized=br?br[3]+'-'+br[2]+'-'+br[1]:str;
       const timestamp=Date.parse(normalized);
       return Number.isFinite(timestamp)?timestamp:-Infinity;
