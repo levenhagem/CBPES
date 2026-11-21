@@ -2678,3 +2678,43 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
   text-align:center!important;
  }
 }
+
+/* Histórico do técnico: a classe de recolhimento prevalece sobre
+   qualquer display:flex/grid definido nos temas ou breakpoints. */
+#coachView .cbpes-coach-history-section>.result-row.cbpes-history-collapsed{
+ display:none!important;
+}
+/* Alinhamento consistente do escudo mandante em todas as partidas. */
+@media(min-width:641px){
+ #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child{
+  width:100%!important;min-width:0!important;align-items:stretch!important;
+ }
+ #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
+  width:100%!important;display:flex!important;flex-direction:row-reverse!important;
+  align-items:center!important;justify-content:flex-start!important;
+  text-align:right!important;gap:7px!important;
+ }
+ #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
+ #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+ #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+  flex:0 0 23px!important;width:23px!important;height:23px!important;
+  max-width:23px!important;object-fit:contain!important;
+ }
+}
+/* Comparador: manter o seletor e sua lista acima dos demais cards,
+   sem recorte pelo contêiner do perfil. */
+#coachView .cbpes-coach-compare,
+#coachView .cbpes-coach-compare .cardbody,
+#coachView .cbpes-coach-compare .field{
+ overflow:visible!important;
+}
+#coachView .cbpes-coach-compare{position:relative!important;z-index:5!important}
+#coachView .cbpes-coach-compare .field{position:relative!important;z-index:6!important}
+#coachView #coachCompareWith{
+ position:relative!important;z-index:7!important;
+ appearance:auto!important;-webkit-appearance:menulist!important;
+ background:#f9fbfa!important;color:#1a3942!important;
+}
+#coachView #coachCompareWith option{
+ background:#fff!important;color:#14232b!important;
+}
