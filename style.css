@@ -3375,3 +3375,29 @@ body.cbpes-copa-master-page #table .cbpes-master-round-group-title::after{
  width:48%!important;height:100%!important;pointer-events:none!important;
  background:radial-gradient(ellipse at right,rgba(255,196,0,.09),transparent 73%)!important;
 }
+
+/* Correção de especificidade: o cabeçalho antigo da tabela tinha prioridade sobre o rebranding. */
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header,
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups .cbpes-master-round-group .cbpes-master-round-group-title{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ min-height:66px!important;padding:11px 17px!important;
+ background:linear-gradient(105deg,#1d1e20 0%,#302b21 58%,#655024 100%)!important;
+ background-color:#1d1e20!important;color:#f6f3eb!important;
+ border:1px solid #735b2a!important;border-left:4px solid #ffc400!important;
+ border-radius:0!important;box-shadow:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header .cbpes-master-group-heading,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-heading{
+ display:flex!important;flex-direction:column!important;gap:5px!important;
+ min-width:0!important;opacity:1!important;visibility:visible!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header .cbpes-master-group-label,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-label{
+ display:block!important;white-space:nowrap!important;color:#fff!important;
+ font-size:16px!important;line-height:1.2!important;opacity:1!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header .cbpes-master-group-label b,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-label b{
+ display:inline!important;color:#ffc400!important;font-size:21px!important;
+ font-weight:900!important;opacity:1!important;visibility:visible!important;
+}
