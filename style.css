@@ -3239,3 +3239,50 @@ body.cbpes-copa-master-page #table .cbpes-match.cbpes-match-copa-master .cbpes-m
 body.cbpes-copa-master-page #table .cbpes-master-template-match .cbpes-match-main{
  min-height:86px!important;
 }
+
+/* Correção: impedir que regras antigas de grid da Copa Master espalhem os times. */
+body.cbpes-copa-master-page #table .cbpes-master-round-group > .cbpes-match.cbpes-match-copa-master{
+ width:100%!important;min-width:0!important;box-sizing:border-box!important;
+ padding:13px 14px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-main{
+ display:grid!important;grid-template-columns:minmax(0,1fr) 65px!important;
+ grid-template-rows:minmax(35px,auto) minmax(35px,auto)!important;
+ align-items:center!important;gap:6px 12px!important;
+ min-height:82px!important;width:100%!important;padding:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-main > .cbpes-match-team.home{
+ grid-column:1!important;grid-row:1!important;justify-self:stretch!important;
+ align-self:center!important;text-align:left!important;width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-main > .cbpes-match-team.away{
+ grid-column:1!important;grid-row:2!important;justify-self:stretch!important;
+ align-self:center!important;text-align:left!important;width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-main > .cbpes-match-score{
+ grid-column:2!important;grid-row:1 / 3!important;justify-self:center!important;
+ align-self:center!important;text-align:center!important;width:65px!important;
+ font-size:20px!important;white-space:nowrap!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-club{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:flex-start!important;gap:9px!important;
+ width:100%!important;min-width:0!important;margin:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-club-text{
+ display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+ text-align:left!important;min-width:0!important;width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-team-name{
+ font-size:14px!important;line-height:1.2!important;white-space:normal!important;
+ overflow-wrap:break-word!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-match-club-text small{
+ display:block!important;font-size:10px!important;line-height:1.3!important;margin-top:3px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-score-inline{
+ display:inline!important;white-space:nowrap!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-score-stacked{
+ display:none!important;
+}
