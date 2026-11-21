@@ -2871,3 +2871,7 @@ body.cbpes-copa-master-page{
 .cbpes-copa-master-page #table .cbpes-master-match-demo::after{color:rgba(255,196,0,.09)!important}
 .cbpes-copa-master-page #table button.active,
 .cbpes-copa-master-page #table .active.phase-arrow{background:#ffc400!important;color:#11100e!important}
+
+/* Copa Master: COPA em branco e MASTER em amarelo sólido no título. */
+body.cbpes-copa-master-page .cbpes-master-hero-title{color:#ffffff!important}
+body.cbpes-copa-master-page .cbpes-master-hero-title strong{color:#ffc400!important}
