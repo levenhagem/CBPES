@@ -355,6 +355,25 @@ function renderTable() {
   const masterConfig=edition.group_config||{};
   const masterGroupCount=Math.max(1,Math.min(16,Number(masterConfig.groups)||4));
   const masterSlots=Math.max(1,Math.min(24,Number(masterConfig.teams_per_group)||3));
+  // Calendário virtual determinístico: rodízio de posições, sem gravar jogos fictícios.
+  const masterLegs=Math.max(1,Math.min(4,Number(masterConfig.legs)||1));
+  const masterRoundRobin=(count)=>{
+    const ids=Array.from({length:count},(_,i)=>i+1);
+    if(ids.length%2)ids.push(null);
+    const rounds=[];
+    for(let r=0;r<ids.length-1;r++){
+      const pairs=[];
+      for(let j=0;j<ids.length/2;j++){
+        const a=ids[j],b=ids[ids.length-1-j];
+        if(a!==null&&b!==null)pairs.push(r%2?[b,a]:[a,b]);
+      }
+      rounds.push(pairs);
+      ids.splice(1,0,ids.pop());
+    }
+    return rounds;
+  };
+  const masterBaseRounds=masterRoundRobin(masterSlots);
+  const masterCalendar=Array.from({length:masterLegs},(_,leg)=>masterBaseRounds.map(round=>round.map(([a,b])=>leg%2?[b,a]:[a,b]))).flat();
   const masterAssignments=(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id));
   const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
   const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
@@ -374,19 +393,30 @@ function renderTable() {
   }).join('')+'</div>'+zoneLegend(masterGroupZones)+'</section>';
   if(isCopaMaster && masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id)){
     // Mantém a navegação de fases e partidas; substitui somente a tabela da fase de grupos.
-    const masterRoundNav=roundPicker(masterGroupRounds,selectedOfficialRoundByPhase[String(masterGroupPhase.id)],String(masterGroupPhase.id),'official-round');
-    const masterSelectedRound=masterGroupRounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[String(masterGroupPhase.id)]));
+    const virtualRoundKey='master-template-'+edition.id;
+    const totalMasterRounds=Math.max(masterCalendar.length,masterGroupRounds.length,1);
+    const virtualRound=Math.max(0,Math.min(totalMasterRounds-1,Number(selectedOfficialRoundByPhase[virtualRoundKey])||0));
+    const masterSelectedRound=masterGroupRounds[virtualRound]||null;
+    const masterRoundNav='<div class="round-switcher cbpes-master-round-switcher"><button class="phase-arrow" data-master-round-prev="1" '+(virtualRound===0?'disabled':'')+' aria-label="Rodada anterior">‹</button><b>RODADA '+String(virtualRound+1).padStart(2,'0')+'</b><button class="phase-arrow" data-master-round-next="1" '+(virtualRound>=totalMasterRounds-1?'disabled':'')+' aria-label="Próxima rodada">›</button></div>';
     const masterFixtures='<div class="cbpes-master-rounds">'+masterRoundNav+'<div class="cbpes-master-round-groups">'+masterGroupNames.map(g=>{
-      const games=masterGroupMatches.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)&&String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort(byDisplayOrder);
-      const matchCards=games.length?games.map(m=>matchRow(m,true)).join(''):'<div class="cbpes-master-fixture-placeholder"><span>TIME A</span><strong>×</strong><span>TIME B</span></div>';
-      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+matchCards+'</div>';
+      const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
+      const games=gm.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)).sort(byDisplayOrder);
+      const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
+      const groupIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
+      const pairings=masterCalendar[virtualRound]||[];
+      const templates=pairings.map(([home,away])=>{
+        const h=D.participants.find(p=>String(p.id)===groupIds[home-1]);
+        const a=D.participants.find(p=>String(p.id)===groupIds[away-1]);
+        return '<div class="cbpes-master-fixture-placeholder"><span>'+(h?participantLink(h):'TIME '+home)+'</span><strong>×</strong><span>'+(a?participantLink(a):'TIME '+away)+'</span></div>';
+      }).join('');
+      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+(games.length?games.map(m=>matchRow(m,true)).join(''):templates||'<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+'</div>';
     }).join('')+'</div></div>';
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral">'+masterGroupsHtml+masterFixtures+'</div>';
   }
   const drawNotice='';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
-  $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
+  $('fullTable').onclick=e=>{const masterButton=e.target.closest('[data-master-round-prev],[data-master-round-next]');if(masterButton){const key='master-template-'+edition.id;const current=Number(selectedOfficialRoundByPhase[key])||0;selectedOfficialRoundByPhase[key]=Math.max(0,Math.min(Math.max(masterCalendar.length,masterGroupRounds.length,1)-1,current+(masterButton.hasAttribute('data-master-round-next')?1:-1)));renderTable();return;}const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
 function renderWeeklies() {
