@@ -348,7 +348,7 @@ function renderTable() {
   }
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   // Copa Master usa os grupos e resultados reais do gerenciador, nunca uma prévia estática.
-  const isCopaMaster=/copa\\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
+  const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const masterGroupPhase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(edition.id)&&p.counts_in_standings);
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
   const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id));
@@ -359,8 +359,8 @@ function renderTable() {
   const masterAssignments=(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id));
   const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
   const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong></div><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
-    const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
-    const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===g);
+    const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
+    const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
     const teamIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
     const teams=teamIds.map(id=>D.participants.find(p=>String(p.id)===id)).filter(Boolean);
     const ranking=standings(teams,gm);
@@ -379,7 +379,7 @@ function renderTable() {
     const masterSelectedRound=masterGroupRounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[String(masterGroupPhase.id)]));
     const masterGames=masterGroupMatches.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)).sort(byDisplayOrder);
     const masterFixtures=masterRoundNav+(masterGames.length?masterGames.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida cadastrada nesta rodada.'));
-    const masterNav=html.match(/^<div class="phase-switcher"[\\s\\S]*?<\\/div>/)?.[0]||'';
+    const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral">'+masterGroupsHtml+masterFixtures+'</div>';
   }
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
