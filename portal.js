@@ -348,7 +348,6 @@ function renderTable() {
   }
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   // Copa Master usa os grupos e resultados reais do gerenciador, nunca uma prévia estática.
-  const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const masterGroupPhase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(edition.id)&&p.counts_in_standings);
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
   const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id));
