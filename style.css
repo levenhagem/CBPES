@@ -2739,3 +2739,19 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView .cbpes-coach-compare #coachCompareResult:not(:empty){
  margin-top:12px!important;
 }
+
+/* Data da partida abaixo da competição, sem deslocar o placar. */
+#coachView .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
+ display:block!important;margin-top:3px!important;
+ font-size:10px!important;font-weight:500!important;
+ line-height:1.25!important;letter-spacing:0!important;
+ color:inherit!important;opacity:.82;
+}
+#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ white-space:normal!important;overflow-wrap:anywhere!important;
+}
+@media(max-width:640px){
+ #coachView .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
+  font-size:10px!important;margin-top:2px!important;
+ }
+}
