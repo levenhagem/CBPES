@@ -633,7 +633,7 @@ function renderCoach(name) {
       <div class="cbpes-coach-hero-club-info">
         <div class="cbpes-coach-hero-club-name">${currentTeam?esc(currentTeam.name):'Sem clube atual'}</div>
         <div class="cbpes-coach-hero-club-role">Técnico</div>
-        ${previousClubs.length?`<details class="cbpes-coach-previous"><summary>Clubes anteriores</summary><div class="cbpes-coach-previous-list">${previousClubs.map(t=>`<div>${coachTeamLink(t)}</div>`).join('')}</div></details>`:''}
+        ${previousClubs.length?`<div class="cbpes-coach-previous"><div class="cbpes-coach-previous-heading">Clubes anteriores</div><div class="cbpes-coach-previous-list">${previousClubs.map(t=>`<a class="cbpes-coach-previous-team" href="#team/${encodeURIComponent(t.id)}">${crestOnly(t)}<span>${esc(t.name)}</span></a>`).join('')}</div></div>`:''}
       </div>
     </div>
   </div>
