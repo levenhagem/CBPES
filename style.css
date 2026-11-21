@@ -2966,3 +2966,19 @@ body.cbpes-copa-master-page #table .cbpes-competition-emblem{
 .cbpes-copa-master-page #table .cbpes-master-group-rank{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;background:#39352d;border-radius:4px;margin-right:7px;font-size:11px}
 @media(max-width:800px){.cbpes-copa-master-page #table .cbpes-master-groups-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.cbpes-copa-master-page #table .cbpes-master-groups-title{flex-direction:column;align-items:flex-start}.cbpes-copa-master-page #table .cbpes-master-group table{font-size:11px}}
+
+/* Copa Master: layout da Liga Pro como referência estrutural; só cores específicas. */
+.cbpes-copa-master-page #table .cbpes-master-group.card{border-radius:9px;background:#201b12!important;border:1px solid #57471b!important;box-shadow:none}
+.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header{
+ display:flex;align-items:center;min-height:44px;padding:11px 14px;
+ background:#2b2417!important;color:#ffc400!important;
+ border-bottom:2px solid #ffc400!important;font-size:15px;font-weight:750;
+}
+.cbpes-copa-master-page #table .cbpes-master-group .table{width:100%;background:#201b12!important}
+.cbpes-copa-master-page #table .cbpes-master-group .table th{
+ background:#292319!important;color:#ffc400!important;border-bottom:1px solid #57471b!important;
+}
+.cbpes-copa-master-page #table .cbpes-master-group .table td{
+ background:#201b12!important;color:#fff!important;border-bottom:1px solid #514321!important;
+}
+.cbpes-copa-master-page #table .cbpes-master-group .table tr:nth-child(even) td{background:#2b2417!important}
