@@ -3326,3 +3326,52 @@ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-zone-le
   grid-row:1!important;
  }
 }
+
+/* Rebranding dos cabeçalhos de grupo: grafite editorial + dourado, sem tarja amarela chapada. */
+body.cbpes-copa-master-page #table .cbpes-master-group-header,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title{
+ position:relative!important;isolation:isolate!important;overflow:hidden!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ min-height:66px!important;box-sizing:border-box!important;
+ padding:11px 17px!important;margin:0!important;
+ background:linear-gradient(105deg,#1d1e20 0%,#302b21 58%,#655024 100%)!important;
+ color:#fff!important;border:1px solid #735b2a!important;
+ border-left:4px solid #ffc400!important;border-bottom:1px solid #735b2a!important;
+ border-radius:0!important;box-shadow:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title{margin-bottom:8px!important}
+body.cbpes-copa-master-page #table .cbpes-master-group-heading{
+ display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+ gap:4px!important;position:relative!important;z-index:1!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-overline{
+ font-family:Lato,Arial,sans-serif!important;color:#d6b762!important;
+ font-size:9px!important;line-height:1!important;letter-spacing:.16em!important;
+ font-weight:800!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-label{
+ font-family:Lato,Arial,sans-serif!important;color:#f6f3eb!important;
+ font-size:16px!important;line-height:1.05!important;letter-spacing:.035em!important;
+ font-weight:800!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-label b{
+ color:#ffc400!important;font-size:21px!important;font-weight:900!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-emblem{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ position:relative!important;z-index:1!important;flex:0 0 39px!important;
+ width:39px!important;height:39px!important;border:1px solid rgba(255,196,0,.5)!important;
+ transform:rotate(45deg)!important;color:#ffc400!important;
+ font-family:Lato,Arial,sans-serif!important;font-size:0!important;
+ background:rgba(255,196,0,.055)!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-emblem::after{
+ content:""!important;display:block!important;width:11px!important;height:11px!important;
+ border:2px solid #ffc400!important;transform:rotate(0deg)!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-header::after,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title::after{
+ content:""!important;position:absolute!important;right:0!important;top:0!important;
+ width:48%!important;height:100%!important;pointer-events:none!important;
+ background:radial-gradient(ellipse at right,rgba(255,196,0,.09),transparent 73%)!important;
+}
