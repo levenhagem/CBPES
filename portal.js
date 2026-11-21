@@ -416,6 +416,31 @@ function renderTable() {
   }
   const drawNotice='';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
+  // Cada tabela e seu confronto compartilham a mesma linha do grid.
+  // Evita desalinhamento quando a altura dos cards de partidas varia por grupo.
+  if(isCopaMaster && masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id)){
+    const root=$('fullTable').querySelector('.cbpes-master-two-column');
+    if(root){
+      const standings=[...root.querySelectorAll('.cbpes-master-group')];
+      const fixtures=[...root.querySelectorAll('.cbpes-master-round-group')];
+      const nav=root.querySelector('.cbpes-master-round-switcher');
+      const legend=root.querySelector('.cbpes-zone-legend');
+      const aligned=document.createElement('div');
+      aligned.className='cbpes-master-aligned-groups';
+      if(nav){
+        const spacer=document.createElement('div');
+        spacer.className='cbpes-master-round-spacer';
+        aligned.append(spacer,nav);
+      }
+      standings.forEach((table,i)=>{
+        const group=fixtures[i];
+        if(group)aligned.append(table,group);
+      });
+      if(legend)aligned.append(legend);
+      root.replaceWith(aligned);
+    }
+  }
+
   $('fullTable').onclick=e=>{const masterButton=e.target.closest('[data-master-round-prev],[data-master-round-next]');if(masterButton){const key='master-template-'+edition.id;const current=Number(selectedOfficialRoundByPhase[key])||0;selectedOfficialRoundByPhase[key]=Math.max(0,Math.min(Math.max(masterCalendar.length,masterGroupRounds.length,1)-1,current+(masterButton.hasAttribute('data-master-round-next')?1:-1)));renderTable();return;}const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
 }
