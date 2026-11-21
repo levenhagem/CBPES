@@ -556,8 +556,8 @@ function renderCoach(name) {
   const coachScoreRecordCard=(label,emoji,m,kind)=>{
     const score=m?`${m.own}–${m.against}`:'—';
     const competition=m?(m.competition||coachMatchCompetition(m.match)):'';
-    const detail=m?`<span class="cbpes-coach-record-opponent">${score} vs. ${coachLink(m.opponent)}</span><small>${esc(competition||'Competição não informada')}</small>`:'<small>Nenhuma partida correspondente registrada.</small>';
-    return `<div class="cbpes-coach-rivalry-card ${kind}" style="position:relative"><div class="cbpes-coach-rivalry-icon" aria-hidden="true">${emoji}</div><div class="cbpes-coach-rivalry-info" style="min-width:0;padding-right:85px"><span class="cbpes-coach-rivalry-label">${label}</span><div class="cbpes-coach-rivalry-name">${detail}</div></div>${m?.date?`<small style="position:absolute;right:14px;top:12px;white-space:nowrap;opacity:.7;font-size:11px">${esc(fd(m.date))}</small>`:''}</div>`;
+    const detail=m?`<span class="cbpes-coach-record-opponent">${score} vs. ${coachLink(m.opponent)}</span><small style="display:block;margin-top:6px;color:#8a929d;font-weight:400;font-size:12px;line-height:1.4">${esc(competition||'Competição não informada')}</small>`:'<small>Nenhuma partida correspondente registrada.</small>';
+    return `<div class="cbpes-coach-rivalry-card ${kind}" style="position:relative"><div class="cbpes-coach-rivalry-icon" aria-hidden="true">${emoji}</div><div class="cbpes-coach-rivalry-info" style="min-width:0;padding-right:85px"><span class="cbpes-coach-rivalry-label">${label}</span><div class="cbpes-coach-rivalry-name" style="font-weight:600">${detail}</div></div>${m?.date?`<small style="position:absolute;right:14px;top:12px;white-space:nowrap;opacity:.7;font-size:11px">${esc(fd(m.date))}</small>`:''}</div>`;
   };
 
   const coachMatchCompetition=m=>{
