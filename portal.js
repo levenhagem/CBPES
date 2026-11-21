@@ -412,7 +412,7 @@ function renderTable() {
       return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+(games.length?games.map(m=>matchRow(m,true)).join(''):templates||'<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+'</div>';
     }).join('')+'</div></div>';
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
-    html=masterNav+'<div class="cbpes-competition-neutral">'+masterGroupsHtml+masterFixtures+'</div>';
+    html=masterNav+'<div class="cbpes-competition-neutral cbpes-master-two-column"><div class="cbpes-master-standings-column">'+masterGroupsHtml+'</div><aside class="cbpes-master-fixtures-column">'+masterFixtures+'</aside></div>';
   }
   const drawNotice='';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
