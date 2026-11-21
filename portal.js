@@ -545,8 +545,8 @@ function renderCoach(name) {
 
   // Recordes de placar: partidas oficiais, semanais, amistosas e histórico PES6.
   const coachScoreMatches=[
-    ...matches.map(m=>({home:m.home_coach_name,away:m.away_coach_name,hs:Number(m.home_score),as:Number(m.away_score),date:m.date||null})),
-    ...historicCoach.map(m=>({home:m.home_coach,away:m.away_coach,hs:Number(m.home_score),as:Number(m.away_score),date:m.played_on||m.date||null}))
+    ...matches.map(m=>({home:m.home_coach_name,away:m.away_coach_name,hs:Number(m.home_score),as:Number(m.away_score),date:m.date||null,competition:m.category==='friendly'?'Amistoso':null,match:m})),
+    ...historicCoach.map(m=>({home:m.home_coach,away:m.away_coach,hs:Number(m.home_score),as:Number(m.away_score),date:m.played_on||m.date||null,competition:'Amistoso',match:null}))
   ].filter(m=>Number.isFinite(m.hs)&&Number.isFinite(m.as)).map(m=>{
     const isHome=String(m.home||'').trim().toLocaleLowerCase()===key;
     return {...m,own:isHome?m.hs:m.as,against:isHome?m.as:m.hs,opponent:isHome?m.away:m.home};
@@ -555,8 +555,9 @@ function renderCoach(name) {
   const worstLoss=coachScoreMatches.filter(m=>m.own<m.against).sort((a,b)=>(b.against-b.own)-(a.against-a.own)||b.against-a.against||String(b.date||'').localeCompare(String(a.date||'')))[0];
   const coachScoreRecordCard=(label,emoji,m,kind)=>{
     const score=m?`${m.own}–${m.against}`:'—';
-    const detail=m?`Contra ${coachLink(m.opponent)} · Saldo ${m.own-m.against>0?'+':''}${m.own-m.against}${m.date?' · '+esc(fd(m.date)):''}`:'Nenhuma partida correspondente registrada.';
-    return `<div class="cbpes-coach-rivalry-card ${kind}"><div class="cbpes-coach-rivalry-icon" aria-hidden="true">${emoji}</div><div class="cbpes-coach-rivalry-info"><span class="cbpes-coach-rivalry-label">${label}</span><div class="cbpes-coach-rivalry-name">${score}</div><small>${detail}</small></div></div>`;
+    const competition=m?(m.competition||coachMatchCompetition(m.match)):'';
+    const detail=m?`<span class="cbpes-coach-record-opponent">${score} vs. ${coachLink(m.opponent)}</span><small>${esc(competition||'Competição não informada')}</small>`:'<small>Nenhuma partida correspondente registrada.</small>';
+    return `<div class="cbpes-coach-rivalry-card ${kind}" style="position:relative"><div class="cbpes-coach-rivalry-icon" aria-hidden="true">${emoji}</div><div class="cbpes-coach-rivalry-info" style="min-width:0;padding-right:85px"><span class="cbpes-coach-rivalry-label">${label}</span><div class="cbpes-coach-rivalry-name">${detail}</div></div>${m?.date?`<small style="position:absolute;right:14px;top:12px;white-space:nowrap;opacity:.7;font-size:11px">${esc(fd(m.date))}</small>`:''}</div>`;
   };
 
   const coachMatchCompetition=m=>{
