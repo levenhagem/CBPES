@@ -544,10 +544,10 @@ const friendlyCoachDefinitions=()=>{
   D.matches.filter(m=>m.played&&m.category==='friendly').forEach(m=>add(m.home_coach_name,m.away_coach_name,m.home_score,m.away_score));
   (careerArchive||[]).forEach(m=>add(m.home_coach,m.away_coach,m.home_score,m.away_score));
   const rows=[...coaches.values()].map(x=>({...x,sg:x.gp-x.gc,ap:x.j?Math.round((3*x.v+x.e)/(3*x.j)*1000)/10:0}));
-  const ranked=(value,ascending=false)=>rows.slice().sort((a,b)=>(ascending?value(a)-value(b):value(b)-value(a))||a.name.localeCompare(b.name,'pt-BR'));
+  const ranked=(value,ascending=false)=>rows.slice().sort((a,b)=>(ascending?Number(value(a))-Number(value(b)):Number(value(b))-Number(value(a)))||a.name.localeCompare(b.name,'pt-BR'));
   const def=(key,title,value,unit='',ascending=false)=>({key,title,rows:ranked(value,ascending),value,unit,coaches:true});
   return [
-    def('attack','MELHOR ATAQUE (GOLS/JOGO)',x=>fmt1(x.gp/x.j)),
+    {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:ranked(x=>x.gp/x.j),value:x=>fmt1(x.gp/x.j),unit:'',coaches:true},
     def('defense','MELHOR DEFESA (MENOS SOFRIDOS)',x=>x.gc,'',true),
     def('goals','GOLS MARCADOS',x=>x.gp),
     def('efficiency','APROVEITAMENTO',x=>x.ap,'%'),
