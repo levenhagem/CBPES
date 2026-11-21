@@ -200,6 +200,8 @@ function renderHome() {
   const proTeamIds=new Set(proLeagueMatches.flatMap(m=>[String(m.home_id),String(m.away_id)]));
   const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
   const proStanding=standings(proTeams,proLeagueMatches);
+  const recentLigaProLink=document.querySelector('#leagueRecentCard .cbpes-home-heading-link');
+  if(recentLigaProLink)recentLigaProLink.href=proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table';
   $('miniTitle').innerHTML='<a class="cbpes-home-heading-link" href="'+(proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table')+'">'+(proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO')+'</a>';
   $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6),zonesFor('official',null,(D.phases||[]).find(p=>String(p.official_edition_id)===String(proEdition.id)&&p.counts_in_standings)?.id),proLeagueMatches)+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
   const proRecent=latestPlayed(proMatches).slice(0,3);
