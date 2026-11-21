@@ -345,7 +345,7 @@ function renderTable() {
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const drawNotice='';
   if(isCopaMaster && !officialMatches.length){
-    html='<div class="copa-master-draw-notice copa-master-draw-centered">SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.</div>';
+    html='<div class="copa-master-draw-notice copa-master-draw-centered">SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.</div><section class="cbpes-master-preview" aria-label="Prévia visual de partida"><div class="cbpes-master-preview-heading"><span>PRÉVIA DO CARD DE PARTIDA</span><small>MODELO ILUSTRATIVO</small></div><div class="cbpes-master-match-demo"><div class="cbpes-master-match-meta"><span>COPA MASTER · CONFRONTO</span><span>AGUARDANDO SORTEIO</span></div><div class="cbpes-master-match-main"><div class="cbpes-master-demo-teams"><div class="cbpes-master-demo-team"><strong>Equipe mandante</strong><small>Participante a definir</small></div><div class="cbpes-master-demo-team away"><strong>Equipe visitante</strong><small>Participante a definir</small></div></div><div class="cbpes-master-demo-scores"><strong>–</strong><strong>–</strong></div></div></div></section>';
   }
 
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
