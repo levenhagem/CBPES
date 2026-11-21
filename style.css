@@ -2911,3 +2911,23 @@ body.cbpes-copa-master-page #tableCompetitionName{
 body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
 #table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-master,
 body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
+
+/* Tipografia padronizada pela fonte REAL do título Liga Pro (Lato).
+   Substitui a tentativa anterior com Squadra Medium. */
+#table #tableCompetitionName,
+#table[data-liga-pro="true"] #tableCompetitionName,
+#table[data-copa-master="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName,
+body.cbpes-copa-master-page #tableCompetitionName{
+ font-family:"Lato",Arial,sans-serif!important;
+ font-weight:400!important;
+ font-style:normal!important;
+ font-stretch:normal!important;
+ letter-spacing:.15px!important;
+ line-height:1.15!important;
+ text-transform:uppercase!important;
+}
+#table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-copa,
+body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
+#table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-master,
+body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
