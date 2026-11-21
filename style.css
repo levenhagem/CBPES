@@ -3038,3 +3038,6 @@ body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr{
 body.cbpes-copa-master-page #table .cbpes-master-group-rank{
  border-left:0!important;
 }
+
+/* Copa Master: pontos (PTS) em negrito na classificação dos grupos. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody td:nth-child(3){font-weight:800!important;}
