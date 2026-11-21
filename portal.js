@@ -627,7 +627,7 @@ function renderCoach(name) {
   const heroTeamCard=(t,label,small=false)=>t?`<div style="display:flex;align-items:center;gap:10px;${small?'opacity:.8;font-size:12px':'font-size:15px'}"><span style="flex:0 0 auto">${crestOnly(t)}</span><div style="min-width:0"><div style="font-weight:700">${coachTeamLink(t)}</div><div style="font-size:11px;opacity:.7;margin-top:3px">${label}</div></div></div>`:`<div style="font-size:13px;opacity:.65">Sem time atualmente</div>`;
   root.innerHTML=`<div class="cbpes-coach-hero" style="padding:32px 34px;min-height:205px">
     <div class="cbpes-coach-hero-label" style="font-size:12px;letter-spacing:.12em">PERFIL DO TÉCNICO</div>
-    <div class="cbpes-coach-hero-title" style="gap:22px;flex-wrap:wrap;align-items:center;margin-top:12px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1><div class="cbpes-coach-career-crests" style="display:flex;align-items:center;gap:16px;margin-left:8px;min-height:68px">${careerCrests.map(largeCrest).join('')}</div></div>
+    <div class="cbpes-coach-hero-title" style="gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1><div class="cbpes-coach-career-crests" style="display:flex;align-items:center;gap:10px;margin-left:0;min-height:68px">${careerCrests.map(largeCrest).join('')}</div></div>
     <div class="cbpes-coach-current-team" style="margin-top:22px;font-size:16px"><span>TIME ATUAL:</span>${currentTeam?`<a href="#team/${encodeURIComponent(currentTeam.id)}">${esc(currentTeam.name)}</a>`:'Sem time atualmente'}</div>
     ${profile?.bio?`<p class="cbpes-coach-hero-bio" style="margin-top:14px">${esc(profile.bio)}</p>`:''}
   </div>
