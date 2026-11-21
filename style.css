@@ -3020,3 +3020,21 @@ body.cbpes-copa-master-page #table .cbpes-competition-emblem{
 .cbpes-copa-master-page #table .cbpes-master-form-dots i{
  display:inline-block;width:8px;height:8px;border-radius:50%;background:#7a7569;
 }
+
+/* Copa Master — cabeçalho de grupo plano, amarelo sólido e sem linha lateral. */
+body.cbpes-copa-master-page #table .cbpes-master-group.card{
+ border-radius:0!important;overflow:hidden;border:1px solid #57471b!important;
+ border-top:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header{
+ border-radius:0!important;
+ background:#ffc400!important;color:#11100e!important;
+ border:0!important;border-bottom:0!important;
+ box-shadow:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr{
+ border-left:0!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-rank{
+ border-left:0!important;
+}
