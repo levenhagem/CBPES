@@ -3054,3 +3054,17 @@ body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-posit
 body.cbpes-copa-master-page #table .cbpes-master-groups-preview .cbpes-zone-legend{
  color:#d4d0c8;padding:12px 2px;
 }
+
+/* Copa Master: faixa de classificação verde vivo, plana e com filete branco. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-position{
+ box-shadow:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-position::before{
+ width:4px!important;
+ background:linear-gradient(to right,#19d66b 0 75%,#ffffff 75% 100%)!important;
+ box-shadow:none!important;
+ filter:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-groups-preview .cbpes-zone-legend i{
+ box-shadow:none!important;filter:none!important;
+}
