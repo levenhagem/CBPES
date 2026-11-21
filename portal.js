@@ -347,18 +347,41 @@ function renderTable() {
     pill=ms.filter(m=>m.played).length+' PARTIDAS DISPUTADAS';
   }
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
+  // Copa Master usa os grupos e resultados reais do gerenciador, nunca uma prévia estática.
+  const isCopaMaster=/copa\\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const masterGroupPhase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(edition.id)&&p.counts_in_standings);
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
-  const masterGroupPreview=isCopaMaster && !officialMatches.length
-    ? '<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong><small>PRÉVIA ILUSTRATIVA · 4 GRUPOS DE 3 EQUIPES</small></div><div class="cbpes-master-groups-grid">'+
-      ['A','B','C','D'].map(g=>'<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header">GRUPO '+g+'</div><div class="cbpes-master-group-scroll"><table class="table cbpes-master-group-table"><thead><tr><th class="cbpes-master-position"></th><th class="cbpes-master-club"></th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th><th>FORMA</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr class="'+(zoneAt(masterGroupZones,n)?'cbpes-master-qualified':'cbpes-master-not-qualified')+'" style="--zone-color:'+(zoneAt(masterGroupZones,n)?.color||'transparent')+'"><td class="cbpes-master-position'+(zoneAt(masterGroupZones,n)?' cbpes-zone-position':'')+'"><span class="cbpes-master-group-rank">'+n+'</span></td><td class="cbpes-master-club"><strong>Equipe a definir</strong><small>Técnico a definir</small></td>'+[0,0,0,0,0,0,0,0,0].map(v=>'<td>'+v+'</td>').join('')+'<td class="cbpes-master-form"><span class="cbpes-master-form-dots">'+Array(5).fill('<i></i>').join('')+'</span></td></tr>').join('')+'</tbody></table></div></div>').join('')+
-      '</div>'+zoneLegend(masterGroupZones)+'</section>' : '';
-  const drawNotice='';
-  if(isCopaMaster && !officialMatches.length){
-    html='<div class="copa-master-draw-notice copa-master-draw-centered">SORTEIO NO DIA 21 DE NOVEMBRO, ÀS 12H.</div><section class="cbpes-master-preview" aria-label="Prévia visual de partida"><div class="cbpes-master-preview-heading"><span>PRÉVIA DO CARD DE PARTIDA</span><small>MODELO ILUSTRATIVO</small></div><div class="cbpes-master-match-demo"><div class="cbpes-master-match-meta"><span>COPA MASTER · CONFRONTO</span><span>AGUARDANDO SORTEIO</span></div><div class="cbpes-master-match-main"><div class="cbpes-master-demo-teams"><div class="cbpes-master-demo-team"><strong>Equipe mandante</strong><small>Participante a definir</small></div><div class="cbpes-master-demo-team away"><strong>Equipe visitante</strong><small>Participante a definir</small></div></div><div class="cbpes-master-demo-scores"><strong>–</strong><strong>–</strong></div></div></div></section>';
-    html=masterGroupPreview+html;
+  const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id));
+  const masterGroupMatches=officialMatches.filter(m=>masterGroupRounds.some(r=>String(r.id)===String(m.round_id)));
+  const masterConfig=edition.group_config||{};
+  const masterGroupCount=Math.max(1,Math.min(16,Number(masterConfig.groups)||4));
+  const masterSlots=Math.max(1,Math.min(24,Number(masterConfig.teams_per_group)||3));
+  const masterAssignments=(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id));
+  const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
+  const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong></div><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
+    const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
+    const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===g);
+    const teamIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
+    const teams=teamIds.map(id=>D.participants.find(p=>String(p.id)===id)).filter(Boolean);
+    const ranking=standings(teams,gm);
+    const slots=Array.from({length:Math.max(masterSlots,ranking.length)},(_,i)=>ranking[i]||null);
+    return '<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header">GRUPO '+g+'</div><div class="cbpes-master-group-scroll"><table class="table cbpes-master-group-table"><thead><tr><th class="cbpes-master-position"></th><th class="cbpes-master-club"></th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th><th>FORMA</th></tr></thead><tbody>'+
+      slots.map((x,i)=>{
+        const n=i+1,qualified=!!zoneAt(masterGroupZones,n);
+        const team=x?.p;
+        const cells=x?[x.pts,x.j,x.v,x.e,x.d,x.gp,x.gc,sgf(x.sg),x.ap]:Array(9).fill(0);
+        return '<tr class="'+(qualified?'cbpes-master-qualified':'cbpes-master-not-qualified')+'"><td class="cbpes-master-position'+(qualified?' cbpes-zone-position':'')+'"><span class="cbpes-master-group-rank">'+n+'</span></td><td class="cbpes-master-club">'+(team?participantLink(team)+'<small>'+ (team.coach_name?coachLink(team.coach_name):'')+'</small>':'<strong>Equipe a definir</strong>')+'</td>'+cells.map(v=>'<td>'+v+'</td>').join('')+'<td class="cbpes-master-form">'+(team?formDots(team.id,gm):'<span class="cbpes-master-form-dots">'+Array(5).fill('<i></i>').join('')+'</span>')+'</td></tr>';
+      }).join('')+'</tbody></table></div></div>';
+  }).join('')+'</div>'+zoneLegend(masterGroupZones)+'</section>';
+  if(isCopaMaster && masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id)){
+    // Mantém a navegação de fases e partidas; substitui somente a tabela da fase de grupos.
+    const masterRoundNav=roundPicker(masterGroupRounds,selectedOfficialRoundByPhase[String(masterGroupPhase.id)],String(masterGroupPhase.id),'official-round');
+    const masterSelectedRound=masterGroupRounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[String(masterGroupPhase.id)]));
+    const masterGames=masterGroupMatches.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)).sort(byDisplayOrder);
+    const masterFixtures=masterRoundNav+(masterGames.length?masterGames.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida cadastrada nesta rodada.'));
+    const masterNav=html.match(/^<div class="phase-switcher"[\\s\\S]*?<\\/div>/)?.[0]||'';
+    html=masterNav+'<div class="cbpes-competition-neutral">'+masterGroupsHtml+masterFixtures+'</div>';
   }
-
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
   $('fullTable').onclick=e=>{const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   const prev=$('phasePrev'),next=$('phaseNext'); if(prev)prev.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i>0){selectedOfficialPhase=phases[i-1].id;renderTable();}};if(next)next.onclick=()=>{const i=phases.findIndex(p=>p.id===selectedOfficialPhase);if(i<phases.length-1){selectedOfficialPhase=phases[i+1].id;renderTable();}};
