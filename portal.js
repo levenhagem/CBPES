@@ -350,7 +350,7 @@ function renderTable() {
   // Copa Master usa os grupos e resultados reais do gerenciador, nunca uma prévia estática.
   const masterGroupPhase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(edition.id)&&p.counts_in_standings);
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
-  const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id));
+  const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id)).sort((a,b)=>(Number(a.number)||0)-(Number(b.number)||0));
   const masterGroupMatches=officialMatches.filter(m=>masterGroupRounds.some(r=>String(r.id)===String(m.round_id)));
   const masterConfig=edition.group_config||{};
   const masterGroupCount=Math.max(1,Math.min(16,Number(masterConfig.groups)||4));
@@ -422,9 +422,8 @@ function renderTable() {
       const fixtures=root.querySelector('.cbpes-master-rounds');
       const roundGroups=fixtures?.querySelector('.cbpes-master-round-groups');
       if(roundGroups){
-        const allMatches=[...roundGroups.querySelectorAll('.cbpes-master-round-group > .cbpes-match')];
-        const empty=[...roundGroups.querySelectorAll('.cbpes-master-fixture-placeholder')];
-        roundGroups.replaceChildren(...(allMatches.length?allMatches:empty));
+        // Os jogos já são renderizados diretamente em roundGroups.
+        // Não substituir os filhos: isso apagava os 6 confrontos de cada rodada.
         roundGroups.classList.add('cbpes-master-round-list');
       }
       root.classList.add('cbpes-master-round-layout');
