@@ -2875,3 +2875,18 @@ body.cbpes-copa-master-page{
 /* Copa Master: COPA em branco e MASTER em amarelo sólido no título. */
 body.cbpes-copa-master-page .cbpes-master-hero-title{color:#ffffff!important}
 body.cbpes-copa-master-page .cbpes-master-hero-title strong{color:#ffc400!important}
+
+/* Prévia da partida Copa Master: identidade sólida, sem degradês. */
+.cbpes-copa-master-page #table .cbpes-master-preview{margin:22px auto 8px;max-width:680px}
+.cbpes-copa-master-page #table .cbpes-master-preview-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;color:#ffc400!important;font-size:12px;font-weight:800;letter-spacing:.075em}
+.cbpes-copa-master-page #table .cbpes-master-preview-heading small{color:#fff;font-size:10px;font-weight:500;letter-spacing:.03em}
+.cbpes-copa-master-page #table .cbpes-master-match-demo{padding:18px 22px;background:#201b12!important;border:1px solid #80651b!important;border-left:4px solid #ffc400!important;box-shadow:none!important}
+.cbpes-copa-master-page #table .cbpes-master-match-meta{display:flex;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid #5b4b28;color:#ffc400!important;font-size:10px;font-weight:800;letter-spacing:.07em}
+.cbpes-copa-master-page #table .cbpes-master-match-meta span:last-child{color:#fff}
+.cbpes-copa-master-page #table .cbpes-master-match-main{display:grid;grid-template-columns:minmax(0,1fr) 50px;gap:18px;align-items:center;padding-top:17px}
+.cbpes-copa-master-page #table .cbpes-master-demo-teams,.cbpes-copa-master-page #table .cbpes-master-demo-scores{display:flex;flex-direction:column;gap:17px;justify-content:center}
+.cbpes-copa-master-page #table .cbpes-master-demo-team{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px}
+.cbpes-copa-master-page #table .cbpes-master-demo-team strong{color:#fff!important;font-size:16px;font-weight:750}
+.cbpes-copa-master-page #table .cbpes-master-demo-team small{color:#c6c1b7;font-size:11px}
+.cbpes-copa-master-page #table .cbpes-master-demo-scores{align-items:center;color:#ffc400!important;font-size:23px}
+@media(max-width:520px){.cbpes-copa-master-page #table .cbpes-master-match-demo{padding:13px}.cbpes-copa-master-page #table .cbpes-master-match-meta{font-size:9px}.cbpes-copa-master-page #table .cbpes-master-demo-team strong{font-size:14px}}
