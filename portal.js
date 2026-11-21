@@ -357,7 +357,7 @@ function renderTable() {
   const masterSlots=Math.max(1,Math.min(24,Number(masterConfig.teams_per_group)||3));
   const masterAssignments=(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id));
   const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
-  const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong></div><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
+  const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
     const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
     const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
     const teamIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
@@ -376,8 +376,11 @@ function renderTable() {
     // Mantém a navegação de fases e partidas; substitui somente a tabela da fase de grupos.
     const masterRoundNav=roundPicker(masterGroupRounds,selectedOfficialRoundByPhase[String(masterGroupPhase.id)],String(masterGroupPhase.id),'official-round');
     const masterSelectedRound=masterGroupRounds.find(r=>String(r.id)===String(selectedOfficialRoundByPhase[String(masterGroupPhase.id)]));
-    const masterGames=masterGroupMatches.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)).sort(byDisplayOrder);
-    const masterFixtures=masterRoundNav+(masterGames.length?masterGames.map(m=>matchRow(m,true)).join(''):empty('Nenhuma partida cadastrada nesta rodada.'));
+    const masterFixtures='<div class="cbpes-master-rounds">'+masterRoundNav+'<div class="cbpes-master-round-groups">'+masterGroupNames.map(g=>{
+      const games=masterGroupMatches.filter(m=>String(m.round_id)===String(masterSelectedRound?.id)&&String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort(byDisplayOrder);
+      const matchCards=games.length?games.map(m=>matchRow(m,true)).join(''):'<div class="cbpes-master-fixture-placeholder"><span>TIME A</span><strong>×</strong><span>TIME B</span></div>';
+      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+matchCards+'</div>';
+    }).join('')+'</div></div>';
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral">'+masterGroupsHtml+masterFixtures+'</div>';
   }
