@@ -2802,3 +2802,12 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView .cbpes-coach-previous{margin-top:18px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
 #coachView .cbpes-coach-previous summary{font-size:11px;letter-spacing:.01em}
 @media(max-width:520px){#coachView .cbpes-coach-hero-club{width:100%!important;max-width:330px!important;min-height:136px}}
+
+/* Exibir clubes anteriores diretamente no cartão do técnico, com escudos pequenos. */
+#coachView .cbpes-coach-previous{margin-top:12px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
+#coachView .cbpes-coach-previous-heading{font-size:11px;font-weight:650;color:#287453;margin-bottom:8px}
+#coachView .cbpes-coach-previous-list{position:static;display:flex;flex-direction:column;gap:7px;min-width:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;text-align:left}
+#coachView .cbpes-coach-previous-team{display:flex;align-items:center;gap:8px;color:#214d38;text-decoration:none;font-size:12px;font-weight:650;line-height:1.25}
+#coachView .cbpes-coach-previous-team:hover{color:#087047;text-decoration:underline}
+#coachView .cbpes-coach-previous-team .cbpes-coach-career-crest{flex:0 0 28px;display:flex!important;width:28px!important;height:28px!important;align-items:center;justify-content:center}
+#coachView .cbpes-coach-previous-team .cbpes-coach-career-crest img{width:28px!important;height:28px!important;object-fit:contain}
