@@ -2718,3 +2718,24 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView #coachCompareWith option{
  background:#fff!important;color:#14232b!important;
 }
+
+/* Comparação de técnicos: layout compacto sem espaço reservado para ajuda. */
+#coachView .cbpes-coach-compare>.cardbody{
+ padding:12px 16px!important;
+}
+#coachView .cbpes-coach-compare .field{
+ margin:0!important;display:flex!important;flex-direction:column!important;
+ gap:6px!important;max-width:440px!important;
+}
+#coachView .cbpes-coach-compare .field label{
+ margin:0!important;line-height:1.25!important;
+}
+#coachView .cbpes-coach-compare #coachCompareWith{
+ margin:0!important;min-height:38px!important;
+}
+#coachView .cbpes-coach-compare #coachCompareResult:empty{
+ display:none!important;
+}
+#coachView .cbpes-coach-compare #coachCompareResult:not(:empty){
+ margin-top:12px!important;
+}
