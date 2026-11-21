@@ -1,4 +1,4 @@
-let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official';
+let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
@@ -510,7 +510,7 @@ const statDefinitions=S=>[
   {key:'assists',title:'ASSISTÊNCIAS',rows:S.garcons,value:x=>x.a,unit:'assist.',players:true},
   {key:'goal-contributions',title:'PARTICIPAÇÕES EM GOLS (G+A)',rows:S.part,value:x=>x.ga,unit:'',players:true},
   {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:S.ataque.slice().sort((a,b)=>b.gp/b.j-a.gp/a.j),value:x=>fmt1(x.gp/x.j)},
-  {key:'defense',title:'MELHOR DEFESA (MENOS SOFRIDOS)',rows:S.defesa,value:x=>x.gc},
+  {key:'defense',title:'MELHOR DEFESA',rows:S.defesa,value:x=>x.gc},
   {key:'goals',title:'GOLS MARCADOS',rows:S.ataque,value:x=>x.gp},
   {key:'efficiency',title:'APROVEITAMENTO',rows:S.aprov,value:x=>x.ap,unit:'%'},
   {key:'wins',title:'VITÓRIAS',rows:S.vit,value:x=>x.v},
@@ -548,7 +548,7 @@ const friendlyCoachDefinitions=()=>{
   const def=(key,title,value,unit='',ascending=false)=>({key,title,rows:ranked(value,ascending),value,unit,coaches:true});
   return [
     {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:ranked(x=>x.gp/x.j),value:x=>fmt1(x.gp/x.j),unit:'',coaches:true},
-    def('defense','MELHOR DEFESA (MENOS SOFRIDOS)',x=>x.gc,'',true),
+    def('defense','MELHOR DEFESA',x=>x.gc,'',true),
     def('goals','GOLS MARCADOS',x=>x.gp),
     def('efficiency','APROVEITAMENTO',x=>x.ap,'%'),
     def('wins','VITÓRIAS',x=>x.v),
@@ -563,11 +563,34 @@ const visibleStatDefinitions=category=>{
   if(category==='official')return defs.filter(d=>!['wins','draws','losses','efficiency'].includes(d.key));
   return defs.filter(d=>!d.players);
 };
+const defenseDefinition=definition=>{
+  if(definition.key!=='defense')return definition;
+  const perGame=statsDefenseMode==='per-game';
+  const rows=definition.rows.filter(x=>x.j>0).slice().sort((a,b)=>{
+    const av=perGame?a.gc/a.j:a.gc,bv=perGame?b.gc/b.j:b.gc;
+    return av-bv || a.gc-b.gc || b.j-a.j || (definition.coaches?a.name.localeCompare(b.name,'pt-BR'):a.p.name.localeCompare(b.p.name,'pt-BR'));
+  });
+  return {...definition,rows,value:x=>perGame?fmt1(x.gc/x.j):x.gc,unit:perGame?'gols/jogo':'gols'};
+};
+const defensePicker=definition=>definition.key==='defense'
+  ?'<div class="cbpes-defense-picker" role="group" aria-label="Critério de melhor defesa"><button type="button" data-defense-mode="per-game" class="'+(statsDefenseMode==='per-game'?'selected':'')+'">SOFRIDOS POR JOGO</button><button type="button" data-defense-mode="total" class="'+(statsDefenseMode==='total'?'selected':'')+'">SOFRIDOS NO TOTAL</button></div>'
+  :'';
+const changeDefenseMode=e=>{
+  const button=e.target.closest('[data-defense-mode]');
+  if(!button)return false;
+  statsDefenseMode=button.dataset.defenseMode;
+  renderStats();
+  if(location.hash.startsWith('#stats-detail/')){
+    const parts=location.hash.slice(1).split('/');
+    renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
+  }
+  return true;
+};
 const statRowsHtml=(definition,limit=Infinity)=>{
   const rows=definition.rows.slice(0,limit);
   return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
-const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+statRowsHtml(definition,full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
+const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function renderStats(){
   const S=statData(statsCategory),b=S.big;
   const bigTxt=b?'<a href="#team/'+b.home_id+'">'+esc(b.home.name)+'</a> '+b.home_score+' x '+b.away_score+' <a href="#team/'+b.away_id+'">'+esc(b.away.name)+'</a>':'—';
@@ -575,13 +598,14 @@ function renderStats(){
   const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+S.jogos+'</b><span>Partidas</span></div><div class="stat"><b>'+S.gols+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(S.media)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
   const definitions=visibleStatDefinitions(statsCategory);
   $('statsGrid').innerHTML=filter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
-  $('statsGrid').onclick=e=>{const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
+  $('statsGrid').onclick=e=>{if(changeDefenseMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
 function renderStatsDetail(category,key){
   const root=$('statsDetailView');if(!root)return;
   const valid=Object.hasOwn(statCategoryLabels,category)?category:'official';
   const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
   if(!definition){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
+  root.onclick=e=>{changeDefenseMode(e);};
   root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1><div class="sub">Classificação completa da estatística selecionada.</div></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
 }
 
