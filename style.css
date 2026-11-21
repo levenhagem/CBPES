@@ -3794,3 +3794,23 @@ body.cbpes-copa-master-page #tableCompetitionName{
   transform:none!important;
  }
 }
+
+/* Uniformização definitiva: Liga PRO e demais competições com a mesma Squadra 700. */
+html body #table .page-title .cbpes-competition-heading > #tableCompetitionName,
+html body.cbpes-liga-pro-page #table .page-title .cbpes-competition-heading > #tableCompetitionName,
+html body.cbpes-copa-master-page #table .page-title .cbpes-competition-heading > #tableCompetitionName,
+html body #table[data-liga-pro="true"] .cbpes-competition-heading > #tableCompetitionName,
+html body #table[data-copa-master="true"] .cbpes-competition-heading > #tableCompetitionName{
+ font-family:"Squadra Medium CBPES","Squadra CBPES",Arial,sans-serif!important;
+ font-size:clamp(36px,4vw,54px)!important;
+ font-weight:700!important;font-synthesis:weight!important;
+ font-style:normal!important;font-stretch:normal!important;
+ letter-spacing:.12px!important;line-height:1.02!important;
+}
+@media(max-width:620px){
+ html body #table .page-title .cbpes-competition-heading > #tableCompetitionName,
+ html body.cbpes-liga-pro-page #table .page-title .cbpes-competition-heading > #tableCompetitionName,
+ html body.cbpes-copa-master-page #table .page-title .cbpes-competition-heading > #tableCompetitionName{
+  font-size:clamp(28px,7vw,39px)!important;
+ }
+}
