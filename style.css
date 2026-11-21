@@ -3183,3 +3183,59 @@ body.cbpes-copa-master-page #table .cbpes-master-real-match{position:relative;ma
 body.cbpes-copa-master-page #table .cbpes-master-real-match .cbpes-master-card-star{
  top:9px;right:12px;
 }
+
+/* Copa Master — mesmo card da Liga PRO, grafite/dourado, estrela translúcida e partículas discretas. */
+body.cbpes-copa-master-page #table .cbpes-master-round-group{
+ background:transparent!important;border:0!important;border-left:0!important;
+ padding:0!important;margin:0 0 17px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title{
+ margin:0 0 8px!important;padding:8px 11px!important;
+ background:#ffc400!important;color:#161411!important;
+ border:0!important;font-size:12px!important;font-weight:900!important;
+}
+.cbpes-match.cbpes-match-copa-master,
+body.cbpes-copa-master-page #table .cbpes-match.cbpes-match-copa-master{
+ position:relative!important;isolation:isolate!important;overflow:hidden!important;
+ margin:0 0 8px!important;border:1px solid #806522!important;
+ border-left:3px solid #dcae30!important;border-radius:3px!important;
+ background:
+ radial-gradient(ellipse at 95% 8%,rgba(217,168,44,.23),transparent 54%),
+ linear-gradient(110deg,#202124 0%,#30302b 51%,#645021 100%)!important;
+ color:#fff!important;box-shadow:none!important;
+}
+.cbpes-match.cbpes-match-copa-master::before,
+body.cbpes-copa-master-page #table .cbpes-match.cbpes-match-copa-master::before{
+ content:"★"!important;position:absolute!important;right:-13px!important;top:-34px!important;
+ font-size:124px!important;line-height:1!important;font-family:Georgia,serif!important;
+ color:rgba(255,209,90,.10)!important;z-index:0!important;pointer-events:none!important;
+ width:auto!important;height:auto!important;border:0!important;border-radius:0!important;
+ transform:rotate(-14deg)!important;background:none!important;box-shadow:none!important;
+}
+.cbpes-match.cbpes-match-copa-master::after,
+body.cbpes-copa-master-page #table .cbpes-match.cbpes-match-copa-master::after{
+ content:""!important;position:absolute!important;inset:0!important;height:auto!important;
+ background:
+ radial-gradient(circle at 13% 22%,rgba(255,212,91,.40) 0 1px,transparent 1.6px),
+ radial-gradient(circle at 77% 73%,rgba(255,212,91,.27) 0 1px,transparent 1.7px),
+ radial-gradient(circle at 41% 83%,rgba(255,212,91,.27) 0 .8px,transparent 1.5px),
+ radial-gradient(circle at 88% 32%,rgba(255,212,91,.34) 0 .9px,transparent 1.6px),
+ radial-gradient(circle at 29% 57%,rgba(255,212,91,.20) 0 .7px,transparent 1.5px)!important;
+ z-index:0!important;pointer-events:none!important;
+}
+.cbpes-match.cbpes-match-copa-master .cbpes-match-main,
+.cbpes-match.cbpes-match-copa-master .cbpes-match-top{
+ position:relative!important;z-index:1!important;
+}
+body.cbpes-copa-master-page #table .cbpes-match.cbpes-match-copa-master .cbpes-match-top{
+ display:none!important;
+}
+.cbpes-match.cbpes-match-copa-master .cbpes-team-name,
+.cbpes-match.cbpes-match-copa-master .cbpes-match-score,
+.cbpes-match.cbpes-match-copa-master .coach-link{
+ color:#fff!important;
+}
+.cbpes-match.cbpes-match-copa-master .cbpes-match-team small{color:#d6c9ab!important}
+body.cbpes-copa-master-page #table .cbpes-master-template-match .cbpes-match-main{
+ min-height:86px!important;
+}
