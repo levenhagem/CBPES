@@ -3286,3 +3286,43 @@ body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-m
 body.cbpes-copa-master-page #table .cbpes-master-round-group .cbpes-match-copa-master .cbpes-score-stacked{
  display:none!important;
 }
+
+/* Copa Master: pares tabela/partida na MESMA linha, sem colunas independentes. */
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups{
+ display:grid!important;
+ grid-template-columns:minmax(0,1.65fr) minmax(310px,1fr)!important;
+ column-gap:20px!important;row-gap:16px!important;align-items:start!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-group,
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group{
+ min-width:0!important;margin:0!important;align-self:start!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-group{
+ grid-column:1!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-group{
+ grid-column:2!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-spacer{
+ grid-column:1!important;min-height:40px;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-switcher{
+ grid-column:2!important;margin:0!important;min-height:40px;
+}
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-zone-legend{
+ grid-column:1 / -1!important;
+}
+@media(max-width:1100px){
+ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups{
+  grid-template-columns:minmax(0,1fr)!important;row-gap:9px!important;
+ }
+ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > *{
+  grid-column:1!important;
+ }
+ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-spacer{
+  display:none!important;
+ }
+ body.cbpes-copa-master-page #table .cbpes-master-aligned-groups > .cbpes-master-round-switcher{
+  grid-row:1!important;
+ }
+}
