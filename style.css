@@ -4096,3 +4096,24 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   width:58px!important;height:58px!important;
  }
 }
+
+/* Técnico: vínculo atual em destaque e escudos do cabeçalho mais próximos. */
+#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current{
+ background:#e3f4e9!important;
+ border:1px solid #91c8a5!important;
+ border-left:4px solid #11824c!important;
+ box-shadow:none!important;
+}
+#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .pill{
+ background:#11824c!important;color:#fff!important;border-color:#11824c!important;
+ font-weight:800!important;
+}
+#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .cbpes-coach-team-link{
+ color:#075a35!important;font-weight:800!important;
+}
+#coachView .cbpes-coach-hero-crest-line{gap:3px!important}
+#coachView .cbpes-coach-hero-past-crests{gap:5px!important}
+@media(max-width:620px){
+ #coachView .cbpes-coach-hero-crest-line{gap:2px!important}
+ #coachView .cbpes-coach-hero-past-crests{gap:4px!important}
+}
