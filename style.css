@@ -3151,3 +3151,35 @@ body.cbpes-copa-master-page #table .cbpes-master-fixture-placeholder{
   grid-template-columns:minmax(0,1fr)!important;
  }
 }
+
+/* Copa Master — card de confronto com estrela decorativa no canto. */
+body.cbpes-copa-master-page #table .cbpes-master-fixture-card{
+ position:relative;overflow:hidden;background:#292217;border:1px solid #655124;
+ border-left:3px solid #ffc400;padding:12px 14px 15px;color:#fff;
+}
+body.cbpes-copa-master-page #table .cbpes-master-card-star{
+ position:absolute;top:9px;right:11px;color:#ffc400;font-size:17px;line-height:1;
+ text-shadow:none;pointer-events:none;z-index:2;
+}
+body.cbpes-copa-master-page #table .cbpes-master-card-top{
+ font-size:10px;font-weight:800;letter-spacing:.065em;color:#d3b76e;
+ padding-right:24px;padding-bottom:11px;border-bottom:1px solid #564522;
+}
+body.cbpes-copa-master-page #table .cbpes-master-card-top span{padding:0 5px}
+body.cbpes-copa-master-page #table .cbpes-master-card-body{
+ display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);
+ align-items:center;gap:8px;padding-top:15px;
+}
+body.cbpes-copa-master-page #table .cbpes-master-card-team{min-width:0;text-align:left;font-size:13px;font-weight:800}
+body.cbpes-copa-master-page #table .cbpes-master-card-team.away{text-align:right}
+body.cbpes-copa-master-page #table .cbpes-master-card-team a{color:#fff!important;text-decoration:none}
+body.cbpes-copa-master-page #table .cbpes-master-card-team small{
+ display:block;margin-top:4px;font-size:10px;color:#b8afa0;font-weight:400;
+}
+body.cbpes-copa-master-page #table .cbpes-master-card-versus{
+ text-align:center;color:#ffc400;font-size:18px;font-weight:800;
+}
+body.cbpes-copa-master-page #table .cbpes-master-real-match{position:relative;margin:7px 0}
+body.cbpes-copa-master-page #table .cbpes-master-real-match .cbpes-master-card-star{
+ top:9px;right:12px;
+}
