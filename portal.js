@@ -245,7 +245,11 @@ function renderTable() {
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
   const headingName=selectedCompetition?.name||selectedEdition?.name||selectedWeekly?.name||'Tabela do campeonato';
   const heading=$('tableCompetitionName'), emblem=$('tableCompetitionEmblem');
-  if(heading)heading.textContent=headingName;
+  if(heading){
+    if(/copa\\s*master/i.test(headingName)){
+      heading.innerHTML='<span class="cbpes-master-title-copa">COPA</span> <span class="cbpes-master-title-master">MASTER</span>';
+    }else heading.textContent=headingName;
+  }
   if(emblem){
     const logo=selectedCompetition?.logo_url||selectedCompetition?.logo||selectedEdition?.logo_url||selectedEdition?.logo;
     emblem.textContent='';
