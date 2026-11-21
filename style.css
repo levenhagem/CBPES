@@ -3401,3 +3401,37 @@ body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master
  display:inline!important;color:#ffc400!important;font-size:21px!important;
  font-weight:900!important;opacity:1!important;visibility:visible!important;
 }
+
+/* Rebranding amarelo Copa Master: Squadra + dourado acetinado, sem losango. */
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header,
+body.cbpes-copa-master-page #table .cbpes-master-aligned-groups .cbpes-master-round-group .cbpes-master-round-group-title{
+ background:linear-gradient(110deg,#f8c500 0%,#eeb500 52%,#a87917 100%)!important;
+ background-color:#e9b700!important;
+ border:0!important;border-left:4px solid #ffe078!important;
+ border-bottom:2px solid #8b641c!important;
+ color:#181715!important;min-height:65px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-header .cbpes-master-group-overline,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-overline{
+ color:#62460e!important;font-size:10px!important;letter-spacing:.12em!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header .cbpes-master-group-label,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-label{
+ font-family:"Squadra Medium CBPES","Squadra CBPES",Lato,Arial,sans-serif!important;
+ color:#201a0e!important;font-size:24px!important;font-weight:500!important;
+ letter-spacing:.015em!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group .cardhead.cbpes-master-group-header .cbpes-master-group-label b,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title .cbpes-master-group-label b{
+ font-family:"Squadra Medium CBPES","Squadra CBPES",Lato,Arial,sans-serif!important;
+ color:#201a0e!important;font-size:27px!important;font-weight:500!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-emblem,
+body.cbpes-copa-master-page #table .cbpes-master-group-emblem,
+body.cbpes-copa-master-page #table .cbpes-master-group-emblem::after{
+ display:none!important;content:none!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-header::after,
+body.cbpes-copa-master-page #table .cbpes-master-round-group-title::after{
+ background:linear-gradient(110deg,transparent,rgba(255,233,154,.13))!important;
+}
