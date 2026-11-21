@@ -2782,3 +2782,23 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView .cbpes-coach-previous-list>div{padding:5px 0}
 @media(min-width:521px){#coachView .cbpes-coach-hero-title{padding-right:340px!important}#coachView .cbpes-coach-current-team{max-width:calc(100% - 340px)}}
 @media(max-width:520px){#coachView .cbpes-coach-hero-club{position:relative;top:auto;right:auto;margin-top:18px;width:100%;max-width:330px;min-height:116px}#coachView .cbpes-coach-hero-title{padding-right:0!important}#coachView .cbpes-coach-current-team{max-width:none}}
+
+/* Refinamento visual do cartão do clube: alinhamento superior e identidade CBPES. */
+#coachView .cbpes-coach-hero-club{
+ align-items:flex-start;gap:14px;min-height:136px;padding:15px 17px;
+ background:linear-gradient(120deg,#fff 0%,#f6fbf7 53%,#dcefe3 100%);
+ border:1px solid rgba(20,111,70,.23);border-top:3px solid #168c58;
+ border-radius:8px;box-shadow:0 9px 24px rgba(0,37,22,.16);
+}
+#coachView .cbpes-coach-hero-club-crest{align-self:center}
+#coachView .cbpes-coach-hero-club-info{padding-top:1px;align-self:flex-start}
+#coachView .cbpes-coach-hero-club-name{
+ font-size:18px;line-height:1.15;font-weight:800;letter-spacing:-.025em;
+ color:#08643e;margin:0 0 3px;
+}
+#coachView .cbpes-coach-hero-club-role{
+ font-size:12px;line-height:1.15;font-weight:650;margin:0;color:#426555;
+}
+#coachView .cbpes-coach-previous{margin-top:18px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
+#coachView .cbpes-coach-previous summary{font-size:11px;letter-spacing:.01em}
+@media(max-width:520px){#coachView .cbpes-coach-hero-club{width:100%!important;max-width:330px!important;min-height:136px}}
