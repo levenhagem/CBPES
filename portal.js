@@ -715,17 +715,15 @@ function renderCoach(name) {
   const previousClubs=[...new Map(assignments.map(h=>D.participants.find(p=>String(p.id)===String(h.participant_id))).filter(t=>t&&String(t.id)!==String(currentTeam?.id)).map(t=>[String(t.id),t])).values()];
   root.innerHTML=`<div class="cbpes-coach-hero" style="padding:32px 34px;min-height:205px;position:relative">
     <div class="cbpes-coach-hero-label" style="font-size:12px;letter-spacing:.12em">PERFIL DO TÉCNICO</div>
-    <div class="cbpes-coach-hero-title" style="gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-right:205px"><h1 style="font-size:clamp(32px,4vw,48px);line-height:1.12">${esc(name)}</h1></div>
-    <div class="cbpes-coach-current-team" style="margin-top:22px;font-size:16px"><span>TIME ATUAL:</span>${currentTeam?`<a href="#team/${encodeURIComponent(currentTeam.id)}">${esc(currentTeam.name)}</a>`:'Sem time atualmente'}</div>
-    ${profile?.bio?`<p class="cbpes-coach-hero-bio" style="margin-top:14px">${esc(profile.bio)}</p>`:''}
-    <div class="cbpes-coach-hero-club">
-      <div class="cbpes-coach-hero-club-crest">${currentTeam?crestOnly(currentTeam):'<span>Sem clube</span>'}</div>
-      <div class="cbpes-coach-hero-club-info">
-        <div class="cbpes-coach-hero-club-name">${currentTeam?esc(currentTeam.name):'Sem clube atual'}</div>
-        <div class="cbpes-coach-hero-club-role">Técnico</div>
-        ${previousClubs.length?`<div class="cbpes-coach-previous"><div class="cbpes-coach-previous-heading">Clubes anteriores</div><div class="cbpes-coach-previous-list">${previousClubs.map(t=>`<a class="cbpes-coach-previous-team" href="#team/${encodeURIComponent(t.id)}">${crestOnly(t)}<span>${esc(t.name)}</span></a>`).join('')}</div></div>`:''}
+    <div class="cbpes-coach-hero-title cbpes-coach-hero-identity">
+      <h1>${esc(name)}</h1>
+      <div class="cbpes-coach-hero-crest-line">
+        ${currentTeam?`<span class="cbpes-coach-hero-current-crest" title="Clube atual: ${esc(currentTeam.name)}">${crestOnly(currentTeam)}</span>`:""}
+        ${previousClubs.length?`<span class="cbpes-coach-hero-past-crests">${previousClubs.map(t=>`<span class="cbpes-coach-hero-past-crest" title="Clube anterior: ${esc(t.name)}">${crestOnly(t)}</span>`).join("")}</span>`:""}
       </div>
     </div>
+    <div class="cbpes-coach-current-team"><span>TIME ATUAL:</span>${currentTeam?`<a href="#team/${encodeURIComponent(currentTeam.id)}">${esc(currentTeam.name)}</a>`:"Sem time atualmente"}</div>
+    ${profile?.bio?`<p class="cbpes-coach-hero-bio" style="margin-top:14px">${esc(profile.bio)}</p>`:""}
   </div>
   <div class="card cbpes-coach-performance"><div class="cardhead"><h2>ESTATÍSTICAS DA CARREIRA</h2></div><div class="cardbody"><div class="cbpes-coach-filter" role="group" aria-label="Filtrar estatísticas por categoria"><span>FILTRAR POR</span><label><input type="checkbox" data-coach-category="friendly" checked> AMISTOSOS</label><label><input type="checkbox" data-coach-category="official" checked> OFICIAIS</label><label><input type="checkbox" data-coach-category="weekly" checked> SEMANAIS</label></div><div class="cbpes-coach-kpi-grid"><div class="cbpes-coach-kpi games"><span class="cbpes-coach-kpi-label">JOGOS</span><strong>${careerGames}</strong><small>Partidas disputadas</small></div><div class="cbpes-coach-kpi wins"><span class="cbpes-coach-kpi-label">VITÓRIAS</span><strong>${v}</strong><small>${careerGames?Math.round(v/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi draws"><span class="cbpes-coach-kpi-label">EMPATES</span><strong>${e}</strong><small>${careerGames?Math.round(e/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi losses"><span class="cbpes-coach-kpi-label">DERROTAS</span><strong>${d}</strong><small>${careerGames?Math.round(d/careerGames*100):0}% dos jogos</small></div><div class="cbpes-coach-kpi efficiency"><span class="cbpes-coach-kpi-label">APROVEITAMENTO</span><strong>0%</strong><small></small></div></div></div></div>
   <div class="cbpes-coach-rivalry-grid">${coachRivalryCard('MAIOR FREGUÊS',bestVictim,'Sem retrospecto positivo definido.','victim')}${coachRivalryCard('MAIOR CARRASCO',biggestNemesis,'Sem retrospecto negativo definido.','nemesis')}</div>
