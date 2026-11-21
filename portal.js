@@ -349,7 +349,7 @@ function renderTable() {
   const isCopaMaster=/copa\s*master/i.test([edition.name,(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '));
   const masterGroupPreview=isCopaMaster && !officialMatches.length
     ? '<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-title"><strong>FASE DE GRUPOS</strong><small>PRÉVIA ILUSTRATIVA · GRUPOS A DEFINIR</small></div><div class="cbpes-master-groups-grid">'+
-      ['A','B','C','D'].map(g=>'<div class="cbpes-master-group"><div class="cbpes-master-group-header">GRUPO '+g+'</div><table><thead><tr><th>CLUBE</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td><span class="cbpes-master-group-rank">'+n+'</span> A definir</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>').join('')+'</tbody></table></div>').join('')+
+      ['A','B','C','D'].map(g=>'<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header">GRUPO '+g+'</div><table class="table"><thead><tr><th>CLUBE</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td><span class="cbpes-master-group-rank">'+n+'</span> A definir</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>').join('')+'</tbody></table></div>').join('')+
       '</div></section>' : '';
   const drawNotice='';
   if(isCopaMaster && !officialMatches.length){
