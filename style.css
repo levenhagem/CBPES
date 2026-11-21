@@ -3756,3 +3756,41 @@ body.cbpes-copa-master-page #tableCompetitionName{
  #home .cols .card > .cardhead .cbpes-home-heading-link{gap:6px!important}
  #home .cols .card > .cardhead > .pill{right:7px!important;font-size:9px!important}
 }
+
+/* Home: sem logotipo de fundo. Grafismo editorial discreto, reto e integrado ao card. */
+#home .cols .card > .cardhead{
+ background:linear-gradient(112deg,#e6f1e9 0%,#f7faf8 56%,#e1eee6 100%)!important;
+ border-bottom:1px solid #cbded2!important;
+}
+#home .cols .card > .cardhead::after{
+ content:""!important;
+ position:absolute!important;right:0!important;top:0!important;
+ width:34%!important;height:100%!important;
+ opacity:1!important;transform:none!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:
+ linear-gradient(122deg,transparent 0 43%,rgba(6,116,72,.065) 43% 45%,transparent 45% 58%,rgba(6,116,72,.05) 58% 60%,transparent 60%),
+ repeating-linear-gradient(90deg,transparent 0 27px,rgba(8,124,78,.035) 27px 28px)!important;
+ pointer-events:none!important;z-index:0!important;
+}
+#home .cols .card > .cardhead::before{
+ background:linear-gradient(180deg,#006e46,#12a46b)!important;
+}
+#home .cols .card > .cardhead > h2{
+ z-index:1!important;
+}
+#home .cols .card > .cardhead .cbpes-home-heading-link{
+ letter-spacing:.065em!important;
+}
+#home .cols .card > .cardhead .cbpes-home-heading-link span{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:23px!important;height:23px!important;border:1px solid rgba(7,115,72,.27)!important;
+ border-radius:0!important;background:rgba(255,255,255,.42)!important;
+ font-size:14px!important;
+}
+@media(max-width:620px){
+ #home .cols .card > .cardhead::after{
+  right:0!important;top:0!important;width:26%!important;height:100%!important;
+  transform:none!important;
+ }
+}
