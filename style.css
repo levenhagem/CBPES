@@ -2982,3 +2982,41 @@ body.cbpes-copa-master-page #table .cbpes-competition-emblem{
  background:#201b12!important;color:#fff!important;border-bottom:1px solid #514321!important;
 }
 .cbpes-copa-master-page #table .cbpes-master-group .table tr:nth-child(even) td{background:#2b2417!important}
+
+/* Copa Master — mesmas colunas, densidade e tipografia da classificação Liga Pro. */
+.cbpes-copa-master-page #table .cbpes-master-groups-grid{grid-template-columns:1fr;gap:18px}
+.cbpes-copa-master-page #table .cbpes-master-group-scroll{width:100%;overflow-x:auto}
+.cbpes-copa-master-page #table .cbpes-master-group-table{
+ width:100%;min-width:610px;border-collapse:collapse;
+ font-family:Lato,Arial,sans-serif!important;font-size:12px!important;
+ font-variant-numeric:tabular-nums;
+}
+.cbpes-copa-master-page #table .cbpes-master-group-table th{
+ padding:10px 5px!important;font-size:10px!important;font-weight:700!important;
+ letter-spacing:.02em;text-align:center!important;white-space:nowrap;
+}
+.cbpes-copa-master-page #table .cbpes-master-group-table td{
+ padding:11px 5px!important;text-align:center!important;font-size:12px!important;
+ font-weight:600;white-space:nowrap;
+}
+.cbpes-copa-master-page #table .cbpes-master-group-table .cbpes-master-position{width:38px;text-align:center!important}
+.cbpes-copa-master-page #table .cbpes-master-group-table .cbpes-master-club{
+ width:auto;min-width:145px;text-align:left!important;padding-left:7px!important;
+}
+.cbpes-copa-master-page #table .cbpes-master-club strong{
+ display:block;color:#fff;font-size:13px;font-weight:750;line-height:1.25;
+}
+.cbpes-copa-master-page #table .cbpes-master-club small{
+ display:block;color:#c7c0ae;font-size:11px;font-weight:400;margin-top:3px;
+}
+.cbpes-copa-master-page #table .cbpes-master-group-rank{
+ background:transparent!important;color:#fff;font-size:13px;font-weight:600;
+}
+.cbpes-copa-master-page #table .cbpes-master-group-table tbody tr{
+ border-left:3px solid #ffc400;
+}
+.cbpes-copa-master-page #table .cbpes-master-form{width:78px}
+.cbpes-copa-master-page #table .cbpes-master-form-dots{display:inline-flex;gap:3px;align-items:center}
+.cbpes-copa-master-page #table .cbpes-master-form-dots i{
+ display:inline-block;width:8px;height:8px;border-radius:50%;background:#7a7569;
+}
