@@ -2894,3 +2894,20 @@ body.cbpes-copa-master-page .cbpes-master-hero-title strong{color:#ffc400!import
 /* Nome da competição no cabeçalho: COPA branca, MASTER amarela. */
 body.cbpes-copa-master-page #table #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
 body.cbpes-copa-master-page #table #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
+
+/* Padronização: todos os títulos das competições usam a fonte da Liga Pro. */
+#table #tableCompetitionName,
+#table[data-liga-pro="true"] #tableCompetitionName,
+body.cbpes-liga-pro-page #tableCompetitionName,
+body.cbpes-copa-master-page #tableCompetitionName{
+ font-family:"Squadra Medium CBPES","Squadra CBPES",Arial,sans-serif!important;
+ font-weight:500!important;
+ font-stretch:normal!important;
+ letter-spacing:.25px!important;
+ line-height:1.05!important;
+ text-transform:uppercase!important;
+}
+#table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-copa,
+body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
+#table[data-copa-master="true"] #tableCompetitionName .cbpes-master-title-master,
+body.cbpes-copa-master-page #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
