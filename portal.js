@@ -573,7 +573,7 @@ const defenseDefinition=definition=>{
   return {...definition,rows,value:x=>perGame?fmt1(x.gc/x.j):x.gc,unit:perGame?'gols/jogo':'gols'};
 };
 const defensePicker=definition=>definition.key==='defense'
-  ?'<div class="cbpes-defense-picker" role="group" aria-label="Critério de melhor defesa"><button type="button" data-defense-mode="per-game" class="'+(statsDefenseMode==='per-game'?'selected':'')+'">SOFRIDOS POR JOGO</button><button type="button" data-defense-mode="total" class="'+(statsDefenseMode==='total'?'selected':'')+'">SOFRIDOS NO TOTAL</button></div>'
+  ?'<div class="stats-category-filter cbpes-defense-picker" role="group" aria-label="Critério de melhor defesa"><button type="button" data-defense-mode="per-game" class="'+(statsDefenseMode==='per-game'?'selected':'')+'">SOFRIDOS POR JOGO</button><button type="button" data-defense-mode="total" class="'+(statsDefenseMode==='total'?'selected':'')+'">SOFRIDOS NO TOTAL</button></div>'
   :'';
 const changeDefenseMode=e=>{
   const button=e.target.closest('[data-defense-mode]');
