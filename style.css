@@ -3875,3 +3875,25 @@ html body #table[data-copa-master="true"] .cbpes-competition-heading > #tableCom
 #coachView .cbpes-compare-metric-head-neutral > b{
  color:#111111!important;
 }
+
+/* Copa Master: confrontos apresentados somente por rodada, sem agrupamento A/B/C/D. */
+body.cbpes-copa-master-page #table .cbpes-master-round-layout{
+ display:grid!important;
+ grid-template-columns:minmax(0,1.65fr) minmax(310px,1fr)!important;
+ align-items:start!important;gap:20px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list{
+ display:flex!important;flex-direction:column!important;
+ gap:12px!important;margin-top:14px!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-round-list > .cbpes-match{
+ width:100%!important;margin:0!important;
+}
+@media(max-width:1100px){
+ body.cbpes-copa-master-page #table .cbpes-master-round-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-fixtures-column{
+  margin-top:14px!important;
+ }
+}
