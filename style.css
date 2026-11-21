@@ -2811,3 +2811,63 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 #coachView .cbpes-coach-previous-team:hover{color:#087047;text-decoration:underline}
 #coachView .cbpes-coach-previous-team .cbpes-coach-career-crest{flex:0 0 28px;display:flex!important;width:28px!important;height:28px!important;align-items:center;justify-content:center}
 #coachView .cbpes-coach-previous-team .cbpes-coach-career-crest img{width:28px!important;height:28px!important;object-fit:contain}
+
+
+/* Copa Master — identidade oficial: amarelo sólido, branco e preto.
+   Restrito à página da Copa Master; nenhuma superfície em degradê. */
+body.cbpes-copa-master-page{
+ --master-yellow:#ffc400;--master-white:#ffffff;--master-black:#11100e;
+ --ink:#ffffff;--muted:#d6d4cd;--line:#57471b;--bg:#11100e;
+ --white:#201b12;--soft:#292319;--blue:#ffc400;--navy:#ffc400;
+ background:#11100e!important;color:#fff;
+}
+.cbpes-copa-master-page main{color:#fff}
+.cbpes-copa-master-page #table>.page-title{border-bottom:2px solid #ffc400}
+.cbpes-copa-master-page #table .cbpes-competition-heading,
+.cbpes-copa-master-page #table .eyebrow,
+.cbpes-copa-master-page #table .round-switcher,
+.cbpes-copa-master-page #table .phase-arrow,
+.cbpes-copa-master-page #table .cbpes-master-preview-heading,
+.cbpes-copa-master-page #table .cbpes-master-match-meta{color:#ffc400!important}
+.cbpes-copa-master-page #table .cbpes-competition-emblem{
+ background:#ffc400!important;color:#11100e!important;border:1px solid #ffc400!important;
+}
+.cbpes-copa-master-page #table>.card{background:#201b12!important;border:1px solid #57471b}
+.cbpes-copa-master-page #table .cardhead{background:#2b2417!important;color:#fff!important;border-bottom:2px solid #ffc400}
+.cbpes-copa-master-page #table .cardhead h2{color:#fff!important}
+.cbpes-copa-master-page #table .cardbody{color:#fff}
+.cbpes-copa-master-page #table .cbpes-competition-neutral{background:transparent;color:#fff}
+.cbpes-copa-master-page #table .phase-switcher{border-bottom-color:#57471b!important;color:#fff}
+.cbpes-copa-master-page #table .phase-arrow{border-color:#ffc400!important}
+.cbpes-copa-master-page #table .table{background:#201b12;color:#fff}
+.cbpes-copa-master-page #table .table th{background:#ffc400!important;color:#11100e!important;border-color:#b88c00!important}
+.cbpes-copa-master-page #table .table td{background:#201b12!important;color:#fff!important;border-color:#514321!important}
+.cbpes-copa-master-page #table .table tr:nth-child(even) td{background:#2b2417!important}
+.cbpes-copa-master-page #table .cbpes-match,
+.cbpes-copa-master-page #table .cbpes-master-match-demo{
+ background:#201b12!important;color:#fff!important;border:1px solid #705819!important;box-shadow:none!important;
+}
+.cbpes-copa-master-page #table .cbpes-match .cbpes-team-name,
+.cbpes-copa-master-page #table .cbpes-match-score,
+.cbpes-copa-master-page #table .cbpes-master-demo-team strong,
+.cbpes-copa-master-page #table .cbpes-master-demo-scores{color:#fff!important}
+.cbpes-copa-master-page #table .cbpes-master-demo-score span{color:#ffc400!important}
+.cbpes-copa-master-page #table .copa-master-draw-centered{color:#ffc400!important;background:transparent!important;text-shadow:none}
+.cbpes-copa-master-page .cbpes-master-hero{
+ background:#17130b!important;border:1px solid #765d16!important;
+ border-top:5px solid #ffc400!important;box-shadow:none!important;
+}
+.cbpes-copa-master-page .cbpes-master-hero::after{display:none!important}
+.cbpes-copa-master-page .cbpes-master-kicker,
+.cbpes-copa-master-page .cbpes-master-hero-edition{color:#ffc400!important}
+.cbpes-copa-master-page .cbpes-master-kicker-line,
+.cbpes-copa-master-page .cbpes-master-hero-rule{background:#ffc400!important}
+.cbpes-copa-master-page .cbpes-master-hero-title{color:#fff!important;text-shadow:none!important}
+.cbpes-copa-master-page .cbpes-master-hero-title strong{color:#ffc400!important;text-shadow:none!important}
+.cbpes-copa-master-page .cbpes-master-hero-sub{color:#fff!important}
+.cbpes-copa-master-page .cbpes-master-trophy,
+.cbpes-copa-master-page .cbpes-master-trophy svg{filter:none!important}
+.cbpes-copa-master-page #table .cbpes-match::before,
+.cbpes-copa-master-page #table .cbpes-master-match-demo::after{color:rgba(255,196,0,.09)!important}
+.cbpes-copa-master-page #table button.active,
+.cbpes-copa-master-page #table .active.phase-arrow{background:#ffc400!important;color:#11100e!important}
