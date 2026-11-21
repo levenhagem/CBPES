@@ -3041,3 +3041,16 @@ body.cbpes-copa-master-page #table .cbpes-master-group-rank{
 
 /* Copa Master: pontos (PTS) em negrito na classificação dos grupos. */
 body.cbpes-copa-master-page #table .cbpes-master-group-table tbody td:nth-child(3){font-weight:800!important;}
+
+/* Copa Master: zonas configuradas no banco, iguais às faixas da Liga Pro. */
+body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-position{
+ position:relative;border-left:0!important;overflow:hidden;
+ box-shadow:inset 9px 0 12px -9px var(--zone-color,transparent)!important;
+}
+body.cbpes-copa-master-page #table .cbpes-master-group-table td.cbpes-zone-position::before{
+ content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+ background:var(--zone-color,transparent);pointer-events:none;
+}
+body.cbpes-copa-master-page #table .cbpes-master-groups-preview .cbpes-zone-legend{
+ color:#d4d0c8;padding:12px 2px;
+}
