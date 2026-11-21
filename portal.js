@@ -407,9 +407,9 @@ function renderTable() {
       const templates=pairings.map(([home,away])=>{
         const h=D.participants.find(p=>String(p.id)===groupIds[home-1]);
         const a=D.participants.find(p=>String(p.id)===groupIds[away-1]);
-        return '<div class="cbpes-master-fixture-placeholder"><span>'+(h?participantLink(h):'TIME '+home)+'</span><strong>×</strong><span>'+(a?participantLink(a):'TIME '+away)+'</span></div>';
+        return '<div class="cbpes-master-fixture-card"><span class="cbpes-master-card-star" aria-hidden="true">★</span><div class="cbpes-master-card-top">COPA MASTER <span>·</span> RODADA '+String(virtualRound+1).padStart(2,'0')+'</div><div class="cbpes-master-card-body"><div class="cbpes-master-card-team">'+(h?participantLink(h):'<strong>TIME '+home+'</strong>')+'<small>'+(h?.coach_name?esc(h.coach_name):'Técnico a definir')+'</small></div><div class="cbpes-master-card-versus">×</div><div class="cbpes-master-card-team away">'+(a?participantLink(a):'<strong>TIME '+away+'</strong>')+'<small>'+(a?.coach_name?esc(a.coach_name):'Técnico a definir')+'</small></div></div></div>';
       }).join('');
-      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+(games.length?games.map(m=>matchRow(m,true)).join(''):templates||'<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+'</div>';
+      return '<div class="cbpes-master-round-group"><div class="cbpes-master-round-group-title">GRUPO '+g+'</div>'+(games.length?games.map(m=>'<div class="cbpes-master-real-match"><span class="cbpes-master-card-star" aria-hidden="true">★</span>'+matchRow(m,true)+'</div>').join(''):templates||'<div class="cbpes-master-fixture-placeholder">Aguardando confrontos</div>')+'</div>';
     }).join('')+'</div></div>';
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral cbpes-master-two-column"><div class="cbpes-master-standings-column">'+masterGroupsHtml+'</div><aside class="cbpes-master-fixtures-column">'+masterFixtures+'</aside></div>';
