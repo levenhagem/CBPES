@@ -4117,3 +4117,12 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
  #coachView .cbpes-coach-hero-crest-line{gap:2px!important}
  #coachView .cbpes-coach-hero-past-crests{gap:4px!important}
 }
+
+/* Forma recente do técnico: últimos cinco resultados centralizados. */
+#coachView .cbpes-coach-recent-form{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding:16px 0 3px;text-align:center}
+#coachView .cbpes-coach-recent-form>span{font-size:11px;font-weight:800;letter-spacing:.08em;color:#66737d}
+#coachView .cbpes-coach-recent-form-dots{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-height:31px}
+#coachView .cbpes-coach-form-dot{width:31px;height:31px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800}
+#coachView .cbpes-coach-form-dot.win{background:#159354}
+#coachView .cbpes-coach-form-dot.draw{background:#89949c}
+#coachView .cbpes-coach-form-dot.loss{background:#d64d4d}
