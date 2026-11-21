@@ -2,7 +2,7 @@ let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'cu
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'weeklies', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
@@ -23,7 +23,8 @@ const publicCompetitionMatch = m => {
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
-  const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (PAGES.includes(raw) ? raw : 'home'));
+  const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
+  if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
   if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
@@ -503,22 +504,47 @@ function renderWeeklies() {
   root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next],[data-weekly-round-prev],[data-weekly-round-next]');if(!b)return;if(b.hasAttribute('data-weekly-round-prev')||b.hasAttribute('data-weekly-round-next')){const key=b.dataset.weeklyRoundPrev||b.dataset.weeklyRoundNext;const [edition,phase]=key.split('|');const rs=(D.weeklyRounds||[]).filter(r=>String(r.weekly_id)===edition&&(String(r.phase_id)===phase||(!r.phase_id&&phase==='legacy-groups'))).sort((a,c)=>a.number-c.number);selectedRoundByEdition[key]=changeRound(rs,selectedRoundByEdition[key],b.hasAttribute('data-weekly-round-next')?1:-1);renderWeeklies();return;}const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const allPhases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);const ps=allPhases.filter(p=>p.phase_type!=='third_place'||!allPhases.some(x=>x.phase_type==='final'));if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
 }
 
-function renderStats() {
-  const filteredMatches = D.matches.filter(m => m.category === statsCategory);
-  const matchIds = new Set(filteredMatches.map(m => m.id));
-  const filtered = { ...D, matches: filteredMatches, events: D.events.filter(e => matchIds.has(e.match_id)) };
-  const S = stats(filtered, statsCategory), b = S.big;
-  const bigTxt = b ? `<a href="#team/${b.home_id}">${esc(b.home.name)}</a> ${b.home_score} x ${b.away_score} <a href="#team/${b.away_id}">${esc(b.away.name)}</a>` : '—';
-  $('statsGrid').innerHTML = `<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">${[['official','COMPETIÇÕES OFICIAIS'],['weekly','SEMANAIS'],['friendly','AMISTOSOS']].map(([v,l])=>`<button data-stats-category="${v}" class="${statsCategory===v?'selected':''}">${l}</button>`).join('')}</div>` +
-    `<div class="card"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>${S.jogos}</b><span>Partidas</span></div><div class="stat"><b>${S.gols}</b><span>Gols</span></div><div class="stat"><b>${fmt1(S.media)}</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>${bigTxt}</small></div></div></div></div>` +
-    plCard('ARTILHARIA', S.artilheiros, x => x.g, 'gols') + plCard('ASSISTÊNCIAS', S.garcons, x => x.a, 'assist.') + plCard('PARTICIPAÇÕES EM GOLS (G+A)', S.part, x => x.ga, '') +
-    rankCard('MELHOR ATAQUE (GOLS/JOGO)', S.ataque.slice().sort((a, c) => c.gp / c.j - a.gp / a.j), x => fmt1(x.gp / x.j)) +
-    rankCard('MELHOR DEFESA (MENOS SOFRIDOS)', S.defesa, x => x.gc) + rankCard('GOLS MARCADOS', S.ataque, x => x.gp) +
-    rankCard('APROVEITAMENTO', S.aprov, x => x.ap, '%') + rankCard('VITÓRIAS', S.vit, x => x.v) + rankCard('EMPATES', S.emp, x => x.e) + rankCard('DERROTAS', S.der, x => x.d) +
-    rankCard('SALDO DE GOLS', S.st.filter(x => x.j).sort((a, c) => c.sg - a.sg), x => sgf(x.sg));
-  $('statsGrid').onclick = e => { const b=e.target.closest('[data-stats-category]'); if(!b)return; statsCategory=b.dataset.statsCategory; renderStats(); };
+const statCategoryLabels={official:'COMPETIÇÕES OFICIAIS',weekly:'SEMANAIS',friendly:'AMISTOSOS'};
+const statDefinitions=S=>[
+  {key:'scorers',title:'ARTILHARIA',rows:S.artilheiros,value:x=>x.g,unit:'gols',players:true},
+  {key:'assists',title:'ASSISTÊNCIAS',rows:S.garcons,value:x=>x.a,unit:'assist.',players:true},
+  {key:'goal-contributions',title:'PARTICIPAÇÕES EM GOLS (G+A)',rows:S.part,value:x=>x.ga,unit:'',players:true},
+  {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:S.ataque.slice().sort((a,b)=>b.gp/b.j-a.gp/a.j),value:x=>fmt1(x.gp/x.j)},
+  {key:'defense',title:'MELHOR DEFESA (MENOS SOFRIDOS)',rows:S.defesa,value:x=>x.gc},
+  {key:'goals',title:'GOLS MARCADOS',rows:S.ataque,value:x=>x.gp},
+  {key:'efficiency',title:'APROVEITAMENTO',rows:S.aprov,value:x=>x.ap,unit:'%'},
+  {key:'wins',title:'VITÓRIAS',rows:S.vit,value:x=>x.v},
+  {key:'draws',title:'EMPATES',rows:S.emp,value:x=>x.e},
+  {key:'losses',title:'DERROTAS',rows:S.der,value:x=>x.d},
+  {key:'goal-difference',title:'SALDO DE GOLS',rows:S.st.filter(x=>x.j).sort((a,b)=>b.sg-a.sg),value:x=>sgf(x.sg)}
+];
+const statData=category=>{
+  const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m));
+  const ids=new Set(ms.map(m=>m.id));
+  const filtered={...D,matches:ms,events:D.events.filter(e=>ids.has(e.match_id))};
+  return stats(filtered,category);
+};
+const statRowsHtml=(definition,limit=Infinity)=>{
+  const rows=definition.rows.slice(0,limit);
+  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
+};
+const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+statRowsHtml(definition,full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
+function renderStats(){
+  const S=statData(statsCategory),b=S.big;
+  const bigTxt=b?'<a href="#team/'+b.home_id+'">'+esc(b.home.name)+'</a> '+b.home_score+' x '+b.away_score+' <a href="#team/'+b.away_id+'">'+esc(b.away.name)+'</a>':'—';
+  const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
+  const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+S.jogos+'</b><span>Partidas</span></div><div class="stat"><b>'+S.gols+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(S.media)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
+  const definitions=statDefinitions(S).filter(d=>statsCategory==='official'||!d.players);
+  $('statsGrid').innerHTML=filter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
+  $('statsGrid').onclick=e=>{const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
-
+function renderStatsDetail(category,key){
+  const root=$('statsDetailView');if(!root)return;
+  const valid=Object.hasOwn(statCategoryLabels,category)?category:'official';
+  const definition=statDefinitions(statData(valid)).find(d=>d.key===key);
+  if(!definition||(valid!=='official'&&definition.players)){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
+  root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1><div class="sub">Classificação completa da estatística selecionada.</div></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
+}
 
 function renderParticipant(id) {
   const p = D.participants.find(x => x.id === id), root = $('participantView');
@@ -831,7 +857,7 @@ function renderCoach(name) {
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
 
-function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(value,decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
