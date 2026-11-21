@@ -2890,3 +2890,7 @@ body.cbpes-copa-master-page .cbpes-master-hero-title strong{color:#ffc400!import
 .cbpes-copa-master-page #table .cbpes-master-demo-team small{color:#c6c1b7;font-size:11px}
 .cbpes-copa-master-page #table .cbpes-master-demo-scores{align-items:center;color:#ffc400!important;font-size:23px}
 @media(max-width:520px){.cbpes-copa-master-page #table .cbpes-master-match-demo{padding:13px}.cbpes-copa-master-page #table .cbpes-master-match-meta{font-size:9px}.cbpes-copa-master-page #table .cbpes-master-demo-team strong{font-size:14px}}
+
+/* Nome da competição no cabeçalho: COPA branca, MASTER amarela. */
+body.cbpes-copa-master-page #table #tableCompetitionName .cbpes-master-title-copa{color:#fff!important}
+body.cbpes-copa-master-page #table #tableCompetitionName .cbpes-master-title-master{color:#ffc400!important}
