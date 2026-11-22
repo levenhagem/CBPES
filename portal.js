@@ -265,7 +265,14 @@ async function loadOpeningArchive(){
 const openingTeamAliases={
   'middlebrook':'Bolton Wanderers','east london':'West Ham','man blue':'Manchester City',
   'lancashire':'Blackburn Rovers','west midlands village':'Aston Villa',
-  'athenakos fc':'Panathinaikos','fc bosphorus':'Beşiktaş'
+  'athenakos fc':'Panathinaikos','fc bosphorus':'Beşiktaş',
+  'dynamo kiev':'Dínamo de Kiev','dynamo kyiv':'Dínamo de Kiev',
+  'aj auxerre':'Auxerre','r.c. celta':'Celta de Vigo',
+  'as saint etienne':'Saint-Etiénne','as saint-étienne':'Saint-Etiénne',
+  'stade rennais fc':'Stade Rennais','sc heerenveen':'Heerenveen',
+  'c.a. osasuna':'Osasuna','rc lens':'Lens',
+  'r.c.d. espanyol':'Espanyol','fc groningen':'Groningen',
+  'getafe c.f.':'Getafe'
 };
 function openingTeamName(name){
   const key=String(name||'').trim().toLocaleLowerCase('pt-BR');
