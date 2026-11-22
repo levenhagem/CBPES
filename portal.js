@@ -270,33 +270,42 @@ function renderOpeningArchive(){
   if(!openingArchive.length){root.innerHTML=empty('Histórico do Torneio de Abertura ainda não disponível.');return;}
   const entries=openingArchive.filter(x=>x.record_type==='match').map(x=>({...x.payload,key:x.source_key}));
   const standing=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload).sort((a,b)=>Number(a.position)-Number(b.position));
-  const stages=[['round_of_16','OITAVAS DE FINAL'],['quarterfinal','QUARTAS DE FINAL'],['semifinal','SEMIFINAIS'],['final','FINAL']];
-  const matchName=(coach,team)=>'<strong>'+esc(coach||'—')+'</strong>'+(team?' <small>· '+esc(team)+'</small>':'');
-  const score=x=>'<strong>'+esc(String(x.home_score))+' × '+esc(String(x.away_score))+'</strong>';
-  const game=x=>'<div class="cbpes-opening-game"><div>'+matchName(x.home_coach,x.home_team)+'</div><div class="cbpes-opening-score">'+score(x)+'</div><div>'+matchName(x.away_coach,x.away_team)+'</div></div>';
-  const grouped=stages.map(([id,name])=>({id,name,ties:[...new Set(entries.filter(x=>x.phase===id).map(x=>Number(x.tie)||1))].sort((a,b)=>a-b).map(tie=>({tie,games:entries.filter(x=>x.phase===id&&(Number(x.tie)||1)===tie).sort((a,b)=>(Number(a.leg||a.game)||1)-(Number(b.leg||b.game)||1))}))}));
-  const tieHtml=t=>{const first=t.games[0];if(!first)return '';
-    const home=first.home_coach,away=first.away_coach;
-    const totals=t.games.reduce((acc,m)=>{const h=String(m.home_coach||'').toLowerCase()===String(home||'').toLowerCase();acc[0]+=Number(h?m.home_score:m.away_score)||0;acc[1]+=Number(h?m.away_score:m.home_score)||0;return acc;},[0,0]);
-    const pen=t.games.find(m=>m.penalty_shootout)?.penalty_shootout;
-    const penalty=pen?' · Pênaltis '+esc(String(pen.home_score))+'–'+esc(String(pen.away_score)):'';
-    return '<div class="cbpes-opening-tie"><div class="cbpes-opening-tie-title">'+matchName(home,first.home_team)+' <b>'+totals[0]+' × '+totals[1]+'</b> '+matchName(away,first.away_team)+penalty+'</div>'+t.games.map((m,i)=>'<div class="cbpes-opening-leg"><small>JOGO '+(i+1)+'</small>'+game(m)+'</div>').join('')+'</div>';
-  };
-  const buttons=[['classification','CLASSIFICAÇÃO'],['rounds','RODADAS'],['bracket','MATA-MATA']];
-  const nav='<div class="cbpes-opening-tabs">'+buttons.map(([id,label])=>'<button type="button" data-opening-tab="'+id+'" class="'+(openingArchiveTab===id?'active':'')+'">'+label+'</button>').join('')+'</div>';
-  const podium='<div class="cbpes-opening-podium"><div><span>🥇 CAMPEÃO</span><strong>Tirol</strong><small>AJ Auxerre</small></div><div><span>🥈 VICE-CAMPEÃO</span><strong>Hard</strong><small>Olympiacos Piraeus</small></div></div>';
+  const stages=[['classification','FASE CLASSIFICATÓRIA'],['round_of_16','OITAVAS DE FINAL'],['quarterfinal','QUARTAS DE FINAL'],['semifinal','SEMIFINAIS'],['final','FINAL']];
+  if(!stages.some(x=>x[0]===openingArchiveTab))openingArchiveTab='classification';
+  const phaseIndex=stages.findIndex(x=>x[0]===openingArchiveTab);
+  const phaseNav='<div class="phase-switcher cbpes-opening-phase-nav"><button class="phase-arrow" data-opening-phase="-1" aria-label="Fase anterior" '+(phaseIndex===0?'disabled':'')+'><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>'+stages[phaseIndex][1]+'</b><button class="phase-arrow" data-opening-phase="1" aria-label="Próxima fase" '+(phaseIndex===stages.length-1?'disabled':'')+'><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>';
+  const participant=(coach,team)=>'<div class="cbpes-opening-participant"><strong>'+esc(coach||'—')+'</strong>'+(team?'<small>'+esc(team)+'</small>':'')+'</div>';
+  const score=x=>'<strong>'+esc(String(x.home_score??'–'))+' <span>–</span> '+esc(String(x.away_score??'–'))+'</strong>';
+  const game=x=>'<div class="cbpes-opening-game cbpes-opening-fixture"><div>'+participant(x.home_coach,x.home_team)+'</div><div class="cbpes-opening-score">'+score(x)+'</div><div>'+participant(x.away_coach,x.away_team)+'</div></div>';
+  const podium='<div class="cbpes-opening-podium"><div><span>🥇 CAMPEÃO</span><strong>Tirol</strong><small>AJ Auxerre</small></div><div><span>🥈 VICE-CAMPEÃO</span><strong>William Hard</strong><small>Olympiacos Piraeus</small></div></div>';
   let content='';
   if(openingArchiveTab==='classification'){
-    content='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>#</th><th>TÉCNICO / CLUBE HISTÓRICO</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+standing.map(x=>'<tr><td>'+esc(String(x.position))+'</td><td>'+matchName(x.coach,x.team)+'</td>'+[x.points,x.played,x.wins,x.draws,x.losses,x.goals_for,x.goals_against,x.goal_difference].map(v=>'<td>'+esc(String(v??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="admin-help">Classificação histórica original após seis rodadas, preservada conforme o Optijuegos.</p>';
-  }else if(openingArchiveTab==='rounds'){
+    const table='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>#</th><th>CLUBE / TÉCNICO</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+standing.map(x=>'<tr><td>'+esc(String(x.position))+'</td><td>'+participant(x.coach,x.team)+'</td>'+[x.points,x.played,x.wins,x.draws,x.losses,x.goals_for,x.goals_against,x.goal_difference].map(v=>'<td>'+esc(String(v??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
     const rounds=entries.filter(x=>Number(x.round)>=1&&Number(x.round)<=6);
-    const selector='<div class="cbpes-opening-round-nav"><button type="button" data-opening-round="-1" '+(openingArchiveRound<=1?'disabled':'')+'>‹</button><b>RODADA '+openingArchiveRound+'</b><button type="button" data-opening-round="1" '+(openingArchiveRound>=6?'disabled':'')+'>›</button></div>';
-    content=selector+'<div class="cbpes-opening-games">'+rounds.filter(x=>Number(x.round)===openingArchiveRound).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0)).map(game).join('')+'</div>';
+    const selector='<div class="cbpes-opening-round-nav"><button class="phase-arrow" type="button" data-opening-round="-1" '+(openingArchiveRound<=1?'disabled':'')+' aria-label="Rodada anterior">‹</button><b>RODADA '+openingArchiveRound+'</b><button class="phase-arrow" type="button" data-opening-round="1" '+(openingArchiveRound>=6?'disabled':'')+' aria-label="Próxima rodada">›</button></div>';
+    const fixtures='<div class="cbpes-opening-fixtures">'+selector+'<div class="cbpes-opening-games">'+rounds.filter(x=>Number(x.round)===openingArchiveRound).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0)).map(game).join('')+'</div></div>';
+    content='<div class="cbpes-opening-two-column"><div class="cbpes-opening-standings"><h3>CLASSIFICAÇÃO</h3>'+table+'<p class="admin-help">Classificação histórica original após seis rodadas.</p></div><aside class="cbpes-opening-fixtures-column"><h3>JOGOS E RESULTADOS</h3>'+fixtures+'</aside></div>';
   }else{
-    content='<div class="cbpes-opening-bracket">'+grouped.map(stage=>'<section><h3>'+stage.name+'</h3><div class="cbpes-opening-ties">'+stage.ties.map(tieHtml).join('')+'</div></section>').join('')+'</div>';
+    const phase=openingArchiveTab;
+    const games=entries.filter(x=>x.phase===phase);
+    const ties=[...new Set(games.map(x=>Number(x.tie)||1))].sort((a,b)=>a-b);
+    const tieHtml=tie=>{
+      const matches=games.filter(x=>(Number(x.tie)||1)===tie).sort((a,b)=>(Number(a.leg||a.game)||1)-(Number(b.leg||b.game)||1));
+      const first=matches[0];if(!first)return '';
+      const home=first.home_coach,away=first.away_coach;
+      const totals=matches.reduce((acc,m)=>{const h=String(m.home_coach||'').toLowerCase()===String(home||'').toLowerCase();acc[0]+=Number(h?m.home_score:m.away_score)||0;acc[1]+=Number(h?m.away_score:m.home_score)||0;return acc;},[0,0]);
+      const penalty=matches.find(x=>x.penalty_shootout)?.penalty_shootout;
+      const note=penalty?'<small>Decisão por pênaltis</small>':'';
+      return '<article class="cbpes-opening-tie"><div class="cbpes-opening-tie-title"><span>CONFRONTO '+tie+'</span><b>'+totals[0]+' – '+totals[1]+'</b>'+note+'</div><div class="cbpes-opening-tie-teams">'+participant(home,first.home_team)+'<span>VS</span>'+participant(away,first.away_team)+'</div>'+matches.map((m,i)=>'<div class="cbpes-opening-leg"><small>PARTIDA '+(i+1)+'</small>'+game(m)+'</div>').join('')+'</article>';
+    };
+    content='<div class="cbpes-opening-knockout"><div class="cbpes-opening-stage-heading"><h3>'+stages[phaseIndex][1]+'</h3><small>'+games.length+' PARTIDAS</small></div><div class="cbpes-opening-ties">'+ties.map(tieHtml).join('')+'</div></div>';
   }
-  root.innerHTML='<div class="cbpes-opening-history"><p class="admin-help">ARQUIVO HISTÓRICO · OPTIJUEGOS · 2026</p>'+podium+nav+content+'<p class="admin-help">Partidas preservadas no arquivo da competição. Possíveis duplicidades com o PES6.es não são adicionadas novamente às estatísticas gerais.</p></div>';
-  root.onclick=e=>{const tab=e.target.closest('[data-opening-tab]'),round=e.target.closest('[data-opening-round]');if(tab){openingArchiveTab=tab.dataset.openingTab;renderOpeningArchive();}else if(round){openingArchiveRound=Math.max(1,Math.min(6,openingArchiveRound+Number(round.dataset.openingRound)));renderOpeningArchive();}};
+  root.innerHTML='<div class="cbpes-opening-history"><p class="admin-help">ARQUIVO HISTÓRICO · OPTIJUEGOS · 2026</p>'+podium+phaseNav+'<div class="cbpes-competition-neutral">'+content+'</div><p class="admin-help">Resultados históricos preservados. Possíveis duplicidades com o PES6.es não são adicionadas novamente às estatísticas gerais.</p></div>';
+  root.onclick=e=>{
+    const phase=e.target.closest('[data-opening-phase]'),round=e.target.closest('[data-opening-round]');
+    if(phase){const next=Math.max(0,Math.min(stages.length-1,phaseIndex+Number(phase.dataset.openingPhase)));openingArchiveTab=stages[next][0];renderOpeningArchive();}
+    else if(round){openingArchiveRound=Math.max(1,Math.min(6,openingArchiveRound+Number(round.dataset.openingRound)));renderOpeningArchive();}
+  };
 }
 
 function renderTable() {
