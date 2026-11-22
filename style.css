@@ -4376,3 +4376,14 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-playoff-score .cbpes-opening-team-names small{color:#b8cde7}
 .cbpes-opening-playoff-score .cbpes-opening-team .cbpes-opening-crest{width:35px;height:35px}
 .cbpes-opening-table .cbpes-opening-team-names strong{font-size:12px}
+
+
+/* Mata-mata do Torneio de Abertura: dois cartões brancos iguais (ida/volta). */
+.cbpes-opening-knockout .cbpes-opening-tie{background:transparent;border:0;box-shadow:none}
+.cbpes-opening-tie-heading{margin:0 0 9px;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.035em}
+.cbpes-opening-knockout .cbpes-opening-legs{margin-top:0;gap:8px}
+.cbpes-opening-knockout .cbpes-opening-leg{background:#fff;color:#1b2938;border:1px solid #dce3e9;border-radius:5px;min-height:91px;padding:12px 15px}
+.cbpes-opening-knockout .cbpes-opening-leg>small{font-size:10px;font-weight:800;letter-spacing:.04em;color:#607487}
+.cbpes-opening-knockout .cbpes-opening-leg .cbpes-opening-score strong{font-size:18px;font-weight:800}
+.cbpes-opening-knockout .cbpes-opening-leg .cbpes-opening-team-names small{color:#758596}
+.cbpes-opening-penalty-note{display:block;margin:6px 0 0;color:var(--muted);font-size:11px}
