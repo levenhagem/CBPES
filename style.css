@@ -4526,3 +4526,27 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#222b33!important}
 
 
+
+
+/* Tag CAMPEÃO: proporção compacta em telas pequenas */
+@media(max-width:640px){
+ #latest .featured-juventus-name-row .featured-juventus-champion,
+ .cbpes-match .featured-juventus-name-row .featured-juventus-champion{
+  font-size:8px!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  line-height:1!important;
+  padding:2px 4px!important;
+  border-radius:2px!important;
+  min-width:0!important;
+  max-width:fit-content!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+ }
+ #latest .featured-juventus-name-row,
+ .cbpes-match .featured-juventus-name-row{
+  gap:4px!important;
+  min-width:0!important;
+  max-width:100%!important;
+ }
+}
