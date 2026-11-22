@@ -4172,3 +4172,9 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-compare-track{height:7px;border-radius:999px;overflow:hidden}
 #coachView .cbpes-compare-track.cbpes-compare-track-neutral{height:7px;border-radius:999px}
 #coachView .cbpes-compare-left,#coachView .cbpes-compare-right{height:100%}
+
+/* Barras do confronto direto com pontas totalmente circulares. */
+#coachView .cbpes-compare-track,#coachView .cbpes-compare-track.cbpes-compare-track-neutral{border-radius:9999px!important;overflow:hidden}
+#coachView .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
+#coachView .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
+#coachView .cbpes-compare-track .cbpes-compare-left:only-child,#coachView .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
