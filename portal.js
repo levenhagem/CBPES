@@ -1097,7 +1097,7 @@ function recordCards(){
 }
 function renderRecords(){
   const root=$('recordsView');if(!root||!D)return;
-  const groups=recordCards();const records=recordGroups.flatMap(group=>groups[group[0]]||[]);
+  const groups=recordCards();const records=recordGroups.filter(group=>group[0]!=='players').flatMap(group=>groups[group[0]]||[]);
   root.innerHTML='<div class="cbpes-records-simple">'+records.map((c,i)=>
     '<div class="cbpes-record-line"><div class="cbpes-record-label"><h2>'+esc(c.title)+'</h2></div><div class="cbpes-record-values">'+
     (c.rows.length?c.rows.map(x=>{const item=c.render(x);return '<div class="cbpes-record-value"><div class="cbpes-record-person"><strong>'+item.value+'</strong>'+(item.detail?'<small>'+item.detail+'</small>':'')+'</div><span class="cbpes-record-number">'+esc(item.metric||'')+'</span></div>';}).join(''):'<span class="cbpes-record-empty">Sem dados suficientes</span>')+
