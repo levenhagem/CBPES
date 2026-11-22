@@ -4398,3 +4398,62 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-table tr.cbpes-opening-qualified td:nth-child(2){background:rgba(34,156,85,.045)}
 .cbpes-opening-zone-legend{display:flex;align-items:center;gap:8px;margin-top:11px;font-size:12px;font-weight:700;color:#247b49}
 .cbpes-opening-zone-dot{width:10px;height:10px;border-radius:2px;background:#229c55;flex:none}
+
+
+/* Classificação: somente a barrinha verde, sem tingir células ou números */
+.cbpes-opening-table tr.cbpes-opening-qualified td:first-child{
+  color:inherit;
+  font-weight:inherit;
+}
+.cbpes-opening-table tr.cbpes-opening-qualified td:nth-child(2){background:transparent}
+
+/* Rodadas: escudo + nome do clube acima do técnico, sempre alinhados */
+.cbpes-opening-fixtures-column .cbpes-opening-fixture{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 68px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  min-height:64px;
+  padding:10px 12px;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture>div:first-child,
+.cbpes-opening-fixtures-column .cbpes-opening-fixture>div:last-child{min-width:0}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-team{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  max-width:100%;
+  text-align:left;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture>div:last-child .cbpes-opening-team{
+  flex-direction:row-reverse;
+  text-align:right;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-crest{
+  display:block;
+  width:30px;
+  height:30px;
+  min-width:30px;
+  object-fit:contain;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-team-names{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:3px;
+  min-width:0;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-team-names strong{
+  font-size:12px;
+  line-height:1.25;
+  font-weight:750;
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-team-names small{
+  font-size:10px;
+  line-height:1.25;
+  color:var(--muted);
+}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture>div:last-child .cbpes-opening-team-names{align-items:flex-end}
+.cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-score{text-align:center;white-space:nowrap}
