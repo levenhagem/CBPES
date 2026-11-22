@@ -1,3 +1,4 @@
+let homeRecentOfficial = true, homeRecentFriendly = true;
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = 'all', statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
@@ -178,7 +179,10 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
+  const recentHome = played.filter(m=>(m.category==='official'&&homeRecentOfficial)||(m.category==='friendly'&&homeRecentFriendly)).slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
+  const recentOfficialToggle=$('homeRecentOfficial'),recentFriendlyToggle=$('homeRecentFriendly');
+  if(recentOfficialToggle){recentOfficialToggle.checked=homeRecentOfficial;recentOfficialToggle.onchange=()=>{homeRecentOfficial=recentOfficialToggle.checked;renderHome();};}
+  if(recentFriendlyToggle){recentFriendlyToggle.checked=homeRecentFriendly;recentFriendlyToggle.onchange=()=>{homeRecentFriendly=recentFriendlyToggle.checked;renderHome();};}
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
