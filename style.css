@@ -4577,3 +4577,28 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #games .cbpes-match-top{flex-wrap:wrap;column-gap:10px;row-gap:3px}
 #games .cbpes-match-top .match-date{margin-left:auto}
 @media(max-width:560px){#games .cbpes-match-round-label{font-size:9px;white-space:normal}#games .cbpes-match-top{column-gap:6px}}
+
+
+/* Aba Jogos: visitante alinhado à direita apenas em telas de celular */
+@media(max-width:620px){
+ #games .cbpes-match-main > .cbpes-match-team.away{
+  justify-self:stretch!important;
+  align-items:flex-end!important;
+  text-align:right!important;
+  min-width:0!important;
+ }
+ #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
+  width:max-content!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:0!important;
+  justify-content:end!important;
+ }
+ #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text{
+  align-items:flex-end!important;
+  text-align:right!important;
+ }
+ #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text small{
+  text-align:right!important;
+ }
+}
