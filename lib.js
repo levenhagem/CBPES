@@ -165,11 +165,10 @@ function matchRow(m, hideDate = false, showOfficialRound = false) {
   const officialName = competition?.name || edition?.name || SET.name || 'OFICIAL';
   const officialPhase = (D.phases||[]).find(p=>String(p.id)===String(m.round?.phase_id||''));
   const officialRound = m.round ? (officialPhase && !officialPhase.counts_in_standings ? officialPhase.name : roundLabel(m.round)) : (officialPhase?.name||'');
-  const categoryLabel = m.category==='official' ? esc(officialName) : category;
-  const roundBadge = showOfficialRound && m.category==='official' && officialRound ? `<span class="cbpes-match-round-label">${esc(officialRound)}</span>` : '';
+  const categoryLabel = m.category==='official' ? esc(officialName)+(showOfficialRound && officialRound ? ' • '+esc(officialRound).toUpperCase() : '') : category;
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
   return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
-    <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${roundBadge}${meta}</div>
+    <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a>${championTag(m.home_id)}</span><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
       <div class="cbpes-match-score"><span class="cbpes-score-inline">${score}</span><span class="cbpes-score-stacked" aria-label="Placar: ${score}"><span class="${!m.played?'pending':homeWon?'score-winner':'score-normal'}">${m.played?m.home_score:'–'}</span><span class="${!m.played?'pending':awayWon?'score-winner':'score-normal'}">${m.played?m.away_score:'–'}</span></span>${detailHTML}</div>
