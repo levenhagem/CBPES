@@ -4145,3 +4145,22 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #stats-detail .cbpes-stats-card{max-width:860px}
 #stats-detail .cbpes-stats-card .cardbody{padding:12px 18px}
 @media(max-width:700px){#statsGrid.cbpes-stats-grid{grid-template-columns:minmax(0,1fr)}#statsGrid .stats-category-filter,#statsGrid .cbpes-stats-general{grid-column:1}}
+
+/* Livro dos recordes: lista editorial, sem cartões arredondados. */
+#records .cbpes-records-simple{border-top:2px solid #173b30;background:#fff}
+#records .cbpes-record-line{display:grid;grid-template-columns:minmax(220px,38%) minmax(0,1fr);gap:22px;align-items:start;padding:19px 12px;border-bottom:1px solid #e3e9e6}
+#records .cbpes-record-line:nth-child(even){background:#f8faf9}
+#records .cbpes-record-label{display:flex;align-items:baseline;gap:14px;min-width:0}
+#records .cbpes-record-index{font-family:inherit;font-size:12px;font-weight:700;color:#8a9991;flex:none;font-variant-numeric:tabular-nums}
+#records .cbpes-record-label h2{font-family:inherit;font-size:15px;line-height:1.35;font-weight:700;letter-spacing:0;margin:0;color:#21352d}
+#records .cbpes-record-values{min-width:0}
+#records .cbpes-record-value{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:4px 0}
+#records .cbpes-record-value+.cbpes-record-value{border-top:1px dashed #dce5df;margin-top:8px;padding-top:12px}
+#records .cbpes-record-person{min-width:0;line-height:1.45}
+#records .cbpes-record-person strong{display:block;font-size:14px;font-weight:700;overflow-wrap:anywhere}
+#records .cbpes-record-person small{display:block;color:#687a70;font-size:12px;line-height:1.6;margin-top:4px}
+#records .cbpes-record-person a{color:#087c47;text-decoration:none}
+#records .cbpes-record-person a:hover{text-decoration:underline}
+#records .cbpes-record-number{font-size:14px;font-weight:700;white-space:normal;text-align:right;flex-shrink:0;color:#1b3d30}
+#records .cbpes-record-empty{font-size:13px;color:#82918a}
+@media(max-width:700px){#records .cbpes-record-line{display:block;padding:16px 10px}#records .cbpes-record-values{margin:10px 0 0 30px}#records .cbpes-record-label h2{font-size:14px}#records .cbpes-record-number{font-size:13px}}
