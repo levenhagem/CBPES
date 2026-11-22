@@ -143,7 +143,7 @@ function crestImg(p,cls='') {
   return `<img class="cbpes-crest ${cls}" src="${esc(p.crest_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`;
 }
 function teamWithCrest(p) { return `<span class="cbpes-team-inline">${crestImg(p)}<span>${esc(p.name)}</span></span>`; }
-function matchRow(m, hideDate = false) {
+function matchRow(m, hideDate = false, showOfficialRound = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
   const details = [];
@@ -155,16 +155,21 @@ function matchRow(m, hideDate = false) {
 
   const homeWon = m.played && (m.home_score > m.away_score || (winnerByPens&&m.home_pen>m.away_pen));
   const awayWon = m.played && (m.away_score > m.home_score || (winnerByPens&&m.away_pen>m.home_pen));
-  const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : esc(SET.name || 'OFICIAL');
+  const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : 'OFICIAL';
   const championTag = id => String(m.champion_team_id||'')===String(id) ? '<span class="featured-juventus-champion">CAMPEÃO</span>' : '';
   const color = matchColor(m);
   const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
   const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
   const isLigaPro=(m.category||'official')==='official'&&/liga\s*pro/i.test((competition?.name||'')+' '+(edition?.name||''));
   const isCopaMaster=(m.category||'official')==='official'&&/copa\s*master/i.test((competition?.name||'')+' '+(edition?.name||''));
+  const officialName = competition?.name || edition?.name || SET.name || 'OFICIAL';
+  const officialPhase = (D.phases||[]).find(p=>String(p.id)===String(m.round?.phase_id||''));
+  const officialRound = m.round ? (officialPhase && !officialPhase.counts_in_standings ? officialPhase.name : roundLabel(m.round)) : (officialPhase?.name||'');
+  const categoryLabel = m.category==='official' ? esc(officialName) : category;
+  const roundBadge = showOfficialRound && m.category==='official' && officialRound ? `<span class="cbpes-match-round-label">${esc(officialRound)}</span>` : '';
   const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
   return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
-    <div class="cbpes-match-top"><span class="cbpes-match-category">${category}</span>${meta}</div>
+    <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${roundBadge}${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a>${championTag(m.home_id)}</span><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
       <div class="cbpes-match-score"><span class="cbpes-score-inline">${score}</span><span class="cbpes-score-stacked" aria-label="Placar: ${score}"><span class="${!m.played?'pending':homeWon?'score-winner':'score-normal'}">${m.played?m.home_score:'–'}</span><span class="${!m.played?'pending':awayWon?'score-winner':'score-normal'}">${m.played?m.away_score:'–'}</span></span>${detailHTML}</div>
