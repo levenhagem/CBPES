@@ -4524,3 +4524,10 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{color:#222b33!important}
 #coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small{color:#77818a!important}
 #coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#222b33!important}
+
+
+/* Filtros discretos da lista de últimos resultados */
+.cbpes-home-recent-filters{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-left:auto}
+.cbpes-home-recent-filters label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted,#667085);white-space:nowrap}
+.cbpes-home-recent-filters input{width:13px;height:13px;accent-color:#16834b;cursor:pointer}
+@media(max-width:560px){#home .cbpes-home-recent-filters{width:100%;margin-left:0;margin-top:7px;gap:12px}#home .cbpes-home-recent-filters label{font-size:11px}}
