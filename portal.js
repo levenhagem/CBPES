@@ -999,11 +999,10 @@ function recordCards(){
   put('matches','Maior goleada da história',top(fixtures,m=>Math.abs(m.hs-m.as)),m=>({...matchRow(m),metric:Math.abs(m.hs-m.as)+' gols de diferença'}));
   put('matches','Partida com mais gols',top(fixtures,m=>m.hs+m.as),m=>({...matchRow(m),metric:m.hs+m.as+' gols'}));
   put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
-  const streakCard=(group,title,kind,mode)=>{
-    const arr=recordStreaks(fixtures,kind,mode);
+  const streakCard=(group,title,kind,mode,source=fixtures)=>{
+    const arr=recordStreaks(source,kind,mode);
     put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<span class="cbpes-record-streak-label">INÍCIO</span><br>'+recordMeta(x.start)+'<br><span class="cbpes-record-streak-label">FIM</span><br>'+(x.breaker?recordMeta(x.breaker):'Sequência ativa')}));
   };
-  streakCard('clubs','Maior sequência de vitórias de clubes','club','wins');
   streakCard('clubs','Maior invencibilidade de clubes','club','unbeaten');
   streakCard('clubs','Maior sequência sem vencer','club','winless');
   const editions=new Map();
@@ -1048,6 +1047,7 @@ function recordCards(){
   const coaches=[...coachMatches.values()];
   put('coaches','Técnico com mais vitórias na história',top(coaches,x=>x.wins),x=>({value:recordLink(x.name,'coach'),metric:x.wins+' vitórias'}));
   streakCard('coaches','Maior sequência de vitórias de técnicos','coach','wins');
+  streakCard('coaches','Maior sequência de vitórias oficiais de técnicos','coach','wins',official);
   streakCard('coaches','Maior sequência invicta de técnicos','coach','unbeaten');
   put('coaches','Maior número de títulos',top(titleCounts(t=>t.coach),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos'}));
   const finals=fixtures.filter(m=>/final/i.test(String(m.round?.name||''))&&!/semi|quart|oitav|terceiro|3º/i.test(String(m.round?.name||'')));
