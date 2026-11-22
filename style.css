@@ -4550,3 +4550,10 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   max-width:100%!important;
  }
 }
+
+
+/* Seletor de data da edição semanal */
+.cbpes-weekly-edition-picker{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 16px;margin-bottom:16px;background:#fff;border:1px solid var(--line,#e2e7eb);border-radius:8px}
+.cbpes-weekly-edition-picker label{font-size:11px;font-weight:800;letter-spacing:.045em;color:var(--muted,#68737c)}
+.cbpes-weekly-edition-picker select{min-width:200px;max-width:100%;padding:9px 34px 9px 12px;border:1px solid var(--line,#d8dfe5);border-radius:6px;background:#fff;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+@media(max-width:560px){.cbpes-weekly-edition-picker{align-items:stretch;flex-direction:column}.cbpes-weekly-edition-picker select{width:100%;min-width:0}}
