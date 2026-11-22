@@ -1015,6 +1015,7 @@ function recordCards(){
   });
   const editionName=(ms)=>{
     const m=ms[0];
+    if(!m)return 'Edição não identificada';
     if(m.category==='weekly')return m.raw.weekly?.name||'Semanal';
     const e=D.officialEditions.find(e=>String(e.id)===m.edition);
     const c=D.officialCompetitions.find(c=>String(c.id)===String(e?.competition_id));
@@ -1082,7 +1083,7 @@ function recordCards(){
   put('players','Maior sequência de jogos marcando',top(playerStreaks,x=>x.count),x=>({value:playerName(x.player),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>FIM · '+recordMeta(x.end)}));
   put('players','Mais participações em gols em uma edição',top(pe,x=>x.ga),x=>({value:playerName(x.player),metric:x.ga+' participações',detail:esc(peDetail(x))}));
   const champions=[];
-  (D.officialEditions||[]).forEach(e=>{if(!publicEditionVisible(e))return;const id=e.champion_id||e.champion_team_id;if(!id)return;const ms=editions.get('official:'+e.id)||[];const x=teamEditions.find(t=>t.id===id&&t.matches===ms);if(x)champions.push(x);});
+  (D.officialEditions||[]).forEach(e=>{if(!publicEditionVisible(e))return;const id=e.champion_id||e.champion_team_id;if(!id)return;const ms=editions.get('official:'+e.id)||[];const x=teamEditions.find(t=>String(t.id)===String(id)&&t.matches===ms);if(x)champions.push(x);});
   (D.weeklies||[]).forEach(w=>{if(!w.champion_id)return;const ms=editions.get('weekly:'+w.id)||[];const x=teamEditions.find(t=>String(t.id)===String(w.champion_id)&&t.matches===ms);if(x)champions.push(x);});
   put('competitions','Campeão com melhor campanha',top(champions.filter(x=>x.j),x=>x.pts/(x.j*3)),x=>({...teRow(x),metric:fmt1(100*x.pts/(x.j*3))+'%'}));
   put('competitions','Campeão com mais gols marcados',top(champions,x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols'}));
