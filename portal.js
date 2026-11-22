@@ -281,7 +281,7 @@ function openingTeamName(name){
 function openingTeamView(coach,team){
   const name=openingTeamName(team),norm=x=>String(x||'').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
   const club=(D?.participants||[]).find(p=>norm(p.name)===norm(name));
-  const img=club?crestImg(club,'cbpes-opening-crest'):'';
+  const img='';
   return '<div class="cbpes-opening-team">'+img+'<div class="cbpes-opening-team-names"><strong>'+esc(name||'—')+'</strong><small>'+esc(coach||'—')+'</small></div></div>';
 }
 function renderOpeningArchive(){
