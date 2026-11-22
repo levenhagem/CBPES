@@ -19,7 +19,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
- <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><button data-page="stats">ESTATÍSTICAS</button><button data-page="weeklies">SEMANAIS</button></nav>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><button data-page="stats">ESTATÍSTICAS</button><button data-page="records">RECORDES</button><button data-page="weeklies">SEMANAIS</button></nav>
  <span class="season" id="season"></span>
 </div></header>
 <main>
@@ -58,6 +58,8 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
  <div class="cols3 cbpes-stats-grid" id="statsGrid"></div>
 </section>
 
+<section id="records" class="section"><div class="page-title"><div><div class="eyebrow">Livro dos recordes</div><h1>Recordes</h1><div class="sub">Marcas históricas de partidas, clubes, técnicos, jogadores e competições.</div></div></div><div id="recordsView"></div></section>
+
 <section id="stats-detail" class="section"><div id="statsDetailView"></div></section>
 
 <section id="weeklies" class="section">
@@ -73,5 +75,5 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="lib.js?v=20261121-visibility2"></script>
-<script src="portal.js?v=general-indicators-20261121"></script>
+<script src="portal.js?v=records-streaks-20261121"></script>
 </body></html>
