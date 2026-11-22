@@ -1,6 +1,7 @@
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = 'all', statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
+let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
 const $ = id => document.getElementById(id);
 const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
@@ -9,8 +10,8 @@ const publicEditionVisible = e => {
   if(!competition)return false;
   // Proteção adicional para as competições em preparação, independente de cache de dados.
   const hiddenIds=new Set(['31a4e67c-54fb-46f8-895b-35dfd876c211','810e323b-ed38-44d4-8460-1e21f02dd077']);
-  if(hiddenIds.has(String(competition.id)))return false;
-  if(/^(liga\s*evo|torneio\s*de\s*abertura)$/i.test(String(competition.name||'').trim()))return false;
+  if(hiddenIds.has(String(competition.id)) && !/torneio\s*de\s*abertura/i.test(String(competition.name||'')))return false;
+  if(/^liga\s*evo$/i.test(String(competition.name||'').trim()))return false;
   return competition.is_visible!==false;
 };
 const publicCompetitionMatch = m => {
@@ -254,6 +255,50 @@ function renderGames() {
   const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const games=weeklies.filter(m=>m.weekly_id===id);const title=edition?`SEMANAL • ${fd(edition.event_date)}`:'SEMANAL';const playedWeeklyRoundIds=new Set(games.filter(m=>m.played&&m.weekly_round_id).map(m=>String(m.weekly_round_id)));const rounds=[...new Map(games.filter(m=>m.weeklyRound&&playedWeeklyRoundIds.has(String(m.weekly_round_id))).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const roundHtml=rounds.map(r=>heading(esc(roundLabel(r).toUpperCase()))+games.filter(m=>m.weekly_round_id===r.id).sort(byDisplayOrder).map(m=>matchRow(m,true)).join('')).join('');const unassigned=games.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return heading(title)+roundHtml+(unassigned.length?heading('PARTIDAS SEM RODADA')+unassigned.map(m=>matchRow(m,true)).join(''):'');}).join('');
   $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml || empty('Nenhuma partida encontrada.');
 }
+
+const openingEditionId='16917e42-3fc8-4aca-8cdc-4c008254dbe1';
+async function loadOpeningArchive(){
+  const {data,error}=await sb.from('opening_tournament_archive').select('source_key,record_type,payload').eq('edition_id',openingEditionId).order('source_key');
+  openingArchiveError=error?.message||'';
+  openingArchive=error?[]:(data||[]);
+}
+function renderOpeningArchive(){
+  const root=$('fullTable');if(!root)return;
+  $('tblTitle').textContent='TORNEIO DE ABERTURA 2026';
+  $('tblPill').hidden=true;
+  if(openingArchiveError){root.innerHTML='<div class="notice">Não foi possível consultar o arquivo histórico: '+esc(openingArchiveError)+'</div>';return;}
+  if(!openingArchive.length){root.innerHTML=empty('Histórico do Torneio de Abertura ainda não disponível.');return;}
+  const entries=openingArchive.filter(x=>x.record_type==='match').map(x=>({...x.payload,key:x.source_key}));
+  const standing=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload).sort((a,b)=>Number(a.position)-Number(b.position));
+  const stages=[['round_of_16','OITAVAS DE FINAL'],['quarterfinal','QUARTAS DE FINAL'],['semifinal','SEMIFINAIS'],['final','FINAL']];
+  const matchName=(coach,team)=>'<strong>'+esc(coach||'—')+'</strong>'+(team?' <small>· '+esc(team)+'</small>':'');
+  const score=x=>'<strong>'+esc(String(x.home_score))+' × '+esc(String(x.away_score))+'</strong>';
+  const game=x=>'<div class="cbpes-opening-game"><div>'+matchName(x.home_coach,x.home_team)+'</div><div class="cbpes-opening-score">'+score(x)+'</div><div>'+matchName(x.away_coach,x.away_team)+'</div></div>';
+  const grouped=stages.map(([id,name])=>({id,name,ties:[...new Set(entries.filter(x=>x.phase===id).map(x=>Number(x.tie)||1))].sort((a,b)=>a-b).map(tie=>({tie,games:entries.filter(x=>x.phase===id&&(Number(x.tie)||1)===tie).sort((a,b)=>(Number(a.leg||a.game)||1)-(Number(b.leg||b.game)||1))}))}));
+  const tieHtml=t=>{const first=t.games[0];if(!first)return '';
+    const home=first.home_coach,away=first.away_coach;
+    const totals=t.games.reduce((acc,m)=>{const h=String(m.home_coach||'').toLowerCase()===String(home||'').toLowerCase();acc[0]+=Number(h?m.home_score:m.away_score)||0;acc[1]+=Number(h?m.away_score:m.home_score)||0;return acc;},[0,0]);
+    const pen=t.games.find(m=>m.penalty_shootout)?.penalty_shootout;
+    const penalty=pen?' · Pênaltis '+esc(String(pen.home_score))+'–'+esc(String(pen.away_score)):'';
+    return '<div class="cbpes-opening-tie"><div class="cbpes-opening-tie-title">'+matchName(home,first.home_team)+' <b>'+totals[0]+' × '+totals[1]+'</b> '+matchName(away,first.away_team)+penalty+'</div>'+t.games.map((m,i)=>'<div class="cbpes-opening-leg"><small>JOGO '+(i+1)+'</small>'+game(m)+'</div>').join('')+'</div>';
+  };
+  const buttons=[['classification','CLASSIFICAÇÃO'],['rounds','RODADAS'],['bracket','MATA-MATA']];
+  const nav='<div class="cbpes-opening-tabs">'+buttons.map(([id,label])=>'<button type="button" data-opening-tab="'+id+'" class="'+(openingArchiveTab===id?'active':'')+'">'+label+'</button>').join('')+'</div>';
+  const podium='<div class="cbpes-opening-podium"><div><span>🥇 CAMPEÃO</span><strong>Tirol</strong><small>AJ Auxerre</small></div><div><span>🥈 VICE-CAMPEÃO</span><strong>Hard</strong><small>Olympiacos Piraeus</small></div></div>';
+  let content='';
+  if(openingArchiveTab==='classification'){
+    content='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>#</th><th>TÉCNICO / CLUBE HISTÓRICO</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+standing.map(x=>'<tr><td>'+esc(String(x.position))+'</td><td>'+matchName(x.coach,x.team)+'</td>'+[x.points,x.played,x.wins,x.draws,x.losses,x.goals_for,x.goals_against,x.goal_difference].map(v=>'<td>'+esc(String(v??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="admin-help">Classificação histórica original após seis rodadas, preservada conforme o Optijuegos.</p>';
+  }else if(openingArchiveTab==='rounds'){
+    const rounds=entries.filter(x=>Number(x.round)>=1&&Number(x.round)<=6);
+    const selector='<div class="cbpes-opening-round-nav"><button type="button" data-opening-round="-1" '+(openingArchiveRound<=1?'disabled':'')+'>‹</button><b>RODADA '+openingArchiveRound+'</b><button type="button" data-opening-round="1" '+(openingArchiveRound>=6?'disabled':'')+'>›</button></div>';
+    content=selector+'<div class="cbpes-opening-games">'+rounds.filter(x=>Number(x.round)===openingArchiveRound).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0)).map(game).join('')+'</div>';
+  }else{
+    content='<div class="cbpes-opening-bracket">'+grouped.map(stage=>'<section><h3>'+stage.name+'</h3><div class="cbpes-opening-ties">'+stage.ties.map(tieHtml).join('')+'</div></section>').join('')+'</div>';
+  }
+  root.innerHTML='<div class="cbpes-opening-history"><p class="admin-help">ARQUIVO HISTÓRICO · OPTIJUEGOS · 2026</p>'+podium+nav+content+'<p class="admin-help">Partidas preservadas no arquivo da competição. Possíveis duplicidades com o PES6.es não são adicionadas novamente às estatísticas gerais.</p></div>';
+  root.onclick=e=>{const tab=e.target.closest('[data-opening-tab]'),round=e.target.closest('[data-opening-round]');if(tab){openingArchiveTab=tab.dataset.openingTab;renderOpeningArchive();}else if(round){openingArchiveRound=Math.max(1,Math.min(6,openingArchiveRound+Number(round.dataset.openingRound)));renderOpeningArchive();}};
+}
+
 function renderTable() {
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
@@ -285,6 +330,7 @@ function renderTable() {
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   document.getElementById('table').dataset.copaMaster=String(isMaster);
   document.body.classList.toggle('cbpes-copa-master-page', location.hash.slice(1).split('/')[0]==='table' && isMaster);
+  if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();return;}
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
@@ -1133,6 +1179,7 @@ async function boot() {
     D = await load();
     // O arquivo de histórico é complementar: não deve bloquear a exibição do portal.
     try { await loadCareerArchive(); } catch (archiveError) { console.warn('Histórico complementar indisponível:', archiveError); }
+    try { await loadOpeningArchive(); } catch (archiveError) { openingArchiveError=archiveError.message; }
     renderAll();
     route();
     $('status').classList.add('hidden');
@@ -1145,4 +1192,4 @@ async function boot() {
   }
 }
 boot();
-setInterval(async () => { if (D && !document.hidden) { try { D = await load(); await loadCareerArchive(); renderAll(); } catch (e) {} } }, 60000);
+setInterval(async () => { if (D && !document.hidden) { try { D = await load(); await loadCareerArchive(); await loadOpeningArchive(); renderAll(); } catch (e) {} } }, 60000);
