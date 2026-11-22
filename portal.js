@@ -262,6 +262,21 @@ async function loadOpeningArchive(){
   openingArchiveError=error?.message||'';
   openingArchive=error?[]:(data||[]);
 }
+const openingTeamAliases={
+  'middlebrook':'Bolton Wanderers','east london':'West Ham','man blue':'Manchester City',
+  'lancashire':'Blackburn Rovers','west midlands village':'Aston Villa',
+  'athenakos fc':'Panathinaikos','fc bosphorus':'Beşiktaş'
+};
+function openingTeamName(name){
+  const key=String(name||'').trim().toLocaleLowerCase('pt-BR');
+  return openingTeamAliases[key]||String(name||'');
+}
+function openingTeamView(coach,team){
+  const name=openingTeamName(team),norm=x=>String(x||'').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const club=(D?.participants||[]).find(p=>norm(p.name)===norm(name));
+  const img=club?crestImg(club,'cbpes-opening-crest'):'';
+  return '<div class="cbpes-opening-team">'+img+'<div class="cbpes-opening-team-names"><strong>'+esc(name||'—')+'</strong><small>'+esc(coach||'—')+'</small></div></div>';
+}
 function renderOpeningArchive(){
   const root=$('fullTable');if(!root)return;
   $('tblTitle').textContent='TORNEIO DE ABERTURA 2026';
@@ -274,7 +289,7 @@ function renderOpeningArchive(){
   if(!stages.some(x=>x[0]===openingArchiveTab))openingArchiveTab='classification';
   const phaseIndex=stages.findIndex(x=>x[0]===openingArchiveTab);
   const phaseNav='<div class="phase-switcher cbpes-opening-phase-nav"><button class="phase-arrow" data-opening-phase="-1" aria-label="Fase anterior" '+(phaseIndex===0?'disabled':'')+'><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>'+stages[phaseIndex][1]+'</b><button class="phase-arrow" data-opening-phase="1" aria-label="Próxima fase" '+(phaseIndex===stages.length-1?'disabled':'')+'><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>';
-  const participant=(coach,team)=>'<div class="cbpes-opening-participant"><strong>'+esc(coach||'—')+'</strong>'+(team?'<small>'+esc(team)+'</small>':'')+'</div>';
+  const participant=(coach,team)=>openingTeamView(coach,team);
   const score=x=>'<strong>'+esc(String(x.home_score??'–'))+' <span>–</span> '+esc(String(x.away_score??'–'))+'</strong>';
   const game=x=>'<div class="cbpes-opening-game cbpes-opening-fixture"><div>'+participant(x.home_coach,x.home_team)+'</div><div class="cbpes-opening-score">'+score(x)+'</div><div>'+participant(x.away_coach,x.away_team)+'</div></div>';
   const podium='<div class="cbpes-opening-podium"><div><span>🥇 CAMPEÃO</span><strong>Tirol</strong><small>AJ Auxerre</small></div><div><span>🥈 VICE-CAMPEÃO</span><strong>William Hard</strong><small>Olympiacos Piraeus</small></div></div>';
