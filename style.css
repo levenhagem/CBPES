@@ -4361,3 +4361,18 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   padding:5px 0;
   background:transparent;
 }
+
+
+/* Arquivo histórico: escudo e nome do clube junto ao placar, técnico abaixo */
+.cbpes-opening-team{display:inline-flex;align-items:center;gap:9px;min-width:0;max-width:100%;text-align:left}
+.cbpes-opening-team .cbpes-opening-crest{display:block;width:28px;height:28px;min-width:28px;object-fit:contain}
+.cbpes-opening-team-names{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cbpes-opening-team-names strong{font-size:12px;font-weight:750;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+.cbpes-opening-team-names small{font-size:10px;font-weight:400;color:var(--muted);line-height:1.25}
+.cbpes-opening-fixture>div:last-child .cbpes-opening-team{flex-direction:row-reverse;text-align:right}
+.cbpes-opening-fixture>div:last-child .cbpes-opening-team-names{align-items:flex-end}
+.cbpes-opening-playoff-score .cbpes-opening-team{flex-direction:column;gap:4px;text-align:center}
+.cbpes-opening-playoff-score .cbpes-opening-team-names{align-items:center}
+.cbpes-opening-playoff-score .cbpes-opening-team-names small{color:#b8cde7}
+.cbpes-opening-playoff-score .cbpes-opening-team .cbpes-opening-crest{width:35px;height:35px}
+.cbpes-opening-table .cbpes-opening-team-names strong{font-size:12px}
