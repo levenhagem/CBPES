@@ -4579,27 +4579,46 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 @media(max-width:560px){#games .cbpes-match-round-label{font-size:9px;white-space:normal}#games .cbpes-match-top{column-gap:6px}}
 
 
-/* Aba Jogos: visitante alinhado à direita apenas em telas de celular */
+/* Simetria dos cards: mandante e visitante com a mesma margem no celular.
+   Nomes dos clubes e técnicos compartilham o mesmo alinhamento. */
 @media(max-width:620px){
- #games .cbpes-match-main > .cbpes-match-team.away{
-  justify-self:stretch!important;
-  align-items:flex-end!important;
-  text-align:right!important;
-  padding-right:10px!important;
-  min-width:0!important;
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main{
+  width:100%!important;
+  max-width:none!important;
+  grid-template-columns:minmax(0,1fr) 55px minmax(0,1fr)!important;
+  gap:5px!important;
  }
- #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.home,
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away{
+  width:100%!important;
+  min-width:0!important;
+  padding:0 6px!important;
+  justify-self:stretch!important;
+ }
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.home{
+  align-items:flex-start!important;
+ }
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away{
+  align-items:flex-end!important;
+ }
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.home .cbpes-match-club{
+  width:max-content!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+ }
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
   width:max-content!important;
   max-width:100%!important;
   margin-left:auto!important;
   margin-right:0!important;
-  justify-content:end!important;
  }
- #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text{
-  align-items:flex-start!important;
-  text-align:left!important;
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text{
+  align-items:flex-end!important;
+  text-align:right!important;
  }
- #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text small{
-  text-align:left!important;
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text small,
+ :is(#games,#latest,#recent,#next,#leagueRecent) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text .cbpes-team-name{
+  text-align:right!important;
  }
 }
