@@ -979,7 +979,7 @@ function recordStreaks(fixtures,kind,mode){
       const key=String(id).toLocaleLowerCase(),current=per.get(key)||{id,name:kind==='coach'?id:(D.participants.find(p=>String(p.id)===key)?.name||''),count:0,start:null,end:null};
       const qualifies=mode==='wins'?gf>ga:mode==='unbeaten'?gf>=ga:gf<=ga;
       if(qualifies){if(!current.count)current.start=m;current.count++;current.end=m;}
-      else{if(current.count)results.push({...current,active:false});current.count=0;current.start=null;current.end=null;}
+      else{if(current.count)results.push({...current,active:false,breaker:m});current.count=0;current.start=null;current.end=null;}
       per.set(key,current);
     });
   });
@@ -1001,7 +1001,7 @@ function recordCards(){
   put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
   const streakCard=(group,title,kind,mode)=>{
     const arr=recordStreaks(fixtures,kind,mode);
-    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>FIM · '+recordMeta(x.end)+(x.active?' · Sequência ativa':'')}));
+    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>ÚLTIMO JOGO DA SEQUÊNCIA · '+recordMeta(x.end)+(x.active?' · Sequência ativa':(x.breaker&&mode!=='winless'?'<br>JOGO QUE ENCERROU A SEQUÊNCIA · '+recordMeta(x.breaker):''))}));
   };
   streakCard('clubs','Maior sequência de vitórias','club','wins');
   streakCard('clubs','Maior invencibilidade','club','unbeaten');
