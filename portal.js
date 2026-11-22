@@ -1041,6 +1041,8 @@ const recordGroups=[
  ['matches','PARTIDAS',['Maior goleada da história','Partida com mais gols','Maior empate']],
  ['clubs','CLUBES',['Maior sequência de vitórias','Maior invencibilidade','Maior sequência sem vencer','Mais gols marcados em uma competição','Menos gols sofridos em uma competição','Mais títulos conquistados']],
  ['coaches','TÉCNICOS',['Técnico com mais vitórias na história','Maior sequência de vitórias','Maior sequência invicta','Maior número de títulos','Mais finais disputadas','Maior freguesia histórica contra outro técnico','Maior vencedor de semanais']],
+ ['titles','TÍTULOS OFICIAIS',[]],
+ ['weeklyTitles','TÍTULOS SEMANAIS',[]],
  ['players','JOGADORES',['Mais gols em uma partida','Mais gols em uma edição','Maior sequência de jogos marcando','Mais participações em gols em uma edição']],
  ['competitions','COMPETIÇÕES',['Campeão com melhor campanha','Campeão com mais gols marcados','Campeão com menos gols sofridos','Maior pontuação em uma edição de liga','Maior diferença de pontos entre campeão e vice','Maior número de gols em uma edição']]
 ];
@@ -1085,7 +1087,7 @@ function recordStreaks(fixtures,kind,mode){
   return results.sort((a,b)=>b.count-a.count);
 }
 function recordCards(){
-  const fixtures=recordFixtures(),official=fixtures.filter(m=>m.category==='official'),groups={matches:[],clubs:[],coaches:[],players:[],competitions:[]};
+  const fixtures=recordFixtures(),official=fixtures.filter(m=>m.category==='official'),groups={matches:[],clubs:[],coaches:[],titles:[],weeklyTitles:[],players:[],competitions:[]};
   const put=(group,title,rows,render)=>groups[group].push({title,rows:rows||[],render});
   const top=(arr,value,dir='max')=>{
     const valid=arr.filter(x=>Number.isFinite(Number(value(x))));
@@ -1131,9 +1133,22 @@ function recordCards(){
   put('clubs','Mais gols marcados em uma competição',top(teamEditions,x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols'}));
   put('clubs','Menos gols sofridos em uma competição',top(teamEditions.filter(x=>x.j>=2),x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
   const trophies=D.coachTrophies||[];
-  const titleRows=trophies.map(t=>({coach:t.coach_name||D.coachProfiles.find(c=>String(c.id)===String(t.coach_id))?.name,teamId:t.participant_id||t.team_id,category:t.category||t.type||'official'}));
-  const titleCounts=(key,filter)=>{const map=new Map();titleRows.filter(filter||(()=>true)).forEach(t=>{const name=key(t);if(name)map.set(String(name),(map.get(String(name))||0)+1);});return [...map].map(([name,count])=>({name,count}));};
-  put('clubs','Mais títulos conquistados',top(titleCounts(t=>t.teamId),x=>x.count),x=>({value:recordLink(D.participants.find(p=>String(p.id)===x.name)?.name||x.name,'club',x.name),metric:x.count+' títulos'}));
+  const titleRows=trophies.map(t=>({
+    coach:t.coach_name||(D.coachProfiles||[]).find(c=>String(c.id)===String(t.coach_id))?.name,
+    teamId:t.participant_id||t.team_id,
+    category:String(t.source_type||t.category||t.type||'').toLowerCase()
+  }));
+  const officialTitles=titleRows.filter(t=>t.category==='official');
+  const weeklyTitles=titleRows.filter(t=>t.category==='weekly');
+  const titleCounts=(key,source)=>{const map=new Map();source.forEach(t=>{const name=key(t);if(name)map.set(String(name),(map.get(String(name))||0)+1);});return [...map].map(([name,count])=>({name,count}));};
+  const titleTeamRow=x=>({value:recordLink(D.participants.find(p=>String(p.id)===x.name)?.name||x.name,'club',x.name),metric:x.count+' títulos'});
+  const titleCoachRow=x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos'});
+  put('titles','Técnico com mais títulos oficiais',top(titleCounts(t=>t.coach,officialTitles),x=>x.count),titleCoachRow);
+  put('titles','Clube com mais títulos oficiais',top(titleCounts(t=>t.teamId,officialTitles),x=>x.count),titleTeamRow);
+  put('weeklyTitles','Técnico com mais títulos semanais',top(titleCounts(t=>t.coach,weeklyTitles),x=>x.count),titleCoachRow);
+  put('weeklyTitles','Clube com mais títulos semanais',top(titleCounts(t=>t.teamId,weeklyTitles),x=>x.count),titleTeamRow);
+  put('clubs','Mais títulos oficiais conquistados',top(titleCounts(t=>t.teamId,officialTitles),x=>x.count),titleTeamRow);
+  put('clubs','Mais títulos semanais conquistados',top(titleCounts(t=>t.teamId,weeklyTitles),x=>x.count),titleTeamRow);
   const coachMatches=new Map();
   fixtures.forEach(m=>[[m.homeCoach,m.hs,m.as,m.awayCoach],[m.awayCoach,m.as,m.hs,m.homeCoach]].forEach(([name,gf,ga,opponent])=>{
     if(!name)return;
@@ -1147,7 +1162,8 @@ function recordCards(){
   streakCard('coaches','Maior sequência de vitórias de técnicos','coach','wins');
   streakCard('coaches','Maior sequência de vitórias oficiais de técnicos','coach','wins',official);
   streakCard('coaches','Maior sequência invicta de técnicos','coach','unbeaten');
-  put('coaches','Maior número de títulos',top(titleCounts(t=>t.coach),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos'}));
+  put('coaches','Mais títulos oficiais',top(titleCounts(t=>t.coach,officialTitles),x=>x.count),titleCoachRow);
+  put('coaches','Mais títulos semanais',top(titleCounts(t=>t.coach,weeklyTitles),x=>x.count),titleCoachRow);
   const finals=fixtures.filter(m=>/final/i.test(String(m.round?.name||''))&&!/semi|quart|oitav|terceiro|3º/i.test(String(m.round?.name||'')));
   const finalMap=new Map();
   finals.forEach(m=>[m.homeCoach,m.awayCoach].forEach(n=>{if(n){const key=n.toLocaleLowerCase();if(!finalMap.has(key))finalMap.set(key,{name:n,ids:new Set()});finalMap.get(key).ids.add(m.edition||m.id);}}));
@@ -1182,6 +1198,9 @@ function recordCards(){
   const champions=[];
   (D.officialEditions||[]).forEach(e=>{if(!publicEditionVisible(e))return;const id=e.champion_id||e.champion_team_id;if(!id)return;const ms=editions.get('official:'+e.id)||[];const x=teamEditions.find(t=>String(t.id)===String(id)&&t.matches===ms);if(x)champions.push(x);});
   (D.weeklies||[]).forEach(w=>{if(!w.champion_id)return;const ms=editions.get('weekly:'+w.id)||[];const x=teamEditions.find(t=>String(t.id)===String(w.champion_id)&&t.matches===ms);if(x)champions.push(x);});
+  put('competitions','Mais gols marcados por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'),x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols · '+x.j+' jogos'}));
+  put('competitions','Menos gols sofridos por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'&&x.j>=2),x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
+  put('competitions','Mais gols sofridos por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'),x=>x.ga),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
   put('competitions','Campeão com melhor campanha',top(champions.filter(x=>x.j),x=>x.pts/(x.j*3)),x=>({...teRow(x),metric:fmt1(100*x.pts/(x.j*3))+'%'}));
   put('competitions','Campeão com mais gols marcados',top(champions,x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols'}));
   put('competitions','Campeão com menos gols sofridos',top(champions,x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols'}));
