@@ -1,5 +1,5 @@
 let selectedWeeklyEditionId = null;
-let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = 'all', statsDefenseMode = 'per-game';
+let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = null, statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
@@ -700,7 +700,14 @@ function renderStats(){
   const bigTxt=b?(b.archive?coachLink(b.home):'<a href="#team/'+encodeURIComponent(b.homeId)+'">'+esc(b.home)+'</a>')+' '+b.hs+' x '+b.as+' '+(b.archive?coachLink(b.away):'<a href="#team/'+encodeURIComponent(b.awayId)+'">'+esc(b.away)+'</a>'):'—';
   const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
   const competitionOptions=statsCategory==='official'?activeVisibleStatCompetitions():[];
-  if(statsCategory==='official'&&statsCompetition!=='all'&&!competitionOptions.some(c=>String(c.id)===statsCompetition))statsCompetition='all';
+  if(statsCategory==='official'){
+    if(statsCompetition===null){
+      const ligaPro=competitionOptions.find(c=>/liga\s*pro/i.test(String(c.name||'')));
+      statsCompetition=ligaPro?String(ligaPro.id):'all';
+    }else if(statsCompetition!=='all'&&!competitionOptions.some(c=>String(c.id)===statsCompetition)){
+      statsCompetition='all';
+    }
+  }
   const competitionFilter=statsCategory==='official'?'<div class="cbpes-stats-competition-filter"><label for="statsCompetitionSelect">COMPETIÇÃO</label><select id="statsCompetitionSelect" aria-label="Filtrar estatísticas por competição"><option value="all">TODAS</option>'+competitionOptions.map(c=>'<option value="'+esc(String(c.id))+'"'+(statsCompetition===String(c.id)?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></div>':'';
   const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+generalData.games+'</b><span>Partidas</span></div><div class="stat"><b>'+generalData.goals+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(generalData.average)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
   const definitions=visibleStatDefinitions(statsCategory);
