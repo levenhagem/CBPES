@@ -983,6 +983,10 @@ function renderCoach(name) {
     const body=historyCard.querySelector('.cardbody');
     const existing=[...body.querySelectorAll('.result-row')];
     const officialRows=existing.filter((row,i)=>matches[i]?.category!=='friendly');
+    // Jogos consolidados não possuem data; exibi-los explicitamente no histórico oficial,
+    // em vez de deixá-los ocultos pelo limite inicial de cinco partidas.
+    const consolidatedRows=officialRows.filter(row=>row.querySelector('.cbpes-coach-match-meta')?.textContent?.includes('Torneio de Abertura'));
+    const regularOfficialRows=officialRows.filter(row=>!consolidatedRows.includes(row));
     const friendlyRows=existing.filter((row,i)=>matches[i]?.category==='friendly');
     const makeSection=(title,rows)=>{
       const section=document.createElement('section');section.className='cbpes-coach-history-section';
@@ -998,7 +1002,13 @@ function renderCoach(name) {
       body.appendChild(section);
     };
     body.innerHTML='';
-    makeSection('PARTIDAS OFICIAIS / SEMANAIS',officialRows);
+    makeSection('PARTIDAS OFICIAIS / SEMANAIS',regularOfficialRows);
+    if(consolidatedRows.length){
+      const section=document.createElement('section');section.className='cbpes-coach-history-section cbpes-coach-opening-history';
+      const title=document.createElement('h3');title.textContent='TORNEIO DE ABERTURA 2026 · OFICIAL';section.appendChild(title);
+      consolidatedRows.forEach(row=>section.appendChild(row));
+      body.appendChild(section);
+    }
     const imported=document.createElement('div');imported.innerHTML=historicResults;
     // Une amistosos do portal e histórico PES6 em ordem cronológica decrescente,
     // independentemente do adversário. Datas ausentes ficam por último.
