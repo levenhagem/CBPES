@@ -4570,3 +4570,10 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #weeklies .cbpes-weekly-third-place .cbpes-match .cbpes-match-category,
 #weeklies .cbpes-weekly-third-place .cbpes-match .match-date{font-size:9px!important;color:#88939b!important}
 @media(max-width:560px){#weeklies .cbpes-weekly-third-place .cbpes-match{padding:5px 7px!important}#weeklies .cbpes-weekly-third-place .cbpes-match .score,#weeklies .cbpes-weekly-third-place .cbpes-match .cbpes-match-score{font-size:15px!important}}
+
+
+/* Identificação discreta da rodada ou fase em jogos oficiais */
+#games .cbpes-match-round-label{display:inline-flex;align-items:center;margin-right:auto;font-size:10px;font-weight:650;opacity:.85;white-space:nowrap}
+#games .cbpes-match-top{flex-wrap:wrap;column-gap:10px;row-gap:3px}
+#games .cbpes-match-top .match-date{margin-left:auto}
+@media(max-width:560px){#games .cbpes-match-round-label{font-size:9px;white-space:normal}#games .cbpes-match-top{column-gap:6px}}
