@@ -247,11 +247,8 @@ function renderGames() {
     if(createdA!==createdB)return createdB.localeCompare(createdA);
     return (Number(b.seq)||0)-(Number(a.seq)||0);
   });
-  const timelineHtml = chronological.map(m=>matchRow(m,m.category==='weekly',true)).join('');
-  const archived=D.matches.filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId && m.category==='official' && m.played);
-  const showArchive=['all','done','official'].includes(filter);
-  const archiveHtml=showArchive&&archived.length?'<section class="cbpes-opening-consolidated"><h3>TORNEIO DE ABERTURA 2026</h3><p class="cbpes-opening-consolidated-note">PARTIDAS OFICIAIS CONSOLIDADAS</p><div class="cbpes-opening-consolidated-list">'+archived.slice().sort((a,b)=>{const ra=Number((a.group_name||'').match(/RODADA (\\d+)/)?.[1]||0),rb=Number((b.group_name||'').match(/RODADA (\\d+)/)?.[1]||0);return ra-rb||(a.display_order||0)-(b.display_order||0)||(a.seq||0)-(b.seq||0)}).map(openingConsolidatedRow).join('')+'</div></section>':'';
-  $('gamesList').innerHTML = timelineHtml + archiveHtml || empty('Nenhuma partida encontrada.');
+  const timelineHtml = chronological.map(m=>matchRow(m,false,true)).join('');
+  $('gamesList').innerHTML = timelineHtml || empty('Nenhuma partida encontrada.');
 }
 
 const openingEditionId='16917e42-3fc8-4aca-8cdc-4c008254dbe1';
