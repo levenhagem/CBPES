@@ -62,7 +62,7 @@ function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
-  menu.innerHTML=editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'<span class="nav-competition-empty">Nenhuma competição cadastrada</span>';
+  menu.innerHTML=(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'')+'<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>';
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
@@ -72,9 +72,10 @@ if(navCompetitionWrap&&navCompetitionButton){
   navCompetitionWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
   menu.addEventListener('click',e=>{
-    const link=e.target.closest('a[href^="#table/"]');
+    const link=e.target.closest('a[href^="#table/"],a[href="#weeklies"]');
     if(!link)return;
     e.preventDefault();
+    if(link.getAttribute('href')==='#weeklies'){closeNavCompetitionMenu();if(location.hash==='#weeklies')route();else location.hash='#weeklies';return;}
     const editionId=decodeURIComponent(link.getAttribute('href').slice('#table/'.length));
     selectedWeeklyTable=editionId;
     closeNavCompetitionMenu();
@@ -177,7 +178,7 @@ function renderHome() {
   $('latest').innerHTML = m
     ? (m.category === 'official'
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
-        : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}${m.category==='weekly'?' • SEMANAL':m.category==='friendly'?' • AMISTOSO':''}</div>${featuredRow()}`)
+        : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
