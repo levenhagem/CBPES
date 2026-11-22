@@ -4311,3 +4311,22 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-leg{padding:8px 12px}
 .cbpes-opening-leg .cbpes-opening-fixture{min-height:44px;padding:7px 0}
 @media(max-width:900px){.cbpes-opening-two-column{grid-template-columns:1fr}.cbpes-opening-ties{grid-template-columns:1fr}.cbpes-opening-table{min-width:600px}}
+
+
+/* Mata-mata: chaves em faixas, seguindo a referência visual dos playoffs */
+.cbpes-opening-knockout .cbpes-opening-ties{display:flex;flex-direction:column;gap:14px}
+.cbpes-opening-knockout .cbpes-opening-tie{border:0;border-radius:0;overflow:visible;background:transparent}
+.cbpes-opening-playoff-card{position:relative;overflow:hidden;min-height:92px;padding:11px 15px 14px;border:1px solid #2762a6;border-left:4px solid #328aff;background:linear-gradient(115deg,#0b214a 0%,#0b2859 68%,#114d9d 100%);color:#f5f9ff}
+.cbpes-opening-playoff-card:after{content:"";position:absolute;right:-32px;top:-46px;width:155px;height:155px;border:19px solid rgba(76,154,255,.13);border-radius:50%;pointer-events:none}
+.cbpes-opening-playoff-label{font-size:10px;font-weight:800;letter-spacing:.025em;color:#c8ddfa}
+.cbpes-opening-playoff-score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;margin-top:12px;text-align:center;position:relative;z-index:1}
+.cbpes-opening-playoff-score>strong{font-size:21px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cbpes-opening-playoff-score>strong span{opacity:.7}
+.cbpes-opening-playoff-score .cbpes-opening-participant{align-items:center}
+.cbpes-opening-playoff-score .cbpes-opening-participant small{color:#b8cde7}
+.cbpes-opening-playoff-card>small{display:block;text-align:center;font-size:10px;color:#d4e5fa}
+.cbpes-opening-legs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.cbpes-opening-leg{padding:8px 10px;border:1px solid var(--line);border-radius:4px}
+.cbpes-opening-leg>small{display:block;margin-bottom:4px}
+.cbpes-opening-leg .cbpes-opening-fixture{border-bottom:0}
+@media(max-width:650px){.cbpes-opening-playoff-score{gap:7px}.cbpes-opening-playoff-score>strong{font-size:17px}.cbpes-opening-legs{grid-template-columns:1fr}.cbpes-opening-playoff-card{padding:10px}}
