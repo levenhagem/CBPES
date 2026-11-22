@@ -4210,3 +4210,28 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #statsGrid .cbpes-stats-competition-filter label{font-size:11px;font-weight:800;letter-spacing:.05em;color:#536b60}
 #statsGrid .cbpes-stats-competition-filter select{min-width:180px;max-width:100%;padding:9px 34px 9px 12px;border:1px solid #d5e0da;border-radius:7px;background:#fff;color:#244437;font:inherit;font-size:13px;font-weight:600}
 @media(max-width:600px){#statsGrid .cbpes-stats-competition-filter{align-items:stretch;flex-direction:column;gap:6px}#statsGrid .cbpes-stats-competition-filter select{width:100%}}
+
+/* Aproxima o seletor do rótulo na comparação de técnicos. */
+#coachView .cbpes-coach-compare .cardbody>.field{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-content:start!important;
+  justify-content:start!important;
+  row-gap:5px!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:0!important;
+}
+#coachView .cbpes-coach-compare .cardbody>.field>label{
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+}
+#coachView .cbpes-coach-compare .cardbody>.field>#coachCompareWith{
+  display:block!important;
+  margin:0!important;
+  align-self:start!important;
+}
