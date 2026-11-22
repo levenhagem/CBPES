@@ -976,7 +976,7 @@ function renderCoach(name) {
   <div class="cbpes-coach-rivalry-grid" style="margin-top:16px">${coachScoreRecordCard('MAIOR GOLEADA','⚽',biggestWin,'victim')}${coachScoreRecordCard('PIOR DERROTA SOFRIDA','💀',worstLoss,'nemesis')}</div>
   <div class="card cbpes-coach-trophies" style="margin-top:16px"><div class="cardhead"><h2>SALA DE TROFÉUS (${coachTrophies.length})</h2></div><div class="cardbody">${coachTrophies.length?coachTrophies.map(t=>`<div class="player"><div><b>🏆 ${esc(t.title)}</b><small>${esc(t.competition_name||'Conquista')} • ${fd(t.awarded_on)}${t.team_name?' • '+esc(t.team_name):''}</small></div><span class="pill">${t.source_type==='manual'?'ESPECIAL':t.source_type==='weekly'?'SEMANAL':'OFICIAL'}</span></div>`).join(''):empty('Nenhum título registrado.')}</div></div><div class="card cbpes-coach-teams" style="margin-top:16px"><div class="cardhead"><h2>TIMES COMANDADOS</h2></div><div class="cardbody">${career}</div></div>
   <div class="card cbpes-coach-compare" style="margin-top:16px"><div class="cardhead"><h2>COMPARAR COM OUTRO TÉCNICO</h2></div><div class="cardbody"><div class="field"><label for="coachCompareWith">Selecione o técnico</label><select id="coachCompareWith"><option value="">Selecione outro técnico</option>${coachCompareOptions}</select></div><div id="coachCompareResult" style="margin-top:12px"></div></div></div>
-  <div class="card cbpes-coach-history" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row cbpes-coach-match-row ${m.category==='weekly'?'cbpes-coach-match-weekly':m.category==='friendly'?'cbpes-coach-match-friendly':'cbpes-coach-match-official'}"><span class="cbpes-coach-match-meta">${esc(coachMatchCompetition(m))}<small class="cbpes-coach-match-date">${m.date?esc(fd(m.date)):m.played_on?esc(fd(m.played_on)):"Data não informada"}</small></span><div class="cbpes-coach-match-line"><span class="cbpes-coach-match-side"><a href="#team/${encodeURIComponent(m.home_id)}" class="cbpes-coach-match-club">${String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId?esc(m.home.name):teamWithCrest(m.home)}</a><small>${esc(m.home_coach_name||'')}</small></span><strong class="cbpes-coach-match-score">${m.home_score}–${m.away_score}</strong><span class="cbpes-coach-match-side"><a href="#team/${encodeURIComponent(m.away_id)}" class="cbpes-coach-match-club">${String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId?esc(m.away.name):teamWithCrest(m.away)}</a><small>${esc(m.away_coach_name||'')}</small></span></div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
+  <div class="card cbpes-coach-history" style="margin-top:16px"><div class="cardhead"><h2>PARTIDAS NA CARREIRA</h2></div><div class="cardbody">${matches.length?matches.map(m=>`<div class="result-row cbpes-coach-match-row ${m.category==='weekly'?'cbpes-coach-match-weekly':m.category==='friendly'?'cbpes-coach-match-friendly':'cbpes-coach-match-official'}"><span class="cbpes-coach-match-meta">${esc(coachMatchCompetition(m))}${m.date||m.played_on?`<small class="cbpes-coach-match-date">${esc(fd(m.date||m.played_on))}</small>`:""}</span><div class="cbpes-coach-match-line"><span class="cbpes-coach-match-side"><a href="#team/${encodeURIComponent(m.home_id)}" class="cbpes-coach-match-club">${String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId?esc(m.home.name):teamWithCrest(m.home)}</a><small>${esc(m.home_coach_name||'')}</small></span><strong class="cbpes-coach-match-score">${m.home_score}–${m.away_score}</strong><span class="cbpes-coach-match-side"><a href="#team/${encodeURIComponent(m.away_id)}" class="cbpes-coach-match-club">${String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId?esc(m.away.name):teamWithCrest(m.away)}</a><small>${esc(m.away_coach_name||'')}</small></span></div></div>`).join(''):empty('As estatísticas serão formadas a partir das partidas com o técnico registrado no momento do jogo.')}</div></div>`;
   // Separa partidas competitivas e amistosos, cada categoria com sua própria expansão.
   const historyCard=root.querySelector('.cbpes-coach-history');
   if(historyCard){
@@ -988,21 +988,21 @@ function renderCoach(name) {
     const consolidatedRows=officialRows.filter(row=>row.querySelector('.cbpes-coach-match-meta')?.textContent?.includes('Torneio de Abertura'));
     const regularOfficialRows=officialRows.filter(row=>!consolidatedRows.includes(row));
     const friendlyRows=existing.filter((row,i)=>matches[i]?.category==='friendly');
-    const makeSection=(title,rows)=>{
+    const makeSection=(title,rows,limit=5)=>{
       const section=document.createElement('section');section.className='cbpes-coach-history-section';
       const heading=document.createElement('h3');heading.textContent=title;section.appendChild(heading);
-      rows.forEach((row,i)=>{row.hidden=i>=5;row.classList.toggle('cbpes-history-collapsed',i>=5);section.appendChild(row);});
-      if(rows.length>5){
+      rows.forEach((row,i)=>{row.hidden=limit!==null&&i>=limit;row.classList.toggle('cbpes-history-collapsed',limit!==null&&i>=limit);section.appendChild(row);});
+      if(limit!==null&&rows.length>limit){
         const more=document.createElement('button');more.type='button';more.className='cbpes-coach-history-toggle';
         more.textContent='EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';more.setAttribute('aria-expanded','false');
-        more.addEventListener('click',()=>{const expanded=more.getAttribute('aria-expanded')!=='true';rows.slice(5).forEach(row=>{row.hidden=!expanded;row.classList.toggle('cbpes-history-collapsed',!expanded);});more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';});
+        more.addEventListener('click',()=>{const expanded=more.getAttribute('aria-expanded')!=='true';rows.slice(limit).forEach(row=>{row.hidden=!expanded;row.classList.toggle('cbpes-history-collapsed',!expanded);});more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'MOSTRAR APENAS AS 5 PRIMEIRAS':'EXIBIR HISTÓRICO COMPLETO ('+rows.length+' PARTIDAS)';});
         section.appendChild(more);
       }
       if(!rows.length){const emptyText=document.createElement('p');emptyText.className='cbpes-coach-history-empty';emptyText.textContent='Nenhuma partida registrada nesta categoria.';section.appendChild(emptyText);}
       body.appendChild(section);
     };
     body.innerHTML='';
-    makeSection('PARTIDAS OFICIAIS / SEMANAIS',regularOfficialRows);
+    makeSection('PARTIDAS OFICIAIS / SEMANAIS',regularOfficialRows,null);
     if(consolidatedRows.length){
       const section=document.createElement('section');section.className='cbpes-coach-history-section cbpes-coach-opening-history';
       const title=document.createElement('h3');title.textContent='TORNEIO DE ABERTURA 2026 · OFICIAL';section.appendChild(title);
