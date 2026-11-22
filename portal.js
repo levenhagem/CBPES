@@ -1003,8 +1003,8 @@ function recordCards(){
     const arr=recordStreaks(fixtures,kind,mode);
     put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<span class="cbpes-record-streak-label">INÍCIO</span><br>'+recordMeta(x.start)+'<br><span class="cbpes-record-streak-label">FIM</span><br>'+(x.breaker?recordMeta(x.breaker):'Sequência ativa')}));
   };
-  streakCard('clubs','Maior sequência de vitórias','club','wins');
-  streakCard('clubs','Maior invencibilidade','club','unbeaten');
+  streakCard('clubs','Maior sequência de vitórias de clubes','club','wins');
+  streakCard('clubs','Maior invencibilidade de clubes','club','unbeaten');
   streakCard('clubs','Maior sequência sem vencer','club','winless');
   const editions=new Map();
   fixtures.filter(m=>m.edition).forEach(m=>{
@@ -1047,8 +1047,8 @@ function recordCards(){
   }));
   const coaches=[...coachMatches.values()];
   put('coaches','Técnico com mais vitórias na história',top(coaches,x=>x.wins),x=>({value:recordLink(x.name,'coach'),metric:x.wins+' vitórias'}));
-  streakCard('coaches','Maior sequência de vitórias','coach','wins');
-  streakCard('coaches','Maior sequência invicta','coach','unbeaten');
+  streakCard('coaches','Maior sequência de vitórias de técnicos','coach','wins');
+  streakCard('coaches','Maior sequência invicta de técnicos','coach','unbeaten');
   put('coaches','Maior número de títulos',top(titleCounts(t=>t.coach),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos'}));
   const finals=fixtures.filter(m=>/final/i.test(String(m.round?.name||''))&&!/semi|quart|oitav|terceiro|3º/i.test(String(m.round?.name||'')));
   const finalMap=new Map();
