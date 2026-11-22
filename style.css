@@ -4457,3 +4457,37 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 }
 .cbpes-opening-fixtures-column .cbpes-opening-fixture>div:last-child .cbpes-opening-team-names{align-items:flex-end}
 .cbpes-opening-fixtures-column .cbpes-opening-fixture .cbpes-opening-score{text-align:center;white-space:nowrap}
+
+
+/* Destaques do pódio do Torneio de Abertura */
+.cbpes-opening-podium{gap:14px}
+.cbpes-opening-podium>div.cbpes-opening-champion{
+  border:1px solid #c59624;
+  border-top:4px solid #f2c34b;
+  border-radius:9px;
+  background:linear-gradient(125deg,#fff9dc 0%,#ffedaa 48%,#fff7d9 100%);
+  box-shadow:0 4px 16px rgba(164,117,19,.17),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.cbpes-opening-podium>div.cbpes-opening-runnerup{
+  border:1px solid #aeb9c5;
+  border-top:4px solid #a7b3c1;
+  border-radius:9px;
+  background:linear-gradient(125deg,#f8fafc 0%,#e0e6ec 50%,#f6f8fa 100%);
+  box-shadow:0 3px 12px rgba(86,102,118,.11);
+}
+.cbpes-opening-podium .cbpes-opening-medal{
+  display:inline-flex;align-self:flex-start;align-items:center;
+  padding:5px 10px;border-radius:999px;
+  font-size:11px;font-weight:900;letter-spacing:.055em;
+}
+.cbpes-opening-podium .cbpes-opening-champion .cbpes-opening-medal{
+  background:linear-gradient(110deg,#c18a0e,#f3cc56,#b9830c);
+  color:#342200;box-shadow:0 2px 7px rgba(161,113,15,.2);
+}
+.cbpes-opening-podium .cbpes-opening-runnerup .cbpes-opening-medal{
+  background:linear-gradient(110deg,#9ca9b8,#dce3e9,#9aa7b6);
+  color:#253343;
+}
+.cbpes-opening-podium .cbpes-opening-champion strong{color:#654200}
+.cbpes-opening-podium .cbpes-opening-runnerup strong{color:#3c4b5a}
+@media(max-width:520px){.cbpes-opening-podium{grid-template-columns:1fr}}
