@@ -4204,3 +4204,9 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 /* Resultado V/D/E sempre alinhado à extremidade direita, inclusive no celular. */
 #coachView .cbpes-direct-fixture-result{justify-content:flex-end!important;justify-self:end;width:100%}
 @media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:minmax(0,1fr) 32px!important;column-gap:10px}#coachView .cbpes-direct-fixture-info{grid-column:1/-1}#coachView .cbpes-direct-fixture-score{grid-column:1;min-width:0}#coachView .cbpes-direct-fixture-result{grid-column:2;grid-row:2;justify-content:flex-end!important;align-self:center}}
+
+/* Filtro de competição nas estatísticas oficiais. */
+#statsGrid .cbpes-stats-competition-filter{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:2px 0 8px}
+#statsGrid .cbpes-stats-competition-filter label{font-size:11px;font-weight:800;letter-spacing:.05em;color:#536b60}
+#statsGrid .cbpes-stats-competition-filter select{min-width:180px;max-width:100%;padding:9px 34px 9px 12px;border:1px solid #d5e0da;border-radius:7px;background:#fff;color:#244437;font:inherit;font-size:13px;font-weight:600}
+@media(max-width:600px){#statsGrid .cbpes-stats-competition-filter{align-items:stretch;flex-direction:column;gap:6px}#statsGrid .cbpes-stats-competition-filter select{width:100%}}
