@@ -237,31 +237,19 @@ function openingConsolidatedRow(m){
 function renderGames() {
   document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('selected', b.dataset.f === filter));
   const ms = D.matches.filter(publicCompetitionMatch).filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')!==openingEditionId).filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
-  const official = ms.filter(m => m.category === 'official' && m.round);
-  const visibleOfficialRounds = new Set(official.filter(m => m.played).map(m => String(m.round_id)));
-  const friendlies = ms.filter(m => m.category === 'friendly');
-  const weeklies = ms.filter(m => m.category === 'weekly');
-  const latestResultInRound = round => official.filter(m=>String(m.round_id)===String(round.id)&&m.played).reduce((latest,m)=>{
-    const stamp=m.updated_at||m.played_on||m.date||'';
-    return stamp>latest?stamp:latest;
-  },'');
-  const rs = [...new Map(official.filter(m => visibleOfficialRounds.has(String(m.round_id))).map(m => [m.round.id, m.round])).values()].sort((a,b) => {
-    if(filter==='next')return a.number-b.number;
-    const aLatest=latestResultInRound(a), bLatest=latestResultInRound(b);
-    if(aLatest!==bLatest)return bLatest.localeCompare(aLatest);
-    return b.number-a.number;
+  // Linha do tempo única: partidas oficiais, amistosas e semanais intercaladas
+  // pela data/hora de cadastro, sem agrupar resultados por competição ou rodada.
+  const chronological = ms.slice().sort((a,b)=>{
+    if(Boolean(a.played)!==Boolean(b.played))return a.played?-1:1;
+    const createdA=String(a.created_at||''),createdB=String(b.created_at||'');
+    if(createdA!==createdB)return createdB.localeCompare(createdA);
+    return (Number(b.seq)||0)-(Number(a.seq)||0);
   });
-  const officialHtml = rs.map(r => {
-    const list = official.filter(m => m.round_id === r.id).sort((a,b)=>byDisplayOrder(a,b)||(a.seq||0)-(b.seq||0));
-    if (!list.length) return '';
-    return heading(`${esc(roundLabel(r).toUpperCase())}${r.date ? ' • ' + fd(r.date) : ''}`) + list.map(matchRow).join('');
-  }).join('');
-  const friendlyHtml = friendlies.length ? heading('PARTIDAS AMISTOSAS') + friendlies.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(matchRow).join('') : '';
-  const weeklyHtml = [...new Set(weeklies.map(m=>m.weekly_id))].map(id=>{const edition=weeklies.find(m=>m.weekly_id===id)?.weekly;const games=weeklies.filter(m=>m.weekly_id===id);const title=edition?`SEMANAL • ${fd(edition.event_date)}`:'SEMANAL';const playedWeeklyRoundIds=new Set(games.filter(m=>m.played&&m.weekly_round_id).map(m=>String(m.weekly_round_id)));const rounds=[...new Map(games.filter(m=>m.weeklyRound&&playedWeeklyRoundIds.has(String(m.weekly_round_id))).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const roundHtml=rounds.map(r=>heading(esc(roundLabel(r).toUpperCase()))+games.filter(m=>m.weekly_round_id===r.id).sort(byDisplayOrder).map(m=>matchRow(m,true)).join('')).join('');const unassigned=games.filter(m=>!m.weekly_round_id).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return heading(title)+roundHtml+(unassigned.length?heading('PARTIDAS SEM RODADA')+unassigned.map(m=>matchRow(m,true)).join(''):'');}).join('');
+  const timelineHtml = chronological.map(m=>matchRow(m,m.category==='weekly')).join('');
   const archived=D.matches.filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId && m.category==='official' && m.played);
   const showArchive=['all','done','official'].includes(filter);
   const archiveHtml=showArchive&&archived.length?'<section class="cbpes-opening-consolidated"><h3>TORNEIO DE ABERTURA 2026</h3><p class="cbpes-opening-consolidated-note">PARTIDAS OFICIAIS CONSOLIDADAS</p><div class="cbpes-opening-consolidated-list">'+archived.slice().sort((a,b)=>{const ra=Number((a.group_name||'').match(/RODADA (\\d+)/)?.[1]||0),rb=Number((b.group_name||'').match(/RODADA (\\d+)/)?.[1]||0);return ra-rb||(a.display_order||0)-(b.display_order||0)||(a.seq||0)-(b.seq||0)}).map(openingConsolidatedRow).join('')+'</div></section>':'';
-  $('gamesList').innerHTML = officialHtml + friendlyHtml + weeklyHtml + archiveHtml || empty('Nenhuma partida encontrada.');
+  $('gamesList').innerHTML = timelineHtml + archiveHtml || empty('Nenhuma partida encontrada.');
 }
 
 const openingEditionId='16917e42-3fc8-4aca-8cdc-4c008254dbe1';
