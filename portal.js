@@ -1001,7 +1001,7 @@ function recordCards(){
   put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
   const streakCard=(group,title,kind,mode)=>{
     const arr=recordStreaks(fixtures,kind,mode);
-    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>ÚLTIMO JOGO DA SEQUÊNCIA · '+recordMeta(x.end)+(x.active?' · Sequência ativa':(x.breaker&&mode!=='winless'?'<br>JOGO QUE ENCERROU A SEQUÊNCIA · '+recordMeta(x.breaker):''))}));
+    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>ÚLTIMO JOGO '+(mode==='wins'?'VENCIDO':mode==='unbeaten'?'SEM DERROTA':'SEM VITÓRIA')+' · '+recordMeta(x.end)+(x.active?'<br>STATUS · Sequência ativa':(x.breaker?'<br>FIM DA SEQUÊNCIA · '+recordMeta(x.breaker):''))}));
   };
   streakCard('clubs','Maior sequência de vitórias','club','wins');
   streakCard('clubs','Maior invencibilidade','club','unbeaten');
