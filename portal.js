@@ -25,14 +25,15 @@ const publicCompetitionMatch = m => {
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
-  const id = profile ? parts[0] : (raw==='records' ? 'stats' : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home'))));
+  const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
   if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
+  closeNavStatsMenu();
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
-  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id || (b.id==='navStatsButton'&&['stats','records','stats-detail'].includes(id))));
   if (profile && D) {
     const value = decodeURIComponent(parts.slice(1).join('/'));
     if (id === 'participant') renderParticipant(value);
@@ -86,6 +87,34 @@ if(navCompetitionWrap&&navCompetitionButton){
   document.addEventListener('click',e=>{if(!navCompetitionWrap.contains(e.target)&&!menu.contains(e.target))closeNavCompetitionMenu();});
   window.addEventListener('resize',closeNavCompetitionMenu);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNavCompetitionMenu();navCompetitionButton.focus();}});
+}
+function closeNavStatsMenu(){
+  const m=$('navStatsMenu'),b=$('navStatsButton'),wrap=$('navStatsWrap');
+  if(m){m.hidden=true;if(wrap&&m.parentElement!==wrap)wrap.appendChild(m);['top','left','right','width','max-width'].forEach(x=>m.style.removeProperty(x));}
+  if(b)b.setAttribute('aria-expanded','false');
+}
+function openNavStatsMenu(){
+  const m=$('navStatsMenu'),b=$('navStatsButton');if(!m||!b)return;
+  if(window.matchMedia('(max-width:700px)').matches){
+    document.body.appendChild(m);
+    const rect=b.getBoundingClientRect(),width=Math.min(340,window.innerWidth-24);
+    m.style.width=width+'px';m.style.maxWidth=width+'px';
+    m.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-width-12))+'px';
+    m.style.top=Math.min(rect.bottom+2,window.innerHeight-80)+'px';m.style.right='auto';
+  }
+  m.hidden=false;b.setAttribute('aria-expanded','true');
+}
+const navStatsWrap=$('navStatsWrap'),navStatsButton=$('navStatsButton');
+if(navStatsWrap&&navStatsButton){
+  const menu=$('navStatsMenu');
+  navStatsButton.onclick=e=>{e.stopPropagation();if(menu.hidden){closeNavCompetitionMenu();openNavStatsMenu();}else closeNavStatsMenu();};
+  navStatsWrap.addEventListener('mouseenter',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavStatsMenu();});
+  navStatsWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavStatsMenu();});
+  navStatsWrap.addEventListener('focusout',e=>{if(!navStatsWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavStatsMenu();});
+  menu.addEventListener('click',e=>{if(e.target.closest('a'))closeNavStatsMenu();});
+  document.addEventListener('click',e=>{if(!navStatsWrap.contains(e.target)&&!menu.contains(e.target))closeNavStatsMenu();});
+  window.addEventListener('resize',closeNavStatsMenu);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeNavStatsMenu();navStatsButton.focus();}});
 }
 document.querySelectorAll('#nav button:not(#navCompetitionButton)').forEach(b => b.onclick = () => location.hash = b.dataset.page);
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => location.hash = b.dataset.go);
