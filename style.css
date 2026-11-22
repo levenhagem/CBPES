@@ -4626,3 +4626,15 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   text-align:left!important;
  }
 }
+
+/* Menu Estatísticas: mesma aparência e interação do menu TABELA,
+   inclusive quando o dropdown é movido para o body no celular. */
+#navStatsMenu.nav-competition-menu,
+body > #navStatsMenu.nav-competition-menu{
+  position:absolute;top:100%;left:0;min-width:255px;max-width:min(340px,90vw);
+  max-height:65vh;overflow-y:auto;background:#071e3c;border:1px solid #315b88;
+  border-top:3px solid #3691ff;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:5px 0;z-index:9999;
+}
+#navStatsMenu.nav-competition-menu[hidden]{display:none!important}
+#navStatsMenu.nav-competition-menu a{display:flex;flex-direction:column;gap:3px;padding:11px 15px;color:#fff;text-decoration:none;font:700 13px Barlow,sans-serif;border-bottom:1px solid rgba(180,213,255,.12)}
+#navStatsMenu.nav-competition-menu a:hover,#navStatsMenu.nav-competition-menu a:focus-visible{background:#13549d;outline:none}
