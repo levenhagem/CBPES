@@ -575,7 +575,7 @@ function renderWeeklies() {
     const chosen=rounds.find(r=>String(r.id)===String(selectedRoundByEdition[roundKey]));
     let selectedGames=all.filter(m=>m.weekly_round_id===chosen?.id);
     if(active.phase_type==='final'){const thirdP=phases.find(p=>p.phase_type==='third_place');const thirdRounds=(D.weeklyRounds||[]).filter(r=>r.phase_id===thirdP?.id);selectedGames=selectedGames.concat(all.filter(m=>thirdRounds.some(r=>r.id===m.weekly_round_id)));}
-    let rows=selectedGames.sort(byDisplayOrder).map(m=>{const third=active.phase_type==='final'&&(D.weeklyRounds||[]).find(r=>r.id===m.weekly_round_id)?.phase?.phase_type==='third_place';return (third?heading('DISPUTA DE 3º LUGAR'):'')+matchRow(m,true);}).join('');
+    let rows=selectedGames.sort(byDisplayOrder).map(m=>{const gameRound=(D.weeklyRounds||[]).find(r=>r.id===m.weekly_round_id);const third=active.phase_type==='final'&&phases.some(ph=>ph.id===gameRound?.phase_id&&ph.phase_type==='third_place');return third?'<div class="cbpes-weekly-third-place"><div class="cbpes-weekly-third-label">DISPUTA DE 3º LUGAR</div>'+matchRow(m,true)+'</div>':matchRow(m,true);}).join('');
     const finalPhase = phaseList.find(p=>p.phase_type==='final');
     const thirdPhase = phases.find(p=>p.phase_type==='third_place');
     const finalRoundIds=(D.weeklyRounds||[]).filter(r=>r.phase_id===finalPhase?.id).map(r=>r.id);
