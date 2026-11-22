@@ -4596,10 +4596,10 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   justify-content:end!important;
  }
  #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text{
-  align-items:flex-end!important;
-  text-align:right!important;
+  align-items:flex-start!important;
+  text-align:left!important;
  }
  #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text small{
-  text-align:right!important;
+  text-align:left!important;
  }
 }
