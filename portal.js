@@ -1,3 +1,4 @@
+let selectedWeeklyEditionId = null;
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = 'all', statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
@@ -549,9 +550,11 @@ function renderTable() {
 }
 function renderWeeklies() {
   const root = $('weeklyList');
-  const editions = D.weeklies || [];
+  const editions = [...(D.weeklies || [])].sort((a,b)=>String(b.event_date||'').localeCompare(String(a.event_date||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')));
   if (!editions.length) { root.innerHTML = `<div class="card"><div class="cardbody">${empty('Nenhuma edição semanal cadastrada ainda.')}</div></div>`; return; }
-  root.innerHTML = editions.map(w => {
+  if(!editions.some(w=>String(w.id)===String(selectedWeeklyEditionId)))selectedWeeklyEditionId=editions[0].id;
+  const editionSelector = `<div class="cbpes-weekly-edition-picker"><label for="weeklyEditionSelect">SELECIONE A DATA DO SEMANAL</label><select id="weeklyEditionSelect" aria-label="Selecionar edição semanal por data">${editions.map(w=>`<option value="${esc(w.id)}" ${String(w.id)===String(selectedWeeklyEditionId)?'selected':''}>${esc(fd(w.event_date))} — ${esc(w.name)}</option>`).join('')}</select></div>`;
+  root.innerHTML = editionSelector + editions.filter(w=>String(w.id)===String(selectedWeeklyEditionId)).map(w => {
     const all = D.matches.filter(m => m.category === 'weekly' && m.weekly_id === w.id);
     const phases = (D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===w.id).sort((a,b)=>a.sort_order-b.sort_order);
     const fallback = {id:'legacy-groups',name:'Fase de grupos',phase_type:'groups',counts_in_standings:true};
@@ -586,6 +589,7 @@ function renderWeeklies() {
     const nav = `<div class="phase-switcher" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin:12px 0"><button class="phase-arrow" data-phase-prev="${w.id}" aria-label="Fase anterior" ${phaseList.findIndex(p=>p.id===activeId)<=0?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><b style="text-align:center;flex:1">${esc(active.name).toUpperCase()}</b><button class="phase-arrow" data-phase-next="${w.id}" aria-label="Próxima fase" ${phaseList.findIndex(p=>p.id===activeId)>=phaseList.length-1?'disabled':''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>`;
     return `<div class="card" style="margin-bottom:16px"><div class="cardhead"><div><h2>${esc(w.name)}</h2><small class="admin-help">${fd(w.event_date)} • ${w.participant_count||teams.length} PARTICIPANTES</small></div><span class="pill">${all.filter(m=>m.played).length} JOGOS • ${phaseList.length} FASES</span></div><div class="cardbody">${w.format_description?`<p class="sub">${esc(w.format_description)}</p>`:''}${nav}${championBanner(winner,finalMatch?(winner?.id===finalMatch.home_id?finalMatch.home_coach_name:finalMatch.away_coach_name):null)}<div class="cbpes-competition-neutral">${twoColumn(active.counts_in_standings?(table.length?`<h3>CLASSIFICAÇÃO — ${esc(active.name.toUpperCase())}</h3><div class="scroll">${fullTbl(table,zonesFor('weekly',w.id,active.id),phaseMatches)}</div>`:empty('Aguardando partidas desta fase.')):'',roundPicker(rounds,selectedRoundByEdition[roundKey],roundKey,'weekly-round')+(rows||empty('Nenhuma partida cadastrada nesta rodada.')))}</div>${podium}</div></div>`;
   }).join('');
+  root.onchange=e=>{if(e.target.id==='weeklyEditionSelect'){selectedWeeklyEditionId=e.target.value;renderWeeklies();}};
   root.onclick=e=>{const b=e.target.closest('[data-phase-prev],[data-phase-next],[data-weekly-round-prev],[data-weekly-round-next]');if(!b)return;if(b.hasAttribute('data-weekly-round-prev')||b.hasAttribute('data-weekly-round-next')){const key=b.dataset.weeklyRoundPrev||b.dataset.weeklyRoundNext;const [edition,phase]=key.split('|');const rs=(D.weeklyRounds||[]).filter(r=>String(r.weekly_id)===edition&&(String(r.phase_id)===phase||(!r.phase_id&&phase==='legacy-groups'))).sort((a,c)=>a.number-c.number);selectedRoundByEdition[key]=changeRound(rs,selectedRoundByEdition[key],b.hasAttribute('data-weekly-round-next')?1:-1);renderWeeklies();return;}const id=b.dataset.phasePrev||b.dataset.phaseNext,w=D.weeklies.find(x=>x.id===id);if(!w)return;const allPhases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===id).sort((a,b)=>a.sort_order-b.sort_order);const ps=allPhases.filter(p=>p.phase_type!=='third_place'||!allPhases.some(x=>x.phase_type==='final'));if(!ps.length)return;let i=ps.findIndex(p=>p.id===selectedPhaseByEdition[id]);i+=b.dataset.phasePrev?-1:1;i=Math.max(0,Math.min(ps.length-1,i));selectedPhaseByEdition[id]=ps[i].id;renderWeeklies();};
 }
 
