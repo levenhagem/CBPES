@@ -4491,3 +4491,21 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-podium .cbpes-opening-champion strong{color:#654200}
 .cbpes-opening-podium .cbpes-opening-runnerup strong{color:#3c4b5a}
 @media(max-width:520px){.cbpes-opening-podium{grid-template-columns:1fr}}
+
+
+/* Partidas consolidadas: bloco histórico discreto ao fim de Jogos */
+.cbpes-opening-consolidated{margin-top:34px;border-top:1px solid var(--line);padding-top:18px}
+.cbpes-opening-consolidated h3{font-size:15px;font-weight:800;letter-spacing:.02em;margin:0 0 4px}
+.cbpes-opening-consolidated-note{font-size:10px;color:var(--muted);font-weight:650;letter-spacing:.05em;margin:0 0 14px}
+.cbpes-opening-consolidated-list{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cbpes-opening-consolidated-game{display:grid;grid-template-columns:minmax(0,1fr) 68px minmax(0,1fr);align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line);background:var(--card,#fff)}
+.cbpes-opening-consolidated-game:last-child{border-bottom:0}
+.cbpes-opening-consolidated-game:nth-child(even){background:rgba(127,140,148,.035)}
+.cbpes-opening-consolidated-side{min-width:0;display:flex;flex-direction:column;gap:4px}
+.cbpes-opening-consolidated-side>a{font-size:12px;font-weight:750;line-height:1.3;color:inherit;text-decoration:none}
+.cbpes-opening-consolidated-side small{font-size:11px;color:var(--muted);line-height:1.3}
+.cbpes-opening-consolidated-side small a{color:inherit;text-decoration:none}
+.cbpes-opening-consolidated-game>div:last-child .cbpes-opening-consolidated-side{text-align:right;align-items:flex-end}
+.cbpes-opening-consolidated-score{text-align:center;font-size:15px;white-space:nowrap}
+.cbpes-opening-consolidated-score span{font-weight:400;color:var(--muted)}
+@media(max-width:500px){.cbpes-opening-consolidated-game{grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);gap:5px;padding:10px 8px}.cbpes-opening-consolidated-side>a{font-size:11px}}
