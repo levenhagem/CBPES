@@ -19,7 +19,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
- <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><button data-page="stats">ESTATÍSTICAS</button></nav>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a></div></div></nav>
  <span class="season" id="season"></span>
 </div></header>
 <main>
@@ -56,10 +56,12 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <section id="stats" class="section">
  <div class="page-title"><div><div class="eyebrow">Dados da competição</div><h1>Estatísticas</h1><div class="sub">Estatísticas oficiais por clubes e jogadores; amistosos por técnicos.</div></div></div>
  <div class="cols3 cbpes-stats-grid" id="statsGrid"></div>
- <div id="records" class="cbpes-stats-records"><div class="page-title"><div><div class="eyebrow">Livro dos recordes</div><h2>Recordes</h2><div class="sub">Marcas históricas de partidas, clubes, técnicos e competições.</div></div></div><div id="recordsView"></div></div>
+ 
 </section>
 
 
+
+<section id="records" class="section"><div class="page-title"><div><div class="eyebrow">Livro dos recordes</div><h1>Recordes</h1><div class="sub">Marcas históricas de partidas, clubes, técnicos e competições.</div></div></div><div id="recordsView"></div></section>
 
 <section id="stats-detail" class="section"><div id="statsDetailView"></div></section>
 
@@ -76,5 +78,5 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="lib.js?v=official-inline-round-20261122"></script>
-<script src="portal.js?v=liga-pro-stats-default-20261122"></script>
+<script src="portal.js?v=stats-dropdown-menu-20261122"></script>
 </body></html>
