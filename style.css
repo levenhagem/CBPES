@@ -4192,3 +4192,11 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-direct-fixture-score strong{text-align:center;font-size:17px;white-space:nowrap;color:#203e30}
 #coachView .cbpes-direct-fixture-result{text-align:right;color:#62786d;font-size:11px}
 @media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:1fr;gap:7px}#coachView .cbpes-direct-fixture-info{flex-direction:row;gap:10px}#coachView .cbpes-direct-fixture-result{text-align:center}#coachView .cbpes-direct-fixture-score{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr)}}
+
+/* Resultado do confronto direto, sob a perspectiva do técnico do perfil. */
+#coachView .cbpes-direct-fixture-result{display:flex;justify-content:flex-end;align-items:center}
+#coachView .cbpes-direct-result-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:12px;font-weight:800;line-height:1}
+#coachView .cbpes-direct-result-v{background:#e0f3e8;color:#087c47}
+#coachView .cbpes-direct-result-d{background:#fde7e7;color:#bd3131}
+#coachView .cbpes-direct-result-e{background:#e9ecef;color:#64717b}
+@media(max-width:700px){#coachView .cbpes-direct-fixture-result{justify-content:center}}
