@@ -239,13 +239,15 @@ function renderGames() {
   const ms = D.matches.filter(publicCompetitionMatch).filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')!==openingEditionId).filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
   // Linha do tempo única: partidas oficiais, amistosas e semanais intercaladas
   // pela data/hora de cadastro, sem agrupar resultados por competição ou rodada.
-  const chronological = ms.slice().sort((a,b)=>{
+  const officialRoundsWithResults=new Set(D.matches.filter(m=>m.category==='official'&&m.played&&m.round_id).map(m=>String(m.round_id)));
+  const visibleGames=ms.filter(m=>m.category!=='official'||filter==='next'||!m.round_id||officialRoundsWithResults.has(String(m.round_id)));
+  const chronological = visibleGames.slice().sort((a,b)=>{
     if(Boolean(a.played)!==Boolean(b.played))return a.played?-1:1;
     const createdA=String(a.created_at||''),createdB=String(b.created_at||'');
     if(createdA!==createdB)return createdB.localeCompare(createdA);
     return (Number(b.seq)||0)-(Number(a.seq)||0);
   });
-  const timelineHtml = chronological.map(m=>matchRow(m,m.category==='weekly')).join('');
+  const timelineHtml = chronological.map(m=>matchRow(m,m.category==='weekly',true)).join('');
   const archived=D.matches.filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')===openingEditionId && m.category==='official' && m.played);
   const showArchive=['all','done','official'].includes(filter);
   const archiveHtml=showArchive&&archived.length?'<section class="cbpes-opening-consolidated"><h3>TORNEIO DE ABERTURA 2026</h3><p class="cbpes-opening-consolidated-note">PARTIDAS OFICIAIS CONSOLIDADAS</p><div class="cbpes-opening-consolidated-list">'+archived.slice().sort((a,b)=>{const ra=Number((a.group_name||'').match(/RODADA (\\d+)/)?.[1]||0),rb=Number((b.group_name||'').match(/RODADA (\\d+)/)?.[1]||0);return ra-rb||(a.display_order||0)-(b.display_order||0)||(a.seq||0)-(b.seq||0)}).map(openingConsolidatedRow).join('')+'</div></section>':'';
