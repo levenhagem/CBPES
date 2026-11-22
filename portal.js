@@ -25,7 +25,7 @@ const publicCompetitionMatch = m => {
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
   const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
-  const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
+  const id = profile ? parts[0] : (raw==='records' ? 'stats' : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home'))));
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
   if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
