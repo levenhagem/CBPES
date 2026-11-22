@@ -939,7 +939,6 @@ function renderCoach(name) {
 }
 
 
-let recordsTab='matches';
 const recordGroups=[
  ['matches','PARTIDAS',['Maior goleada da história','Partida com mais gols','Maior empate']],
  ['clubs','CLUBES',['Maior sequência de vitórias','Maior invencibilidade','Maior sequência sem vencer','Mais gols marcados em uma competição','Menos gols sofridos em uma competição','Mais títulos conquistados']],
@@ -1098,10 +1097,12 @@ function recordCards(){
 }
 function renderRecords(){
   const root=$('recordsView');if(!root||!D)return;
-  const groups=recordCards(),tab=recordGroups.find(g=>g[0]===recordsTab)||recordGroups[0];
-  const tabs='<div class="stats-category-filter cbpes-record-tabs">'+recordGroups.map(g=>'<button type="button" data-record-tab="'+g[0]+'" class="'+(g[0]===recordsTab?'selected':'')+'">'+g[1]+'</button>').join('')+'</div>';
-  root.innerHTML=tabs+'<div class="cols3 cbpes-stats-grid">'+groups[tab[0]].map(c=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(c.title).toUpperCase()+'</h2></div><div class="cardbody">'+(c.rows.length?c.rows.map(x=>{const item=c.render(x);return '<div class="player cbpes-record-entry"><div><b>'+item.value+'</b>'+(item.detail?'<small>'+item.detail+'</small>':'')+'</div><span class="number">'+esc(item.metric||'')+'</span></div>';}).join(''):empty('Sem dados suficientes para este recorde.'))+'</div></div>').join('')+'</div>';
-  root.onclick=e=>{const b=e.target.closest('[data-record-tab]');if(b){recordsTab=b.dataset.recordTab;renderRecords();}};
+  const groups=recordCards();
+  const records=recordGroups.flatMap(group=>groups[group[0]]||[]);
+  root.innerHTML='<div class="cbpes-records-list">'+records.map(c=>
+    '<div class="card cbpes-stats-card cbpes-record-row"><div class="cardhead"><h2>'+esc(c.title).toUpperCase()+'</h2></div><div class="cardbody">'+
+    (c.rows.length?c.rows.map(x=>{const item=c.render(x);return '<div class="player cbpes-record-entry"><div><b>'+item.value+'</b>'+(item.detail?'<small>'+item.detail+'</small>':'')+'</div><span class="number">'+esc(item.metric||'')+'</span></div>';}).join(''):empty('Sem dados suficientes para este recorde.'))+
+    '</div></div>').join('')+'</div>';
 }
 
 function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
