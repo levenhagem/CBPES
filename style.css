@@ -4235,3 +4235,41 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   margin:0!important;
   align-self:start!important;
 }
+
+
+/* Torneio de Abertura: arquivo histórico público */
+.cbpes-opening-history{max-width:1100px;margin:0 auto;padding:12px 0 28px}
+.cbpes-opening-podium{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 22px}
+.cbpes-opening-podium>div{display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-top:3px solid #d1a431;padding:17px;background:var(--card,#fff)}
+.cbpes-opening-podium>div+div{border-top-color:#9ba5ad}
+.cbpes-opening-podium span{font-size:11px;font-weight:800;letter-spacing:.04em}
+.cbpes-opening-podium strong{font-size:23px}
+.cbpes-opening-podium small{color:var(--muted)}
+.cbpes-opening-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin:12px 0 20px;overflow:auto}
+.cbpes-opening-tabs button{background:transparent;border:0;border-bottom:3px solid transparent;padding:12px 17px;color:var(--muted);font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+.cbpes-opening-tabs button.active{color:var(--green,#087b4a);border-bottom-color:var(--green,#087b4a)}
+.cbpes-opening-table{width:100%;border-collapse:collapse;min-width:690px;font-size:13px}
+.cbpes-opening-table th{text-align:left;background:var(--bg,#f5f7f7);font-size:11px;padding:11px 9px}
+.cbpes-opening-table td{padding:10px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+.cbpes-opening-table tr:nth-child(even){background:rgba(127,140,148,.045)}
+.cbpes-opening-table small{font-weight:400;color:var(--muted)}
+.cbpes-opening-round-nav{display:flex;align-items:center;justify-content:space-between;max-width:480px;margin:0 auto 16px;border-bottom:1px solid var(--line)}
+.cbpes-opening-round-nav button{border:0;background:transparent;font-size:26px;cursor:pointer;padding:8px 18px}
+.cbpes-opening-round-nav button:disabled{opacity:.25;cursor:default}
+.cbpes-opening-games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.cbpes-opening-game{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:13px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.cbpes-opening-game>div:last-child{text-align:right}
+.cbpes-opening-game small{font-size:11px;color:var(--muted);font-weight:400}
+.cbpes-opening-score{white-space:nowrap;font-variant-numeric:tabular-nums}
+.cbpes-opening-bracket{display:grid;grid-template-columns:repeat(4,minmax(210px,1fr));gap:14px;overflow-x:auto}
+.cbpes-opening-bracket section{min-width:0}
+.cbpes-opening-bracket h3{font-size:12px;margin:0 0 14px;padding:10px 0;border-bottom:2px solid var(--line)}
+.cbpes-opening-ties{display:flex;flex-direction:column;gap:12px}
+.cbpes-opening-tie{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cbpes-opening-tie-title{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:10px;background:rgba(127,140,148,.07);font-size:12px}
+.cbpes-opening-tie-title b{white-space:nowrap}
+.cbpes-opening-leg{padding:5px 8px}
+.cbpes-opening-leg>small{font-size:9px;color:var(--muted);font-weight:800}
+.cbpes-opening-leg .cbpes-opening-game{padding:6px 0;font-size:11px;gap:5px}
+.cbpes-opening-leg .cbpes-opening-game small{font-size:10px}
+@media(max-width:720px){.cbpes-opening-games{grid-template-columns:1fr}.cbpes-opening-bracket{grid-template-columns:repeat(4,230px)}.cbpes-opening-podium strong{font-size:19px}.cbpes-opening-game{gap:6px;font-size:12px}}
