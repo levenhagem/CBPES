@@ -302,7 +302,7 @@ function renderOpeningArchive(){
   const participant=(coach,team)=>openingTeamView(coach,team||clubByCoach.get(coachKey(coach))||'');
   const score=x=>'<strong>'+esc(String(x.home_score??'–'))+' <span>–</span> '+esc(String(x.away_score??'–'))+'</strong>';
   const game=x=>'<div class="cbpes-opening-game cbpes-opening-fixture"><div>'+participant(x.home_coach,x.home_team)+'</div><div class="cbpes-opening-score">'+score(x)+'</div><div>'+participant(x.away_coach,x.away_team)+'</div></div>';
-  const podium='<div class="cbpes-opening-podium"><div><span>🥇 CAMPEÃO</span><strong>Tirol</strong><small>AJ Auxerre</small></div><div><span>🥈 VICE-CAMPEÃO</span><strong>William Hard</strong><small>Olympiacos Piraeus</small></div></div>';
+  const podium='<div class="cbpes-opening-podium"><div class="cbpes-opening-champion"><span class="cbpes-opening-medal">🏆 CAMPEÃO</span><strong>Tirol</strong><small>Auxerre</small></div><div class="cbpes-opening-runnerup"><span class="cbpes-opening-medal">🥈 VICE-CAMPEÃO</span><strong>William Hard</strong><small>Olympiacos Piraeus</small></div></div>';
   let content='';
   if(openingArchiveTab==='classification'){
     const table='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>#</th><th>CLUBE / TÉCNICO</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+standing.map(x=>'<tr class="'+(Number(x.position)>=1&&Number(x.position)<=16?'cbpes-opening-qualified':'')+'"><td>'+esc(String(x.position))+'</td><td>'+participant(x.coach,x.team)+'</td>'+[x.points,x.played,x.wins,x.draws,x.losses,x.goals_for,x.goals_against,x.goal_difference].map(v=>'<td>'+esc(String(v??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
@@ -323,7 +323,7 @@ function renderOpeningArchive(){
     };
     content='<div class="cbpes-opening-knockout"><div class="cbpes-opening-stage-heading"><h3>'+stages[phaseIndex][1]+'</h3><small>'+games.length+' PARTIDAS</small></div><div class="cbpes-opening-ties">'+ties.map(tieHtml).join('')+'</div></div>';
   }
-  root.innerHTML='<div class="cbpes-opening-history"><p class="admin-help">ARQUIVO HISTÓRICO · OPTIJUEGOS · 2026</p>'+podium+phaseNav+'<div class="cbpes-competition-neutral">'+content+'</div><p class="admin-help">Resultados históricos preservados. Possíveis duplicidades com o PES6.es não são adicionadas novamente às estatísticas gerais.</p></div>';
+  root.innerHTML='<div class="cbpes-opening-history">'+podium+phaseNav+'<div class="cbpes-competition-neutral">'+content+'</div></div>';
   root.onclick=e=>{
     const phase=e.target.closest('[data-opening-phase]'),round=e.target.closest('[data-opening-round]');
     if(phase){const next=Math.max(0,Math.min(stages.length-1,phaseIndex+Number(phase.dataset.openingPhase)));openingArchiveTab=stages[next][0];renderOpeningArchive();}
