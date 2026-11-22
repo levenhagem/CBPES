@@ -4387,3 +4387,14 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-knockout .cbpes-opening-leg .cbpes-opening-score strong{font-size:18px;font-weight:800}
 .cbpes-opening-knockout .cbpes-opening-leg .cbpes-opening-team-names small{color:#758596}
 .cbpes-opening-penalty-note{display:block;margin:6px 0 0;color:var(--muted);font-size:11px}
+
+
+/* Zona de classificação às oitavas: 1º ao 16º, verde */
+.cbpes-opening-table tr.cbpes-opening-qualified td:first-child{
+  box-shadow:inset 4px 0 0 #229c55;
+  color:#187c43;
+  font-weight:800;
+}
+.cbpes-opening-table tr.cbpes-opening-qualified td:nth-child(2){background:rgba(34,156,85,.045)}
+.cbpes-opening-zone-legend{display:flex;align-items:center;gap:8px;margin-top:11px;font-size:12px;font-weight:700;color:#247b49}
+.cbpes-opening-zone-dot{width:10px;height:10px;border-radius:2px;background:#229c55;flex:none}
