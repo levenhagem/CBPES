@@ -4330,3 +4330,34 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 .cbpes-opening-leg>small{display:block;margin-bottom:4px}
 .cbpes-opening-leg .cbpes-opening-fixture{border-bottom:0}
 @media(max-width:650px){.cbpes-opening-playoff-score{gap:7px}.cbpes-opening-playoff-score>strong{font-size:17px}.cbpes-opening-legs{grid-template-columns:1fr}.cbpes-opening-playoff-card{padding:10px}}
+
+
+/* Torneio de Abertura: partidas de ida e volta empilhadas, com cartões iguais e neutros. */
+.cbpes-opening-knockout .cbpes-opening-legs{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+}
+.cbpes-opening-knockout .cbpes-opening-leg{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  box-sizing:border-box;
+  width:100%;
+  min-height:78px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--card,#fff);
+}
+.cbpes-opening-knockout .cbpes-opening-leg>small{
+  margin-bottom:6px;
+  color:var(--muted);
+}
+.cbpes-opening-knockout .cbpes-opening-leg .cbpes-opening-fixture{
+  width:100%;
+  min-height:42px;
+  padding:5px 0;
+  background:transparent;
+}
