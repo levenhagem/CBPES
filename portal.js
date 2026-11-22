@@ -2,7 +2,7 @@ let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'cu
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'weeklies', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'weeklies', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
@@ -938,7 +938,172 @@ function renderCoach(name) {
   if(compareSelect) compareSelect.addEventListener('change',()=>renderCoachComparison(compareSelect.value));
 }
 
-function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(value,decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
+
+let recordsTab='matches';
+const recordGroups=[
+ ['matches','PARTIDAS',['Maior goleada da história','Partida com mais gols','Maior empate']],
+ ['clubs','CLUBES',['Maior sequência de vitórias','Maior invencibilidade','Maior sequência sem vencer','Mais gols marcados em uma competição','Menos gols sofridos em uma competição','Mais títulos conquistados']],
+ ['coaches','TÉCNICOS',['Técnico com mais vitórias na história','Maior sequência de vitórias','Maior sequência invicta','Maior número de títulos','Mais finais disputadas','Maior freguesia histórica contra outro técnico','Maior vencedor de semanais']],
+ ['players','JOGADORES',['Mais gols em uma partida','Mais gols em uma edição','Maior sequência de jogos marcando','Mais participações em gols em uma edição']],
+ ['competitions','COMPETIÇÕES',['Campeão com melhor campanha','Campeão com mais gols marcados','Campeão com menos gols sofridos','Maior pontuação em uma edição de liga','Maior diferença de pontos entre campeão e vice','Maior número de gols em uma edição']]
+];
+const recordDate=d=>d?fd(String(d).slice(0,10)):'Data não informada';
+const recordMatch=m=>m?esc(m.homeName)+' '+m.hs+'–'+m.as+' '+esc(m.awayName):'Partida não identificada';
+const recordMeta=m=>m?recordMatch(m)+' · '+recordDate(m.date):'';
+const recordLink=(name,type,id)=>type==='coach'?'<a href="#coach/'+encodeURIComponent(name)+'">'+esc(name)+'</a>':id?'<a href="#team/'+encodeURIComponent(id)+'">'+esc(name)+'</a>':esc(name);
+function recordFixtures(){
+  const items=D.matches.filter(m=>m.played&&publicCompetitionMatch(m)).map(m=>({
+    id:m.id,date:m.date,seq:m.seq,category:m.category,homeId:m.home_id,awayId:m.away_id,
+    homeName:m.home.name,awayName:m.away.name,homeCoach:m.home_coach_name||m.home.coach_name,
+    awayCoach:m.away_coach_name||m.away.coach_name,hs:Number(m.home_score),as:Number(m.away_score),
+    edition:m.category==='official'?String(m.official_edition_id||m.round?.official_edition_id||''):m.category==='weekly'?String(m.weekly_id||''):'',
+    round:m.round,raw:m
+  }));
+  (careerArchive||[]).forEach((m,i)=>{
+    const hs=Number(m.home_score),as=Number(m.away_score);
+    if(!Number.isFinite(hs)||!Number.isFinite(as))return;
+    items.push({id:'archive-'+i,date:m.played_on||m.match_date||m.date||null,seq:m.seq,
+      category:'friendly',homeId:null,awayId:null,homeName:m.home_club||m.home_coach||'Mandante',
+      awayName:m.away_club||m.away_coach||'Visitante',homeCoach:m.home_coach,awayCoach:m.away_coach,
+      hs,as,edition:'',round:null,raw:m,archive:true});
+  });
+  return items.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||Number(a.seq||0)-Number(b.seq||0)||String(a.id).localeCompare(String(b.id)));
+}
+function recordStreaks(fixtures,kind,mode){
+  const per=new Map(),results=[];
+  fixtures.filter(m=>m.date).forEach(m=>{
+    const sides=kind==='coach'
+      ?[[m.homeCoach,m.hs,m.as],[m.awayCoach,m.as,m.hs]]
+      :[[m.homeId,m.hs,m.as],[m.awayId,m.as,m.hs]];
+    sides.forEach(([id,gf,ga])=>{
+      if(!id)return;
+      const key=String(id).toLocaleLowerCase(),current=per.get(key)||{id,name:kind==='coach'?id:(D.participants.find(p=>String(p.id)===key)?.name||''),count:0,start:null,end:null};
+      const qualifies=mode==='wins'?gf>ga:mode==='unbeaten'?gf>=ga:gf<=ga;
+      if(qualifies){if(!current.count)current.start=m;current.count++;current.end=m;}
+      else{if(current.count)results.push({...current,active:false});current.count=0;current.start=null;current.end=null;}
+      per.set(key,current);
+    });
+  });
+  per.forEach(x=>{if(x.count)results.push({...x,active:true});});
+  return results.sort((a,b)=>b.count-a.count);
+}
+function recordCards(){
+  const fixtures=recordFixtures(),official=fixtures.filter(m=>m.category==='official'),groups={matches:[],clubs:[],coaches:[],players:[],competitions:[]};
+  const put=(group,title,rows,render)=>groups[group].push({title,rows:rows||[],render});
+  const top=(arr,value,dir='max')=>{
+    const valid=arr.filter(x=>Number.isFinite(Number(value(x))));
+    if(!valid.length)return [];
+    const best=dir==='min'?Math.min(...valid.map(value)):Math.max(...valid.map(value));
+    return valid.filter(x=>value(x)===best);
+  };
+  const matchRow=m=>({value:recordMatch(m),detail:recordDate(m.date)});
+  put('matches','Maior goleada da história',top(fixtures,m=>Math.abs(m.hs-m.as)),m=>({...matchRow(m),metric:Math.abs(m.hs-m.as)+' gols de diferença'}));
+  put('matches','Partida com mais gols',top(fixtures,m=>m.hs+m.as),m=>({...matchRow(m),metric:m.hs+m.as+' gols'}));
+  put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
+  const streakCard=(group,title,kind,mode)=>{
+    const arr=recordStreaks(fixtures,kind,mode);
+    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>FIM · '+recordMeta(x.end)+(x.active?' · Sequência ativa':'')}));
+  };
+  streakCard('clubs','Maior sequência de vitórias','club','wins');
+  streakCard('clubs','Maior invencibilidade','club','unbeaten');
+  streakCard('clubs','Maior sequência sem vencer','club','winless');
+  const editions=new Map();
+  fixtures.filter(m=>m.edition).forEach(m=>{
+    const key=m.category+':'+m.edition;
+    if(!editions.has(key))editions.set(key,[]);
+    editions.get(key).push(m);
+  });
+  const editionName=(ms)=>{
+    const m=ms[0];
+    if(m.category==='weekly')return m.raw.weekly?.name||'Semanal';
+    const e=D.officialEditions.find(e=>String(e.id)===m.edition);
+    const c=D.officialCompetitions.find(c=>String(c.id)===String(e?.competition_id));
+    return [c?.name,e?.name].filter(Boolean).join(' · ')||'Competição oficial';
+  };
+  const teamEditions=[];
+  editions.forEach(ms=>{
+    const map=new Map();
+    ms.forEach(m=>[[m.homeId,m.homeName,m.hs,m.as],[m.awayId,m.awayName,m.as,m.hs]].forEach(([id,name,gf,ga])=>{
+      if(!id)return;
+      if(!map.has(id))map.set(id,{id,name,gf:0,ga:0,j:0,v:0,e:0,pts:0,competition:editionName(ms),matches:ms});
+      const x=map.get(id);x.gf+=gf;x.ga+=ga;x.j++;x.v+=gf>ga?1:0;x.e+=gf===ga?1:0;x.pts+=gf>ga?3:gf===ga?1:0;
+    }));
+    teamEditions.push(...map.values());
+  });
+  const teRow=x=>({value:recordLink(x.name,'club',x.id),detail:esc(x.competition)});
+  put('clubs','Mais gols marcados em uma competição',top(teamEditions,x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols'}));
+  put('clubs','Menos gols sofridos em uma competição',top(teamEditions.filter(x=>x.j>=2),x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
+  const trophies=D.coachTrophies||[];
+  const titleRows=trophies.map(t=>({coach:t.coach_name||D.coachProfiles.find(c=>String(c.id)===String(t.coach_id))?.name,teamId:t.participant_id||t.team_id,category:t.category||t.type||'official'}));
+  const titleCounts=(key,filter)=>{const map=new Map();titleRows.filter(filter||(()=>true)).forEach(t=>{const name=key(t);if(name)map.set(String(name),(map.get(String(name))||0)+1);});return [...map].map(([name,count])=>({name,count}));};
+  put('clubs','Mais títulos conquistados',top(titleCounts(t=>t.teamId),x=>x.count),x=>({value:recordLink(D.participants.find(p=>String(p.id)===x.name)?.name||x.name,'club',x.name),metric:x.count+' títulos'}));
+  const coachMatches=new Map();
+  fixtures.forEach(m=>[[m.homeCoach,m.hs,m.as,m.awayCoach],[m.awayCoach,m.as,m.hs,m.homeCoach]].forEach(([name,gf,ga,opponent])=>{
+    if(!name)return;
+    const key=String(name).toLocaleLowerCase();
+    if(!coachMatches.has(key))coachMatches.set(key,{name,wins:0,finals:new Set(),opponents:new Map()});
+    const x=coachMatches.get(key);if(gf>ga)x.wins++;
+    if(opponent){const o=String(opponent).toLocaleLowerCase(),p=x.opponents.get(o)||{name:opponent,wins:0,losses:0};if(gf>ga)p.wins++;if(gf<ga)p.losses++;x.opponents.set(o,p);}
+  }));
+  const coaches=[...coachMatches.values()];
+  put('coaches','Técnico com mais vitórias na história',top(coaches,x=>x.wins),x=>({value:recordLink(x.name,'coach'),metric:x.wins+' vitórias'}));
+  streakCard('coaches','Maior sequência de vitórias','coach','wins');
+  streakCard('coaches','Maior sequência invicta','coach','unbeaten');
+  put('coaches','Maior número de títulos',top(titleCounts(t=>t.coach),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos'}));
+  const finals=fixtures.filter(m=>/final/i.test(String(m.round?.name||''))&&!/semi|quart|oitav|terceiro|3º/i.test(String(m.round?.name||'')));
+  const finalMap=new Map();
+  finals.forEach(m=>[m.homeCoach,m.awayCoach].forEach(n=>{if(n){const key=n.toLocaleLowerCase();if(!finalMap.has(key))finalMap.set(key,{name:n,ids:new Set()});finalMap.get(key).ids.add(m.edition||m.id);}}));
+  put('coaches','Mais finais disputadas',top([...finalMap.values()],x=>x.ids.size),x=>({value:recordLink(x.name,'coach'),metric:x.ids.size+' finais'}));
+  const rivals=coaches.flatMap(c=>[...c.opponents.values()].map(o=>({coach:c.name,opponent:o.name,wins:o.wins,losses:o.losses,lead:o.wins-o.losses}))).filter(x=>x.lead>0);
+  put('coaches','Maior freguesia histórica contra outro técnico',top(rivals,x=>x.lead),x=>({value:recordLink(x.coach,'coach')+' contra '+recordLink(x.opponent,'coach'),metric:x.wins+'–'+x.losses+' · saldo +'+x.lead}));
+  const weeklyChampions=(D.weeklies||[]).filter(w=>w.champion_id).map(w=>({name:w.champion_coach_name||D.participants.find(p=>String(p.id)===String(w.champion_id))?.coach_name}));
+  const weekMap=new Map();weeklyChampions.forEach(x=>{if(x.name)weekMap.set(x.name,(weekMap.get(x.name)||0)+1);});
+  put('coaches','Maior vencedor de semanais',top([...weekMap].map(([name,count])=>({name,count})),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos semanais'}));
+  const officialIds=new Set(official.map(m=>String(m.id)));
+  const scorerEvents=(D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.scorer_id);
+  const players=new Map(D.players.map(p=>[String(p.id),p]));
+  const playerEvents=new Map();
+  scorerEvents.forEach(e=>{const key=String(e.match_id)+':'+e.scorer_id;playerEvents.set(key,(playerEvents.get(key)||0)+1);});
+  const playerName=id=>{const p=players.get(String(id));return p?esc(p.name)+' · '+esc(p.team?.name||''):esc(id);};
+  const gameGoals=[...playerEvents].map(([key,goals])=>{const split=key.indexOf(':');return {match:official.find(m=>String(m.id)===key.slice(0,split)),player:key.slice(split+1),goals};});
+  put('players','Mais gols em uma partida',top(gameGoals,x=>x.goals),x=>({value:playerName(x.player),metric:x.goals+' gols',detail:recordMeta(x.match)}));
+  const playerEdition=new Map();
+  scorerEvents.forEach(e=>{const m=official.find(m=>String(m.id)===String(e.match_id));if(!m?.edition)return;const key=e.scorer_id+':'+m.edition;const x=playerEdition.get(key)||{player:e.scorer_id,edition:m.edition,goals:0,ga:0};x.goals++;x.ga++;playerEdition.set(key,x);});
+  (D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.assist_id).forEach(e=>{const m=official.find(m=>String(m.id)===String(e.match_id));if(!m?.edition)return;const key=e.assist_id+':'+m.edition;const x=playerEdition.get(key)||{player:e.assist_id,edition:m.edition,goals:0,ga:0};x.ga++;playerEdition.set(key,x);});
+  const pe=[...playerEdition.values()];
+  const peDetail=x=>editionName(editions.get('official:'+x.edition)||[]);
+  put('players','Mais gols em uma edição',top(pe,x=>x.goals),x=>({value:playerName(x.player),metric:x.goals+' gols',detail:esc(peDetail(x))}));
+  const playerStreaks=[];
+  const playerGames=new Map();
+  official.filter(m=>m.date).forEach(m=>{
+    [m.homeId,m.awayId].forEach(id=>{if(!id)return;const ps=D.players.filter(p=>String(p.participant_id)===String(id));ps.forEach(p=>{const k=String(p.id),current=playerGames.get(k)||{player:k,count:0,start:null,end:null};const g=playerEvents.get(String(m.id)+':'+k)||0;if(g){if(!current.count)current.start=m;current.count++;current.end=m;}else{if(current.count)playerStreaks.push({...current});current.count=0;current.start=null;current.end=null;}playerGames.set(k,current);});});
+  });
+  playerGames.forEach(x=>{if(x.count)playerStreaks.push({...x});});
+  put('players','Maior sequência de jogos marcando',top(playerStreaks,x=>x.count),x=>({value:playerName(x.player),metric:x.count+' jogos',detail:'INÍCIO · '+recordMeta(x.start)+'<br>FIM · '+recordMeta(x.end)}));
+  put('players','Mais participações em gols em uma edição',top(pe,x=>x.ga),x=>({value:playerName(x.player),metric:x.ga+' participações',detail:esc(peDetail(x))}));
+  const champions=[];
+  (D.officialEditions||[]).forEach(e=>{if(!publicEditionVisible(e))return;const id=e.champion_id||e.champion_team_id;if(!id)return;const ms=editions.get('official:'+e.id)||[];const x=teamEditions.find(t=>t.id===id&&t.matches===ms);if(x)champions.push(x);});
+  (D.weeklies||[]).forEach(w=>{if(!w.champion_id)return;const ms=editions.get('weekly:'+w.id)||[];const x=teamEditions.find(t=>String(t.id)===String(w.champion_id)&&t.matches===ms);if(x)champions.push(x);});
+  put('competitions','Campeão com melhor campanha',top(champions.filter(x=>x.j),x=>x.pts/(x.j*3)),x=>({...teRow(x),metric:fmt1(100*x.pts/(x.j*3))+'%'}));
+  put('competitions','Campeão com mais gols marcados',top(champions,x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols'}));
+  put('competitions','Campeão com menos gols sofridos',top(champions,x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols'}));
+  const leagueTeams=teamEditions.filter(x=>{const m=x.matches[0];if(m.category!=='official')return false;const e=D.officialEditions.find(e=>String(e.id)===m.edition);return /liga|pontos corridos/i.test(String(e?.name||'')+' '+String(D.officialCompetitions.find(c=>String(c.id)===String(e?.competition_id))?.name||''));});
+  put('competitions','Maior pontuação em uma edição de liga',top(leagueTeams,x=>x.pts),x=>({...teRow(x),metric:x.pts+' pontos'}));
+  const gaps=[];editions.forEach(ms=>{const table=teamEditions.filter(x=>x.matches===ms).sort((a,b)=>b.pts-a.pts);if(table.length>=2)gaps.push({champ:table[0],runner:table[1],gap:table[0].pts-table[1].pts});});
+  put('competitions','Maior diferença de pontos entre campeão e vice',top(gaps,x=>x.gap),x=>({value:recordLink(x.champ.name,'club',x.champ.id)+' / '+recordLink(x.runner.name,'club',x.runner.id),metric:x.gap+' pontos',detail:esc(x.champ.competition)}));
+  const editionTotals=[...editions.values()].map(ms=>({name:editionName(ms),goals:ms.reduce((sum,m)=>sum+m.hs+m.as,0)}));
+  put('competitions','Maior número de gols em uma edição',top(editionTotals,x=>x.goals),x=>({value:esc(x.name),metric:x.goals+' gols'}));
+  return groups;
+}
+function renderRecords(){
+  const root=$('recordsView');if(!root||!D)return;
+  const groups=recordCards(),tab=recordGroups.find(g=>g[0]===recordsTab)||recordGroups[0];
+  const tabs='<div class="stats-category-filter cbpes-record-tabs">'+recordGroups.map(g=>'<button type="button" data-record-tab="'+g[0]+'" class="'+(g[0]===recordsTab?'selected':'')+'">'+g[1]+'</button>').join('')+'</div>';
+  root.innerHTML=tabs+'<div class="cols3 cbpes-stats-grid">'+groups[tab[0]].map(c=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(c.title).toUpperCase()+'</h2></div><div class="cardbody">'+(c.rows.length?c.rows.map(x=>{const item=c.render(x);return '<div class="player cbpes-record-entry"><div><b>'+item.value+'</b>'+(item.detail?'<small>'+item.detail+'</small>':'')+'</div><span class="number">'+esc(item.metric||'')+'</span></div>';}).join(''):empty('Sem dados suficientes para este recorde.'))+'</div></div>').join('')+'</div>';
+  root.onclick=e=>{const b=e.target.closest('[data-record-tab]');if(b){recordsTab=b.dataset.recordTab;renderRecords();}};
+}
+
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
