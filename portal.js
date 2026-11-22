@@ -309,7 +309,7 @@ function renderOpeningArchive(){
       const first=matches[0];if(!first)return '';
       const penalty=matches.find(x=>x.penalty_shootout)?.penalty_shootout;
       const note=penalty?'<small class="cbpes-opening-penalty-note">Decisão por pênaltis</small>':'';
-      return '<article class="cbpes-opening-tie"><h4 class="cbpes-opening-tie-heading">'+stages[phaseIndex][1]+' • CHAVE '+tie+'</h4><div class="cbpes-opening-legs">'+matches.map((m,i)=>'<div class="cbpes-opening-leg"><small>'+(matches.length===1?'PARTIDA ÚNICA':i===0?'IDA':'VOLTA')+'</small>'+game(m)+'</div>').join('')+'</div>'+note+'</article>';
+      return '<article class="cbpes-opening-tie"><h4 class="cbpes-opening-tie-heading">'+stages[phaseIndex][1]+(phase==='final'?'':' • CHAVE '+tie)+'</h4><div class="cbpes-opening-legs">'+matches.map((m,i)=>'<div class="cbpes-opening-leg"><small>'+(matches.length===1?'PARTIDA ÚNICA':i===0?'IDA':i===1?'VOLTA':'TERCEIRO JOGO')+'</small>'+game(m)+'</div>').join('')+'</div>'+note+'</article>';
     };
     content='<div class="cbpes-opening-knockout"><div class="cbpes-opening-stage-heading"><h3>'+stages[phaseIndex][1]+'</h3><small>'+games.length+' PARTIDAS</small></div><div class="cbpes-opening-ties">'+ties.map(tieHtml).join('')+'</div></div>';
   }
