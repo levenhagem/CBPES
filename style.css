@@ -4579,58 +4579,54 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 @media(max-width:560px){#games .cbpes-match-round-label{font-size:9px;white-space:normal}#games .cbpes-match-top{column-gap:6px}}
 
 
-/* Cards mobile: duas colunas espelhadas, com escudos nas bordas
-   e textos alinhados à mesma margem interna. */
+/* Cards mobile: preservar escudo junto ao nome e técnico em ambos os lados.
+   Margens iguais, sem inverter a ordem dos elementos internos. */
 @media(max-width:620px){
  :is(#games,#latest,#recent,#next) .cbpes-match-main{
-  display:grid!important;
   grid-template-columns:minmax(0,1fr) 55px minmax(0,1fr)!important;
-  column-gap:5px!important;
+  gap:5px!important;
   width:100%!important;
   max-width:none!important;
-  justify-content:stretch!important;
  }
  :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team{
-  min-width:0!important;
+  box-sizing:border-box!important;
   width:100%!important;
+  min-width:0!important;
   padding:0 6px!important;
   justify-self:stretch!important;
-  align-items:stretch!important;
+ }
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.home{
+  align-items:flex-start!important;
+ }
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away{
+  align-items:flex-end!important;
  }
  :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team .cbpes-match-club{
   display:grid!important;
-  width:100%!important;
-  max-width:100%!important;
-  grid-template-columns:30px minmax(0,1fr)!important;
+  grid-template-columns:30px minmax(0,max-content)!important;
   gap:5px!important;
-  margin:0!important;
   align-items:center!important;
+  justify-content:start!important;
+  width:max-content!important;
+  max-width:100%!important;
  }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.home .cbpes-match-club-text{
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.home .cbpes-match-club{
+  margin:0 auto 0 0!important;
+ }
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
+  margin:0 0 0 auto!important;
+ }
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team .cbpes-crest{
+  grid-column:1!important;
+  grid-row:1!important;
+ }
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team .cbpes-match-club-text{
   grid-column:2!important;
+  grid-row:1!important;
   align-items:flex-start!important;
   text-align:left!important;
  }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
-  grid-template-columns:minmax(0,1fr) 30px!important;
- }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .cbpes-crest{
-  grid-column:2!important;
-  grid-row:1!important;
-  justify-self:end!important;
- }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text{
-  grid-column:1!important;
-  grid-row:1!important;
-  align-items:flex-end!important;
-  text-align:right!important;
-  min-width:0!important;
- }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club-text :is(.cbpes-team-name,small){
-  text-align:right!important;
- }
- :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team.away .featured-juventus-name-row{
-  justify-content:flex-end!important;
-  max-width:100%!important;
+ :is(#games,#latest,#recent,#next) .cbpes-match-main > .cbpes-match-team .cbpes-match-club-text :is(.cbpes-team-name,small){
+  text-align:left!important;
  }
 }
