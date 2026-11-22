@@ -4178,3 +4178,17 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
 #coachView .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
 #coachView .cbpes-compare-track .cbpes-compare-left:only-child,#coachView .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
+
+/* Histórico de confrontos diretos entre técnicos */
+#coachView .cbpes-direct-fixtures{margin-top:20px;border-top:1px solid #dce5e0}
+#coachView .cbpes-direct-fixtures h3{font-family:inherit;font-size:13px;letter-spacing:.02em;margin:18px 0 10px;color:#253f34}
+#coachView .cbpes-direct-fixtures h3 span{color:#82958b;font-weight:500}
+#coachView .cbpes-direct-fixture{display:grid;grid-template-columns:120px minmax(0,1fr) 150px;gap:14px;align-items:center;padding:13px 4px;border-bottom:1px solid #e6ece8}
+#coachView .cbpes-direct-fixture-info{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:#567467}
+#coachView .cbpes-direct-fixture-info small{font-size:11px;font-weight:400;color:#85948b}
+#coachView .cbpes-direct-fixture-score{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);align-items:center;gap:8px;font-size:13px}
+#coachView .cbpes-direct-fixture-score span:first-child{text-align:right}
+#coachView .cbpes-direct-fixture-score span:last-child{text-align:left}
+#coachView .cbpes-direct-fixture-score strong{text-align:center;font-size:17px;white-space:nowrap;color:#203e30}
+#coachView .cbpes-direct-fixture-result{text-align:right;color:#62786d;font-size:11px}
+@media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:1fr;gap:7px}#coachView .cbpes-direct-fixture-info{flex-direction:row;gap:10px}#coachView .cbpes-direct-fixture-result{text-align:center}#coachView .cbpes-direct-fixture-score{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr)}}
