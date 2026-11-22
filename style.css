@@ -4585,6 +4585,7 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   justify-self:stretch!important;
   align-items:flex-end!important;
   text-align:right!important;
+  padding-right:10px!important;
   min-width:0!important;
  }
  #games .cbpes-match-main > .cbpes-match-team.away .cbpes-match-club{
