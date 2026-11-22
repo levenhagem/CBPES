@@ -1,4 +1,4 @@
-let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsDefenseMode = 'per-game';
+let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = 'all', statsDefenseMode = 'per-game';
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 const $ = id => document.getElementById(id);
@@ -518,8 +518,17 @@ const statDefinitions=S=>[
   {key:'losses',title:'DERROTAS',rows:S.der,value:x=>x.d},
   {key:'goal-difference',title:'SALDO DE GOLS',rows:S.st.filter(x=>x.j).sort((a,b)=>b.sg-a.sg),value:x=>sgf(x.sg)}
 ];
+const activeVisibleStatCompetitions=()=> (D.officialCompetitions||[]).filter(c=>
+  c.is_visible!==false && c.is_active!==false && !['inactive','archived','hidden','draft','completed','finished'].includes(String(c.status||'').toLowerCase()) &&
+  (D.officialEditions||[]).some(e=>String(e.competition_id)===String(c.id)&&publicEditionVisible(e))
+);
+const statsCompetitionMatch=m=>{
+  if(statsCompetition==='all')return true;
+  const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
+  return String(edition?.competition_id||'')===statsCompetition;
+};
 const statData=category=>{
-  const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m));
+  const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
   const ids=new Set(ms.map(m=>m.id));
   const filtered={...D,matches:ms,events:D.events.filter(e=>ids.has(e.match_id))};
   return stats(filtered,category);
@@ -592,7 +601,7 @@ const statRowsHtml=(definition,limit=Infinity)=>{
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function generalStatsData(category){
-  const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m));
+  const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
   const records=matches.map(m=>({
     home:m.home?.name||'Mandante',away:m.away?.name||'Visitante',
     homeId:m.home_id,awayId:m.away_id,
@@ -613,9 +622,13 @@ function renderStats(){
   const generalData=generalStatsData(statsCategory),b=generalData.biggest;
   const bigTxt=b?(b.archive?coachLink(b.home):'<a href="#team/'+encodeURIComponent(b.homeId)+'">'+esc(b.home)+'</a>')+' '+b.hs+' x '+b.as+' '+(b.archive?coachLink(b.away):'<a href="#team/'+encodeURIComponent(b.awayId)+'">'+esc(b.away)+'</a>'):'—';
   const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
+  const competitionOptions=statsCategory==='official'?activeVisibleStatCompetitions():[];
+  if(statsCategory==='official'&&statsCompetition!=='all'&&!competitionOptions.some(c=>String(c.id)===statsCompetition))statsCompetition='all';
+  const competitionFilter=statsCategory==='official'?'<div class="cbpes-stats-competition-filter"><label for="statsCompetitionSelect">COMPETIÇÃO</label><select id="statsCompetitionSelect" aria-label="Filtrar estatísticas por competição"><option value="all">TODAS</option>'+competitionOptions.map(c=>'<option value="'+esc(String(c.id))+'"'+(statsCompetition===String(c.id)?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></div>':'';
   const general='<div class="card cbpes-stats-card cbpes-stats-general"><div class="cardhead"><h2>INDICADORES GERAIS</h2></div><div class="cardbody"><div class="stats"><div class="stat"><b>'+generalData.games+'</b><span>Partidas</span></div><div class="stat"><b>'+generalData.goals+'</b><span>Gols</span></div><div class="stat"><b>'+fmt1(generalData.average)+'</b><span>Gols/jogo</span></div></div><div class="player" style="margin-top:8px"><div><b>Maior goleada</b><small>'+bigTxt+'</small></div></div></div></div>';
   const definitions=visibleStatDefinitions(statsCategory);
-  $('statsGrid').innerHTML=filter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
+  $('statsGrid').innerHTML=filter+competitionFilter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
+  $('statsGrid').onchange=e=>{if(e.target.id==='statsCompetitionSelect'){statsCompetition=e.target.value;renderStats();}};
   $('statsGrid').onclick=e=>{if(changeDefenseMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
 function renderStatsDetail(category,key){
