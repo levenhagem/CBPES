@@ -4200,3 +4200,7 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #coachView .cbpes-direct-result-d{background:#fde7e7;color:#bd3131}
 #coachView .cbpes-direct-result-e{background:#e9ecef;color:#64717b}
 @media(max-width:700px){#coachView .cbpes-direct-fixture-result{justify-content:center}}
+
+/* Resultado V/D/E sempre alinhado à extremidade direita, inclusive no celular. */
+#coachView .cbpes-direct-fixture-result{justify-content:flex-end!important;justify-self:end;width:100%}
+@media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:minmax(0,1fr) 32px!important;column-gap:10px}#coachView .cbpes-direct-fixture-info{grid-column:1/-1}#coachView .cbpes-direct-fixture-score{grid-column:1;min-width:0}#coachView .cbpes-direct-fixture-result{grid-column:2;grid-row:2;justify-content:flex-end!important;align-self:center}}
