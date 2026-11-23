@@ -219,7 +219,7 @@ function tieRows(ties) {
   }).join('');
 }
 const koHTML = () => koRounds(D).map(r => heading(esc(roundLabel(r).toUpperCase())) + tieRows(tiesOf(D.matches.filter(m => m.round_id === r.id)))).join('');
-const densePosition=(rows,i,f)=>String(1+rows.slice(1,i+1).filter((x,j)=>f(x)!==f(rows[j])).length);
+const densePosition=(rows,i,f)=>{const value=x=>String(f(x)).trim();return String(rows.findIndex(x=>value(x)===value(rows[i]))+1);};
 const plCard = (title, rows, f, unit) => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 10).map((x, i) => `<div class="player"><div><b><span class="rank-position">${densePosition(rows,i,f)}</span>${esc(x.name)}</b><small><a href="#team/${x.team.id}">${esc(x.team.name)}</a></small></div><span class="number">${f(x)} ${unit}</span></div>`).join('') : empty('Nenhum registro ainda.')}</div></div>`;
 const rankCard = (title, rows, f, unit = '') => `<div class="card"><div class="cardhead"><h2>${title}</h2></div><div class="cardbody">${rows.length ? rows.slice(0, 8).map((x, i) => `<div class="player"><div><b><span class="rank-position">${densePosition(rows,i,f)}</span>${participantLink(x.p)}</b></div><span class="number">${f(x)}${unit}</span></div>`).join('') : empty('Sem dados ainda.')}</div></div>`;
 
@@ -747,7 +747,7 @@ const changeDefenseMode=e=>{
 const teamColor=(team)=>/^#[0-9a-f]{6}$/i.test(team?.primary_color||'')?team.primary_color:'#186a55';
 const statRowsHtml=(definition,limit=Infinity)=>{
   const rows=definition.rows.slice(0,limit);
-  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player" style="--cbpes-team-accent:'+teamColor(x.team)+'"><div><b>'+'<span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.players?crestImg(x.team,'cbpes-stats-player-crest'):'')+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b></div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
+  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player" ><div><b>'+'<span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.players?crestImg(x.team,'cbpes-stats-player-crest'):'')+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b></div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function generalStatsData(category){
