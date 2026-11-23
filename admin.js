@@ -29,7 +29,7 @@ $('loginBtn').onclick = async () => {
 };
 $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
-$('tabs').onclick = e => { const btn=e.target.closest('button[data-t]'); if(btn){ tab=btn.dataset.t; if(tab==='jogos'){gamesSubView='matches';editingMatchId=null;} draft=null; render(); } };
+$('tabs').onclick = e => { const btn=e.target.closest('button[data-t]'); if(btn){ tab=btn.dataset.t; if(tab==='jogos'){gamesSubView='matches';editingMatchId=null;matchEditorTab='result';} draft=null; render(); } };
 
 async function refresh() { const y = window.scrollY; try { D = await load(); await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
@@ -446,6 +446,8 @@ function advance() {
 let showNew = false, activeCategory = 'official';
 let gamesSubView='matches';
 let editingMatchId=null;
+let matchEditorTab='result';
+let reportSection='stats';
 const curMatches = () => activeCategory === 'friendly' ? D.matches.filter(m => m.category === 'friendly').sort(displaySort) : D.matches.filter(m => (activeCategory === 'weekly' ? m.weekly_round_id === selRound : m.round_id === selRound) && (m.category || 'official') === activeCategory && (activeCategory !== 'weekly' || m.weekly_id === selWeekly)).sort((a,b)=>displaySort(a,b)||(a.seq||0)-(b.seq||0));
 function rowPayload(id) {
   const h = $('h' + id).value, a = $('a' + id).value, dt = $('d' + id).value;
@@ -645,7 +647,51 @@ async function reclassifyFriendly(id){
   say('Partida vinculada à competição oficial. Estatísticas e tabela serão recalculadas.',true);
   await refresh();
 }
+
+function vMatchEditor(){
+ const m=(D.matches||[]).find(x=>String(x.id)===String(editingMatchId));
+ if(!m){gamesSubView='matches';editingMatchId=null;return vJogos();}
+ const id=m.id;
+ const tabs=[['result','lucide:flag','Resultado'],['options','lucide:settings-2','Configurações'],['goals','lucide:goal','Gols']];
+ if((m.category||'official')==='official')tabs.push(['report','lucide:clipboard-list','Súmula oficial']);
+ if(matchEditorTab==='report'){reportMatchId=id;gamesSubView='reports';return vSumulas();}
+ const details=expandedMatchEditor(m);
+ // Os campos existentes são mantidos no editor, mas apresentados por seção.
+ const temp=document.createElement('div');temp.innerHTML=details;
+ const foot=temp.querySelector('.arow-foot');
+ const extras=foot?.innerHTML||'';
+ const score=m.home_score!=null&&m.away_score!=null?m.home_score+' : '+m.away_score:'– : –';
+ const header='<div class="cbpes-admin-editor-top"><button class="btn" data-editor-back="1"><iconify-icon icon="lucide:arrow-left"></iconify-icon> VOLTAR À LISTA</button><span>GERENCIAR PARTIDA</span></div><div class="cbpes-admin-editor-hero"><span>'+esc(m.home.name)+'</span><strong>'+score+'</strong><span>'+esc(m.away.name)+'</span><small>'+(m.played_on?fd(m.played_on):'Data não informada')+' · '+(m.category==='friendly'?'AMISTOSO':m.category==='weekly'?'SEMANAL':'OFICIAL')+'</small></div>';
+ const nav='<div class="cbpes-admin-editor-tabs">'+tabs.map(([key,icon,label])=>'<button class="'+(matchEditorTab===key?'on':'')+'" data-editor-tab="'+key+'"><iconify-icon icon="'+icon+'"></iconify-icon>'+label+'</button>').join('')+'</div>';
+ let content='';
+ if(matchEditorTab==='result')content='<div class="card cbpes-admin-editor-section"><div class="cardhead"><h2>RESULTADO DA PARTIDA</h2></div><div class="cardbody"><p class="admin-help">Informe o placar e a data da partida. Salve para atualizar a tabela e o histórico.</p><div class="cbpes-admin-editor-score"><div><b>'+esc(m.home.name)+'</b><input class="scoreinput" type="number" min="0" max="99" id="h'+id+'" value="'+(m.home_score??'')+'"></div><span>×</span><div><b>'+esc(m.away.name)+'</b><input class="scoreinput" type="number" min="0" max="99" id="a'+id+'" value="'+(m.away_score??'')+'"></div></div><div class="cbpes-admin-editor-date">'+field('Data do jogo','<input type="date" id="d'+id+'" value="'+(m.played_on||'')+'">')+'</div><div id="editorExtraFields"></div><button class="btn primary" data-editor-save="'+id+'">SALVAR RESULTADO</button></div></div>';
+ else if(matchEditorTab==='options')content='<div class="card cbpes-admin-editor-section"><div class="cardhead"><h2>CONFIGURAÇÕES DA PARTIDA</h2></div><div class="cardbody"><div class="cbpes-admin-editor-settings">'+extras+'</div></div></div>';
+ else content='<div class="card cbpes-admin-editor-section"><div class="cardhead"><h2>GOLS E ASSISTÊNCIAS</h2></div><div class="cardbody">'+(m.played?goalsPanel(m):'<div class="empty">Registre o resultado antes de adicionar gols.</div>')+'</div></div>';
+ $('view').innerHTML=header+nav+content;
+ if(matchEditorTab==='result'){
+   // Pênaltis e prorrogação continuam integrados ao mesmo salvamento.
+   const source=document.createElement('div');source.innerHTML=details;
+   const extra=source.querySelector('.arow-foot');
+   if(extra){const pen=extra.querySelectorAll('input[id^="ph"],input[id^="pa"],input[id^="et"]');const target=$('editorExtraFields');pen.forEach(el=>{const wrapper=el.closest('label')||el.parentElement;if(wrapper&&target&&!target.contains(wrapper)){target.appendChild(wrapper.cloneNode(true));}});}
+ }
+ $('view').onclick=async e=>{
+   const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+   if(d.editorBack){gamesSubView='matches';editingMatchId=null;openGoals=null;return vJogos();}
+   if(d.editorTab){matchEditorTab=d.editorTab;return vMatchEditor();}
+   if(d.editorSave)return saveOne(d.editorSave);
+   if(d.editReport){reportMatchId=id;gamesSubView='reports';return vSumulas();}
+   if(d.reclass)return reclassifyFriendly(d.reclass);
+   if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
+   if(d.s)return saveOne(d.s);
+   if(d.mx&&confirm('Excluir esta partida?')){gamesSubView='matches';editingMatchId=null;return run(sb.from('matches').delete().eq('id',d.mx),'Partida excluída.');}
+   if(d.c&&confirm('Limpar o resultado e os gols desta partida?')){await sb.from('match_events').delete().eq('match_id',d.c);return run(sb.from('matches').update({home_score:null,away_score:null,home_pen:null,away_pen:null,played:false}).eq('id',d.c),'Resultado removido.');}
+   if(d.ex)return run(sb.from('match_events').delete().eq('id',d.ex),'Gol removido.');
+   if(d.ga)return run(sb.from('match_events').insert({match_id:d.ga,scorer_id:$('gs').value,assist_id:$('ga').value||null}),'Gol lançado.');
+ };
+}
+
 function vJogos() {
+  if(gamesSubView==='editor')return vMatchEditor();
   if(gamesSubView==='reports')return vSumulas();
   const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><button class="btn cbpes-report-tab" data-open-reports="1"><iconify-icon icon="lucide:clipboard-list"></iconify-icon> SÚMULAS OFICIAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
   if (activeCategory === 'friendly') {
@@ -656,8 +702,8 @@ function vJogos() {
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
       if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
-      if(d.editMatch){editingMatchId=String(editingMatchId)===String(d.editMatch)?null:d.editMatch;openGoals=null;return vJogos();}
-      if(d.editReport){reportMatchId=d.editReport;gamesSubView='reports';return vSumulas();}
+      if(d.editMatch){editingMatchId=d.editMatch;matchEditorTab='result';gamesSubView='editor';openGoals=null;return vMatchEditor();}
+      if(d.editReport){reportMatchId=d.editReport;reportSection='stats';gamesSubView='reports';return vSumulas();}
       if(d.openReports){gamesSubView='reports';return vSumulas();}
       if(d.category){editingMatchId=null;activeCategory=d.category;selRound=null;return vJogos();}
       if(d.fadd){const h=$('fh').value,a=$('fa').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,home_id:h,away_id:a,played_on:$('fdt').value||null,category:'friendly'}),'Amistoso cadastrado sem vínculo com rodada.');}
@@ -693,7 +739,7 @@ function vJogos() {
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
       if(d.orderUp||d.orderDown){const id=d.orderUp||d.orderDown;return moveMatchOrder(id,d.orderUp?-1:1,finalGames.some(m=>m.id===id)?finalGames:curMatches());}
-      if(d.editMatch){editingMatchId=String(editingMatchId)===String(d.editMatch)?null:d.editMatch;openGoals=null;return vJogos();}
+      if(d.editMatch){editingMatchId=d.editMatch;matchEditorTab='result';gamesSubView='editor';openGoals=null;return vMatchEditor();}
       if(d.editReport){reportMatchId=d.editReport;gamesSubView='reports';return vSumulas();}
       if(d.openReports){gamesSubView='reports';return vSumulas();}
       if(d.category){editingMatchId=null;activeCategory=d.category;selRound=null;showNew=false;return vJogos();}
@@ -750,7 +796,7 @@ function vJogos() {
     if(t.id==='fixtureBulkSave')return importOfficialFixtures();
     const d=t.dataset;
     if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
-    if(d.editMatch){editingMatchId=String(editingMatchId)===String(d.editMatch)?null:d.editMatch;openGoals=null;return vJogos();}
+    if(d.editMatch){editingMatchId=d.editMatch;matchEditorTab='result';gamesSubView='editor';openGoals=null;return vMatchEditor();}
       if(d.editReport){reportMatchId=d.editReport;gamesSubView='reports';return vSumulas();}
       if(d.openReports){gamesSubView='reports';return vSumulas();}
       if(d.category){editingMatchId=null;activeCategory=d.category;selRound=null;showNew=false;openGoals=null;return vJogos();}
@@ -1138,6 +1184,8 @@ async function vSumulas(){
   const players=D.players.filter(p=>m&&(p.participant_id===m.home_id||p.participant_id===m.away_id));
   const events=(D.events||[]).filter(e=>e.match_id===m?.id);
   const selectPlayers=(selected='',empty='Selecione')=>'<option value="">'+empty+'</option>'+players.map(p=>'<option value="'+p.id+'" '+(p.id===selected?'selected':'')+'>'+esc(p.name)+' — '+esc(p.team?.name||'')+'</option>').join('');
+  const selectedReportId=reportMatchId;
+  const reportNav='<div class="cbpes-admin-editor-tabs cbpes-admin-report-tabs">'+[['meta','lucide:map-pin','Estádio e MVP'],['goals','lucide:goal','Gols e jogadores'],['stats','lucide:chart-no-axes-column','Estatísticas']].map(([key,icon,label])=>'<button class="'+(reportSection===key?'on':'')+'" data-report-section="'+key+'"><iconify-icon icon="'+icon+'"></iconify-icon>'+label+'</button>').join('')+'</div>';
   view.innerHTML='<div class="cbpes-report-toolbar"><button class="btn" id="reportBackToGames"><iconify-icon icon="lucide:arrow-left"></iconify-icon> VOLTAR AOS JOGOS</button><span>SÚMULAS OFICIAIS <small>• Estádio, MVP, gols e estatísticas</small></span></div><div class="card"><div class="cardhead"><h2>SELECIONAR PARTIDA</h2></div><div class="cardbody"><div class="field"><label>PARTIDA</label><select id="reportMatchSelect">'+official.map(x=>'<option value="'+x.id+'" '+(x.id===m?.id?'selected':'')+'>'+esc(x.home.name)+' '+(x.home_score??'–')+' x '+(x.away_score??'–')+' '+esc(x.away.name)+'</option>').join('')+'</select></div></div></div>'+
   (m?'<div class="card"><div class="cardhead"><h2>ESTÁDIO E MVP</h2></div><div class="cardbody"><div class="inline">'+
   field('Estádio padrão do mandante','<select id="reportHomeStadium"><option value="">Não definido</option>'+stadiums.map(s=>'<option value="'+s.id+'" '+(s.id===m.home.stadium_id?'selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select>')+
@@ -1146,6 +1194,12 @@ async function vSumulas(){
   '</div><div class="inline"><input id="reportNewStadium" placeholder="Nome de novo estádio"><button class="btn" id="reportAddStadium">CADASTRAR ESTÁDIO</button><button class="btn primary" id="reportSaveMeta">SALVAR ESTÁDIO E MVP</button></div></div></div>'+
   '<div class="card"><div class="cardhead"><h2>ELENCO E GOLS</h2></div><div class="cardbody"><div class="inline">'+field('Clube','<select id="reportPlayerTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Novo jogador','<input id="reportPlayerName" placeholder="Nome do jogador">')+'<button class="btn" id="reportAddPlayer">ADICIONAR JOGADOR</button></div><hr><div class="inline">'+field('Equipe do gol','<select id="reportGoalTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Autor','<select id="reportScorer">'+selectPlayers()+'</select>')+field('Assistência (opcional)','<select id="reportAssist">'+selectPlayers('','Sem assistência')+'</select>')+field('Minuto (opcional)','<input id="reportMinute" type="number" min="0" max="130" placeholder="—">')+field('Tipo','<select id="reportGoalType"><option value="normal">Normal</option><option value="penalty">Pênalti</option><option value="own_goal">Contra</option></select>')+'<button class="btn primary" id="reportAddGoal">ADICIONAR GOL</button></div><div style="margin-top:14px">'+(events.length?events.map(e=>'<div class="cbpes-report-goal"><b>'+esc(D.players.find(p=>p.id===e.scorer_id)?.name||'Jogador')+'</b> '+(e.minute==null?'':e.minute+"'")+' <button class="btn" data-report-delete="'+e.id+'">REMOVER</button></div>').join(''):'Nenhum gol cadastrado')+'</div></div></div>'+
   '<div class="card"><div class="cardhead"><h2>ESTATÍSTICAS DA PARTIDA</h2></div><div class="cardbody"><div class="inline">'+reportStatFields.map(([key,label])=>field(label,'<div class="inline"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Casa" data-stat="home_'+key+'" value="'+(stats['home_'+key]??'')+'"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Fora" data-stat="away_'+key+'" value="'+(stats['away_'+key]??'')+'"></div>')).join('')+'</div><button class="btn primary" id="reportSaveStats">SALVAR ESTATÍSTICAS</button></div></div>':'<div class="empty">Sem partidas oficiais.</div>');
+  const cards=[...view.querySelectorAll(':scope > .card')];
+  if(cards.length>1){
+    const bar=document.createElement('div');bar.innerHTML=reportNav;const nav=bar.firstElementChild;cards[0].after(nav);
+    cards.slice(1).forEach((card,i)=>{card.classList.add('cbpes-admin-report-panel');card.hidden=(['meta','goals','stats'][i]!==reportSection);});
+    nav.onclick=e=>{const btn=e.target.closest('button[data-report-section]');if(!btn)return;reportSection=btn.dataset.reportSection;vSumulas();};
+  }
   $('reportBackToGames').onclick=()=>{gamesSubView='matches';vJogos();};
   $('reportMatchSelect').onchange=e=>{reportMatchId=e.target.value;vSumulas()};
   if(!m)return;
