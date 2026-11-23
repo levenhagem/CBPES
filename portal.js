@@ -1326,7 +1326,7 @@ function recordCards(){
   put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
   const streakCard=(group,title,kind,mode,source=fixtures)=>{
     const arr=recordStreaks(source,kind,mode);
-    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<details class="cbpes-record-streak-games"><summary>VER '+x.count+' PARTIDAS DA SEQUÊNCIA</summary>'+x.matches.map((m,i)=>'<div>'+(i+1)+'. '+recordMeta(m)+'</div>').join('')+(x.breaker?'<div><strong>JOGO QUE ENCERROU:</strong> '+recordMeta(x.breaker)+'</div>':'<div>Sequência ainda ativa</div>')+'</details>'}));
+    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<div class="cbpes-record-streak-games"><div class="cbpes-record-streak-heading">PARTIDAS DA SEQUÊNCIA</div>'+x.matches.map((m,i)=>'<div>'+(i+1)+'. '+recordMeta(m)+'</div>').join('')+(x.breaker?'<div><strong>JOGO QUE ENCERROU:</strong> '+recordMeta(x.breaker)+'</div>':'<div>Sequência ainda ativa</div>')+'</div>'}));
   };
   streakCard('clubs','Maior invencibilidade de clubes','club','unbeaten');
   streakCard('clubs','Maior sequência sem vencer','club','winless');
@@ -1450,11 +1450,14 @@ function renderRecords(){
   const root=$('recordsView');if(!root||!D)return;
   const groups=recordCards();
   const records=recordGroups.filter(group=>group[0]!=='players').flatMap(group=>groups[group[0]]||[]);
+  // Todos os titulares empatados de cada recorde contam no ranking.
+  // Contabilizar apenas recordes de técnicos, não clubes ou partidas.
   const leaders=new Map();
-  records.forEach(card=>card.rows.forEach(x=>{
-    const name=String(x.coach||((x.name&&!x.id&&x.wins!==undefined)?x.name:'')||((x.name&&x.matches)?'':x.name&&x.count!==undefined&&/técnic|semanais|títulos/i.test(card.title)?x.name:'')||'').trim();
+  (groups.coaches||[]).forEach(card=>(card.rows||[]).forEach(x=>{
+    const name=String(x.coach||x.name||'').trim();
     if(!name)return;
-    const key=name.toLocaleLowerCase('pt-BR'),entry=leaders.get(key)||{name,titles:[]};
+    const key=name.toLocaleLowerCase('pt-BR');
+    const entry=leaders.get(key)||{name,titles:[]};
     if(!entry.titles.includes(card.title))entry.titles.push(card.title);
     leaders.set(key,entry);
   }));
