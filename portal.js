@@ -5,7 +5,7 @@ const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'trophies', 'weeklies', 'match', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'trophies', 'weeklies', 'belts', 'match', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
@@ -79,6 +79,7 @@ function route() {
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id || (b.id==='navStatsButton'&&['stats','records','stats-detail','trophies'].includes(id))));
+  if(id==='belts'&&D&&window.CBPESBelts)CBPESBelts.renderPublic();
   if (profile && D) {
     const value = decodeURIComponent(parts.slice(1).join('/'));
     if (id === 'participant') renderParticipant(value);
@@ -1578,7 +1579,7 @@ function renderTrophyRoom(){
       '<div class="cbpes-trophy-ranking-achievements">'+coach.items.map(t=>'<div class="cbpes-trophy-ranking-achievement">'+esc(trophyLabel(t))+'</div>').join('')+'</div>'+
       '</div>').join('')+'</div>':empty('Nenhum troféu registrado até o momento.');
 }
-function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); if(window.CBPESBelts)CBPESBelts.renderPublic(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
