@@ -63,7 +63,7 @@ function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
-  menu.innerHTML=(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'')+'<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>';
+  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
