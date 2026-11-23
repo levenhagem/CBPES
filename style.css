@@ -5066,3 +5066,9 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals.cb
 #match .cbpes-report-goals-centered .cbpes-report-goal-center{display:flex!important;align-items:center!important;justify-content:center!important;align-self:center!important;line-height:1!important;transform:translateY(0)!important}
 #match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{display:block!important;vertical-align:middle!important;width:21px!important;height:21px!important;font-size:21px!important;line-height:1!important}
 #match .cbpes-report-goals-centered .cbpes-report-goal-column{justify-content:center!important;line-height:1.45!important}
+
+/* Uma bola só, alinhada à primeira linha dos artilheiros (modelo PES 6). */
+#match .cbpes-report-goals-centered{align-items:start!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center{align-self:start!important;justify-self:center!important;margin-top:1px!important;transform:none!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column{align-self:start!important}
+#statsGrid .cbpes-stats-player,#stats-detail .cbpes-stats-player{border-left-color:var(--cbpes-team-accent,#186a55)!important}
