@@ -34,7 +34,10 @@ function renderMatchReport(matchId){
   const goals=(D.events||[]).filter(e=>e.match_id===m.id).sort((a,b)=>(a.minute??999)-(b.minute??999));
   const isLigaPro=/liga\s*pro/i.test((competition?.name||'')+' '+(edition?.name||''));
   const isCopaMaster=/copa\s*master/i.test((competition?.name||'')+' '+(edition?.name||''));
-  const theme=isLigaPro?'cbpes-report-liga-pro':isCopaMaster?'cbpes-report-copa-master':'';
+  const theme=isLigaPro?'cbpes-report-liga-pro':isCopaMaster?'cbpes-report-copa-master':'cbpes-report-default';
+  document.body.classList.toggle('cbpes-report-page',true);
+  document.body.classList.toggle('cbpes-report-page-liga-pro',isLigaPro);
+  document.body.classList.toggle('cbpes-report-page-copa-master',isCopaMaster);
   const goalTeam=e=>e.team_id||(e.goal_type==='own_goal'?(player(e.scorer_id)?.participant_id===m.home_id?m.away_id:m.home_id):player(e.scorer_id)?.participant_id);
   const goalList=teamId=>goals.filter(e=>goalTeam(e)===teamId).map(e=>'<div class="cbpes-report-scorer"><span class="cbpes-report-ball" aria-hidden="true">⚽</span><span>'+esc(player(e.scorer_id)?.name||'Jogador não informado')+(e.minute!=null?' <small>'+esc(String(e.minute))+'’</small>':'')+(e.goal_type==='own_goal'?' <small>(GC)</small>':e.goal_type==='penalty'?' <small>(P)</small>':'')+'</span></div>').join('');
   const statDefs=[['possession','Posse de bola','%'],['shots','Finalizações',''],['shots_on_target','Finalizações no gol',''],['corners','Escanteios',''],['fouls','Faltas',''],['offsides','Impedimentos','']];
@@ -44,6 +47,7 @@ function renderMatchReport(matchId){
 
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
+  document.body.classList.remove('cbpes-report-page','cbpes-report-page-liga-pro','cbpes-report-page-copa-master');
   const profile = ['participant','team','coach','match'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
