@@ -1,7 +1,7 @@
 /* CBPES — simulador isolado, com classificação e chaves em memória. */
 (function(){
 'use strict';
-let state=null,rendering=false;
+let state=null,rendering=false,typingTimer=null;
 const eq=(a,b)=>String(a)===String(b);
 const done=m=>m.home_score!==null&&m.home_score!==undefined&&m.away_score!==null&&m.away_score!==undefined;
 const valid=v=>/^(0|[1-9][0-9]{0,2})$/.test(String(v));
@@ -113,22 +113,35 @@ function render(){
  bar.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button><span>Simulação temporária — nenhum resultado oficial será alterado.</span>';
  root().querySelectorAll('table tbody tr').forEach(tr=>{const key=tr.querySelector('a[href^="#team/"]')?.getAttribute('href');const from=positions.get(key);if(from===undefined)return;const delta=from-tr.getBoundingClientRect().top;if(Math.abs(delta)>2&&Math.abs(delta)<650)tr.animate([{transform:'translateY('+delta+'px)',backgroundColor:'rgba(40,153,104,.19)'},{transform:'translateY(0)',backgroundColor:'transparent'}],{duration:340,easing:'ease-out'});});
 }
-function exit(){state=null;renderTable();}
+function exit(){if(typingTimer)clearTimeout(typingTimer);typingTimer=null;state=null;renderTable();}
 document.addEventListener('click',e=>{
  const btn=e.target.closest('[data-simulator-kind]');
  if(btn){e.preventDefault();e.stopPropagation();if(state&&state.kind===btn.dataset.simulatorKind&&eq(state.id,btn.dataset.simulatorId))exit();else{state={kind:btn.dataset.simulatorKind,id:btn.dataset.simulatorId,scores:{}};render();}return;}
  if(state&&e.target.closest('[data-sim-clear]')){state.scores={};render();}
 },true);
-document.addEventListener('change',e=>{
- const el=e.target;if(!state||!el.matches('[data-sim-id]'))return;
- const original=all().find(m=>eq(m.id,el.dataset.simId));if(original&&done(original))return;
- if(!original&&!String(el.dataset.simId).startsWith('master-virtual-'))return;
- const key=String(el.dataset.simId);
+function updateScore(el,immediate=false){
+ if(!state||!el.matches('[data-sim-id]'))return;
+ const key=String(el.dataset.simId),original=all().find(m=>eq(m.id,key));
+ if(original&&done(original))return;
+ if(!original&&!key.startsWith('master-virtual-'))return;
  const v=el.value.trim(),side=Number(el.dataset.simSide);
  if(v!==''&&!valid(v)){el.value=state.scores[key]?.[side]||'';return;}
  const scores=state.scores[key]||['',''];scores[side]=v;state.scores[key]=scores;
- render();
-});
+ if(typingTimer)clearTimeout(typingTimer);
+ // A classificação é recalculada enquanto o usuário digita, não apenas ao sair do campo.
+ // Mantém o foco no mesmo quadradinho após reconstruir a tabela.
+ const refresh=()=>{
+  const active=document.activeElement,focusKey=active?.dataset?.simId,focusSide=active?.dataset?.simSide;
+  render();
+  if(focusKey!==undefined&&focusSide!==undefined){
+   const next=[...root()?.querySelectorAll('[data-sim-id]')||[]].find(x=>x.dataset.simId===focusKey&&x.dataset.simSide===focusSide);
+   if(next){next.focus({preventScroll:true});next.select();}
+  }
+ };
+ if(immediate||scores.every(x=>x!==''))typingTimer=setTimeout(refresh,immediate?0:180);
+}
+document.addEventListener('input',e=>updateScore(e.target));
+document.addEventListener('change',e=>updateScore(e.target,true));
 document.addEventListener('click',e=>{
  if(!state)return;
  const nav=e.target.closest('#phasePrev,#phaseNext,[data-official-round-prev],[data-official-round-next],[data-master-round-prev],[data-master-round-next]');
