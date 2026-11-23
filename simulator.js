@@ -143,13 +143,12 @@ function masterKnockout(edition,phase){
  const final=[match('f',0,semi[0].winner,semi[1].winner)];
  const stage=phase.phase_type==='final'?'f':/semi/i.test(phase.name||'')?'s':'q';
  const fixtures=stage==='f'?final:stage==='s'?semi:q;
- return '<div class="cbpes-master-sim-knockout">'+fixtures.map((m,index)=>{
-  const label=stage==='q'?'QUARTAS DE FINAL':stage==='s'?'SEMIFINAL':'FINAL';
-  const slotLabels=stage==='q'?quarterSlots[index]:null;
-  const labelSuffix=slotLabels?' • '+(slotLabels[1]+1)+'º '+slotLabels[0]+' × '+(slotLabels[3]+1)+'º '+slotLabels[2]:'';
-  const side=(p,position)=>p?'<div class="cbpes-master-ko-team">'+(typeof crestImg==='function'?crestImg(p):'')+'<span>'+esc(p.name)+'</span></div>':'<div class="cbpes-master-ko-team cbpes-master-ko-pending">A definir</div>';
+ return '<div class="cbpes-playoff-template">'+fixtures.map((m,index)=>{
+  const label=esc(String(phase.name||'').toUpperCase());
+  const team=(p,side)=>'<div class="cbpes-match-team '+side+'"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">'+esc(p?.name||'A definir')+'</span></div></div></div>';
   const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state.scores[m.id]||['',''])[side])+'">';
-  return '<div class="cbpes-master-ko-match" data-cbpes-match-id="'+m.id+'"><div class="cbpes-master-ko-label">'+label+' • CONFRONTO '+(index+1)+labelSuffix+'</div><div class="cbpes-master-ko-body">'+side(m.home,0)+'<div class="cbpes-master-ko-score">'+(m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'<span>—</span>')+'</div>'+side(m.away,1)+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
+  const score=m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'– : –';
+  return '<div class="cbpes-match" style="--match-color:#bfcbd3" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+label+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-match-main">'+team(m.home,'home')+'<div class="cbpes-match-score">'+score+'</div>'+team(m.away,'away')+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
  }).join('')+'</div>';
 }
 
