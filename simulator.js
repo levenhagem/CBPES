@@ -70,6 +70,7 @@ function projected(){
 function render(){
  if(!state||!root()||rendering)return;
  const old=D.matches,proj=projected(),byId=new Map(proj.map(m=>[String(m.id),m]));
+ const positions=new Map([...root().querySelectorAll('table tbody tr')].map(tr=>[tr.querySelector('a[href^="#team/"]')?.getAttribute('href'),tr.getBoundingClientRect().top]).filter(([key])=>key));
  rendering=true;
  try{
   D.matches=old.map(m=>byId.get(String(m.id))||m);
@@ -90,7 +91,7 @@ function render(){
  let bar=root().querySelector('#cbpes-sim-controls');
  if(!bar){bar=document.createElement('div');bar.id='cbpes-sim-controls';root().prepend(bar);}
  bar.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button><span>Simulação temporária — nenhum resultado oficial será alterado.</span>';
- root().querySelectorAll('table tbody tr').forEach(tr=>{tr.style.transition='transform .28s ease,background-color .28s ease,opacity .28s ease';});
+ root().querySelectorAll('table tbody tr').forEach(tr=>{const key=tr.querySelector('a[href^="#team/"]')?.getAttribute('href');const from=positions.get(key);if(from===undefined)return;const delta=from-tr.getBoundingClientRect().top;if(Math.abs(delta)>2&&Math.abs(delta)<650)tr.animate([{transform:'translateY('+delta+'px)',backgroundColor:'rgba(40,153,104,.19)'},{transform:'translateY(0)',backgroundColor:'transparent'}],{duration:340,easing:'ease-out'});});
 }
 function exit(){state=null;renderTable();}
 document.addEventListener('click',e=>{
