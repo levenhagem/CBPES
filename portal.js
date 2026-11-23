@@ -727,7 +727,7 @@ const officialMatchMetricDefinitions=()=>{
     ['shots_on_target','CHUTES A GOL ',''],
     ['goalkeeper_saves','DEFESAS DO GOLEIRO ',''],
     ['corners','ESCANTEIOS ',''],
-    ['penalties','PÊNALTIS ',''],
+    ['penalties','PÊNALTIS (TOTAL) ',''],
     ['fouls','FALTAS COMETIDAS ',''],
     ['offsides','IMPEDIMENTOS ',''],
     ['yellow_cards','CARTÕES AMARELOS ',''],
@@ -761,14 +761,51 @@ const officialMatchMetricDefinitions=()=>{
   });
   const format=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
   return metrics.map(([key,title,unit])=>{
-    const mode=key==='possession'?'average':(matchMetricModes[key]||'average');
+    const mode=key==='possession'?'average':key==='penalties'?'total':(matchMetricModes[key]||'average');
     const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key],total:x.totals[key]}))
       .sort((a,b)=>(mode==='total'?b.total-a.total:b.average-a.average)||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
     return {key:'match-'+key,title,rows,value:x=>mode==='total'?String(x.total):format(x.average),unit,matchMetric:key,metricMode:mode};
   });
 };
+const weeklyCoachDefinitions=()=>{
+  const coaches=new Map();
+  const ensure=name=>{
+    const clean=String(name||'').trim(),key=clean.toLocaleLowerCase('pt-BR');
+    if(!key)return null;
+    if(!coaches.has(key))coaches.set(key,{name:clean,j:0,v:0,e:0,d:0,gp:0,gc:0,sg:0,ap:0,titles:0});
+    return coaches.get(key);
+  };
+  D.matches.filter(m=>m.played&&m.category==='weekly').forEach(m=>{
+    const home=ensure(m.home_coach_name||m.home?.coach_name);
+    const away=ensure(m.away_coach_name||m.away?.coach_name);
+    if(!home||!away||home===away)return;
+    [[home,Number(m.home_score),Number(m.away_score)],[away,Number(m.away_score),Number(m.home_score)]].forEach(([x,gf,ga])=>{
+      x.j++;x.gp+=gf;x.gc+=ga;
+      if(gf>ga)x.v++;else if(gf===ga)x.e++;else x.d++;
+    });
+  });
+  (D.weeklies||[]).filter(w=>w.champion_id).forEach(w=>{
+    const name=w.champion_coach_name||D.participants.find(p=>String(p.id)===String(w.champion_id))?.coach_name;
+    const coach=ensure(name);if(coach)coach.titles++;
+  });
+  const rows=[...coaches.values()].map(x=>({...x,sg:x.gp-x.gc,ap:x.j?Math.round((3*x.v+x.e)/(3*x.j)*1000)/10:0}));
+  const ranked=(value,ascending=false)=>rows.slice().sort((a,b)=>(ascending?Number(value(a))-Number(value(b)):Number(value(b))-Number(value(a)))||a.name.localeCompare(b.name,'pt-BR'));
+  const def=(key,title,value,unit='',ascending=false)=>({key,title,rows:ranked(value,ascending),value,unit,coaches:true});
+  return [
+    def('titles','TÍTULOS SEMANAIS',x=>x.titles),
+    {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:ranked(x=>x.j?x.gp/x.j:0),value:x=>x.j?fmt1(x.gp/x.j):'0',unit:'',coaches:true},
+    def('defense','MELHOR DEFESA',x=>x.gc,'',true),
+    def('goals','GOLS MARCADOS',x=>x.gp),
+    def('wins','VITÓRIAS',x=>x.v),
+    def('draws','EMPATES',x=>x.e),
+    def('losses','DERROTAS',x=>x.d),
+    def('efficiency','APROVEITAMENTO',x=>x.ap,'%'),
+    def('goal-difference','SALDO DE GOLS',x=>x.sg)
+  ];
+};
 const visibleStatDefinitions=category=>{
   if(category==='friendly')return friendlyCoachDefinitions();
+  if(category==='weekly')return weeklyCoachDefinitions();
   const defs=statDefinitions(statData(category));
   if(category==='official')return [...defs.filter(d=>!['wins','draws','losses','efficiency'].includes(d.key)),...officialMatchMetricDefinitions()];
   return defs.filter(d=>!d.players);
@@ -782,7 +819,7 @@ const defenseDefinition=definition=>{
   });
   return {...definition,rows,value:x=>perGame?fmt1(x.gc/x.j):x.gc,unit:perGame?'gols/jogo':'gols'};
 };
-const matchMetricPicker=definition=>definition.matchMetric&&definition.matchMetric!=='possession'
+const matchMetricPicker=definition=>definition.matchMetric&&!['possession','penalties'].includes(definition.matchMetric)
   ?'<div class="stats-category-filter cbpes-defense-picker" role="group" aria-label="Exibição de '+esc(definition.title)+'"><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="average" class="'+(definition.metricMode==='average'?'selected':'')+'">MÉDIA</button><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="total" class="'+(definition.metricMode==='total'?'selected':'')+'">TOTAL</button></div>'
   :'';
 const changeMatchMetricMode=e=>{
