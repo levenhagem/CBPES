@@ -5119,3 +5119,11 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 /* Rankings gerais neutros: cores dos clubes reservadas às estatísticas de partida. */
 #statsGrid .cbpes-stats-player,#stats-detail .cbpes-stats-player{border-left-color:#dce3e8!important}
 #statsGrid .cbpes-stats-player .number,#stats-detail .cbpes-stats-player .number{color:inherit!important;background:#eef1f3!important}
+
+/* Rankings gerais sem preenchimento, faixa lateral ou etiqueta de cor: somente linhas da tabela. */
+#statsGrid .cbpes-stats-card .cbpes-stats-player,
+#stats-detail .cbpes-stats-card .cbpes-stats-player{background:transparent!important;border:0!important;border-bottom:1px solid var(--line,#e5e7eb)!important;border-radius:0!important;box-shadow:none!important}
+#statsGrid .cbpes-stats-card .cbpes-stats-player .number,
+#stats-detail .cbpes-stats-card .cbpes-stats-player .number{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;color:inherit!important}
+#statsGrid .cbpes-stats-card .cbpes-stats-player .rank-position:empty,
+#stats-detail .cbpes-stats-card .cbpes-stats-player .rank-position:empty{visibility:hidden!important}
