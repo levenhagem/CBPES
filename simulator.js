@@ -103,7 +103,8 @@ function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real)
 // Chave da Copa Master: quartas (A1-B2, C1-D2, B1-A2, D1-C2),
 // semifinais (Q1-Q2, Q3-Q4) e final (S1-S2).
 function masterKnockout(edition,phase){
- if(!state||state.kind!=='official'||!eq(state.id,edition.id))return null;
+ if(state&&(state.kind!=='official'||!eq(state.id,edition.id)))return null;
+ const simulating=!!state;
  const assignments=(D.officialGroupTeams||[]).filter(a=>eq(a.official_edition_id,edition.id));
  const groupPhase=(D.phases||[]).find(p=>eq(p.official_edition_id,edition.id)&&p.counts_in_standings);
  const rounds=(D.rounds||[]).filter(r=>eq(r.phase_id,groupPhase?.id));
@@ -124,7 +125,7 @@ function masterKnockout(edition,phase){
  const groups=groupTeams;
  const match=(stage,index,home,away)=>{
   const id='master-ko-'+edition.id+'-'+stage+'-'+index;
-  const scores=state.scores[id]||['',''];
+  const scores=simulating?(state.scores[id]||['','']):['',''];
   const played=!!home&&!!away&&scores.some(v=>v!=='');
   const hs=played?Number(scores[0]||0):null,as=played?Number(scores[1]||0):null;
   const winner=played&&hs!==as?(hs>as?home:away):null;
@@ -146,8 +147,8 @@ function masterKnockout(edition,phase){
  return '<div class="cbpes-playoff-template">'+fixtures.map((m,index)=>{
   const label=esc(String(phase.name||'').toUpperCase());
   const team=(p,side)=>'<div class="cbpes-match-team '+side+'"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">'+esc(p?.name||'A definir')+'</span></div></div></div>';
-  const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state.scores[m.id]||['',''])[side])+'">';
-  const score=m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'– : –';
+  const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state?.scores[m.id]||['',''])[side])+'">';
+  const score=m.home&&m.away?(simulating?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'– : –'):'– : –';
   return '<div class="cbpes-match cbpes-match-copa-master" style="--match-color:#bfcbd3" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+label+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-match-main">'+team(m.home,'home')+'<div class="cbpes-match-score">'+score+'</div>'+team(m.away,'away')+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
  }).join('')+'</div>';
 }
