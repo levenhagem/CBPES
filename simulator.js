@@ -98,6 +98,8 @@ function render(){
  finally{D.matches=old;rendering=false;}
  const btn=root()?.querySelector('[data-simulator-kind]');
  if(btn){btn.textContent='SAIR DO SIMULADOR';btn.classList.add('cbpes-sim-active');}
+ // Simulação não oferece súmulas/detalhes: o placar é hipotético.
+ root().querySelectorAll('.cbpes-match-report-link').forEach(link=>link.remove());
  const cards=[...root().querySelectorAll('[data-cbpes-match-id]')];
  for(const card of cards){
   const id=card.dataset.cbpesMatchId,official=old.find(m=>eq(m.id,id));
