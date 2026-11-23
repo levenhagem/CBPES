@@ -21,7 +21,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
  <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a><a href="#belts">CINTURÕES</a><a href="#trophies">SALA DE TROFÉUS</a></div></div></nav>
- <span class="season" id="season">COMMITS #01</span>
+ <span class="season" id="season">COMMITS #02</span>
 </div></header>
 <main>
 <div id="status" class="notice hidden" role="alert"></div>
@@ -84,13 +84,13 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <script src="config.js"></script>
 <script src="lib.js?v=cbpes-simulator-inline-20261123-3"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
-<script src="portal.js?v=cbpes-commit-counter-01"></script>
+<script src="portal.js?v=cbpes-nav-counter-02"></script>
 <script src="simulator.js?v=cbpes-ko-horizontal-02"></script>
 <script>
 (function(){
   const counter=document.getElementById('season');
   if(!counter)return;
-  fetch('commit-counter.txt?t='+Date.now(),{cache:'no-store'})
+  fetch(new URL('commit-counter.txt?t='+Date.now(),document.baseURI),{cache:'no-store'})
     .then(r=>{if(!r.ok)throw Error('counter unavailable');return r.text()})
     .then(n=>{const value=Number(n.trim());if(Number.isSafeInteger(value)&&value>=1)counter.textContent='COMMITS #'+String(value).padStart(2,'0')})
     .catch(()=>{});
