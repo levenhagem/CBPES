@@ -4906,3 +4906,7 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 #match .cbpes-stadium-icon{width:25px!important;height:25px!important;font-size:25px!important;flex:none!important}
 #match .cbpes-report-heading-date{gap:9px!important}
 #match .cbpes-report-meta:empty{display:none!important}
+
+/* Troféu Iconify para identificar o campeão, ao lado do clube. */
+.featured-juventus-name-row .featured-juventus-champion.cbpes-champion-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:23px!important;height:23px!important;min-width:23px!important;padding:0!important;margin:0 0 0 5px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:#f3c454!important;vertical-align:middle!important;line-height:1!important}
+.featured-juventus-name-row .cbpes-champion-icon iconify-icon{display:block;width:22px;height:22px;font-size:22px;color:inherit}
