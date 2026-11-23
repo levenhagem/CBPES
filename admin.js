@@ -1074,7 +1074,7 @@ function vTechnicians() {
 
 
 let reportMatchId=null;
-const reportStatFields=[['possession','Posse (%)'],['shots','Finalizações'],['shots_on_target','No gol'],['corners','Escanteios'],['fouls','Faltas'],['offsides','Impedimentos']];
+const reportStatFields=[['possession','Posse de bola (%)'],['shots','Chutes'],['shots_on_target','Chutes a gol'],['penalties','Pênaltis'],['fouls','Faltas cometidas'],['offsides','Impedimentos'],['yellow_cards','Cartões amarelos'],['red_cards','Cartões vermelhos']];
 async function vSumulas(){
   const view=$('view'),official=D.matches.filter(m=>(m.category||'official')==='official').slice().reverse();
   if(!reportMatchId&&official.length)reportMatchId=official[0].id;
