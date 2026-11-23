@@ -441,6 +441,8 @@ function renderTable() {
   if(heading){
     if(/copa\s*master/i.test(headingName)){
       heading.innerHTML='<span class="cbpes-master-title-copa">COPA</span> <span class="cbpes-master-title-master">MASTER</span>';
+    }else if(/supercopa\s*winning\s*eleven/i.test(headingName)){
+      heading.innerHTML='<span class="cbpes-winning-title-supercopa">SUPERCOPA</span> <span class="cbpes-winning-title-red">WINNING ELEVEN</span>';
     }else heading.textContent=headingName;
   }
   if(emblem){
