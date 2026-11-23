@@ -855,9 +855,9 @@ const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-c
 function generalStatsData(category){
   const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
   const records=matches.map(m=>({
-    home:m.home?.name||'Mandante',away:m.away?.name||'Visitante',
+    home:category==='weekly'?(m.home_coach_name||m.home?.coach_name||'Mandante'):(m.home?.name||'Mandante'),away:category==='weekly'?(m.away_coach_name||m.away?.coach_name||'Visitante'):(m.away?.name||'Visitante'),
     homeId:m.home_id,awayId:m.away_id,
-    hs:Number(m.home_score),as:Number(m.away_score),archive:false
+    hs:Number(m.home_score),as:Number(m.away_score),archive:category==='weekly'
   }));
   if(category==='friendly'){
     (careerArchive||[]).forEach(m=>{
