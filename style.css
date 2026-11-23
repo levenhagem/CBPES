@@ -4846,3 +4846,25 @@ body.cbpes-report-page-copa-master #match .cbpes-report-mvp{background:#f1e6c7;b
 .cbpes-report-heading-date{font-size:12px;line-height:1.4;font-weight:400;letter-spacing:.02em;color:rgba(255,255,255,.78);margin:5px auto 0}
 .cbpes-report-hero .cbpes-report-overline{font-weight:750}
 .cbpes-report-hero .cbpes-report-meta{font-weight:400}
+
+/* Súmula Liga PRO: tema azul dominante em toda a área da página. */
+html:has(body.cbpes-report-page-liga-pro){background:#071d49}
+body.cbpes-report-page-liga-pro{background:linear-gradient(165deg,#06173b 0%,#092d70 42%,#0b3e90 76%,#061b46 100%)!important;color:#eaf3ff;min-height:100vh}
+body.cbpes-report-page-liga-pro main{background:transparent!important;color:#eaf3ff}
+body.cbpes-report-page-liga-pro #match{background:transparent!important;min-height:calc(100vh - 130px);padding-bottom:45px}
+body.cbpes-report-page-liga-pro #match .cbpes-report-back{color:#bdd9ff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-back:hover{color:#fff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-hero{background:radial-gradient(ellipse at 95% 0%,rgba(61,160,255,.34),transparent 55%),linear-gradient(115deg,#05143a,#0b337c 62%,#1355aa)!important;border-color:#3374c3!important;box-shadow:0 14px 38px rgba(0,8,33,.22)}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card{background:#0a285e!important;color:#f0f6ff!important;border:1px solid #3266aa!important;box-shadow:none}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead{background:#103b83!important;color:#fff!important;border-bottom:1px solid #3266aa!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead h2{color:#fff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardbody{background:transparent!important;color:#eaf3ff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stat{color:#eaf3ff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stat>div:first-child span{color:#c0d7fa!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-bars{background:#183d77!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-bars i:first-child{background:#6daeff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-bars i:last-child{background:#d7e9ff!important}
+body.cbpes-report-page-liga-pro #match .empty{color:#c2d6f5!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-mvp{background:#103b83!important;border-left-color:#79b4ff!important;color:#fff!important}
+body.cbpes-report-page-liga-pro footer{background:#061635!important;color:#e7f0ff!important;border-top:1px solid #2b5289}
+body.cbpes-report-page-liga-pro footer *{color:inherit}
