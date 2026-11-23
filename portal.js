@@ -4,7 +4,7 @@ const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'weeklies', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'weeklies', 'match', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
@@ -22,9 +22,24 @@ const publicCompetitionMatch = m => {
   return competition?.is_visible!==false;
 };
 
+
+function renderMatchReport(matchId){
+  const root=$('matchReportView'),m=(D?.matches||[]).find(x=>String(x.id)===String(matchId));
+  if(!m||(m.category||'official')!=='official'||!publicCompetitionMatch(m)){root.innerHTML='<div class="empty">Súmula oficial não encontrada.</div>';return;}
+  const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
+  const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
+  const stadium=(D.stadiums||[]).find(s=>s.id===(m.stadium_id||m.home?.stadium_id));
+  const stat=(D.matchStatistics||[]).find(s=>s.match_id===m.id);
+  const player=id=>(D.players||[]).find(p=>p.id===id);
+  const goals=(D.events||[]).filter(e=>e.match_id===m.id).sort((a,b)=>(a.minute??999)-(b.minute??999));
+  const statDefs=[['possession','Posse de bola','%'],['shots','Finalizações',''],['shots_on_target','Finalizações no gol',''],['corners','Escanteios',''],['fouls','Faltas',''],['offsides','Impedimentos','']];
+  const statHTML=statDefs.map(([key,label,suffix])=>{const a=stat?.['home_'+key],b=stat?.['away_'+key];if(a==null&&b==null)return '';const total=(a||0)+(b||0);return `<div class="cbpes-report-stat"><div><b>${a==null?'—':a+suffix}</b><span>${label}</span><b>${b==null?'—':b+suffix}</b></div><div class="cbpes-report-bars"><i style="width:${a==null?0:total?100*a/total:50}%"></i><i style="width:${b==null?0:total?100*b/total:50}%"></i></div></div>`;}).join('');
+  root.innerHTML=`<a class="cbpes-report-back" href="#games">← JOGOS E RESULTADOS</a><div class="cbpes-report-hero"><div class="cbpes-report-overline">PARTIDA OFICIAL • ${esc(competition?.name||edition?.name||'CBPES')}${m.round?' • '+esc(m.round.name||'RODADA '+m.round.number):''}</div><div class="cbpes-report-scoreboard"><div>${crestImg(m.home)}<a href="#team/${m.home_id}">${esc(m.home.name)}</a><small>${esc(m.home_coach_name||m.home.coach_name||'')}</small></div><strong>${m.played?m.home_score+' : '+m.away_score:'– : –'}</strong><div>${crestImg(m.away)}<a href="#team/${m.away_id}">${esc(m.away.name)}</a><small>${esc(m.away_coach_name||m.away.coach_name||'')}</small></div></div><div class="cbpes-report-meta">${m.played?'ENCERRADO':'AGENDADO'}${m.date?' • '+fd(m.date):''}${stadium?' • '+esc(stadium.name):''}${m.home_pen!=null&&m.away_pen!=null?' • PÊNALTIS '+m.home_pen+'–'+m.away_pen:''}</div></div><div class="cbpes-report-grid"><div class="card"><div class="cardhead"><h2>GOLS</h2></div><div class="cardbody">${goals.length?goals.map(e=>`<div class="cbpes-report-goal"><span>${e.minute==null?'⚽':esc(String(e.minute))+"' ⚽"}</span><div><b>${esc(player(e.scorer_id)?.name||'Jogador não informado')}</b><small>${esc((D.participants||[]).find(t=>t.id===e.team_id)?.name||player(e.scorer_id)?.team?.name||'')}${e.goal_type==='penalty'?' • PÊNALTI':e.goal_type==='own_goal'?' • GOL CONTRA':''}${e.assist_id?' • Assist.: '+esc(player(e.assist_id)?.name||''):''}</small></div></div>`).join(''):'<div class="empty">Gols ainda não detalhados.</div>'}</div></div><div class="card"><div class="cardhead"><h2>ESTATÍSTICAS</h2></div><div class="cardbody">${statHTML||'<div class="empty">Estatísticas ainda não informadas.</div>'}</div></div></div>${m.mvp_player_id?`<div class="cbpes-report-mvp">★ MELHOR JOGADOR DA PARTIDA: <b>${esc(player(m.mvp_player_id)?.name||'')}</b></div>`:''}`;
+}
+
 function route() {
   const raw = location.hash.slice(1), parts = raw.split('/');
-  const profile = ['participant','team','coach'].includes(parts[0]) && parts.length > 1;
+  const profile = ['participant','team','coach','match'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
   if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
@@ -39,6 +54,7 @@ function route() {
     if (id === 'participant') renderParticipant(value);
     if (id === 'team') renderTeam(value);
     if (id === 'coach') renderCoach(value);
+    if (id === 'match') renderMatchReport(value);
   }
   window.scrollTo(0, 0);
 }
