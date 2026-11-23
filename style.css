@@ -4662,3 +4662,33 @@ body > #navStatsMenu.nav-competition-menu{
     flex-basis: max-content !important;
   }
 }
+
+/* Destaque desktop: o selo fica em uma linha própria dentro do bloco do clube.
+   Impede que a largura do selo invada a coluna central do placar. */
+@media (min-width: 641px) {
+  #latest .cbpes-match-main > .cbpes-match-team .cbpes-match-club-text {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  #latest .cbpes-match-main > .cbpes-match-team .featured-juventus-name-row:has(.featured-juventus-champion) {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+  #latest .cbpes-match-main > .cbpes-match-team .featured-juventus-name-row .featured-juventus-champion {
+    position: static !important;
+    display: inline-flex !important;
+    align-self: flex-start !important;
+    flex: none !important;
+    flex-basis: auto !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}
