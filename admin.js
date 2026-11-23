@@ -71,7 +71,7 @@ async function refresh() { const y = window.scrollY; try { D = await load(); con
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
-  ({ camp: vCamp, times: vTimes, coaches: vTechnicians, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais })[tab]();
+  ({ camp: vCamp, times: vTimes, coaches: vTechnicians, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais, belts: renderBeltsAdmin })[tab]();
 }
 const pname = id => (D.participants.find(p => p.id === id) || {}).name || '?';
 const plname = id => (D.players.find(p => p.id === id) || {}).name || '?';
