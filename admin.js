@@ -934,7 +934,7 @@ function vTimes() {
   const panel = p => {
     const pls = D.players.filter(x => x.participant_id === p.id);
     const coachRows = (D.coachHistory||[]).filter(h=>h.participant_id===p.id).sort((a,b)=>(b.started_on||'').localeCompare(a.started_on||'')).map(h=>`<div class="player"><div><b>${esc(h.coach_name)}</b>${h.dates_unspecified?'<small>Competição de Abertura</small>':`<small>${h.started_on||'—'} até ${h.ended_on||'atual'}</small>`}</div><span class="pill">${h.ended_on?'ANTERIOR':'ATUAL'}</span></div>`).join('') || '<div class="empty">Nenhum técnico no histórico.</div>';
-    return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cbpes-crest-editor"><div class="eyebrow">ESCUDO DO CLUBE</div><div class="cbpes-crest-editor-row">${crestImg(p,'cbpes-crest-preview')}<div class="field"><label>Enviar imagem (PNG, JPG, WebP ou SVG, até 2 MB)</label><input id="crestFile${p.id}" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,.svg"></div><div class="field"><label>Ou URL HTTPS da imagem</label><input id="crestUrl${p.id}" type="url" placeholder="https://..." value="${esc(p.crest_url||'')}"></div><button class="btn sm primary" data-crest-save="${p.id}">SALVAR ESCUDO</button><button class="btn sm" data-crest-remove="${p.id}">REMOVER</button></div></div><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de técnicos</div>${coachRows}<div class="inline" style="margin-top:10px;align-items:end"><div class="field"><label>Técnico anterior</label><input id="hcn${p.id}" placeholder="Nome do técnico"></div><div class="field"><label>Competição</label><input value="Competição de Abertura" readonly aria-label="Competição de Abertura"></div><button class="btn sm primary" data-hadd="${p.id}">REGISTRAR PASSAGEM</button></div></div></div></td></tr>`;
+    return `<tr><td colspan="4" style="text-align:left;background:#f6f8f9;padding:10px 12px"><div class="cbpes-crest-editor"><div class="eyebrow">IDENTIDADE DO CLUBE</div><div class="inline" style="align-items:end;gap:12px;margin-bottom:14px"><div class="field"><label>COR PRINCIPAL</label><input type="color" id="teamColor${p.id}" value="${/^#[0-9a-f]{6}$/i.test(p.primary_color||'')?p.primary_color:'#176b45'}"></div><button class="btn sm primary" data-team-color-save="${p.id}">SALVAR COR</button></div><div class="eyebrow">ESCUDO DO CLUBE</div><div class="cbpes-crest-editor-row">${crestImg(p,'cbpes-crest-preview')}<div class="field"><label>Enviar imagem (PNG, JPG, WebP ou SVG, até 2 MB)</label><input id="crestFile${p.id}" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,.svg"></div><div class="field"><label>Ou URL HTTPS da imagem</label><input id="crestUrl${p.id}" type="url" placeholder="https://..." value="${esc(p.crest_url||'')}"></div><button class="btn sm primary" data-crest-save="${p.id}">SALVAR ESCUDO</button><button class="btn sm" data-crest-remove="${p.id}">REMOVER</button></div></div><div class="cols3" style="gap:20px"><div><div class="eyebrow" style="margin-bottom:6px">Jogadores (gol / assistência)</div>${pls.map(x => `<div class="player"><div><b>${esc(x.name)}</b></div><span>${g[x.id] || 0} / ${a[x.id] || 0} <button class="btn sm" data-je="${x.id}">EDITAR</button> <button class="btn sm danger" data-jd="${x.id}">EXCLUIR</button></span></div>`).join('') || '<div class="empty">Nenhum jogador.</div>'}<div class="inline" style="margin-top:8px"><input id="jn${p.id}" placeholder="Nome do jogador" maxlength="60"><button class="btn sm primary" data-jadd="${p.id}">ADICIONAR</button></div></div><div><div class="eyebrow" style="margin-bottom:6px">Histórico de técnicos</div>${coachRows}<div class="inline" style="margin-top:10px;align-items:end"><div class="field"><label>Técnico anterior</label><input id="hcn${p.id}" placeholder="Nome do técnico"></div><div class="field"><label>Competição</label><input value="Competição de Abertura" readonly aria-label="Competição de Abertura"></div><button class="btn sm primary" data-hadd="${p.id}">REGISTRAR PASSAGEM</button></div></div></div></td></tr>`;
   };
   $('view').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>CADASTRAR TIME</h2></div><div class="cardbody"><div class="inline" style="margin-top:10px"><input id="pn" maxlength="60" placeholder="Nome do time"><input id="pc" maxlength="80" placeholder="Técnico atual"><label class="field" style="min-width:190px"><span>Participa de competição atualmente?</span><select id="pactive"><option value="true" selected>Sim</option><option value="false">Não</option></select></label><button class="btn primary" id="pAdd">CADASTRAR</button></div></div></div>
   <div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>IMPORTAR TIMES POR NOME</h2></div><div class="cardbody"><p class="admin-help">Cadastre vários clubes de uma só vez, informando um nome por linha.</p><button class="btn primary" id="openTeamImporter">IMPORTAR TIMES</button></div></div>
@@ -976,6 +976,7 @@ function vTimes() {
   };
   $('view').onclick = async e => {
     const t = e.target.closest('button'); if (!t) return; const d = t.dataset;
+    if(d.teamColorSave){const color=$('teamColor'+d.teamColorSave)?.value;if(!/^#[0-9a-f]{6}$/i.test(color||''))return say('Cor inválida.',false);return run(sb.from('participants').update({primary_color:color}).eq('id',d.teamColorSave),'Cor do clube salva.');}
     if(d.crestSave)return saveCrest(d.crestSave);
     if(d.crestRemove){if(!confirm('Remover o escudo deste clube?'))return;return run(sb.from('participants').update({crest_url:null}).eq('id',d.crestRemove),'Escudo removido.');}
     if (d.t) { openPart = openPart === d.t ? null : d.t; return vTimes(); }
@@ -1220,21 +1221,44 @@ async function vSumulas(){
       const data=result.data;
       const words=(data.words||data.blocks?.flatMap(b=>(b.paragraphs||[]).flatMap(p=>(p.lines||[]).flatMap(l=>l.words||[])))||[]).filter(w=>w.text&&w.bbox);
       const tokens=words.map(w=>({text:w.text.trim(),x:(w.bbox.x0+w.bbox.x1)/2,y:(w.bbox.y0+w.bbox.y1)/2}));
-      const first=tokens.find(t=>/remates|remat|shots|chutes/i.test(t.text));
-      const last=tokens.find(t=>/posse|possession/i.test(t.text));
-      if(!first||!last||last.y<=first.y)throw Error('Não foi possível localizar Remates e Posse de Bola. Use uma captura mais nítida.');
-      const step=(last.y-first.y)/7,width=Math.max(...words.map(w=>w.bbox.x1)),values={};
-      const parse=ts=>{const str=ts.map(t=>t.text).join('').replace(/[Oo]/g,'0').replace(/[Il|]/g,'1');const match=str.match(/(\d+)\s*\(?\s*(\d+)?\s*\)?/);return match?{main:Number(match[1]),sub:match[2]==null?null:Number(match[2])}:null;};
-      for(let i=0;i<8;i++){
-        const row=tokens.filter(t=>Math.abs(t.y-(first.y+i*step))<step*.43);
-        const left=parse(row.filter(t=>t.x<width*.34&&/\d/.test(t.text.replace(/[OoIl|]/g,'0'))).sort((a,b)=>a.x-b.x));
-        const right=parse(row.filter(t=>t.x>width*.69&&/\d/.test(t.text.replace(/[OoIl|]/g,'0'))).sort((a,b)=>a.x-b.x));
+      // O idioma dos rótulos não importa: a tabela do PES 6 conserva oito linhas na mesma ordem.
+      const width=Math.max(...words.map(w=>w.bbox.x1)),height=Math.max(...words.map(w=>w.bbox.y1));
+      const numeric=tokens.filter(t=>/[0-9]/.test(t.text.replace(/[Oo]/g,'0'))&&(t.x<width*.37||t.x>width*.66));
+      const groups=[];
+      numeric.sort((a,b)=>a.y-b.y).forEach(t=>{
+        let g=groups.find(g=>Math.abs(g.y-t.y)<Math.max(7,height*.012));
+        if(!g){g={y:t.y,items:[]};groups.push(g);}
+        g.items.push(t);
+      });
+      const candidates=groups.filter(g=>g.items.some(t=>t.x<width*.37)&&g.items.some(t=>t.x>width*.66)).sort((a,b)=>a.y-b.y);
+      // Seleciona a sequência mais regular de oito linhas, ignorando cabeçalho, nomes e placar.
+      let best=null,bestScore=Infinity;
+      for(let j=0;j<=candidates.length-8;j++){
+        const sample=candidates.slice(j,j+8);
+        const gaps=sample.slice(1).map((g,i)=>g.y-sample[i].y);
+        const avg=gaps.reduce((s,v)=>s+v,0)/gaps.length;
+        if(avg<height*.009||avg>height*.11)continue;
+        const variance=gaps.reduce((s,v)=>s+(v-avg)**2,0)/gaps.length;
+        const score=variance/(avg*avg)+Math.abs(sample[0].y/height-.4)*.08;
+        if(score<bestScore){best=sample;bestScore=score;}
+      }
+      if(!best)throw Error('Não identifiquei as oito linhas da tabela. Envie uma imagem mais nítida e sem cortes.');
+      const values={};
+      const parse=ts=>{
+        const str=ts.sort((a,b)=>a.x-b.x).map(t=>t.text).join('').replace(/[Oo]/g,'0').replace(/[Il|]/g,'1');
+        const match=str.match(/(\d+)\s*\(\s*(\d+)\s*\)/)||str.match(/(\d+)/);
+        return match?{main:Number(match[1]),sub:match[2]==null?null:Number(match[2])}:null;
+      };
+      best.forEach((group,i)=>{
+        const left=parse(group.items.filter(t=>t.x<width*.37));
+        const right=parse(group.items.filter(t=>t.x>width*.66));
         const key=['shots','penalties',null,'corners','fouls','yellow_cards','red_cards','possession'][i];
-        if(!key)continue;
-        if(left)values['home_'+key]=left.main;if(right)values['away_'+key]=right.main;
+        if(!key)return;
+        if(left)values['home_'+key]=left.main;
+        if(right)values['away_'+key]=right.main;
         if(i===0){if(left?.sub!=null)values.home_shots_on_target=left.sub;if(right?.sub!=null)values.away_shots_on_target=right.sub;}
         if(i===4){if(left?.sub!=null)values.home_offsides=left.sub;if(right?.sub!=null)values.away_offsides=right.sub;}
-      }
+      });
       if(Object.keys(values).length<8)throw Error('Leitura incompleta. Tente outra imagem ou preencha os campos manualmente.');
       Object.entries(values).forEach(([key,val])=>{const el=view.querySelector('[data-stat="'+key+'"]');if(el)el.value=val;});
       status.textContent=Object.keys(values).length+' campos preenchidos. Confira os números e clique em SALVAR ESTATÍSTICAS.';
