@@ -5093,3 +5093,16 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cbpes-report-co
 body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report-compare-away{background:var(--cbpes-away-club,#d0a52e)!important}
 #match .cbpes-report-stats-card .cbpes-report-stat-heading b:first-child{color:var(--cbpes-home-club,#2678a9)!important}
 #match .cbpes-report-stats-card .cbpes-report-stat-heading b:last-child{color:var(--cbpes-away-club,#d0a52e)!important}
+
+/* CBPES: refinamento dos rankings e barras de estatísticas - 23/11/2026 */
+#statsGrid .cbpes-stats-player:has(.cbpes-stats-player-crest),
+#stats-detail .cbpes-stats-player:has(.cbpes-stats-player-crest){padding-left:13px!important}
+#statsGrid .cbpes-stats-player b:has(.cbpes-stats-player-crest),
+#stats-detail .cbpes-stats-player b:has(.cbpes-stats-player-crest){display:flex!important;align-items:center!important;gap:10px!important}
+#statsGrid .cbpes-stats-player-crest,#stats-detail .cbpes-stats-player-crest{width:23px!important;height:23px!important}
+#statsGrid .cbpes-stats-card .player,#stats-detail .cbpes-stats-card .player{border-radius:2px!important}
+#statsGrid .cbpes-stats-card .number,#stats-detail .cbpes-stats-card .number{border-radius:2px!important}
+#match .cbpes-report-stat-heading b{color:#fff!important}
+#match .cbpes-report-compare-track{border-radius:999px!important;border:1px solid rgba(255,255,255,.65)!important;overflow:hidden!important}
+#match .cbpes-report-compare-home{background:var(--cbpes-home-club)!important;border-radius:999px 0 0 999px!important}
+#match .cbpes-report-compare-away{background:var(--cbpes-away-club)!important;border-radius:0 999px 999px 0!important}
