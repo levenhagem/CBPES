@@ -43,9 +43,10 @@ function renderMatchReport(matchId){
   const homeGoals=goals.filter(e=>goalTeam(e)===m.home_id);
   const awayGoals=goals.filter(e=>goalTeam(e)===m.away_id);
   const goalRows=Array.from({length:Math.max(homeGoals.length,awayGoals.length)},(_,i)=>'<div class="cbpes-report-goal-row"><span class="cbpes-report-goal-home">'+(homeGoals[i]?goalName(homeGoals[i]):'')+'</span><span class="cbpes-report-goal-center" aria-hidden="true"><iconify-icon icon="iconoir:soccer-ball"></iconify-icon></span><span class="cbpes-report-goal-away">'+(awayGoals[i]?goalName(awayGoals[i]):'')+'</span></div>').join('');
-  const statDefs=[['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
+  const saveStats=(stat&&m.played&&stat.home_shots_on_target!=null&&stat.away_shots_on_target!=null)?{home:Math.max(0,Number(stat.away_shots_on_target)-Number(m.away_score)),away:Math.max(0,Number(stat.home_shots_on_target)-Number(m.home_score))}:null;
+  const statDefs=[['goalkeeper_saves','Defesas do goleiro','',false],['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
   const statHTML=statDefs.map(([key,label,suffix,conditional])=>{
-    const a=stat?.['home_'+key],b=stat?.['away_'+key];
+    const a=key==='goalkeeper_saves'?saveStats?.home:stat?.['home_'+key],b=key==='goalkeeper_saves'?saveStats?.away:stat?.['away_'+key];
     if(conditional&&!(Number(a)>0||Number(b)>0))return '';
     if(a==null&&b==null)return '';
     const left=Number(a)||0,right=Number(b)||0,total=left+right;
