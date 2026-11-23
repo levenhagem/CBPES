@@ -10,7 +10,7 @@ const all=()=>D?.matches||[];
 const team=id=>D.participants.find(p=>eq(p.id,id));
 const phaseOf=(m,rounds,phases,weekly)=>{const r=rounds.find(r=>eq(r.id,weekly?m.weekly_round_id:m.round_id));return phases.find(p=>eq(p.id,r?.phase_id));};
 function scope(){
- if(!state||!window.D)return null;
+ if(!state||typeof D==='undefined'||!D)return null;
  const weekly=state.kind==='weekly',id=state.id;
  const rounds=(weekly?D.weeklyRounds:D.rounds).filter(r=>eq(weekly?r.weekly_id:r.official_edition_id,id));
  const ids=new Set(rounds.map(r=>String(r.id)));
