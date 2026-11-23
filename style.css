@@ -5507,3 +5507,39 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
  #trophies .cbpes-trophy-ranking-coach a{font-size:13px!important}
  #trophies .cbpes-trophy-ranking-achievement{font-size:11px!important;overflow-wrap:break-word!important}
 }
+
+/* V20261123: Liga PRO desktop cards — symmetric sides and centered score. */
+@media(min-width:621px){
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-main{
+   display:grid!important;
+   grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr)!important;
+   gap:14px!important;
+   justify-content:stretch!important;
+   width:100%!important;
+   max-width:none!important;
+   align-items:center!important;
+ }
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-main>.cbpes-match-team{
+   width:100%!important;min-width:0!important;display:flex!important;
+ }
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-main>.cbpes-match-team.home{justify-content:flex-end!important}
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-main>.cbpes-match-team.away{justify-content:flex-start!important}
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-team.home .cbpes-match-club{
+   display:flex!important;flex-direction:row-reverse!important;justify-content:flex-start!important;
+   align-items:center!important;gap:8px!important;width:auto!important;max-width:100%!important;
+ }
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-team.home .cbpes-match-club-text{text-align:right!important;align-items:flex-end!important}
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-team.away .cbpes-match-club{
+   display:flex!important;flex-direction:row!important;justify-content:flex-start!important;
+   align-items:center!important;gap:8px!important;width:auto!important;max-width:100%!important;
+ }
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-team.away .cbpes-match-club-text{text-align:left!important;align-items:flex-start!important}
+ .cbpes-match.cbpes-match-liga-pro .cbpes-match-score{width:92px!important;min-width:0!important;text-align:center!important;justify-self:center!important}
+}
+/* Champion tag always follows visitor club name, not between score and club. */
+.cbpes-match .cbpes-match-team.away .featured-juventus-name-row{
+ display:inline-flex!important;flex-direction:row!important;justify-content:flex-start!important;
+ align-items:center!important;gap:6px!important;width:max-content!important;max-width:100%!important;
+}
+.cbpes-match .cbpes-match-team.away .featured-juventus-name-row .featured-juventus-champion{order:2!important;position:static!important;transform:none!important;margin:0!important}
+.cbpes-match .cbpes-match-team.away .featured-juventus-name-row .cbpes-team-name{order:1!important}
