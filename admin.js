@@ -521,7 +521,7 @@ async function moveMatchOrder(id,direction,list) {
 function rowHTML(m) {
   const ko = !!(m.round && m.round.stage === 'mata'), id = m.id;
   return `<div class="arow"><div class="nm">${esc(m.home.name)}</div><div><input class="scoreinput" type="number" min="0" max="99" id="h${id}" data-m="${id}" value="${m.home_score ?? ''}"> x <input class="scoreinput" type="number" min="0" max="99" id="a${id}" data-m="${id}" value="${m.away_score ?? ''}"></div><div class="nm">${esc(m.away.name)}</div>
-   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${matchExtras(m)}${featuredToggle(m)}${championTagControl(m)}${displayOrderControls(m,curMatches())}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
+   <div class="arow-foot">${m.group_name ? `<span class="admin-help">Grupo ${esc(m.group_name)}</span>` : ''}${matchExtras(m)}${featuredToggle(m)}${championTagControl(m)}${displayOrderControls(m,curMatches())}${friendlyCompetitionPicker(m)}<label class="admin-help">Data</label><input type="date" id="d${id}" value="${m.played_on || (m.played ? '' : today())}"><button class="btn sm primary" data-s="${id}">SALVAR</button>${m.played ? `<button class="btn sm" data-g="${id}">GOLS (${D.events.filter(e => e.match_id === id).length})</button><button class="btn sm danger" data-c="${id}">LIMPAR</button>` : ''}<button class="btn sm danger" data-mx="${id}">EXCLUIR JOGO</button></div>${openGoals === id && m.played ? goalsPanel(m) : ''}</div>`;
 }
 function goalsPanel(m) {
   const ev = D.events.filter(e => e.match_id === m.id), pls = D.players.filter(p => [m.home_id, m.away_id].includes(p.participant_id));
@@ -603,6 +603,34 @@ async function importOfficialFixtures(){
   input.value='';say(result.length+' confrontos importados com sucesso.',true);await refresh();
  }catch(err){say(err.message,false);}finally{button.disabled=false;}
 }
+
+// Reclassificação de amistosos: preserva placar, data, times e eventos da partida.
+function friendlyCompetitionPicker(m){
+  const editions=(D.officialEditions||[]).slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'pt-BR'));
+  const choices=editions.map(e=>{
+    const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(e.competition_id));
+    const rounds=(D.rounds||[]).filter(r=>String(r.official_edition_id)===String(e.id)).sort((a,b)=>(a.number||0)-(b.number||0));
+    if(!rounds.length)return '';
+    return '<optgroup label="'+esc((competition?.name||'Competição')+' • '+(e.name||'Edição'))+'">'+rounds.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.name||'Rodada '+r.number)+'</option>').join('')+'</optgroup>';
+  }).join('');
+  return '<div class="cbpes-friendly-reclassify"><label class="admin-help" for="reclass'+m.id+'">VINCULAR A COMPETIÇÃO / RODADA</label><select id="reclass'+m.id+'"><option value="">Selecione a competição e rodada</option>'+choices+'</select><button class="btn sm" data-reclass="'+m.id+'" '+(!choices?'disabled':'')+'>ALTERAR PARA OFICIAL</button></div>';
+}
+async function reclassifyFriendly(id){
+  const m=D.matches.find(x=>String(x.id)===String(id));
+  if(!m||m.category!=='friendly')return say('Amistoso não encontrado.',false);
+  const roundId=$('reclass'+id)?.value;
+  const round=(D.rounds||[]).find(r=>String(r.id)===String(roundId));
+  if(!round||!round.official_edition_id)return say('Selecione uma rodada de uma competição oficial cadastrada.',false);
+  const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(round.official_edition_id));
+  if(!edition)return say('Edição oficial não encontrada.',false);
+  const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
+  const name=(competition?.name||'Competição')+' • '+(edition.name||'Edição')+' • '+(round.name||'Rodada '+round.number);
+  if(!confirm('Converter este amistoso em partida OFICIAL de '+name+'? O resultado e os gols serão preservados.'))return;
+  const {error}=await sb.from('matches').update({category:'official',round_id:round.id,official_edition_id:edition.id,weekly_id:null,weekly_round_id:null,champion_team_id:null}).eq('id',id).eq('category','friendly');
+  if(error)return say(traduz(error),false);
+  say('Partida vinculada à competição oficial. Estatísticas e tabela serão recalculadas.',true);
+  await refresh();
+}
 function vJogos() {
   const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
   if (activeCategory === 'friendly') {
@@ -615,6 +643,7 @@ function vJogos() {
       if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
       if(d.category){activeCategory=d.category;selRound=null;return vJogos();}
       if(d.fadd){const h=$('fh').value,a=$('fa').value;if(!h||!a)return say('Cadastre os participantes primeiro.',false);if(h===a)return say('Escolha participantes diferentes.',false);return run(sb.from('matches').insert({round_id:null,home_id:h,away_id:a,played_on:$('fdt').value||null,category:'friendly'}),'Amistoso cadastrado sem vínculo com rodada.');}
+      if(d.reclass)return reclassifyFriendly(d.reclass);
       if(d.s)return saveOne(d.s);
       if(d.mx&&confirm('Excluir este amistoso?'))return run(sb.from('matches').delete().eq('id',d.mx),'Amistoso excluído.');
       if(d.g){openGoals=openGoals===d.g?null:d.g;return vJogos();}
