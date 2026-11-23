@@ -4936,3 +4936,11 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 .cbpes-admin-ui .cbpes-report-toolbar .btn,.cbpes-admin-ui .cbpes-report-tab{display:inline-flex!important;align-items:center;gap:6px!important}
 .cbpes-admin-ui .cbpes-report-tab iconify-icon{font-size:17px}
 @media(max-width:720px){.cbpes-admin-ui .cbpes-admin-nav{padding:5px 8px!important}.cbpes-admin-ui .cbpes-admin-nav-label{display:block;flex-basis:100%;padding:4px 6px;min-width:0}.cbpes-admin-ui .cbpes-admin-nav-group{gap:3px}.cbpes-admin-ui .cbpes-admin-nav button{flex:1 1 auto!important;padding:9px 8px!important;font-size:11px!important}.cbpes-admin-ui .cbpes-report-toolbar{align-items:flex-start;flex-direction:column;gap:8px}}
+
+/* Subnavegação de Jogos: menos ruído visual e prioridade à seleção ativa. */
+.cbpes-admin-ui #view>.card:first-child>.cardbody.inline{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:6px!important;padding:11px 12px!important}
+.cbpes-admin-ui #view>.card:first-child>.cardbody.inline>.btn{border:1px solid #e4e9ec!important;background:#fff!important;color:#536574!important;font-weight:700!important;padding:9px 12px!important;box-shadow:none!important}
+.cbpes-admin-ui #view>.card:first-child>.cardbody.inline>.btn.primary{background:#137a4b!important;border-color:#137a4b!important;color:#fff!important}
+.cbpes-admin-ui #view>.card:first-child>.cardbody.inline>.cbpes-report-tab{margin-left:auto!important}
+.cbpes-admin-ui #view>.card:first-child>.cardbody.inline>.admin-help{flex-basis:100%;padding:3px 2px 0!important;color:#82909c}
+@media(max-width:650px){.cbpes-admin-ui #view>.card:first-child>.cardbody.inline>.cbpes-report-tab{margin-left:0!important}}
