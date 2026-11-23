@@ -689,15 +689,44 @@ const statsCompetitionMatch=m=>{
   const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
   return String(edition?.competition_id||'')===statsCompetition;
 };
+// O Torneio de Abertura possui arquivo histórico completo (grupos + mata-mata).
+// Não combinar seus 93 registros parciais de matches com o arquivo: isso duplica jogos.
+const openingStatMatches=()=>{
+  const standingsRows=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload);
+  const byCoach=new Map(standingsRows.map(x=>[String(x.coach||'').trim().toLocaleLowerCase('pt-BR'),openingTeamName(x.team)]));
+  const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]/g,'');
+  const participantByName=new Map(D.participants.map(p=>[normalize(p.name),p]));
+  const extra=new Map();
+  const teamFor=(team,coach)=>{
+    const name=openingTeamName(team||byCoach.get(String(coach||'').trim().toLocaleLowerCase('pt-BR'))||'');
+    if(!name)return null;
+    const key=normalize(name);
+    if(participantByName.has(key))return participantByName.get(key);
+    if(!extra.has(key))extra.set(key,{id:'opening-archive-'+key,name,coach_name:coach||''});
+    return extra.get(key);
+  };
+  const matches=openingArchive.filter(x=>x.record_type==='match').map(x=>{
+    const p=x.payload||{},home=teamFor(p.home_team,p.home_coach),away=teamFor(p.away_team,p.away_coach);
+    const hs=Number(p.home_score),as=Number(p.away_score);
+    if(!home||!away||!Number.isFinite(hs)||!Number.isFinite(as))return null;
+    return {id:'opening-archive-'+x.source_key,category:'official',official_edition_id:openingEditionId,
+      home_id:home.id,away_id:away.id,home,away,home_score:hs,away_score:as,played:true};
+  }).filter(Boolean);
+  return {matches,participants:[...extra.values()]};
+};
 const statDataCache=new WeakMap();
 const statData=category=>{
   let cached=statDataCache.get(D);
   if(!cached){cached=new Map();statDataCache.set(D,cached);}
   const key=category+'|'+(category==='official'?statsCompetition:'all');
   if(cached.has(key))return cached.get(key);
-  const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
+  const includeOpening=category==='official'&&(statsCompetition==='all'||statsCompetition==='810e323b-ed38-44d4-8460-1e21f02dd077');
+  const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m))&&
+    (!includeOpening||String(m.official_edition_id||m.round?.official_edition_id)!==openingEditionId));
+  const archive=includeOpening?openingStatMatches():{matches:[],participants:[]};
+  const combined=ms.concat(archive.matches);
   const ids=new Set(ms.map(m=>m.id));
-  const filtered={...D,matches:ms,events:D.events.filter(e=>ids.has(e.match_id))};
+  const filtered={...D,participants:D.participants.concat(archive.participants),matches:combined,events:D.events.filter(e=>ids.has(e.match_id))};
   const result=stats(filtered,category);
   cached.set(key,result);
   return result;
