@@ -323,15 +323,7 @@ function renderGames() {
     return String(b.created_at||'').localeCompare(String(a.created_at||''))
       ||(Number(b.seq)||0)-(Number(a.seq)||0);
   });
-  const timelineHtml = chronological.map(m=>{
-    const registered=String(m.result_registered_at||m.created_at||'');
-    const date=registered?new Date(registered):null;
-    const dateLabel=date&&!Number.isNaN(date.getTime())
-      ?date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:'America/Sao_Paulo'})
-      :(m.date?fd(m.date).slice(0,5):'SEM DATA');
-    const kind=m.category==='friendly'?'AMISTOSO':m.category==='weekly'?'SEMANAL':'OFICIAL';
-    return '<div class="cbpes-games-chronological-item"><div class="cbpes-games-registration-label">'+kind+' · REGISTRADO EM '+dateLabel+'</div>'+matchRow(m,false,true)+'</div>';
-  }).join('');
+  const timelineHtml = chronological.map(m=>matchRow(m,false,true,'arrow',true)).join('');
   $('gamesList').innerHTML = timelineHtml || empty('Nenhuma partida encontrada.');
 }
 
