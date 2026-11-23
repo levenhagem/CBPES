@@ -31,7 +31,8 @@ $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 $('tabs').onclick = e => { const btn=e.target.closest('button[data-t]'); if(btn){ tab=btn.dataset.t; if(tab==='jogos'){gamesSubView='matches';editingMatchId=null;matchEditorTab='result';} draft=null; render(); } };
 
-async function refresh() { const y = window.scrollY; try { D = await load(); await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
+let adminCareerMatches = [];
+async function refresh() { const y = window.scrollY; try { D = await load(); const archiveResponse=await sb.from('career_matches').select('*'); if(archiveResponse.error)throw archiveResponse.error; adminCareerMatches=archiveResponse.data||[]; await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
@@ -690,6 +691,19 @@ function vMatchEditor(){
  };
 }
 
+// Histórico de técnicos: partidas amistosas importadas, sem copiar registros para matches.
+function archivedFriendlies(){
+ const normalize=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const official=new Set(D.matches.filter(m=>m.category==='official'&&m.played).map(m=>
+  [normalize(m.home?.name),normalize(m.away?.name),m.home_score,m.away_score,String(m.played_on||m.date||'').slice(0,10)].join('|')));
+ const unique=new Set();
+ return adminCareerMatches.filter(m=>{
+  if(m.category&&m.category!=='friendly')return false;
+  const key=[normalize(m.home_club),normalize(m.away_club),m.home_score,m.away_score,String(m.played_on||'').slice(0,10)].join('|');
+  if(official.has(key)||unique.has(String(m.source_key||m.id)))return false;
+  unique.add(String(m.source_key||m.id));return true;
+ }).sort((a,b)=>String(b.played_on||'').localeCompare(String(a.played_on||''))||String(b.source_key||'').localeCompare(String(a.source_key||'')));
+}
 function vJogos() {
   if(gamesSubView==='editor')return vMatchEditor();
   if(gamesSubView==='reports')return vSumulas();
@@ -698,7 +712,10 @@ function vJogos() {
     const ms = curMatches();
     const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO AMISTOSO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="fh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="fa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data</label><input type="date" id="fdt" value="${today()}"></div><button class="btn primary" data-fadd="1">CADASTRAR AMISTOSO</button></div></div></div>`;
     const rows = ms.length ? ms.map(rowHTML).join('') : '<div class="empty">Nenhum amistoso cadastrado.</div>';
-    $('view').innerHTML = switcher + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div>`;
+    const archive=archivedFriendlies();
+    const historicalRows=archive.map(m=>'<div class="cbpes-admin-archive-row"><div><strong>'+esc(m.home_club||m.home_coach)+' '+esc(m.home_score)+' × '+esc(m.away_score)+' '+esc(m.away_club||m.away_coach)+'</strong><div class="admin-help">'+esc(m.home_coach)+' × '+esc(m.away_coach)+' · '+esc(m.played_on||'Sem data')+'</div></div><span class="admin-help">HISTÓRICO</span></div>').join('');
+
+    $('view').innerHTML = switcher + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div><div class="card"><div class="cardhead"><h2>AMISTOSOS DO HISTÓRICO DOS TÉCNICOS (${archive.length})</h2></div><div class="cardbody">${historicalRows||'<div class="empty">Nenhum amistoso histórico.</div>'}</div></div>`;
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
       if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
