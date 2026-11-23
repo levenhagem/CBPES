@@ -4732,3 +4732,30 @@ body > header #nav > .nav-competition-wrap > button {
 body > header #nav > .nav-competition-wrap {
   align-items: stretch !important;
 }
+
+/* Menu TABELA: competições oficiais em verde-claro; SEMANAIS mantém a paleta original. */
+#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option),
+body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) {
+  background: #d9f3e3 !important;
+  color: #124b32 !important;
+  border-bottom-color: #b9dfc8 !important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) small,
+body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) small {
+  color: #367455 !important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option):is(:hover,:focus-visible),
+body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option):is(:hover,:focus-visible) {
+  background: #b6e7ca !important;
+  color: #0b3c27 !important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option,
+body > #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option {
+  background: transparent !important;
+  color: #f4f8f6 !important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible),
+body > #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible) {
+  background: #08643f !important;
+  color: #fff !important;
+}
