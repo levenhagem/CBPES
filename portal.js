@@ -649,8 +649,6 @@ function renderWeeklies() {
 const statCategoryLabels={official:'COMPETIÇÕES OFICIAIS',weekly:'SEMANAIS',friendly:'AMISTOSOS — TÉCNICOS'};
 const statDefinitions=S=>[
   {key:'scorers',title:'ARTILHARIA',rows:S.artilheiros,value:x=>x.g,unit:'gols',players:true},
-  {key:'assists',title:'ASSISTÊNCIAS',rows:S.garcons,value:x=>x.a,unit:'assist.',players:true},
-  {key:'goal-contributions',title:'PARTICIPAÇÕES EM GOLS (G+A)',rows:S.part,value:x=>x.ga,unit:'',players:true},
   {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:S.ataque.slice().sort((a,b)=>b.gp/b.j-a.gp/a.j),value:x=>fmt1(x.gp/x.j)},
   {key:'defense',title:'MELHOR DEFESA',rows:S.defesa,value:x=>x.gc},
   {key:'goals',title:'GOLS MARCADOS',rows:S.ataque,value:x=>x.gp},
@@ -739,7 +737,7 @@ const changeDefenseMode=e=>{
 };
 const statRowsHtml=(definition,limit=Infinity)=>{
   const rows=definition.rows.slice(0,limit);
-  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small><a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
+  return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player"><div><b><span class="rank-position">'+densePosition(definition.rows,i,definition.value)+'</span>'+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b>'+(definition.players?'<small class="cbpes-stats-player-team">'+crestImg(x.team,'cbpes-stats-player-crest')+'<a href="#team/'+encodeURIComponent(x.team.id)+'">'+esc(x.team.name)+'</a></small>':'')+'</div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function generalStatsData(category){
