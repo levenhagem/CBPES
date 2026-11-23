@@ -1173,7 +1173,7 @@ function vTechnicians() {
 
 
 let reportMatchId=null;
-const reportStatFields=[['possession','Posse de bola (%)'],['shots','Chutes'],['shots_on_target','Chutes a gol'],['penalties','Pênaltis'],['fouls','Faltas cometidas'],['offsides','Impedimentos'],['yellow_cards','Cartões amarelos'],['red_cards','Cartões vermelhos']];
+const reportStatFields=[['possession','Posse de bola (%)'],['shots','Chutes'],['shots_on_target','Chutes a gol'],['corners','Escanteios'],['penalties','Pênaltis'],['fouls','Faltas cometidas'],['offsides','Impedimentos'],['yellow_cards','Cartões amarelos'],['red_cards','Cartões vermelhos']];
 async function vSumulas(){
   gamesSubView='reports';
   const view=$('view'),official=D.matches.filter(m=>(m.category||'official')==='official').slice().reverse();
@@ -1195,7 +1195,7 @@ async function vSumulas(){
   field('Melhor jogador','<select id="reportMvp">'+selectPlayers(m.mvp_player_id,'Não definido')+'</select>')+
   '</div><div class="inline"><input id="reportNewStadium" placeholder="Nome de novo estádio"><button class="btn" id="reportAddStadium">CADASTRAR ESTÁDIO</button><button class="btn primary" id="reportSaveMeta">SALVAR ESTÁDIO E MVP</button></div></div></div>'+
   '<div class="card"><div class="cardhead"><h2>ELENCO E GOLS</h2></div><div class="cardbody"><div class="inline">'+field('Clube','<select id="reportPlayerTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Novo jogador','<input id="reportPlayerName" placeholder="Nome do jogador">')+'<button class="btn" id="reportAddPlayer">ADICIONAR JOGADOR</button></div><hr><div class="inline">'+field('Equipe do gol','<select id="reportGoalTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Autor','<select id="reportScorer">'+selectPlayers()+'</select>')+field('Assistência (opcional)','<select id="reportAssist">'+selectPlayers('','Sem assistência')+'</select>')+field('Minuto (opcional)','<input id="reportMinute" type="number" min="0" max="130" placeholder="—">')+field('Tipo','<select id="reportGoalType"><option value="normal">Normal</option><option value="penalty">Pênalti</option><option value="own_goal">Contra</option></select>')+'<button class="btn primary" id="reportAddGoal">ADICIONAR GOL</button></div><div style="margin-top:14px">'+(events.length?events.map(e=>'<div class="cbpes-report-goal"><b>'+esc(D.players.find(p=>p.id===e.scorer_id)?.name||'Jogador')+'</b> '+(e.minute==null?'':e.minute+"'")+' <button class="btn" data-report-delete="'+e.id+'">REMOVER</button></div>').join(''):'Nenhum gol cadastrado')+'</div></div></div>'+
-  '<div class="card"><div class="cardhead"><h2>ESTATÍSTICAS DA PARTIDA</h2></div><div class="cardbody"><div class="cbpes-goalkeepers-admin"><div><label>GOLEIRO DO '+esc(m.home.name)+'</label>'+goalkeeperSelect(m.home_id,stats.home_goalkeeper_id)+'</div><div><label>GOLEIRO DO '+esc(m.away.name)+'</label>'+goalkeeperSelect(m.away_id,stats.away_goalkeeper_id)+'</div></div><div class="cbpes-goalkeeper-saves"><b>DEFESAS DO GOLEIRO</b><span>'+(saves?' '+saves.home+' × '+saves.away+' ':'Informe chutes a gol e placar')+'</span></div><p class="admin-help">As defesas são calculadas a partir dos chutes a gol do adversário menos os gols sofridos. Confira possíveis gols contra ou substituições de goleiro.</p><div class="inline">'+reportStatFields.map(([key,label])=>field(label,'<div class="inline"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Casa" data-stat="home_'+key+'" value="'+(stats['home_'+key]??'')+'"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Fora" data-stat="away_'+key+'" value="'+(stats['away_'+key]??'')+'"></div>')).join('')+'</div><button class="btn primary" id="reportSaveStats">SALVAR ESTATÍSTICAS</button></div></div>':'<div class="empty">Sem partidas oficiais.</div>');
+  '<div class="card"><div class="cardhead"><h2>ESTATÍSTICAS DA PARTIDA</h2></div><div class="cardbody"><div class="cbpes-stats-image-import"><div><b>IMPORTAR ESTATÍSTICAS DO PES 6</b><small>Envie a tela Informação do Jogo. Confira os dados antes de salvar.</small></div><label class="btn" for="reportStatsImage">IMPORTAR IMAGEM</label><input type="file" id="reportStatsImage" accept="image/png,image/jpeg,image/webp" hidden><span id="reportImageStatus" role="status"></span></div><div class="cbpes-goalkeepers-admin"><div><label>GOLEIRO DO '+esc(m.home.name)+'</label>'+goalkeeperSelect(m.home_id,stats.home_goalkeeper_id)+'</div><div><label>GOLEIRO DO '+esc(m.away.name)+'</label>'+goalkeeperSelect(m.away_id,stats.away_goalkeeper_id)+'</div></div><div class="cbpes-goalkeeper-saves"><b>DEFESAS DO GOLEIRO</b><span>'+(saves?' '+saves.home+' × '+saves.away+' ':'Informe chutes a gol e placar')+'</span></div><p class="admin-help">As defesas são calculadas a partir dos chutes a gol do adversário menos os gols sofridos. Confira possíveis gols contra ou substituições de goleiro.</p><div class="inline">'+reportStatFields.map(([key,label])=>field(label,'<div class="inline"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Casa" data-stat="home_'+key+'" value="'+(stats['home_'+key]??'')+'"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Fora" data-stat="away_'+key+'" value="'+(stats['away_'+key]??'')+'"></div>')).join('')+'</div><button class="btn primary" id="reportSaveStats">SALVAR ESTATÍSTICAS</button></div></div>':'<div class="empty">Sem partidas oficiais.</div>');
   const cards=[...view.querySelectorAll(':scope > .card')];
   if(cards.length>1){
     const bar=document.createElement('div');bar.innerHTML=reportNav;const nav=bar.firstElementChild;cards[0].after(nav);
@@ -1210,6 +1210,36 @@ async function vSumulas(){
   $('reportAddPlayer').onclick=async()=>{const name=$('reportPlayerName').value.trim();if(!name)return say('Informe o jogador.',false);const {error}=await sb.from('players').insert({name,participant_id:$('reportPlayerTeam').value});if(error)return say(traduz(error),false);say('Jogador cadastrado.',true);refresh()};
   $('reportAddGoal').onclick=async()=>{const scorer=$('reportScorer').value,team=$('reportGoalTeam').value,assist=$('reportAssist').value;const p=players.find(x=>x.id===scorer);if(!p)return say('Selecione o autor.',false);if(assist===scorer)return say('Autor e assistente não podem ser iguais.',false);const goalType=$('reportGoalType').value;if(goalType==='own_goal'&&p.participant_id===team)return say('No gol contra, selecione a equipe beneficiada e o jogador adversário.',false);if(goalType!=='own_goal'&&p.participant_id!==team)return say('O autor deve pertencer à equipe do gol.',false);const minute=$('reportMinute').value;const {error}=await sb.from('match_events').insert({match_id:m.id,scorer_id:scorer,assist_id:assist||null,team_id:team,minute:minute===''?null:Number(minute),goal_type:goalType});if(error)return say(traduz(error),false);say('Gol cadastrado.',true);refresh()};
   view.querySelectorAll('[data-report-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Remover gol?'))return;const {error}=await sb.from('match_events').delete().eq('id',b.dataset.reportDelete);if(error)return say(traduz(error),false);refresh()});
+  $('reportStatsImage').onchange=async e=>{
+    const file=e.target.files?.[0],status=$('reportImageStatus');if(!file)return;
+    status.textContent='Reconhecendo imagem…';
+    try{
+      if(!window.Tesseract)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';s.onload=resolve;s.onerror=()=>reject(new Error('Falha ao carregar o reconhecimento de imagens.'));document.head.appendChild(s)});
+      const worker=await Tesseract.createWorker('eng');
+      let result;try{result=await worker.recognize(file,{}, {text:true,blocks:true});}finally{await worker.terminate();}
+      const data=result.data;
+      const words=(data.words||data.blocks?.flatMap(b=>(b.paragraphs||[]).flatMap(p=>(p.lines||[]).flatMap(l=>l.words||[])))||[]).filter(w=>w.text&&w.bbox);
+      const tokens=words.map(w=>({text:w.text.trim(),x:(w.bbox.x0+w.bbox.x1)/2,y:(w.bbox.y0+w.bbox.y1)/2}));
+      const first=tokens.find(t=>/remates|remat|shots|chutes/i.test(t.text));
+      const last=tokens.find(t=>/posse|possession/i.test(t.text));
+      if(!first||!last||last.y<=first.y)throw Error('Não foi possível localizar Remates e Posse de Bola. Use uma captura mais nítida.');
+      const step=(last.y-first.y)/7,width=Math.max(...words.map(w=>w.bbox.x1)),values={};
+      const parse=ts=>{const str=ts.map(t=>t.text).join('').replace(/[Oo]/g,'0').replace(/[Il|]/g,'1');const match=str.match(/(\d+)\s*\(?\s*(\d+)?\s*\)?/);return match?{main:Number(match[1]),sub:match[2]==null?null:Number(match[2])}:null;};
+      for(let i=0;i<8;i++){
+        const row=tokens.filter(t=>Math.abs(t.y-(first.y+i*step))<step*.43);
+        const left=parse(row.filter(t=>t.x<width*.34&&/\d/.test(t.text.replace(/[OoIl|]/g,'0'))).sort((a,b)=>a.x-b.x));
+        const right=parse(row.filter(t=>t.x>width*.69&&/\d/.test(t.text.replace(/[OoIl|]/g,'0'))).sort((a,b)=>a.x-b.x));
+        const key=['shots','penalties',null,'corners','fouls','yellow_cards','red_cards','possession'][i];
+        if(!key)continue;
+        if(left)values['home_'+key]=left.main;if(right)values['away_'+key]=right.main;
+        if(i===0){if(left?.sub!=null)values.home_shots_on_target=left.sub;if(right?.sub!=null)values.away_shots_on_target=right.sub;}
+        if(i===4){if(left?.sub!=null)values.home_offsides=left.sub;if(right?.sub!=null)values.away_offsides=right.sub;}
+      }
+      if(Object.keys(values).length<8)throw Error('Leitura incompleta. Tente outra imagem ou preencha os campos manualmente.');
+      Object.entries(values).forEach(([key,val])=>{const el=view.querySelector('[data-stat="'+key+'"]');if(el)el.value=val;});
+      status.textContent=Object.keys(values).length+' campos preenchidos. Confira os números e clique em SALVAR ESTATÍSTICAS.';
+    }catch(err){status.textContent=err.message||'Não foi possível reconhecer a imagem.';}
+  };
   $('reportSaveStats').onclick=async()=>{const row={match_id:m.id,home_goalkeeper_id:view.querySelector('[data-goalkeeper="home"]')?.value||null,away_goalkeeper_id:view.querySelector('[data-goalkeeper="away"]')?.value||null};view.querySelectorAll('[data-stat]').forEach(el=>row[el.dataset.stat]=el.value===''?null:Number(el.value));const {error}=await sb.from('match_statistics').upsert(row,{onConflict:'match_id'});if(error)return say(traduz(error),false);say('Estatísticas salvas.',true);refresh()};
 }
 
