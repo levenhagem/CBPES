@@ -4824,3 +4824,25 @@ body > #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible)
 .cbpes-report-ball{font-size:12px;line-height:1}
 .cbpes-report-stats-card{max-width:960px;margin:0 auto}
 @media(max-width:700px){.cbpes-report-hero{padding:15px 12px 13px!important}.cbpes-report-hero .cbpes-report-scoreboard{margin:13px auto 10px;gap:8px}.cbpes-report-hero .cbpes-report-scoreboard img{max-width:58px;max-height:58px}.cbpes-report-hero .cbpes-report-scoreboard a{font-size:14px}.cbpes-report-goals{gap:10px;font-size:11px}.cbpes-report-scorer{gap:4px}}
+
+/* Identidade da competição aplicada à página inteira da súmula. */
+body.cbpes-report-page{background:#e9f0f4}
+body.cbpes-report-page main{background:transparent}
+body.cbpes-report-page #match{min-height:calc(100vh - 150px)}
+body.cbpes-report-page-liga-pro{background:linear-gradient(155deg,#dce9fc 0%,#edf3fd 55%,#dbe8fb 100%)!important}
+body.cbpes-report-page-copa-master{background:linear-gradient(155deg,#f1ecdc 0%,#f7f5ed 55%,#e8dfc7 100%)!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-back{color:#15488c}
+body.cbpes-report-page-copa-master #match .cbpes-report-back{color:#71551c}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card{border:1px solid #b6cdec;background:#f9fbff}
+body.cbpes-report-page-copa-master #match .cbpes-report-stats-card{border:1px solid #d9cba5;background:#fffcf5}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead{background:#e0eafd;color:#103c82;border-bottom:1px solid #c4d7f2}
+body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cardhead{background:#eee4c9;color:#5c4315;border-bottom:1px solid #d9cba5}
+body.cbpes-report-page-liga-pro #match .cbpes-report-bars i:first-child{background:#1559bd}
+body.cbpes-report-page-liga-pro #match .cbpes-report-bars i:last-child{background:#73a8ed}
+body.cbpes-report-page-copa-master #match .cbpes-report-bars i:first-child{background:#a67c26}
+body.cbpes-report-page-copa-master #match .cbpes-report-bars i:last-child{background:#595344}
+body.cbpes-report-page-liga-pro #match .cbpes-report-mvp{background:#dbe9ff;border-left-color:#2563b5;color:#173b74}
+body.cbpes-report-page-copa-master #match .cbpes-report-mvp{background:#f1e6c7;border-left-color:#b48b30;color:#554019}
+.cbpes-report-heading-date{font-size:12px;line-height:1.4;font-weight:400;letter-spacing:.02em;color:rgba(255,255,255,.78);margin:5px auto 0}
+.cbpes-report-hero .cbpes-report-overline{font-weight:750}
+.cbpes-report-hero .cbpes-report-meta{font-weight:400}
