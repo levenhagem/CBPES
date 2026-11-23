@@ -35,7 +35,7 @@ async function refresh() { const y = window.scrollY; try { D = await load(); awa
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
-  ({ camp: vCamp, times: vTimes, coaches: vTechnicians, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais })[tab]();
+  ({ camp: vCamp, times: vTimes, coaches: vTechnicians, jogos: vJogos, est: vEst, his: vHis, import: vImport, weekly: vSemanais, sumulas: vSumulas })[tab]();
 }
 const pname = id => (D.participants.find(p => p.id === id) || {}).name || '?';
 const plname = id => (D.players.find(p => p.id === id) || {}).name || '?';
@@ -1070,6 +1070,36 @@ function vTechnicians() {
     if(t.dataset.coachProfile){const name=decodeURIComponent(t.dataset.coachProfile),profile=profiles.find(p=>coachKey(p.name)===coachKey(name));const bio=prompt('Apresentação / biografia de '+name+':',profile?.bio||'');if(bio===null)return;const {error}=await sb.from('coach_profiles').upsert({name,bio},{onConflict:'name'});if(error)return say(traduz(error),false);say('Perfil atualizado.',true);return refresh();}
     if(t.dataset.trophyDelete&&confirm('Excluir esta conquista manual?')){const {error}=await sb.from('coach_trophies').delete().eq('id',t.dataset.trophyDelete).eq('source_type','manual');if(error)return say(traduz(error),false);say('Conquista manual removida.',true);return refresh();}
   };
+}
+
+
+let reportMatchId=null;
+const reportStatFields=[['possession','Posse (%)'],['shots','Finalizações'],['shots_on_target','No gol'],['corners','Escanteios'],['fouls','Faltas'],['offsides','Impedimentos']];
+async function vSumulas(){
+  const view=$('view'),official=D.matches.filter(m=>(m.category||'official')==='official').slice().reverse();
+  if(!reportMatchId&&official.length)reportMatchId=official[0].id;
+  const m=official.find(x=>x.id===reportMatchId);
+  const [st,stat]=await Promise.all([sb.from('stadiums').select('*').order('name'),m?sb.from('match_statistics').select('*').eq('match_id',m.id).maybeSingle():Promise.resolve({data:null})]);
+  const stadiums=st.data||[],stats=stat.data||{};
+  const players=D.players.filter(p=>m&&(p.participant_id===m.home_id||p.participant_id===m.away_id));
+  const events=(D.events||[]).filter(e=>e.match_id===m?.id);
+  const selectPlayers=(selected='',empty='Selecione')=>'<option value="">'+empty+'</option>'+players.map(p=>'<option value="'+p.id+'" '+(p.id===selected?'selected':'')+'>'+esc(p.name)+' — '+esc(p.team?.name||'')+'</option>').join('');
+  view.innerHTML='<div class="card"><div class="cardhead"><h2>SÚMULAS — SOMENTE JOGOS OFICIAIS</h2></div><div class="cardbody"><div class="field"><label>PARTIDA</label><select id="reportMatchSelect">'+official.map(x=>'<option value="'+x.id+'" '+(x.id===m?.id?'selected':'')+'>'+esc(x.home.name)+' '+(x.home_score??'–')+' x '+(x.away_score??'–')+' '+esc(x.away.name)+'</option>').join('')+'</select></div></div></div>'+
+  (m?'<div class="card"><div class="cardhead"><h2>ESTÁDIO E MVP</h2></div><div class="cardbody"><div class="inline">'+
+  field('Estádio padrão do mandante','<select id="reportHomeStadium"><option value="">Não definido</option>'+stadiums.map(s=>'<option value="'+s.id+'" '+(s.id===m.home.stadium_id?'selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select>')+
+  field('Estádio desta partida','<select id="reportStadium"><option value="">Padrão do mandante</option>'+stadiums.map(s=>'<option value="'+s.id+'" '+(s.id===m.stadium_id?'selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select>')+
+  field('Melhor jogador','<select id="reportMvp">'+selectPlayers(m.mvp_player_id,'Não definido')+'</select>')+
+  '</div><div class="inline"><input id="reportNewStadium" placeholder="Nome de novo estádio"><button class="btn" id="reportAddStadium">CADASTRAR ESTÁDIO</button><button class="btn primary" id="reportSaveMeta">SALVAR ESTÁDIO E MVP</button></div></div></div>'+
+  '<div class="card"><div class="cardhead"><h2>ELENCO E GOLS</h2></div><div class="cardbody"><div class="inline">'+field('Clube','<select id="reportPlayerTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Novo jogador','<input id="reportPlayerName" placeholder="Nome do jogador">')+'<button class="btn" id="reportAddPlayer">ADICIONAR JOGADOR</button></div><hr><div class="inline">'+field('Equipe do gol','<select id="reportGoalTeam"><option value="'+m.home_id+'">'+esc(m.home.name)+'</option><option value="'+m.away_id+'">'+esc(m.away.name)+'</option></select>')+field('Autor','<select id="reportScorer">'+selectPlayers()+'</select>')+field('Assistência (opcional)','<select id="reportAssist">'+selectPlayers('','Sem assistência')+'</select>')+field('Minuto (opcional)','<input id="reportMinute" type="number" min="0" max="130" placeholder="—">')+field('Tipo','<select id="reportGoalType"><option value="normal">Normal</option><option value="penalty">Pênalti</option><option value="own_goal">Contra</option></select>')+'<button class="btn primary" id="reportAddGoal">ADICIONAR GOL</button></div><div style="margin-top:14px">'+(events.length?events.map(e=>'<div class="cbpes-report-goal"><b>'+esc(D.players.find(p=>p.id===e.scorer_id)?.name||'Jogador')+'</b> '+(e.minute==null?'':e.minute+"'")+' <button class="btn" data-report-delete="'+e.id+'">REMOVER</button></div>').join(''):'Nenhum gol cadastrado')+'</div></div></div>'+
+  '<div class="card"><div class="cardhead"><h2>ESTATÍSTICAS DA PARTIDA</h2></div><div class="cardbody"><div class="inline">'+reportStatFields.map(([key,label])=>field(label,'<div class="inline"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Casa" data-stat="home_'+key+'" value="'+(stats['home_'+key]??'')+'"><input style="width:85px" type="number" min="0" '+(key==='possession'?'max="100"':'')+' placeholder="Fora" data-stat="away_'+key+'" value="'+(stats['away_'+key]??'')+'"></div>')).join('')+'</div><button class="btn primary" id="reportSaveStats">SALVAR ESTATÍSTICAS</button></div></div>':'<div class="empty">Sem partidas oficiais.</div>');
+  $('reportMatchSelect').onchange=e=>{reportMatchId=e.target.value;vSumulas()};
+  if(!m)return;
+  $('reportAddStadium').onclick=async()=>{const name=$('reportNewStadium').value.trim();if(!name)return say('Informe o estádio.',false);const {error}=await sb.from('stadiums').insert({name});if(error)return say(traduz(error),false);say('Estádio cadastrado.',true);vSumulas()};
+  $('reportSaveMeta').onclick=async()=>{const {error:e1}=await sb.from('participants').update({stadium_id:$('reportHomeStadium').value||null}).eq('id',m.home_id);if(e1)return say(traduz(e1),false);const {error:e2}=await sb.from('matches').update({stadium_id:$('reportStadium').value||null,mvp_player_id:$('reportMvp').value||null}).eq('id',m.id);if(e2)return say(traduz(e2),false);say('Estádio e MVP salvos.',true);refresh()};
+  $('reportAddPlayer').onclick=async()=>{const name=$('reportPlayerName').value.trim();if(!name)return say('Informe o jogador.',false);const {error}=await sb.from('players').insert({name,participant_id:$('reportPlayerTeam').value});if(error)return say(traduz(error),false);say('Jogador cadastrado.',true);refresh()};
+  $('reportAddGoal').onclick=async()=>{const scorer=$('reportScorer').value,team=$('reportGoalTeam').value,assist=$('reportAssist').value;const p=players.find(x=>x.id===scorer);if(!p)return say('Selecione o autor.',false);if(assist===scorer)return say('Autor e assistente não podem ser iguais.',false);const goalType=$('reportGoalType').value;if(goalType==='own_goal'&&p.participant_id===team)return say('No gol contra, selecione a equipe beneficiada e o jogador adversário.',false);if(goalType!=='own_goal'&&p.participant_id!==team)return say('O autor deve pertencer à equipe do gol.',false);const minute=$('reportMinute').value;const {error}=await sb.from('match_events').insert({match_id:m.id,scorer_id:scorer,assist_id:assist||null,team_id:team,minute:minute===''?null:Number(minute),goal_type:goalType});if(error)return say(traduz(error),false);say('Gol cadastrado.',true);refresh()};
+  view.querySelectorAll('[data-report-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Remover gol?'))return;const {error}=await sb.from('match_events').delete().eq('id',b.dataset.reportDelete);if(error)return say(traduz(error),false);refresh()});
+  $('reportSaveStats').onclick=async()=>{const row={match_id:m.id};view.querySelectorAll('[data-stat]').forEach(el=>row[el.dataset.stat]=el.value===''?null:Number(el.value));const {error}=await sb.from('match_statistics').upsert(row,{onConflict:'match_id'});if(error)return say(traduz(error),false);say('Estatísticas salvas.',true);refresh()};
 }
 
 // ---------- Histórico ----------
