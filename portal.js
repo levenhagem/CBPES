@@ -1481,8 +1481,20 @@ function renderTrophyRoom(){
   const coaches=[...byCoach.values()].map(coach=>({...coach,points:coach.items.reduce((sum,t)=>sum+trophyWeight(t),0)}))
     .sort((a,b)=>b.points-a.points||b.items.length-a.items.length||a.name.localeCompare(b.name,'pt-BR'));
   const counts={official:trophies.filter(t=>t.source_type==='official').length,weekly:trophies.filter(t=>t.source_type==='weekly').length,manual:trophies.filter(t=>t.source_type==='manual').length};
+  const trophyLabel=t=>{
+    const competition=String(t.competition_name||'').trim();
+    const title=String(t.title||'').trim();
+    const weekly=t.source_type==='weekly'||/semanal/i.test(title+' '+competition);
+    const name=weekly?'CAMPEÃO SEMANAL':/torneio de abertura/i.test(competition)?'CAMPEÃO DO TORNEIO DE ABERTURA':(title||competition||'CONQUISTA').toLocaleUpperCase('pt-BR');
+    const date=t.awarded_on?fd(t.awarded_on):'';
+    return name+(date?' · '+date:'');
+  };
   root.innerHTML='<div class="cbpes-trophy-overview"><div><strong>'+trophies.length+'</strong><span>TÍTULOS REGISTRADOS</span></div><div><strong>'+counts.official+'</strong><span>OFICIAIS</span></div><div><strong>'+counts.weekly+'</strong><span>SEMANAIS</span></div><div><strong>'+coaches.length+'</strong><span>TÉCNICOS CAMPEÕES</span></div></div>'+
-    (coaches.length?'<div class="cbpes-trophy-coaches">'+coaches.map((coach,i)=>'<article class="cbpes-trophy-coach"><div class="cbpes-trophy-coach-heading"><span class="cbpes-trophy-rank">'+(i+1)+'º</span><h2><a href="#coach/'+encodeURIComponent(coach.name)+'">'+esc(coach.name)+'</a></h2><span class="cbpes-trophy-total">🏆 '+coach.items.length+'</span></div><div class="cbpes-trophy-list">'+coach.items.map(t=>'<div class="cbpes-trophy-item"><span aria-hidden="true">🏆</span><div><strong>'+esc(t.title||'Título')+'</strong><small>'+esc(t.competition_name||'Conquista')+(t.team_name?' · '+esc(t.team_name):'')+(t.awarded_on?' · '+fd(t.awarded_on):'')+'</small></div><span class="pill">'+(t.source_type==='weekly'?'SEMANAL':t.source_type==='manual'?'ESPECIAL':'OFICIAL')+'</span></div>').join('')+'</div></article>').join('')+'</div>':empty('Nenhum troféu registrado até o momento.'));
+    (coaches.length?'<div class="cbpes-trophy-ranking">'+coaches.map((coach,i)=>
+      '<div class="cbpes-trophy-ranking-row"><div class="cbpes-trophy-ranking-position">'+(i+1)+'</div>'+
+      '<div class="cbpes-trophy-ranking-coach"><a href="#coach/'+encodeURIComponent(coach.name)+'">'+esc(coach.name)+'</a></div>'+
+      '<div class="cbpes-trophy-ranking-achievements">'+coach.items.map(t=>'<div class="cbpes-trophy-ranking-achievement">'+esc(trophyLabel(t))+'</div>').join('')+'</div>'+
+      '</div>').join('')+'</div>':empty('Nenhum troféu registrado até o momento.'));
 }
 function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
