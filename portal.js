@@ -239,8 +239,8 @@ function renderHome() {
     return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
   };
   // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
-  const sl = played.slice(0,10);
-  $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
+  const sl = played.slice(0,5);
+  $('strip').innerHTML = sl.length ? sl.map(sc).join('') : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
   const m = played.find(x=>x.category==='official') || played[0];
   const featured = !!m?.is_featured;
   const featuredEdition=(D.officialEditions||[]).find(e=>String(e.id)===String(m?.official_edition_id));
@@ -255,7 +255,7 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">PARTIDA EM DESTAQUE</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = played.slice(0,10);
+  const recentHome = played.slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
