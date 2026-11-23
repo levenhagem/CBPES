@@ -5530,11 +5530,44 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 #table[data-liga-pro="true"] .cbpes-match .cbpes-match-category{font-size:11px!important}
 @media(max-width:620px){#table[data-liga-pro="true"] .cbpes-match .cbpes-team-name{font-size:13px!important}#table[data-liga-pro="true"] .cbpes-match .cbpes-match-team small{font-size:11px!important}}
 
-/* TABELAS: mesma aparência e espaçamento do menu ESTATÍSTICAS, com leve acento de cor por competição. */
-#nav #navCompetitionMenu.nav-competition-menu,body>#navCompetitionMenu.nav-competition-menu{background:#071e3c;border:1px solid #315b88;border-top:3px solid #3691ff;padding:5px 0;box-shadow:0 12px 30px rgba(0,0,0,.28)}
-#nav #navCompetitionMenu.nav-competition-menu a,body>#navCompetitionMenu.nav-competition-menu a{display:flex;flex-direction:column;gap:3px;padding:11px 15px;color:#fff;text-decoration:none;font:700 13px Barlow,sans-serif;border-left:0!important;border-bottom:1px solid rgba(180,213,255,.12)!important}
-#nav #navCompetitionMenu.nav-competition-menu a small,body>#navCompetitionMenu.nav-competition-menu a small{font-size:11px;font-weight:500;color:#a9c8e9}
-#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option,body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option{background:transparent!important;color:#fff!important}
-#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option small,body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option small{color:#a9c8e9!important}
-#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry,body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry{background:linear-gradient(90deg,transparent 0%,transparent 70%,color-mix(in srgb,var(--competition-tint) 14%,transparent) 100%)!important}
-#nav #navCompetitionMenu.nav-competition-menu a:hover,body>#navCompetitionMenu.nav-competition-menu a:hover,#nav #navCompetitionMenu.nav-competition-menu a:focus-visible,body>#navCompetitionMenu.nav-competition-menu a:focus-visible{background-color:#13549d!important;outline:none}
+
+/* Menus claros e minimalistas: TABELAS e ESTATÍSTICAS. */
+#nav #navCompetitionMenu.nav-competition-menu,
+body>#navCompetitionMenu.nav-competition-menu,
+#nav #navStatsMenu.nav-competition-menu,
+body>#navStatsMenu.nav-competition-menu{
+ background:#fff!important;color:#253242!important;
+ border:1px solid #e4e8ed!important;border-top:1px solid #e4e8ed!important;
+ border-radius:8px!important;box-shadow:0 12px 30px rgba(22,35,52,.13)!important;
+ padding:5px 0!important;z-index:9999;
+}
+#nav #navCompetitionMenu.nav-competition-menu a,
+body>#navCompetitionMenu.nav-competition-menu a,
+#nav #navStatsMenu.nav-competition-menu a,
+body>#navStatsMenu.nav-competition-menu a{
+ display:flex;flex-direction:column;gap:3px;padding:11px 15px!important;
+ color:#273646!important;background-color:transparent!important;
+ font:700 13px Barlow,sans-serif!important;
+ border:0!important;border-bottom:1px solid #eef0f3!important;
+ text-decoration:none!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a small,
+body>#navCompetitionMenu.nav-competition-menu a small{color:#87919e!important;font-size:11px;font-weight:500}
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option,
+body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option{background:#fff!important;color:#273646!important}
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option small,
+body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option small{color:#87919e!important}
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry,
+body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry{
+ background:linear-gradient(90deg,#fff 0%,#fff 72%,color-mix(in srgb,var(--competition-tint) 13%,#fff) 100%)!important;
+}
+#nav #navCompetitionMenu.nav-competition-menu a:hover,
+body>#navCompetitionMenu.nav-competition-menu a:hover,
+#nav #navCompetitionMenu.nav-competition-menu a:focus-visible,
+body>#navCompetitionMenu.nav-competition-menu a:focus-visible,
+#nav #navStatsMenu.nav-competition-menu a:hover,
+body>#navStatsMenu.nav-competition-menu a:hover,
+#nav #navStatsMenu.nav-competition-menu a:focus-visible,
+body>#navStatsMenu.nav-competition-menu a:focus-visible{
+ color:#142b40!important;background-color:#f3f6f9!important;outline:none!important;
+}
