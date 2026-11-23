@@ -4910,3 +4910,13 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 /* Troféu Iconify para identificar o campeão, ao lado do clube. */
 .featured-juventus-name-row .featured-juventus-champion.cbpes-champion-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:23px!important;height:23px!important;min-width:23px!important;padding:0!important;margin:0 0 0 5px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:#f3c454!important;vertical-align:middle!important;line-height:1!important}
 .featured-juventus-name-row .cbpes-champion-icon iconify-icon{display:block;width:22px;height:22px;font-size:22px;color:inherit}
+
+/* Campeão: troféu maior, dourado em degradê, junto ao escudo mandante e nome visitante. */
+.cbpes-match-team.home .cbpes-match-club>.cbpes-champion-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 31px!important;width:31px!important;height:34px!important;margin:0 2px 0 -3px!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;position:relative!important;order:0!important}
+.cbpes-match-team.away .featured-juventus-name-row>.cbpes-champion-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 31px!important;width:31px!important;height:34px!important;margin:0 0 0 1px!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;position:relative!important;order:2!important}
+.cbpes-match-team .cbpes-champion-icon iconify-icon{display:block!important;width:31px!important;height:31px!important;font-size:31px!important;color:#edb841!important}
+@supports ((mask-image:url("")) or (-webkit-mask-image:url(""))){
+.cbpes-match-team .cbpes-champion-icon{background:linear-gradient(135deg,#fff4b2 0%,#f6d66b 24%,#dc9c18 56%,#ffdb70 78%,#a96507 100%)!important;-webkit-mask-image:url("https://api.iconify.design/at-icons/trophy.svg")!important;mask-image:url("https://api.iconify.design/at-icons/trophy.svg")!important;-webkit-mask-size:contain!important;mask-size:contain!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important;-webkit-mask-position:center!important;mask-position:center!important}
+.cbpes-match-team .cbpes-champion-icon iconify-icon{visibility:hidden!important}
+}
+@media(max-width:700px){.cbpes-match-team.home .cbpes-match-club>.cbpes-champion-icon,.cbpes-match-team.away .featured-juventus-name-row>.cbpes-champion-icon{flex-basis:27px!important;width:27px!important;height:29px!important}}
