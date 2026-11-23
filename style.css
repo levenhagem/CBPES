@@ -4868,3 +4868,19 @@ body.cbpes-report-page-liga-pro #match .empty{color:#c2d6f5!important}
 body.cbpes-report-page-liga-pro #match .cbpes-report-mvp{background:#103b83!important;border-left-color:#79b4ff!important;color:#fff!important}
 body.cbpes-report-page-liga-pro footer{background:#061635!important;color:#e7f0ff!important;border-top:1px solid #2b5289}
 body.cbpes-report-page-liga-pro footer *{color:inherit}
+
+/* Súmula: barras comparativas como no confronto entre técnicos. */
+#match .cbpes-report-heading-date{font-size:12px;font-weight:400;letter-spacing:.015em;opacity:.86;margin-top:6px}
+#match .cbpes-report-stat-compare{margin:0 0 21px}
+#match .cbpes-report-stat-heading{display:grid!important;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:10px;font-size:13px}
+#match .cbpes-report-stat-heading span{text-align:center;font-weight:500}
+#match .cbpes-report-stat-heading b:first-child{text-align:left}
+#match .cbpes-report-stat-heading b:last-child{text-align:right}
+#match .cbpes-report-compare-track{display:flex;width:100%;height:9px;gap:3px;background:transparent;margin-top:8px;overflow:hidden}
+#match .cbpes-report-compare-home{display:block;background:#2184e8;height:100%;border-radius:2px 0 0 2px}
+#match .cbpes-report-compare-away{display:block;background:#8ac1ff;height:100%;border-radius:0 2px 2px 0}
+body.cbpes-report-page-liga-pro #match .cbpes-report-compare-home{background:#52a4ff}
+body.cbpes-report-page-liga-pro #match .cbpes-report-compare-away{background:#c3e0ff}
+body.cbpes-report-page-copa-master #match .cbpes-report-compare-home{background:#bd922f}
+body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:#74654a}
+@media(max-width:700px){#match .cbpes-report-stat-heading{grid-template-columns:40px minmax(0,1fr) 40px;font-size:12px;gap:6px}}
