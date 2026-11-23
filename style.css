@@ -5247,3 +5247,60 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 #trophies .cbpes-trophy-ranking-achievements{display:flex;flex-direction:column;gap:10px}
 #trophies .cbpes-trophy-ranking-achievement{font-size:13px;font-weight:700;color:#344c40;line-height:1.5}
 @media(max-width:600px){#trophies .cbpes-trophy-ranking-row{grid-template-columns:32px minmax(80px,105px) minmax(0,1fr);gap:8px;padding:14px 10px}#trophies .cbpes-trophy-ranking-coach a{font-size:13px}#trophies .cbpes-trophy-ranking-achievement{font-size:11px}}
+
+/* Supercopa Winning Eleven — identidade branca, vermelha e preta do logotipo. */
+#table[data-winning-eleven="true"]{--we-red:#f50935;--we-dark:#15151a;--we-border:#e8dfe1}
+#table[data-winning-eleven="true"] .page-title{border-bottom:2px solid var(--we-red)!important;padding-bottom:16px}
+#table[data-winning-eleven="true"] #tableCompetitionName{
+  color:#17151a!important;font-family:'Arial Black',Arial,sans-serif!important;
+  font-size:clamp(25px,3.3vw,45px)!important;font-weight:900!important;
+  letter-spacing:-.035em!important;text-transform:uppercase!important;
+}
+#table[data-winning-eleven="true"] .cbpes-competition-emblem{
+  background:#fff!important;border:1px solid #f3d6dc!important;
+  border-radius:8px!important;padding:3px!important;box-sizing:border-box!important;
+  color:var(--we-red)!important;
+}
+#table[data-winning-eleven="true"] .cbpes-competition-emblem img{
+  width:100%!important;height:100%!important;object-fit:contain!important;
+}
+#table[data-winning-eleven="true"] #fullTable{border-top:3px solid var(--we-red)}
+#table[data-winning-eleven="true"] .round-switcher{border-bottom-color:#f3dce1!important}
+#table[data-winning-eleven="true"] .round-switcher b{color:#1c171a!important;font-weight:900!important;font-size:15px!important}
+#table[data-winning-eleven="true"] .phase-arrow:not(:disabled){
+  color:var(--we-red)!important;border-color:#f3c7d1!important;background:#fff5f7!important;
+}
+#table[data-winning-eleven="true"] .phase-arrow:not(:disabled):hover{background:#ffe7ed!important}
+#table[data-winning-eleven="true"] .cbpes-knockout-full,
+#table[data-winning-eleven="true"] .cbpes-results-panel,
+#table[data-winning-eleven="true"] .cbpes-playoff-template{
+  width:100%!important;max-width:none!important;min-width:0!important;
+  box-sizing:border-box!important;
+}
+#table[data-winning-eleven="true"] .cbpes-playoff-template{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;
+}
+#table[data-winning-eleven="true"] .cbpes-playoff-template>.cbpes-match,
+#table[data-winning-eleven="true"] .cbpes-results-panel .cbpes-match{
+  width:100%!important;max-width:none!important;min-width:0!important;
+  min-height:132px!important;padding:23px 26px!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  box-sizing:border-box!important;border:1px solid #eadce0!important;
+  border-left:5px solid var(--we-red)!important;background:#fff!important;
+  margin:0 0 12px!important;
+}
+#table[data-winning-eleven="true"] .cbpes-match-main{
+  width:100%!important;min-height:74px!important;align-items:center!important;
+}
+#table[data-winning-eleven="true"] .cbpes-match-score{
+  color:var(--we-red)!important;font-weight:900!important;font-size:clamp(20px,2vw,28px)!important;
+}
+#table[data-winning-eleven="true"] .cbpes-team-name{color:#1b171b!important;font-weight:800!important}
+#table[data-winning-eleven="true"] .cbpes-match::after{background:var(--we-red)!important}
+#table[data-winning-eleven="true"] .cbpes-champion-banner{border-color:#ffb3c3!important}
+@media(max-width:620px){
+ #table[data-winning-eleven="true"] .cbpes-playoff-template>.cbpes-match,
+ #table[data-winning-eleven="true"] .cbpes-results-panel .cbpes-match{
+   min-height:112px!important;padding:17px 12px!important;
+ }
+}
