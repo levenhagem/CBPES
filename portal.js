@@ -573,6 +573,10 @@ function renderTable() {
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
   const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id)).sort((a,b)=>(Number(a.number)||0)-(Number(b.number)||0));
   const masterGroupMatches=officialMatches.filter(m=>masterGroupRounds.some(r=>String(r.id)===String(m.round_id)));
+  // Jogos virtuais só existem enquanto o simulador da Copa Master está ligado.
+  // Nunca entram no banco nem nos resultados oficiais.
+  const masterSimGames=isCopaMaster&&window.CBPESSimulator?.virtualMasterGames?.(edition,(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id)),masterCalendar,masterGroupRounds,Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i)),masterGroupMatches)||[];
+  const masterStandingsMatches=masterGroupMatches.concat(masterSimGames);
   const masterConfig=edition.group_config||{};
   const masterGroupCount=Math.max(1,Math.min(16,Number(masterConfig.groups)||4));
   const masterSlots=Math.max(1,Math.min(24,Number(masterConfig.teams_per_group)||3));
@@ -599,7 +603,7 @@ function renderTable() {
   const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
   const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
     const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
-    const gm=masterGroupMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
+    const gm=masterStandingsMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
     const teamIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
     const teams=teamIds.map(id=>D.participants.find(p=>String(p.id)===id)).filter(Boolean);
     const ranking=standings(teams,gm);
@@ -621,8 +625,8 @@ function renderTable() {
     const masterRoundNav='<div class="round-switcher cbpes-master-round-switcher"><button class="phase-arrow" data-master-round-prev="1" '+(virtualRound===0?'disabled':'')+' aria-label="Rodada anterior">‹</button><b>RODADA '+String(virtualRound+1).padStart(2,'0')+'</b><button class="phase-arrow" data-master-round-next="1" '+(virtualRound>=totalMasterRounds-1?'disabled':'')+' aria-label="Próxima rodada">›</button></div>';
     // Calendário da Copa Master: seis confrontos por rodada, sem divisão por grupos.
     // Usa exclusivamente partidas reais cadastradas no Supabase.
-    const roundGames=masterGroupMatches
-      .filter(m=>String(m.round_id)===String(masterSelectedRound?.id))
+    const roundGames=masterStandingsMatches
+      .filter(m=>m.virtualRoundIndex===virtualRound||(m.virtualRoundIndex===undefined&&String(m.round_id)===String(masterSelectedRound?.id)))
       .sort(byDisplayOrder);
     const masterFixtures='<div class="cbpes-master-rounds">'+masterRoundNav+
       '<div class="cbpes-master-round-groups cbpes-master-round-list">'+
