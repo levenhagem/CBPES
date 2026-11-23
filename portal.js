@@ -484,7 +484,7 @@ function renderTable() {
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   document.getElementById('table').dataset.copaMaster=String(isMaster);
   document.body.classList.toggle('cbpes-copa-master-page', location.hash.slice(1).split('/')[0]==='table' && isMaster);
-  if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();if(selectedEdition) $('fullTable')?.insertAdjacentHTML('afterbegin',simulatorButton('official',selectedEdition.id));return;}
+  if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();return;}
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
@@ -572,7 +572,8 @@ function renderTable() {
   const masterGroupPhase=(D.phases||[]).find(p=>String(p.official_edition_id)===String(edition.id)&&p.counts_in_standings);
   const masterGroupZones=masterGroupPhase?zonesFor('official',null,masterGroupPhase.id):[];
   const masterGroupRounds=officialRounds.filter(r=>String(r.phase_id)===String(masterGroupPhase?.id)).sort((a,b)=>(Number(a.number)||0)-(Number(b.number)||0));
-  const masterGroupMatches=officialMatches.filter(m=>masterGroupRounds.some(r=>String(r.id)===String(m.round_id)));
+  const masterGroupMatchesRaw=officialMatches.filter(m=>masterGroupRounds.some(r=>String(r.id)===String(m.round_id)));
+  const masterGroupMatches=isCopaMaster?(window.CBPESSimulator?.masterProjectedMatches?.(edition,masterGroupMatchesRaw)||masterGroupMatchesRaw):masterGroupMatchesRaw;
   const masterConfig=edition.group_config||{};
   const masterGroupCount=Math.max(1,Math.min(16,Number(masterConfig.groups)||4));
   const masterSlots=Math.max(1,Math.min(24,Number(masterConfig.teams_per_group)||3));
@@ -676,7 +677,7 @@ function renderTable() {
     }
   }
 
-  if(edition && $('fullTable')) $('fullTable').insertAdjacentHTML('afterbegin',simulatorButton('official',edition.id));
+  if(edition && $('fullTable') && !/supercopa|torneio\s*de\s*abertura/i.test([edition.name,selectedCompetition?.name].join(' '))) $('fullTable').insertAdjacentHTML('afterbegin',simulatorButton('official',edition.id));
   $('fullTable').onclick=e=>{const phaseButton=e.target.closest('#phasePrev,#phaseNext');if(phaseButton){const i=phases.findIndex(p=>String(p.id)===String(selectedOfficialPhase));const nextIndex=Math.max(0,Math.min(phases.length-1,i+(phaseButton.id==='phaseNext'?1:-1)));if(phases[nextIndex]&&nextIndex!==i){selectedOfficialPhase=phases[nextIndex].id;renderTable();}return;}const masterButton=e.target.closest('[data-master-round-prev],[data-master-round-next]');if(masterButton){const key='master-template-'+edition.id;const current=Number(selectedOfficialRoundByPhase[key])||0;selectedOfficialRoundByPhase[key]=Math.max(0,Math.min(Math.max(masterCalendar.length,masterGroupRounds.length,1)-1,current+(masterButton.hasAttribute('data-master-round-next')?1:-1)));renderTable();return;}const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);renderTable();};
   // As setas de fase são tratadas por delegação no contêiner, inclusive após recriar os cards.
 }
