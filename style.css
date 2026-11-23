@@ -5106,3 +5106,9 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 #match .cbpes-report-compare-track{border-radius:999px!important;border:1px solid rgba(255,255,255,.65)!important;overflow:hidden!important}
 #match .cbpes-report-compare-home{background:var(--cbpes-home-club)!important;border-radius:999px 0 0 999px!important}
 #match .cbpes-report-compare-away{background:var(--cbpes-away-club)!important;border-radius:0 999px 999px 0!important}
+
+/* Posição da artilharia à esquerda, escudo e nome em linha. */
+#statsGrid .cbpes-stats-player:has(.cbpes-stats-player-crest),
+#stats-detail .cbpes-stats-player:has(.cbpes-stats-player-crest){padding-left:44px!important}
+#statsGrid .cbpes-stats-player b:has(.cbpes-stats-player-crest) .rank-position,
+#stats-detail .cbpes-stats-player b:has(.cbpes-stats-player-crest) .rank-position{position:absolute!important;left:12px!important;top:50%!important;transform:translateY(-50%)!important;width:20px!important;text-align:center!important}
