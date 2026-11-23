@@ -83,7 +83,7 @@ function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real)
  if(!state||state.kind!=='official'||!eq(state.id,edition.id))return [];
  const virtual=[];
  for(let ri=0;ri<calendar.length;ri++)for(const group of groupNames){
-  const slots=assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===group).sort((a,b)=>Number(a.slot)-Number(b.slot));
+  const slots=assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===group).sort((a,b)=>Number(a.slot)-Number(b.slot));
   for(const [left,right] of calendar[ri]){
    const home=team(slots[left-1]?.participant_id),away=team(slots[right-1]?.participant_id);
    if(!home||!away)continue;
