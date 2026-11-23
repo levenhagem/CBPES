@@ -643,8 +643,9 @@ async function reclassifyFriendly(id){
   const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
   const name=(competition?.name||'Competição')+' • '+(edition.name||'Edição')+' • '+(round.name||'Rodada '+round.number);
   if(!confirm('Converter este amistoso em partida OFICIAL de '+name+'? O resultado e os gols serão preservados.'))return;
-  const {error}=await sb.from('matches').update({category:'official',round_id:round.id,official_edition_id:edition.id,weekly_id:null,weekly_round_id:null,champion_team_id:null}).eq('id',id).eq('category','friendly');
+  const {data, error}=await sb.from('matches').update({category:'official',round_id:round.id,official_edition_id:edition.id,weekly_id:null,weekly_round_id:null,champion_team_id:null}).eq('id',id).eq('category','friendly').select('id,category,round_id,official_edition_id');
   if(error)return say(traduz(error),false);
+  if(!data?.length||data[0].category!=='official')return say('A alteração não foi persistida. Verifique as permissões de atualização da tabela matches.',false);
   say('Partida vinculada à competição oficial. Estatísticas e tabela serão recalculadas.',true);
   await refresh();
 }
@@ -757,9 +758,10 @@ function vJogos() {
         const sel=row.querySelector('[data-archive-competition]');
         const update={...values,home_score:hs,away_score:as,played_on:values.played_on||null,official_competition_id:sel?.value||null};
         t.disabled=true;
-        const {error}=await sb.from('career_matches').update(update).eq('id',d.saveCareerMatch);
+        const {data,error}=await sb.from('career_matches').update(update).eq('id',d.saveCareerMatch).select('id,official_competition_id');
         t.disabled=false;
         if(error)return say(traduz(error),false);
+        if(!data?.length||String(data[0].official_competition_id||'')!==String(update.official_competition_id||''))return say('A competição não foi salva no banco. Verifique as permissões de edição do histórico.',false);
         say('Amistoso histórico atualizado.',true);return refresh();
       }
       if(d.deleteCareerMatch){
