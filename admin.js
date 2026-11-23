@@ -1200,8 +1200,8 @@ async function vSumulas(){
     cards.slice(1).forEach((card,i)=>{card.classList.add('cbpes-admin-report-panel');card.hidden=(['meta','goals','stats'][i]!==reportSection);});
     nav.onclick=e=>{const btn=e.target.closest('button[data-report-section]');if(!btn)return;reportSection=btn.dataset.reportSection;vSumulas();};
   }
-  $('reportBackToGames').onclick=()=>{gamesSubView='matches';vJogos();};
-  $('reportMatchSelect').onchange=e=>{reportMatchId=e.target.value;vSumulas()};
+  $('reportBackToGames').onclick=()=>{if(editingMatchId&&String(editingMatchId)===String(reportMatchId)){gamesSubView='editor';matchEditorTab='result';return vMatchEditor();}gamesSubView='matches';vJogos();};
+  $('reportMatchSelect').onchange=e=>{reportMatchId=e.target.value;editingMatchId=null;vSumulas()};
   if(!m)return;
   $('reportAddStadium').onclick=async()=>{const name=$('reportNewStadium').value.trim();if(!name)return say('Informe o estádio.',false);const {error}=await sb.from('stadiums').insert({name});if(error)return say(traduz(error),false);say('Estádio cadastrado.',true);vSumulas()};
   $('reportSaveMeta').onclick=async()=>{const {error:e1}=await sb.from('participants').update({stadium_id:$('reportHomeStadium').value||null}).eq('id',m.home_id);if(e1)return say(traduz(e1),false);const {error:e2}=await sb.from('matches').update({stadium_id:$('reportStadium').value||null,mvp_player_id:$('reportMvp').value||null}).eq('id',m.id);if(e2)return say(traduz(e2),false);say('Estádio e MVP salvos.',true);refresh()};
