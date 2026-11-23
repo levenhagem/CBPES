@@ -4,10 +4,10 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>CBPES | Administração</title>
-<link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=match-admin-reclass-20261123">
+<link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=admin-clean-games-20261123">
 <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js" defer></script>
 </head>
-<body>
+<body class="cbpes-admin-ui">
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="index.html"><img src="logo.png" alt="CBPES"><span><span class="brandname">CBPES</span><small>ADMINISTRAÇÃO</small></span></a>
@@ -27,7 +27,7 @@
 </section>
 
 <section id="app" class="hidden">
- <div class="tabs" id="tabs"><button data-t="jogos">Jogos</button><button data-t="sumulas">Súmulas oficiais</button><button data-t="times">Times</button><button data-t="coaches">Técnicos</button><button data-t="camp">Campeonato</button><button data-t="est">Estatísticas</button><button data-t="his">Histórico</button><button data-t="import">Importar</button><button data-t="weekly">Semanais</button></div>
+ <nav class="tabs cbpes-admin-nav" id="tabs" aria-label="Navegação administrativa"><div class="cbpes-admin-nav-group"><span class="cbpes-admin-nav-label">OPERAÇÃO</span><button data-t="jogos"><iconify-icon icon="lucide:calendar-check"></iconify-icon>Jogos</button><button data-t="camp"><iconify-icon icon="lucide:trophy"></iconify-icon>Competições</button><button data-t="weekly"><iconify-icon icon="lucide:calendar-days"></iconify-icon>Semanais</button></div><div class="cbpes-admin-nav-group"><span class="cbpes-admin-nav-label">CADASTROS E CONTROLE</span><button data-t="times"><iconify-icon icon="lucide:shield"></iconify-icon>Times</button><button data-t="coaches"><iconify-icon icon="lucide:users"></iconify-icon>Técnicos</button><button data-t="est"><iconify-icon icon="lucide:chart-no-axes-column"></iconify-icon>Estatísticas</button><button data-t="import"><iconify-icon icon="lucide:file-input"></iconify-icon>Importar</button><button data-t="his"><iconify-icon icon="lucide:history"></iconify-icon>Histórico</button></div></nav>
  <div id="view"></div>
 </section>
 </main>
@@ -36,5 +36,5 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="config.js"></script>
 <script src="lib.js?v=match-admin-reclass-20261123"></script>
-<script src="admin.js?v=match-admin-reclass-20261123"></script>
+<script src="admin.js?v=admin-clean-games-20261123"></script>
 </body></html>
