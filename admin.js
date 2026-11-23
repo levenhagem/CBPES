@@ -29,7 +29,7 @@ $('loginBtn').onclick = async () => {
 };
 $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
-$('tabs').onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; draft = null; render(); } };
+$('tabs').onclick = e => { const btn=e.target.closest('button[data-t]'); if(btn){ tab=btn.dataset.t; if(tab==='jogos')gamesSubView='matches'; draft=null; render(); } };
 
 async function refresh() { const y = window.scrollY; try { D = await load(); await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
