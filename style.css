@@ -4884,3 +4884,14 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-compare-away{background:#c3
 body.cbpes-report-page-copa-master #match .cbpes-report-compare-home{background:#bd922f}
 body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:#74654a}
 @media(max-width:700px){#match .cbpes-report-stat-heading{grid-template-columns:40px minmax(0,1fr) 40px;font-size:12px;gap:6px}}
+
+/* Selo de campeão visitante: ao lado direito do nome, nunca antes dele. */
+.cbpes-match-team.away .featured-juventus-name-row{display:inline-flex!important;align-items:center!important;gap:6px!important;flex-direction:row!important}
+.cbpes-match-team.away .featured-juventus-champion{order:2!important;position:static!important;transform:none!important;white-space:nowrap}
+/* Nas tabelas, link de súmula textual no lugar da seta. */
+#table .cbpes-match-report-link.cbpes-match-report-details{width:auto!important;height:auto!important;min-width:0!important;padding:4px 7px!important;right:8px!important;top:50%!important;transform:translateY(-50%)!important;background:transparent!important;border:0!important;border-radius:0!important;color:#fff!important;font:600 10px/1.2 var(--f,Arial,sans-serif)!important;letter-spacing:.045em!important;text-decoration:none!important}
+#table .cbpes-match-report-link.cbpes-match-report-details:hover{color:#fff!important;text-decoration:underline!important;background:transparent!important}
+#table .cbpes-competition-neutral .cbpes-match-report-link.cbpes-match-report-details{color:#111!important}
+#table .cbpes-competition-neutral .cbpes-match-report-link.cbpes-match-report-details:hover{color:#111!important}
+#table .cbpes-match:has(.cbpes-match-report-details){padding-right:75px!important}
+#leagueRecent .cbpes-match-report-link{display:none!important}
