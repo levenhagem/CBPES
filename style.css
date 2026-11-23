@@ -5585,3 +5585,20 @@ body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option{
 body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry:hover,
 #nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:hover,
 body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:hover{background:#f3f6f9!important}
+
+/* Copa Master: cartões de mata-mata do simulador com o mesmo alinhamento dos jogos oficiais. */
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-main{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(90px,112px) minmax(0,1fr)!important;
+ align-items:center!important;gap:8px!important;width:100%!important;
+}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-team{min-width:0!important;display:flex!important;align-items:center!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-club{display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important;width:100%!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-team.away .cbpes-match-club{flex-direction:row-reverse!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-crest{display:block;flex:0 0 30px!important;width:30px!important;height:30px!important;object-fit:contain!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-club-text{min-width:0!important;flex:1!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-team.away .cbpes-match-club-text{text-align:right!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-team-name{white-space:normal!important;overflow-wrap:break-word!important;line-height:1.2!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-score{min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-sim-inline{display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:100%!important}
+body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-sim-inline input{min-width:0!important;width:38px!important;max-width:38px!important;box-sizing:border-box!important;text-align:center!important}
+@media(max-width:600px){body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-main{grid-template-columns:minmax(0,1fr) 82px minmax(0,1fr)!important;gap:4px!important}body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-crest{flex-basis:24px!important;width:24px!important;height:24px!important}body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-match-club{gap:4px!important}body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-master .cbpes-sim-inline input{width:31px!important;max-width:31px!important}}
