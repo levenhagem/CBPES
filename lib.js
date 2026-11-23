@@ -103,8 +103,17 @@ function champion(D) {
   const ties = tiesOf(D.matches.filter(m => m.round_id === rs[rs.length - 1].id));
   return ties.length === 1 && ties[0].winner ? ties[0].winner : null;
 }
+// Ordem de publicação do resultado, não a data histórica da partida.
+function matchResultOrder(a,b){
+ const aTime=String(a.result_registered_at||a.created_at||'');
+ const bTime=String(b.result_registered_at||b.created_at||'');
+ return bTime.localeCompare(aTime)
+   ||String(b.created_at||'').localeCompare(String(a.created_at||''))
+   ||(Number(b.seq)||0)-(Number(a.seq)||0)
+   ||String(b.id||'').localeCompare(String(a.id||''));
+}
 function latestPlayed(ms) {
-  return ms.filter(m => m.played).sort((a, b) => (b.date || '').localeCompare(a.date || '') || ((b.round?.number || 0) - (a.round?.number || 0)) || (b.seq || 0) - (a.seq || 0));
+ return ms.filter(m=>m.played).sort(matchResultOrder);
 }
 function nextMatches(ms) {
   return ms.filter(m => !m.played).sort((a, b) => ((a.round?.number || 999999) - (b.round?.number || 999999)) || (a.date || '9').localeCompare(b.date || '9') || (a.seq || 0) - (b.seq || 0));
