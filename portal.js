@@ -110,7 +110,7 @@ function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
-  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));return '<a href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
+  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));const name=String(c?.name||e.name||'');const tint=/copa\s*master/i.test(name)?'#d8ad46':/liga\s*pro/i.test(name)?'#2b8ae8':/winning\s*eleven/i.test(name)?'#d83c3c':/liga\s*evo/i.test(name)?'#35b98c':'#7895b2';return '<a class="cbpes-nav-competition-entry" style="--competition-tint:'+tint+'" href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
@@ -533,7 +533,7 @@ function renderTable() {
     }
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
     const isMasterKnockout=/copa\s*master/i.test([edition.name,competitions.find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '))&&!active.counts_in_standings;
-    const masterKnockoutHtml=isMasterKnockout&&window.CBPESSimulator?.isActive?.()?window.CBPESSimulator.masterKnockout(edition,active):null;
+    const masterKnockoutHtml=isMasterKnockout&&window.CBPESSimulator?.masterKnockout?.(edition,active);
     const placeholderHtml=masterKnockoutHtml||(isMasterKnockout&&window.CBPESSimulator?.isActive?.()?'<div class="cbpes-master-ko-pending">Preparando projeção do mata-mata…</div>':null)||(['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match ${isLigaProTable?'cbpes-match-liga-pro':''}" style="--match-color:#bfcbd3">
         ${active.phase_type==='final'?'':`<div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>`}
