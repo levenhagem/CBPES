@@ -145,7 +145,7 @@ function masterKnockout(edition,phase){
  const fixtures=stage==='f'?final:stage==='s'?semi:q;
  return '<div class="cbpes-playoff-template">'+fixtures.map((m,index)=>{
   const label=esc(String(phase.name||'').toUpperCase());
-  const team=(p,side)=>'<div class="cbpes-match-team '+side+'"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">'+esc(p?.name||'A definir')+'</span></div></div></div>';
+  const team=(p,side)=>'<div class="cbpes-match-team '+side+'"><div class="cbpes-match-club">'+(p?crestImg(p):'')+'<div class="cbpes-match-club-text"><span class="featured-juventus-name-row">'+(p?'<a class="cbpes-team-name" href="#team/'+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>':'<span class="cbpes-team-name">A definir</span>')+'</span></div></div></div>';
   const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state.scores[m.id]||['',''])[side])+'">';
   const score=m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'– : –';
   return '<div class="cbpes-match cbpes-match-copa-master" style="--match-color:#bfcbd3" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+label+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-match-main">'+team(m.home,'home')+'<div class="cbpes-match-score">'+score+'</div>'+team(m.away,'away')+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
