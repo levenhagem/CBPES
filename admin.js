@@ -727,7 +727,15 @@ function vJogos() {
     const historicalRows=archive.map(m=>{
       const selected=String(m.official_competition_id||'');
       const options='<option value=""'+(!selected?' selected':'')+'>AMISTOSO</option>'+(D.officialCompetitions||[]).map(x=>'<option value="'+esc(x.id)+'"'+(String(x.id)===selected?' selected':'')+'>'+esc(x.name)+'</option>').join('');
-      return '<div class="cbpes-admin-archive-row"><div><strong>'+esc(m.home_club||m.home_coach)+' '+esc(m.home_score)+' × '+esc(m.away_score)+' '+esc(m.away_club||m.away_coach)+'</strong><div class="admin-help">'+esc(m.home_coach)+' × '+esc(m.away_coach)+' · '+esc(m.played_on||'Sem data')+'</div></div><div class="cbpes-archive-competition-editor"><label class="admin-help" for="career-comp-'+esc(m.id)+'">COMPETIÇÃO</label><select id="career-comp-'+esc(m.id)+'" data-archive-competition="'+esc(m.id)+'">'+options+'</select><button type="button" class="btn" data-save-archive-competition="'+esc(m.id)+'">SALVAR</button></div></div>';
+      const field=(key,label,value,type='text')=>'<label class="cbpes-archive-edit-field"><span>'+label+'</span><input type="'+type+'" data-career-field="'+key+'" value="'+esc(value??'')+'"></label>';
+      return '<div class="cbpes-admin-archive-row" data-career-row="'+esc(m.id)+'"><div class="cbpes-archive-edit-fields">'+
+        field('home_coach','TÉCNICO MANDANTE',m.home_coach)+field('away_coach','TÉCNICO VISITANTE',m.away_coach)+
+        field('home_club','CLUBE MANDANTE',m.home_club)+field('away_club','CLUBE VISITANTE',m.away_club)+
+        field('home_score','GOLS MANDANTE',m.home_score,'number')+field('away_score','GOLS VISITANTE',m.away_score,'number')+
+        field('played_on','DATA',m.played_on,'date')+'</div>'+
+        '<div class="cbpes-archive-competition-editor"><label class="admin-help" for="career-comp-'+esc(m.id)+'">COMPETIÇÃO</label><select id="career-comp-'+esc(m.id)+'" data-archive-competition="'+esc(m.id)+'">'+options+'</select>'+
+        '<button type="button" class="btn primary" data-save-career-match="'+esc(m.id)+'">SALVAR ALTERAÇÕES</button>'+
+        '<button type="button" class="btn danger" data-delete-career-match="'+esc(m.id)+'">EXCLUIR AMISTOSO</button></div></div>';
     }).join('');
 
     $('view').innerHTML = switcher + coachFilter + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div><div class="card"><div class="cardhead"><h2>AMISTOSOS DO HISTÓRICO DOS TÉCNICOS (${archive.length})</h2><small class="admin-help">EDIÇÃO DE COMPETIÇÃO ATIVA · 23/11</small></div><div class="cardbody">${historicalRows||'<div class="empty">Nenhum amistoso histórico.</div>'}</div></div>`;
@@ -739,6 +747,25 @@ function vJogos() {
       if(d.editReport){reportMatchId=d.editReport;reportSection='stats';gamesSubView='reports';return vSumulas();}
       if(d.openReports){gamesSubView='reports';return vSumulas();}
       if(d.category){editingMatchId=null;activeCategory=d.category;selRound=null;return vJogos();}
+      if(d.saveCareerMatch){
+        const row=[...$('view').querySelectorAll('[data-career-row]')].find(x=>x.dataset.careerRow===d.saveCareerMatch);
+        if(!row)return say('Amistoso não encontrado.',false);
+        const values=Object.fromEntries([...row.querySelectorAll('[data-career-field]')].map(x=>[x.dataset.careerField,x.value.trim()]));
+        const hs=Number(values.home_score),as=Number(values.away_score);
+        if(!values.home_coach||!values.away_coach||!Number.isInteger(hs)||!Number.isInteger(as)||hs<0||as<0)
+          return say('Preencha os técnicos e placares com valores válidos.',false);
+        const sel=row.querySelector('[data-archive-competition]');
+        const update={...values,home_score:hs,away_score:as,played_on:values.played_on||null,official_competition_id:sel?.value||null};
+        t.disabled=true;
+        const {error}=await sb.from('career_matches').update(update).eq('id',d.saveCareerMatch);
+        t.disabled=false;
+        if(error)return say(traduz(error),false);
+        say('Amistoso histórico atualizado.',true);return refresh();
+      }
+      if(d.deleteCareerMatch){
+        if(!confirm('Excluir definitivamente este amistoso do histórico dos técnicos?'))return;
+        return run(sb.from('career_matches').delete().eq('id',d.deleteCareerMatch),'Amistoso histórico excluído.');
+      }
       if(d.saveArchiveCompetition){
         const sel=[...$('view').querySelectorAll('[data-archive-competition]')].find(x=>x.dataset.archiveCompetition===d.saveArchiveCompetition);
         if(!sel)return say('Seletor de competição não encontrado.',false);
