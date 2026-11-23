@@ -109,8 +109,8 @@ function masterKnockout(edition,phase){
  const rounds=(D.rounds||[]).filter(r=>eq(r.phase_id,groupPhase?.id));
  const roundIds=new Set(rounds.map(r=>String(r.id)));
  const groupGames=masterProjectedMatches(edition,all().filter(m=>m.category==='official'&&roundIds.has(String(m.round_id))));
- const hasSimulation=Object.entries(state.scores).some(([id,values])=>values.some(v=>v!=='')&&groupGames.some(m=>String(m.id)===id));
- if(!hasSimulation)return null;
+ // A chave acompanha a classificação projetada desde que o simulador é ligado.
+ // Não exigir partidas completas nem depender de IDs do calendário para ativá-la.
  const participants=D.participants.filter(p=>assignments.some(a=>eq(a.participant_id,p.id)));
  const ranked=standings(participants,groupGames.map(m=>({...m,played:done(m)})));
  const group=g=>ranked.filter(x=>assignments.some(a=>eq(a.participant_id,x.p.id)&&String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g)).map(x=>x.p);
