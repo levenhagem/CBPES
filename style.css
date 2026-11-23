@@ -4755,8 +4755,10 @@ body > #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible)
 }
 
 /* Súmula oficial CBPES */
-.cbpes-match-report-link{display:block;text-align:center;padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:.06em;color:#087344;text-decoration:none;border-top:1px solid var(--line)}
-.cbpes-match-report-link:hover{background:#e8f5ec;color:#005e36}
+.cbpes-match:has(> .cbpes-match-report-link){position:relative}
+.cbpes-match-report-link{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:24px;height:30px;padding:0;border:0;background:transparent;color:#078a45;text-decoration:none;font:700 22px/1 var(--fc);z-index:3;border-radius:3px}
+.cbpes-match-report-link:hover,.cbpes-match-report-link:focus-visible{background:rgba(7,138,69,.1);color:#005e36;outline-offset:2px}
+@media(max-width:700px){.cbpes-match-report-link{right:3px;width:21px;font-size:19px}}
 .cbpes-report-back{display:inline-block;margin:8px 0 15px;color:#087344;font-weight:800;text-decoration:none;font-size:12px}
 .cbpes-report-hero{background:#003c31;color:#fff;padding:28px 22px;text-align:center;border-radius:4px;margin-bottom:18px}
 .cbpes-report-overline{font-size:12px;letter-spacing:.09em;font-weight:800;color:#c6e6d5}
