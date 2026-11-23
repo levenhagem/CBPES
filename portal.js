@@ -897,7 +897,10 @@ const statRowsHtml=(definition,limit=Infinity)=>{
 };
 const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+matchMetricPicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function generalStatsData(category){
-  const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
+  const includeOpening=category==='official'&&(statsCompetition==='all'||statsCompetition==='810e323b-ed38-44d4-8460-1e21f02dd077');
+  const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m))&&
+    (!includeOpening||String(m.official_edition_id||m.round?.official_edition_id)!==openingEditionId));
+  if(includeOpening)matches.push(...openingStatMatches().matches);
   const records=matches.map(m=>({
     home:category==='weekly'?(m.home_coach_name||m.home?.coach_name||'Mandante'):(m.home?.name||'Mandante'),away:category==='weekly'?(m.away_coach_name||m.away?.coach_name||'Visitante'):(m.away?.name||'Visitante'),
     homeId:m.home_id,awayId:m.away_id,
