@@ -1,40 +1,44 @@
+/* Simulador CBPES: placares editáveis na própria tabela, sem gravar no Supabase. */
 (function(){
-let active=null;
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const eq=(a,b)=>String(a)===String(b);
-const team=id=>D.participants.find(p=>eq(p.id,id))?.name||'A definir';
-const complete=m=>m.home_score!=null&&m.away_score!=null;
-function get(){
- const weekly=active.kind==='weekly',rs=(weekly?D.weeklyRounds:D.rounds).filter(r=>eq(weekly?r.weekly_id:r.official_edition_id,active.id));
- const ms=D.matches.filter(m=>m.category===(weekly?'weekly':'official')&&(weekly?eq(m.weekly_id,active.id):eq(m.official_edition_id,active.id)||rs.some(r=>eq(r.id,m.round_id))));
- const ps=D.phases.filter(p=>p.competition_type===(weekly?'weekly':'official')&&eq(weekly?p.weekly_id:p.official_edition_id,active.id)).sort((a,b)=>a.sort_order-b.sort_order);
- return {rs,ms,ps,weekly};
+let state=null,refreshing=false;
+const same=(a,b)=>String(a)===String(b);
+const played=m=>m.home_score!=null&&m.away_score!=null;
+const valid=v=>/^(0|[1-9][0-9]{0,2})$/.test(v);
+const root=()=>document.getElementById('fullTable');
+const current=()=>state&&D&&D.matches.filter(m=>m.category===(state.kind==='weekly'?'weekly':'official')&&(state.kind==='weekly'?same(m.weekly_id,state.id):same(m.official_edition_id,state.id)||D.rounds.some(r=>same(r.id,m.round_id)&&same(r.official_edition_id,state.id))));
+function simulated(m){const s=state?.scores[m.id];return !state||played(m)||!s||s[0]===''||s[1]===''?m:{...m,home_score:Number(s[0]),away_score:Number(s[1]),played:true};}
+function update(){
+ if(!state||!root()||typeof renderTable!=='function')return;
+ const original=D.matches;refreshing=true;
+ try{D.matches=original.map(simulated);renderTable();}
+ finally{D.matches=original;refreshing=false;}
+ const button=root().querySelector('[data-simulator-kind]');if(button){button.textContent='SAIR DO SIMULADOR';button.classList.add('cbpes-sim-active');}
+ const list=current()||[];
+ for(const m of list){
+  if(played(m))continue;
+  const card=Array.from(root().querySelectorAll('[data-cbpes-match-id]')).find(x=>same(x.dataset.cbpesMatchId,m.id));
+  if(!card)continue;
+  const score=card.querySelector('.cbpes-match-score');if(!score)continue;
+  const values=state.scores[m.id]||['',''];
+  score.innerHTML='<span class="cbpes-sim-inline"><input type="number" inputmode="numeric" min="0" max="999" data-sim-id="'+m.id+'" data-sim-side="0" aria-label="Gols mandante" value="'+values[0]+'"><span>:</span><input type="number" inputmode="numeric" min="0" max="999" data-sim-id="'+m.id+'" data-sim-side="1" aria-label="Gols visitante" value="'+values[1]+'"></span>';
+  card.querySelector('.cbpes-match-report-link')?.remove();
+ }
+ let controls=document.getElementById('cbpes-sim-controls');if(!controls){controls=document.createElement('div');controls.id='cbpes-sim-controls';root().insertBefore(controls,root().firstChild);}
+ controls.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button><span>Simulação local • não altera resultados oficiais</span>';
 }
-function adjusted(m){const s=active.scores[m.id];return complete(m)||!s||s[0]===''||s[1]===''?m:{...m,home_score:Number(s[0]),away_score:Number(s[1]),played:true};}
-function ranking(ms){const ids=new Set(ms.flatMap(m=>[m.home_id,m.away_id]));return standings(D.participants.filter(p=>ids.has(p.id)),ms.map(adjusted));}
-function table(ms){return '<div class="cbpes-sim-scroll"><table class="table"><thead><tr><th>#</th><th>CLUBE</th><th>PTS</th><th>J</th><th>V</th><th>SG</th></tr></thead><tbody>'+ranking(ms).map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(x.p.name)+'</td><td><b>'+x.pts+'</b></td><td>'+x.j+'</td><td>'+x.v+'</td><td>'+x.sg+'</td></tr>').join('')+'</tbody></table></div>';}
-function fixture(m){const locked=complete(m),s=active.scores[m.id]||['',''];return '<div class="cbpes-sim-game"><b>'+esc(team(m.home_id))+'</b><div class="cbpes-sim-score">'+(locked?'<strong>'+m.home_score+'</strong>':'<input type="number" min="0" max="999" data-sim-match="'+esc(m.id)+'" data-side="0" value="'+esc(s[0])+'">')+' <span>×</span> '+(locked?'<strong>'+m.away_score+'</strong>':'<input type="number" min="0" max="999" data-sim-match="'+esc(m.id)+'" data-side="1" value="'+esc(s[1])+'">')+'</div><b class="away">'+esc(team(m.away_id))+'</b><small>'+(locked?'🔒 RESULTADO OFICIAL':'PLACAR SIMULADO')+'</small></div>';}
-function render(){
- if(!active)return;
- const {rs,ms,ps,weekly}=get(),root=document.getElementById('cbpes-sim-overlay');
- const phase=m=>{const r=rs.find(r=>eq(r.id,weekly?m.weekly_round_id:m.round_id));return ps.find(p=>eq(p.id,r?.phase_id));};
- const tableMatches=ms.filter(m=>{const p=phase(m);return p?p.counts_in_standings:!ps.length||rs.find(r=>eq(r.id,weekly?m.weekly_round_id:m.round_id))?.stage!=='mata';});
- const groups=[...new Set(tableMatches.map(m=>m.group_name).filter(Boolean))].sort();
- const ranks=groups.length?groups.map(g=>'<h3>GRUPO '+esc(g)+'</h3>'+table(tableMatches.filter(m=>m.group_name===g))).join(''):table(tableMatches);
- const blocks=(ps.length?ps.map(p=>({name:p.name,rs:rs.filter(r=>eq(r.phase_id,p.id))})): [{name:'PARTIDAS',rs}]).map(p=>'<section><h3>'+esc(p.name)+'</h3>'+p.rs.map(r=>'<h4>'+esc(r.name||'Rodada '+r.number)+'</h4>'+ms.filter(m=>eq(weekly?m.weekly_round_id:m.round_id,r.id)).map(fixture).join('')).join('')+'</section>').join('');
- const last=ps.filter(p=>!p.counts_in_standings).at(-1);
- const finalMatches=last?ms.filter(m=>eq(phase(m)?.id,last.id)):[];
- const final=finalMatches.length===1?adjusted(finalMatches[0]):null;
- const champion=final&&complete(final)&&final.home_score!==final.away_score?team(final.home_score>final.away_score?final.home_id:final.away_id):null;
- const ed=D.officialEditions.find(e=>eq(e.id,active.id));
- const title=weekly?D.weeklies.find(w=>eq(w.id,active.id))?.name:D.officialCompetitions.find(c=>eq(c.id,ed?.competition_id))?.name||ed?.name;
- root.innerHTML='<div class="cbpes-sim-panel" role="dialog" aria-modal="true"><header><div><small>CBPES • SIMULAÇÃO INDEPENDENTE</small><h2>'+esc(title||'CAMPEONATO')+'</h2></div><button data-sim-close>✕</button></header><div class="cbpes-sim-body"><p class="cbpes-sim-note">Os resultados oficiais estão bloqueados. Nenhuma simulação será gravada no campeonato.</p><h3>CLASSIFICAÇÃO SIMULADA</h3>'+ranks+'<h3>RODADAS E FASES</h3>'+blocks+(champion?'<div class="cbpes-sim-champion">🏆 CAMPEÃO SIMULADO: '+esc(champion)+'</div>':'')+'</div><footer><button data-sim-reset>REINICIAR</button><button data-sim-close>FECHAR</button></footer></div>';
-}
-function open(kind,id){if(typeof D==='undefined'||!D){alert('Os dados do campeonato ainda estão carregando.');return;}active={kind,id,scores:{}};let root=document.getElementById('cbpes-sim-overlay');if(!root){root=document.createElement('div');root.id='cbpes-sim-overlay';document.body.appendChild(root);}document.body.style.overflow='hidden';render();}
-function close(){document.getElementById('cbpes-sim-overlay')?.remove();document.body.style.overflow='';active=null;}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-simulator-kind]');if(b){e.preventDefault();e.stopPropagation();try{open(b.dataset.simulatorKind,b.dataset.simulatorId);}catch(err){console.error('CBPES simulador:',err);alert('Não foi possível abrir o simulador: '+err.message);}return;}if(!active)return;if(e.target.closest('[data-sim-close]')||e.target.id==='cbpes-sim-overlay')close();else if(e.target.closest('[data-sim-reset]')){active.scores={};render();}});
-document.addEventListener('change',e=>{const el=e.target;if(!active||!el.matches('[data-sim-match]'))return;const m=get().ms.find(m=>eq(m.id,el.dataset.simMatch));if(!m||complete(m))return;const v=el.value.trim();if(v!==''&&!/^(0|[1-9][0-9]{0,2})$/.test(v)){render();return;}const s=active.scores[m.id]||['',''];s[Number(el.dataset.side)]=v;active.scores[m.id]=s;render();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&active)close();});
-const style=document.createElement('style');style.textContent='.cbpes-sim-launch{margin:10px 0;padding:8px 14px;border:1px solid var(--line,#ccc);border-radius:6px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-overlay{position:fixed;inset:0;background:#071c1ccc;z-index:99999;display:flex;justify-content:center;align-items:center;padding:10px}.cbpes-sim-panel{width:min(100%,1000px);max-height:95vh;display:flex;flex-direction:column;background:var(--bg,#fff);color:var(--text,#18232b);border-radius:12px;overflow:hidden}.cbpes-sim-panel header,.cbpes-sim-panel footer{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line,#ddd)}.cbpes-sim-panel header h2{font-size:19px;margin:4px 0}.cbpes-sim-panel button{cursor:pointer;padding:8px 12px;border:1px solid #aaa;border-radius:6px;background:transparent;color:inherit}.cbpes-sim-body{padding:18px;overflow:auto}.cbpes-sim-note{background:#147b5120;padding:12px;border-radius:8px}.cbpes-sim-body h3{font-size:15px;margin:20px 0 10px}.cbpes-sim-body h4{font-size:12px;margin:12px 0}.cbpes-sim-scroll{overflow:auto}.cbpes-sim-game{display:grid;grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line,#ddd);font-size:13px}.cbpes-sim-game .away{text-align:right}.cbpes-sim-score{display:flex;align-items:center;justify-content:center;gap:5px}.cbpes-sim-score input{width:40px;height:34px;text-align:center;border:1px solid #aaa;border-radius:5px;background:transparent;color:inherit}.cbpes-sim-game small{grid-column:1/-1;text-align:center;font-size:10px;color:var(--muted,#777)}.cbpes-sim-champion{padding:16px;margin:15px 0;background:#d6ad3125;text-align:center;font-weight:800}@media(max-width:500px){.cbpes-sim-overlay{padding:3px}.cbpes-sim-body{padding:10px}.cbpes-sim-game{grid-template-columns:minmax(0,1fr) 100px minmax(0,1fr);font-size:11px}.cbpes-sim-score input{width:34px}}';document.head.appendChild(style);
-window.CBPESSimulator={open,close};
+function exit(){state=null;refreshing=false;document.getElementById('cbpes-sim-controls')?.remove();if(typeof renderTable==='function')renderTable();}
+document.addEventListener('click',e=>{
+ const button=e.target.closest('[data-simulator-kind]');
+ if(button){e.preventDefault();e.stopPropagation();if(state&&same(state.id,button.dataset.simulatorId)&&state.kind===button.dataset.simulatorKind){exit();return;}state={kind:button.dataset.simulatorKind,id:button.dataset.simulatorId,scores:{}};try{update();}catch(err){console.error('Simulador:',err);exit();}return;}
+ if(state&&e.target.closest('[data-sim-clear]')){state.scores={};update();}
+},true);
+document.addEventListener('change',e=>{
+ if(!state||!e.target.matches('[data-sim-id]'))return;
+ const input=e.target,m=current()?.find(m=>same(m.id,input.dataset.simId));if(!m||played(m))return;
+ const value=input.value.trim();if(value!==''&&!valid(value)){input.value=state.scores[m.id]?.[Number(input.dataset.simSide)]||'';return;}
+ const scores=state.scores[m.id]||['',''];scores[Number(input.dataset.simSide)]=value;state.scores[m.id]=scores;update();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state)exit();});
+const css=document.createElement('style');css.textContent='.cbpes-sim-launch{margin:10px 0;padding:7px 12px;border:1px solid var(--line,#ccc);border-radius:5px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-launch.cbpes-sim-active{background:#14784b;color:white}.cbpes-sim-inline{display:flex;align-items:center;justify-content:center;gap:4px}.cbpes-sim-inline input{box-sizing:border-box;width:38px;height:36px;border:1px solid #b9c6ca;border-radius:4px;background:#fff;color:#15232b;text-align:center;font-weight:800;font-size:16px;padding:2px}.cbpes-sim-inline input::-webkit-inner-spin-button,.cbpes-sim-inline input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.cbpes-sim-inline input{appearance:textfield;-moz-appearance:textfield}#cbpes-sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-size:11px;color:var(--muted,#777)}#cbpes-sim-controls button{border:1px solid var(--line,#ccc);border-radius:5px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer;font-weight:700}@media(max-width:520px){.cbpes-sim-inline input{width:31px;height:33px;font-size:14px}}';document.head.appendChild(css);
+window.CBPESSimulator={exit};
 })();
