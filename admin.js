@@ -42,8 +42,9 @@ function renderOpeningAdminArchive(){
  const rows=openingAdminArchive.filter(x=>x.record_type==='match');
  const groups=new Map();
  rows.forEach(x=>{const p=x.payload||{},stage=p.phase||('Rodada '+(p.round||'?'));if(!groups.has(stage))groups.set(stage,[]);groups.get(stage).push(x);});
- const summary='<div class="card"><div class="cardhead"><h2>TORNEIO DE ABERTURA — ARQUIVO OFICIAL</h2><span class="pill">'+rows.length+' JOGOS</span></div><div class="cardbody"><p class="admin-help">Arquivo histórico separado da tabela matches. Inclui fase classificatória e mata-mata.</p>'+(openingAdminError?'<p>'+esc(openingAdminError)+'</p>':'')+[...groups].map(([stage,ms])=>'<h3 style="margin:16px 0 8px">'+esc(stage).toUpperCase()+' ('+ms.length+')</h3>'+ms.map(x=>{const m=x.payload||{};return '<div class="result-row"><div class="result-teams"><b>'+esc(m.home_coach||'—')+'</b> x <b>'+esc(m.away_coach||'—')+'</b><small>'+esc(x.source_key)+'</small></div><div class="result-score">'+esc(m.home_score)+' – '+esc(m.away_score)+'</div></div>';}).join('')).join('')+'</div></div>';
+ const summary='<button class="btn" id="openingArchiveBack" style="margin-bottom:12px">VOLTAR A JOGOS</button><div class="card"><div class="cardhead"><h2>TORNEIO DE ABERTURA — ARQUIVO OFICIAL</h2><span class="pill">'+rows.length+' JOGOS</span></div><div class="cardbody"><p class="admin-help">Arquivo histórico separado da tabela matches. Inclui fase classificatória e mata-mata.</p>'+(openingAdminError?'<p>'+esc(openingAdminError)+'</p>':'')+[...groups].map(([stage,ms])=>'<h3 style="margin:16px 0 8px">'+esc(stage).toUpperCase()+' ('+ms.length+')</h3>'+ms.map(x=>{const m=x.payload||{};return '<div class="result-row"><div class="result-teams"><b>'+esc(m.home_coach||'—')+'</b> x <b>'+esc(m.away_coach||'—')+'</b><small>'+esc(x.source_key)+'</small></div><div class="result-score">'+esc(m.home_score)+' – '+esc(m.away_score)+'</div></div>';}).join('')).join('')+'</div></div>';
  $('view').innerHTML=summary;
+ $('openingArchiveBack').onclick=()=>{gamesSubView='matches';vJogos();};
 }
 
 let adminCareerMatches = [];
