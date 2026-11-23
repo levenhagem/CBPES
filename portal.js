@@ -1,5 +1,6 @@
 let selectedWeeklyEditionId = null;
 let D = null, filter = 'all', profileMode = 'current', selectedWeeklyTable = 'current', statsCategory = 'official', statsCompetition = null, statsDefenseMode = 'per-game';
+const matchMetricModes = {};
 const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
@@ -717,16 +718,16 @@ const friendlyCoachDefinitions=()=>{
 };
 const officialMatchMetricDefinitions=()=>{
   const metrics=[
-    ['possession','POSSE DE BOLA (MÉDIA)','%'],
-    ['shots','CHUTES (MÉDIA)',''],
-    ['shots_on_target','CHUTES A GOL (MÉDIA)',''],
-    ['goalkeeper_saves','DEFESAS DO GOLEIRO (MÉDIA)',''],
-    ['corners','ESCANTEIOS (MÉDIA)',''],
-    ['penalties','PÊNALTIS (MÉDIA)',''],
-    ['fouls','FALTAS COMETIDAS (MÉDIA)',''],
-    ['offsides','IMPEDIMENTOS (MÉDIA)',''],
-    ['yellow_cards','CARTÕES AMARELOS (MÉDIA)',''],
-    ['red_cards','CARTÕES VERMELHOS (MÉDIA)','']
+    ['possession','POSSE DE BOLA','%'],
+    ['shots','CHUTES ',''],
+    ['shots_on_target','CHUTES A GOL ',''],
+    ['goalkeeper_saves','DEFESAS DO GOLEIRO ',''],
+    ['corners','ESCANTEIOS ',''],
+    ['penalties','PÊNALTIS ',''],
+    ['fouls','FALTAS COMETIDAS ',''],
+    ['offsides','IMPEDIMENTOS ',''],
+    ['yellow_cards','CARTÕES AMARELOS ',''],
+    ['red_cards','CARTÕES VERMELHOS ','']
   ];
   const statsByMatch=new Map((D.matchStatistics||[]).map(s=>[String(s.match_id),s]));
   const teams=new Map();
@@ -756,9 +757,10 @@ const officialMatchMetricDefinitions=()=>{
   });
   const format=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
   return metrics.map(([key,title,unit])=>{
-    const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key]}))
-      .sort((a,b)=>b.average-a.average||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
-    return {key:'match-'+key,title,rows,value:x=>format(x.average),unit};
+    const mode=key==='possession'?'average':(matchMetricModes[key]||'average');
+    const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key],total:x.totals[key]}))
+      .sort((a,b)=>(mode==='total'?b.total-a.total:b.average-a.average)||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
+    return {key:'match-'+key,title,rows,value:x=>mode==='total'?String(x.total):format(x.average),unit,matchMetric:key,metricMode:mode};
   });
 };
 const visibleStatDefinitions=category=>{
@@ -775,6 +777,19 @@ const defenseDefinition=definition=>{
     return av-bv || a.gc-b.gc || b.j-a.j || (definition.coaches?a.name.localeCompare(b.name,'pt-BR'):a.p.name.localeCompare(b.p.name,'pt-BR'));
   });
   return {...definition,rows,value:x=>perGame?fmt1(x.gc/x.j):x.gc,unit:perGame?'gols/jogo':'gols'};
+};
+const matchMetricPicker=definition=>definition.matchMetric&&definition.matchMetric!=='possession'
+  ?'<div class="stats-category-filter cbpes-defense-picker" role="group" aria-label="Exibição de '+esc(definition.title)+'"><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="average" class="'+(definition.metricMode==='average'?'selected':'')+'">MÉDIA</button><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="total" class="'+(definition.metricMode==='total'?'selected':'')+'">TOTAL</button></div>'
+  :'';
+const changeMatchMetricMode=e=>{
+  const button=e.target.closest('[data-match-metric][data-match-mode]');
+  if(!button)return false;
+  matchMetricModes[button.dataset.matchMetric]=button.dataset.matchMode;
+  if(location.hash.startsWith('#stats-detail/')){
+    const parts=location.hash.slice(1).split('/');
+    renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
+  }else renderStats();
+  return true;
 };
 const defensePicker=definition=>definition.key==='defense'
   ?'<div class="stats-category-filter cbpes-defense-picker" role="group" aria-label="Critério de melhor defesa"><button type="button" data-defense-mode="per-game" class="'+(statsDefenseMode==='per-game'?'selected':'')+'">SOFRIDOS POR JOGO</button><button type="button" data-defense-mode="total" class="'+(statsDefenseMode==='total'?'selected':'')+'">SOFRIDOS NO TOTAL</button></div>'
@@ -795,7 +810,7 @@ const statRowsHtml=(definition,limit=Infinity)=>{
   const rows=definition.rows.slice(0,limit);
   return rows.length?rows.map((x,i)=>'<div class="player cbpes-stats-player" ><div><b>'+'<span class="rank-position">'+(i>0&&String(definition.value(x))===String(definition.value(definition.rows[i-1]))?'':densePosition(definition.rows,i,definition.value))+'</span>'+(definition.players?crestImg(x.team,'cbpes-stats-player-crest'):'')+(definition.coaches?'<a href="#coach/'+encodeURIComponent(x.name)+'">'+esc(x.name)+'</a>':definition.players?esc(x.name):participantLink(x.p))+'</b></div><span class="number">'+definition.value(x)+(definition.unit?' '+definition.unit:'')+'</span></div>').join(''):empty('Nenhum registro ainda.');
 };
-const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
+const statCard=(definition,category,full=false)=>'<div class="card cbpes-stats-card"><div class="cardhead"><h2>'+esc(definition.title)+'</h2></div><div class="cardbody">'+defensePicker(definition)+matchMetricPicker(definition)+statRowsHtml(defenseDefinition(definition),full?Infinity:5)+(full?'':'<a class="cbpes-stats-more" href="#stats-detail/'+encodeURIComponent(category)+'/'+encodeURIComponent(definition.key)+'">VER MAIS <span aria-hidden="true">→</span></a>')+'</div></div>';
 function generalStatsData(category){
   const matches=D.matches.filter(m=>m.category===category&&m.played&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
   const records=matches.map(m=>({
@@ -832,14 +847,14 @@ function renderStats(){
   const definitions=visibleStatDefinitions(statsCategory);
   $('statsGrid').innerHTML=filter+competitionFilter+general+definitions.map(d=>statCard(d,statsCategory)).join('');
   $('statsGrid').onchange=e=>{if(e.target.id==='statsCompetitionSelect'){statsCompetition=e.target.value;renderStats();}};
-  $('statsGrid').onclick=e=>{if(changeDefenseMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
+  $('statsGrid').onclick=e=>{if(changeDefenseMode(e)||changeMatchMetricMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
 function renderStatsDetail(category,key){
   const root=$('statsDetailView');if(!root)return;
   const valid=Object.hasOwn(statCategoryLabels,category)?category:'official';
   const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
   if(!definition){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
-  root.onclick=e=>{changeDefenseMode(e);};
+  root.onclick=e=>{if(changeDefenseMode(e))return;changeMatchMetricMode(e);};
   root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1><div class="sub">Classificação completa da estatística selecionada.</div></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
 }
 
