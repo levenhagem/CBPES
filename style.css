@@ -4895,3 +4895,9 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 #table .cbpes-competition-neutral .cbpes-match-report-link.cbpes-match-report-details:hover{color:#111!important}
 #table .cbpes-match:has(.cbpes-match-report-details){padding-right:75px!important}
 #leagueRecent .cbpes-match-report-link{display:none!important}
+
+#match .cbpes-report-overline .cbpes-report-competition-name,#match .cbpes-report-overline .cbpes-report-round-name{color:#fff!important;font-weight:800!important;letter-spacing:.035em}
+#match .cbpes-report-overline .cbpes-report-date-inline{font-weight:400;color:rgba(255,255,255,.78)}
+#match .cbpes-report-overline .cbpes-report-separator{font-weight:400;color:rgba(255,255,255,.6)}
+#match .cbpes-report-heading-date{display:flex;align-items:center;justify-content:center;gap:7px;color:rgba(255,255,255,.84);font-weight:400}
+#match .cbpes-stadium-icon{display:inline-block;width:17px;height:17px;flex:none;vertical-align:middle}
