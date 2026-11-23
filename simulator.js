@@ -67,6 +67,25 @@ function projected(){
  }
  return projected;
 }
+
+function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real){
+ if(!state||state.kind!=='official'||!eq(state.id,edition.id))return [];
+ const virtual=[];
+ for(let ri=0;ri<calendar.length;ri++)for(const group of groupNames){
+  const slots=assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===group).sort((a,b)=>Number(a.slot)-Number(b.slot));
+  for(const [left,right] of calendar[ri]){
+   const home=team(slots[left-1]?.participant_id),away=team(slots[right-1]?.participant_id);
+   if(!home||!away)continue;
+   const round=rounds[ri];
+   const exists=real.some(m=>eq(m.round_id,round?.id)&&[String(m.home_id),String(m.away_id)].sort().join('|')===[String(home.id),String(away.id)].sort().join('|'));
+   if(exists)continue;
+   const id='master-virtual-'+edition.id+'-'+ri+'-'+group+'-'+left+'-'+right;
+   const values=state.scores[id]||['',''],completed=values.every(x=>x!=='');
+   virtual.push({id,home_id:home.id,away_id:away.id,home,away,home_coach_name:home.coach_name,away_coach_name:away.coach_name,home_score:completed?Number(values[0]):null,away_score:completed?Number(values[1]):null,played:completed,category:'official',group_name:group,round_id:round?.id||null,virtualRoundIndex:ri,official_edition_id:edition.id,seq:ri*100+group.charCodeAt(0),date:round?.date||null});
+  }
+ }
+ return virtual;
+}
 function render(){
  if(!state||!root()||rendering)return;
  const old=D.matches,proj=projected(),byId=new Map(proj.map(m=>[String(m.id),m]));
@@ -82,7 +101,8 @@ function render(){
  const cards=[...root().querySelectorAll('[data-cbpes-match-id]')];
  for(const card of cards){
   const id=card.dataset.cbpesMatchId,official=old.find(m=>eq(m.id,id));
-  if(!official||done(official))continue;
+  if(official&&done(official))continue;
+  if(!official&&!id.startsWith('master-virtual-'))continue;
   const score=card.querySelector('.cbpes-match-score');if(!score)continue;
   const values=state.scores[id]||['',''];
   const field=(side,label)=>'<input type="number" inputmode="numeric" min="0" max="999" aria-label="'+label+'" data-sim-id="'+id+'" data-sim-side="'+side+'" value="'+values[side]+'">';
@@ -101,10 +121,12 @@ document.addEventListener('click',e=>{
 },true);
 document.addEventListener('change',e=>{
  const el=e.target;if(!state||!el.matches('[data-sim-id]'))return;
- const original=all().find(m=>eq(m.id,el.dataset.simId));if(!original||done(original))return;
+ const original=all().find(m=>eq(m.id,el.dataset.simId));if(original&&done(original))return;
+ if(!original&&!String(el.dataset.simId).startsWith('master-virtual-'))return;
+ const key=String(el.dataset.simId);
  const v=el.value.trim(),side=Number(el.dataset.simSide);
- if(v!==''&&!valid(v)){el.value=state.scores[String(original.id)]?.[side]||'';return;}
- const scores=state.scores[String(original.id)]||['',''];scores[side]=v;state.scores[String(original.id)]=scores;
+ if(v!==''&&!valid(v)){el.value=state.scores[key]?.[side]||'';return;}
+ const scores=state.scores[key]||['',''];scores[side]=v;state.scores[key]=scores;
  render();
 });
 document.addEventListener('click',e=>{
@@ -113,6 +135,6 @@ document.addEventListener('click',e=>{
  if(nav)requestAnimationFrame(()=>{if(state)render();});
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state)exit();});
-const css=document.createElement('style');css.textContent='.cbpes-sim-launch{margin:10px 0;padding:7px 12px;border:1px solid var(--line,#ccc);border-radius:5px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-launch.cbpes-sim-active{background:#14784b;color:#fff}.cbpes-sim-inline{display:flex;align-items:center;justify-content:center;gap:4px}.cbpes-sim-inline input{box-sizing:border-box;width:36px;height:32px;border:1px solid #b9c6ca;border-radius:4px;background:#fff;color:#15232b;text-align:center;font-weight:800;font-size:15px;padding:2px;appearance:textfield;-moz-appearance:textfield}.cbpes-sim-inline input::-webkit-inner-spin-button,.cbpes-sim-inline input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#table[data-liga-pro="true"] .cbpes-sim-inline{flex-direction:column;gap:3px}#table[data-liga-pro="true"] .cbpes-sim-colon{display:none}#table[data-liga-pro="true"] .cbpes-sim-inline input{height:28px;width:36px}#cbpes-sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-size:11px;color:var(--muted,#777)}#cbpes-sim-controls button{border:1px solid var(--line,#ccc);border-radius:5px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer;font-weight:700}#table .cbpes-sim-active~* table tbody tr{transition:transform .28s ease,background-color .28s ease}@media(max-width:520px){.cbpes-sim-inline input{width:31px;height:30px;font-size:14px}}';document.head.appendChild(css);
-window.CBPESSimulator={exit,isActive:()=>!!state,refresh:()=>{if(state&&!rendering)render();}};
+const css=document.createElement('style');css.textContent='.cbpes-sim-launch{margin:10px 0;padding:7px 12px;border:1px solid var(--line,#ccc);border-radius:5px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-launch.cbpes-sim-active{background:#14784b;color:#fff}.cbpes-sim-inline{display:flex;align-items:center;justify-content:center;gap:4px}.cbpes-sim-inline input{box-sizing:border-box;width:36px;height:32px;border:1px solid #b9c6ca;border-radius:4px;background:#fff;color:#15232b;text-align:center;font-weight:800;font-size:15px;padding:2px;appearance:textfield;-moz-appearance:textfield}.cbpes-sim-inline input::-webkit-inner-spin-button,.cbpes-sim-inline input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#table[data-liga-pro="true"] .cbpes-sim-inline,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline{flex-direction:column;gap:4px}#table[data-liga-pro="true"] .cbpes-sim-colon,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-colon{display:none}#table[data-liga-pro="true"] .cbpes-sim-inline input{height:28px;width:36px}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline input{width:39px;height:31px;background:linear-gradient(135deg,#352c1a,#151616);border:1px solid #c6a45a;color:#fff4d0;box-shadow:inset 0 0 0 1px #655027;border-radius:4px;font-family:inherit;font-size:17px;font-weight:850}#table[data-liga-pro="true"] .cbpes-sim-inline input{background:linear-gradient(135deg,#17478c,#08275b);border:1px solid #6fa5ff;color:#fff;border-radius:4px}#table[data-winning-eleven="true"] .cbpes-sim-inline input{background:#8b1230;border:1px solid #ff6685;color:#fff}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-match-score{z-index:4!important;position:relative!important}#cbpes-sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-size:11px;color:var(--muted,#777)}#cbpes-sim-controls button{border:1px solid var(--line,#ccc);border-radius:5px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer;font-weight:700}#table .cbpes-sim-active~* table tbody tr{transition:transform .28s ease,background-color .28s ease}@media(max-width:520px){.cbpes-sim-inline input{width:31px;height:30px;font-size:14px}}';document.head.appendChild(css);
+window.CBPESSimulator={exit,isActive:()=>!!state,virtualMasterGames,refresh:()=>{if(state&&!rendering)render();}};
 })();
