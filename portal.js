@@ -626,7 +626,7 @@ function renderTable() {
         const n=i+1,qualified=!!zoneAt(masterGroupZones,n);
         const team=x?.p;
         const cells=x?[x.pts,x.j,x.v,x.e,x.d,x.gp,x.gc,sgf(x.sg),x.ap]:Array(9).fill(0);
-        return '<tr class="'+(qualified?'cbpes-master-qualified':'cbpes-master-not-qualified')+'"><td class="cbpes-master-position'+(qualified?' cbpes-zone-position':'')+'"><span class="cbpes-master-group-rank">'+n+'</span></td><td class="cbpes-master-club">'+(team?participantLink(team)+'<small>'+ (team.coach_name?coachLink(team.coach_name):'')+'</small>':'<strong>Equipe a definir</strong>')+'</td>'+cells.map(v=>'<td>'+v+'</td>').join('')+'<td class="cbpes-master-form">'+(team?formDots(team.id,gm):'<span class="cbpes-master-form-dots">'+Array(5).fill('<i></i>').join('')+'</span>')+'</td></tr>';
+        return '<tr '+(team?'data-master-team-id="'+esc(team.id)+'" ':'')+'class="'+(qualified?'cbpes-master-qualified':'cbpes-master-not-qualified')+'"><td class="cbpes-master-position'+(qualified?' cbpes-zone-position':'')+'"><span class="cbpes-master-group-rank">'+n+'</span></td><td class="cbpes-master-club">'+(team?participantLink(team)+'<small>'+ (team.coach_name?coachLink(team.coach_name):'')+'</small>':'<strong>Equipe a definir</strong>')+'</td>'+cells.map(v=>'<td>'+v+'</td>').join('')+'<td class="cbpes-master-form">'+(team?formDots(team.id,gm):'<span class="cbpes-master-form-dots">'+Array(5).fill('<i></i>').join('')+'</span>')+'</td></tr>';
       }).join('')+'</tbody></table></div></div>';
   }).join('')+'</div>'+zoneLegend(masterGroupZones)+'</section>';
   if(isCopaMaster && masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id)){
