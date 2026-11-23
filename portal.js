@@ -239,9 +239,9 @@ function renderHome() {
     return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
   };
   // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
-  const sl = played.slice(0,6);
+  const sl = played.slice(0,10);
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
-  const m = played[0];
+  const m = played.find(x=>x.is_featured) || played.find(x=>x.category==='official') || played[0];
   const featured = !!m?.is_featured;
   const featuredEdition=(D.officialEditions||[]).find(e=>String(e.id)===String(m?.official_edition_id));
   const featuredCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(featuredEdition?.competition_id));
@@ -255,7 +255,7 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">PARTIDA EM DESTAQUE</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = played.slice(0,5);
+  const recentHome = played.slice(0,10);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
@@ -315,13 +315,10 @@ function renderGames() {
   const ms = D.matches.filter(publicCompetitionMatch).filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')!==openingEditionId).filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
   // Linha do tempo única: partidas oficiais, amistosas e semanais intercaladas
   // pela data/hora de cadastro, sem agrupar resultados por competição ou rodada.
-  const officialRoundsWithResults=new Set(D.matches.filter(m=>m.category==='official'&&m.played&&m.round_id).map(m=>String(m.round_id)));
-  const visibleGames=ms.filter(m=>m.category!=='official'||filter==='next'||!m.round_id||officialRoundsWithResults.has(String(m.round_id)));
+  const visibleGames=ms;
   const chronological = visibleGames.slice().sort((a,b)=>{
     if(Boolean(a.played)!==Boolean(b.played))return a.played?-1:1;
-    if(a.played&&b.played)return matchResultOrder(a,b);
-    return String(b.created_at||'').localeCompare(String(a.created_at||''))
-      ||(Number(b.seq)||0)-(Number(a.seq)||0);
+    return matchResultOrder(a,b);
   });
   const timelineHtml = chronological.map(m=>matchRow(m,false,true,'arrow',true)).join('');
   $('gamesList').innerHTML = timelineHtml || empty('Nenhuma partida encontrada.');
