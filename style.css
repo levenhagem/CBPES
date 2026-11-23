@@ -5179,3 +5179,10 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 body.cbpes-copa-master-page #table .cbpes-form-dot:not(.win):not(.draw):not(.loss){opacity:.24!important}
 #table .cbpes-knockout-full .cbpes-results-panel .result-row{width:100%;max-width:none;box-sizing:border-box}
 @media(max-width:900px){#records .cbpes-records-layout{grid-template-columns:minmax(0,1fr)}#records .cbpes-record-leaders{position:static;order:-1}}
+
+/* Cards de mata-mata: final e semifinal ocupam a mesma largura disponível. */
+#table .cbpes-knockout-full .cbpes-match,
+#weeklyList .cbpes-knockout-full .cbpes-match,
+#table .cbpes-knockout-full .cbpes-results-panel>.cbpes-match{
+ width:100%!important;max-width:none!important;box-sizing:border-box!important;
+}
