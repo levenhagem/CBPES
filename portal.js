@@ -162,7 +162,7 @@ if(navStatsWrap&&navStatsButton){
   window.addEventListener('resize',closeNavStatsMenu);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeNavStatsMenu();navStatsButton.focus();}});
 }
-document.querySelectorAll('#nav button:not(#navCompetitionButton)').forEach(b => b.onclick = () => location.hash = b.dataset.page);
+document.querySelectorAll('#nav button:not(#navCompetitionButton):not(#navStatsButton)').forEach(b => b.onclick = () => location.hash = b.dataset.page);
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => location.hash = b.dataset.go);
 window.addEventListener('hashchange', route);
 $('filters').onclick = e => { if (e.target.dataset.f) { filter = e.target.dataset.f; renderGames(); } };
@@ -311,11 +311,26 @@ function renderHome() {
   if(recentLigaProLink)recentLigaProLink.href=proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table';
   $('miniTitle').innerHTML='<a class="cbpes-home-heading-link" href="'+(proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table')+'">'+(proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO')+'</a>';
   $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6),zonesFor('official',null,(D.phases||[]).find(p=>String(p.official_edition_id)===String(proEdition.id)&&p.counts_in_standings)?.id),proLeagueMatches)+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
-  const proRecent=latestPlayed(proMatches).slice(0,3);
-  $('leagueRecent').innerHTML=proRecent.length?proRecent.map(m=>matchRow(m,true,false,'none')).join(''):empty('Nenhuma partida da Liga Pro finalizada.');
+  // Artilharia exclusiva da Liga PRO, contabilizando apenas gols dos jogos desta edição.
+  const proMatchIds=new Set(proMatches.filter(m=>m.played).map(m=>String(m.id)));
+  const proScorers=new Map();
+  (D.events||[]).filter(e=>proMatchIds.has(String(e.match_id))&&e.scorer_id).forEach(e=>{
+    const player=(D.players||[]).find(p=>String(p.id)===String(e.scorer_id));
+    if(!player)return;
+    const key=String(player.id);
+    const entry=proScorers.get(key)||{player,goals:0};
+    entry.goals++;proScorers.set(key,entry);
+  });
+  const topScorers=[...proScorers.values()].sort((a,b)=>b.goals-a.goals||String(a.player.name||'').localeCompare(String(b.player.name||''),'pt-BR')).slice(0,5);
+  $('leagueRecent').innerHTML=topScorers.length
+    ?'<div class="cbpes-home-scorers">'+topScorers.map((x,i)=>{
+      const team=(D.participants||[]).find(p=>String(p.id)===String(x.player.participant_id||x.player.team_id));
+      return '<div class="cbpes-home-scorer"><span class="cbpes-home-scorer-rank">'+(i+1)+'</span><span class="cbpes-home-scorer-name"><strong>'+esc(x.player.name)+'</strong>'+(team?'<small>'+esc(team.name)+'</small>':'')+'</span><b>'+x.goals+' '+(x.goals===1?'gol':'gols')+'</b></div>';
+    }).join('')+'</div>'
+    :empty('Ainda não há gols de jogadores registrados na Liga PRO.');
   const proPlayed=proMatches.filter(m=>m.played);
   const proGoals=proPlayed.reduce((sum,m)=>sum+(Number(m.home_score)||0)+(Number(m.away_score)||0),0);
-  $('numbers').innerHTML=`<div class="stats"><div class="stat"><b>${proPlayed.length}</b><span>Partidas</span></div><div class="stat"><b>${proGoals}</b><span>Gols</span></div><div class="stat"><b>${proPlayed.length?(proGoals/proPlayed.length).toLocaleString('pt-BR',{maximumFractionDigits:2}):'0'}</b><span>Média de gols</span></div></div>`;
+  $('numbers').innerHTML=`<div class="stats"><div class="stat"><b>${proPlayed.length}</b><span>Partidas</span></div><div class="stat"><b>${proGoals}</b><span>Gols</span></div><div class="stat"><b>${proPlayed.length?(proGoals/proPlayed.length).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:2}):'0'}</b><span>Média de gols</span></div></div>`;
 
 }
 
