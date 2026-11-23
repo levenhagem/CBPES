@@ -5,7 +5,7 @@ const selectedPhaseByEdition = {}; let selectedOfficialPhase = null;
 const selectedRoundByEdition = {}; const selectedOfficialRoundByPhase = {};
 let openingArchive = [], openingArchiveError = '', openingArchiveTab = 'classification', openingArchiveRound = 1;
 const $ = id => document.getElementById(id);
-const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'weeklies', 'match', 'participant', 'team', 'coach'];
+const PAGES = ['home', 'games', 'table', 'stats', 'stats-detail', 'records', 'trophies', 'weeklies', 'match', 'participant', 'team', 'coach'];
 const empty = t => `<div class="empty">${t}</div>`;
 const publicEditionVisible = e => {
   const competition=(D?.officialCompetitions||[]).find(c=>String(c.id)===String(e?.competition_id));
@@ -78,7 +78,7 @@ function route() {
   document.body.classList.toggle('cbpes-liga-pro-page', id === 'table' && document.getElementById('table')?.dataset.ligaPro === 'true');
   document.body.classList.toggle('cbpes-copa-master-page', id === 'table' && document.getElementById('table')?.dataset.copaMaster === 'true');
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
-  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id || (b.id==='navStatsButton'&&['stats','records','stats-detail'].includes(id))));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id || (b.id==='navStatsButton'&&['stats','records','stats-detail','trophies'].includes(id))));
   if (profile && D) {
     const value = decodeURIComponent(parts.slice(1).join('/'));
     if (id === 'participant') renderParticipant(value);
@@ -1464,7 +1464,23 @@ function renderRecords(){
   root.innerHTML='<div class="cbpes-records-layout"><div class="cbpes-records-simple">'+recordHtml+'</div><aside class="cbpes-record-leaders"><h2>MAIORES RECORDISTAS</h2><p>Recordes detidos por técnicos</p><table><thead><tr><th>TÉCNICO</th><th>RECORDES</th></tr></thead><tbody>'+leaderboard.map((x,i)=>
     '<tr><td><details><summary>'+(i+1)+'. '+esc(x.name)+'</summary><div class="cbpes-record-leader-details">'+x.titles.map(t=>'<div>'+esc(t)+'</div>').join('')+'</div></details></td><td>'+x.titles.length+'</td></tr>').join('')+'</tbody></table></aside></div>';
 }
-function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderTrophyRoom(){
+  const root=$('trophiesView');if(!root||!D)return;
+  const trophies=(D.coachTrophies||[]).slice().sort((a,b)=>String(b.awarded_on||'').localeCompare(String(a.awarded_on||'')));
+  const byCoach=new Map();
+  trophies.forEach(t=>{
+    const name=String(t.coach_name||'').trim();
+    if(!name)return;
+    const key=name.toLocaleLowerCase('pt-BR');
+    if(!byCoach.has(key))byCoach.set(key,{name,items:[]});
+    byCoach.get(key).items.push(t);
+  });
+  const coaches=[...byCoach.values()].sort((a,b)=>b.items.length-a.items.length||a.name.localeCompare(b.name,'pt-BR'));
+  const counts={official:trophies.filter(t=>t.source_type==='official').length,weekly:trophies.filter(t=>t.source_type==='weekly').length,manual:trophies.filter(t=>t.source_type==='manual').length};
+  root.innerHTML='<div class="cbpes-trophy-overview"><div><strong>'+trophies.length+'</strong><span>TÍTULOS REGISTRADOS</span></div><div><strong>'+counts.official+'</strong><span>OFICIAIS</span></div><div><strong>'+counts.weekly+'</strong><span>SEMANAIS</span></div><div><strong>'+coaches.length+'</strong><span>TÉCNICOS CAMPEÕES</span></div></div>'+
+    (coaches.length?'<div class="cbpes-trophy-coaches">'+coaches.map((coach,i)=>'<article class="cbpes-trophy-coach"><div class="cbpes-trophy-coach-heading"><span class="cbpes-trophy-rank">'+(i+1)+'º</span><h2><a href="#coach/'+encodeURIComponent(coach.name)+'">'+esc(coach.name)+'</a></h2><span class="cbpes-trophy-total">🏆 '+coach.items.length+'</span></div><div class="cbpes-trophy-list">'+coach.items.map(t=>'<div class="cbpes-trophy-item"><span aria-hidden="true">🏆</span><div><strong>'+esc(t.title||'Título')+'</strong><small>'+esc(t.competition_name||'Conquista')+(t.team_name?' · '+esc(t.team_name):'')+(t.awarded_on?' · '+fd(t.awarded_on):'')+'</small></div><span class="pill">'+(t.source_type==='weekly'?'SEMANAL':t.source_type==='manual'?'ESPECIAL':'OFICIAL')+'</span></div>').join('')+'</div></article>').join('')+'</div>':empty('Nenhum troféu registrado até o momento.'));
+}
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
