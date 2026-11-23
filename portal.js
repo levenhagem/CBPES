@@ -1222,6 +1222,23 @@ function recordFixtures(){
       awayName:m.away_club||m.away_coach||'Visitante',homeCoach:m.home_coach,awayCoach:m.away_coach,
       hs,as,edition:'',round:null,raw:m,archive:true});
   });
+  // Arquivo oficial do Torneio de Abertura: reconstruir clubes a partir do
+  // cadastro histórico de técnicos, inclusive oitavas, quartas, semis e final.
+  const standing=(openingArchive||[]).filter(x=>x.record_type==='standing').map(x=>x.payload);
+  const coachTeams=new Map(standing.filter(x=>x.coach&&x.team).map(x=>[String(x.coach).toLocaleLowerCase('pt-BR'),openingTeamName(x.team)]));
+  (openingArchive||[]).filter(x=>x.record_type==='match').forEach((entry,i)=>{
+    const m=entry.payload||{},hs=Number(m.home_score),as=Number(m.away_score);
+    if(!Number.isFinite(hs)||!Number.isFinite(as))return;
+    const homeCoach=String(m.home_coach||''),awayCoach=String(m.away_coach||'');
+    const homeName=coachTeams.get(homeCoach.toLocaleLowerCase('pt-BR'))||homeCoach;
+    const awayName=coachTeams.get(awayCoach.toLocaleLowerCase('pt-BR'))||awayCoach;
+    const homeTeam=D.participants.find(p=>p.name===homeName),awayTeam=D.participants.find(p=>p.name===awayName);
+    items.push({id:'opening-'+entry.source_key,date:m.played_on||null,seq:i,category:'official',
+      homeId:homeTeam?.id||'opening:'+homeName,awayId:awayTeam?.id||'opening:'+awayName,
+      homeName,awayName,homeCoach,awayCoach,hs,as,edition:openingEditionId,
+      round:{name:String(entry.source_key||'').includes('-qf-')?'Quartas de final':String(entry.source_key||'').includes('-ro16-')?'Oitavas de final':String(entry.source_key||'').includes('-sf-')?'Semifinal':String(entry.source_key||'').includes('-final-')?'Final':'Classificação'},
+      raw:m,archive:true,opening:true,order:i});
+  });
   return items.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||Number(a.seq||0)-Number(b.seq||0)||String(a.id).localeCompare(String(b.id)));
 }
 function recordStreaks(fixtures,kind,mode){
@@ -1232,10 +1249,10 @@ function recordStreaks(fixtures,kind,mode){
       :[[m.homeId,m.hs,m.as],[m.awayId,m.as,m.hs]];
     sides.forEach(([id,gf,ga])=>{
       if(!id)return;
-      const key=String(id).toLocaleLowerCase(),current=per.get(key)||{id,name:kind==='coach'?id:(D.participants.find(p=>String(p.id)===key)?.name||''),count:0,start:null,end:null};
+      const key=String(id).toLocaleLowerCase(),current=per.get(key)||{id,name:kind==='coach'?id:(D.participants.find(p=>String(p.id)===key)?.name||''),count:0,start:null,end:null,matches:[]};
       const qualifies=mode==='wins'?gf>ga:mode==='unbeaten'?gf>=ga:gf<=ga;
-      if(qualifies){if(!current.count)current.start=m;current.count++;current.end=m;}
-      else{if(current.count)results.push({...current,active:false,breaker:m});current.count=0;current.start=null;current.end=null;}
+      if(qualifies){if(!current.count)current.start=m;current.count++;current.end=m;current.matches.push(m);}
+      else{if(current.count)results.push({...current,active:false,breaker:m});current.count=0;current.start=null;current.end=null;current.matches=[];}
       per.set(key,current);
     });
   });
@@ -1257,7 +1274,7 @@ function recordCards(){
   put('matches','Maior empate',top(fixtures.filter(m=>m.hs===m.as),m=>m.hs),m=>({...matchRow(m),metric:m.hs+'–'+m.as}));
   const streakCard=(group,title,kind,mode,source=fixtures)=>{
     const arr=recordStreaks(source,kind,mode);
-    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<span class="cbpes-record-streak-label">INÍCIO</span><br>'+recordMeta(x.start)+'<br><span class="cbpes-record-streak-label">FIM</span><br>'+(x.breaker?recordMeta(x.breaker):'Sequência ativa')}));
+    put(group,title,top(arr,x=>x.count),x=>({value:recordLink(x.name,kind,x.id),metric:x.count+' jogos',detail:'<details class="cbpes-record-streak-games"><summary>VER '+x.count+' PARTIDAS DA SEQUÊNCIA</summary>'+x.matches.map((m,i)=>'<div>'+(i+1)+'. '+recordMeta(m)+'</div>').join('')+(x.breaker?'<div><strong>JOGO QUE ENCERROU:</strong> '+recordMeta(x.breaker)+'</div>':'<div>Sequência ainda ativa</div>')+'</details>'}));
   };
   streakCard('clubs','Maior invencibilidade de clubes','club','unbeaten');
   streakCard('clubs','Maior sequência sem vencer','club','winless');
@@ -1271,6 +1288,7 @@ function recordCards(){
     const m=ms[0];
     if(!m)return 'Edição não identificada';
     if(m.category==='weekly')return m.raw.weekly?.name||'Semanal';
+    if(m.opening)return 'Torneio de Abertura 2026';
     const e=D.officialEditions.find(e=>String(e.id)===m.edition);
     const c=D.officialCompetitions.find(c=>String(c.id)===String(e?.competition_id));
     return [c?.name,e?.name].filter(Boolean).join(' · ')||'Competição oficial';
@@ -1353,7 +1371,15 @@ function recordCards(){
   put('players','Mais participações em gols em uma edição',top(pe,x=>x.ga),x=>({value:playerName(x.player),metric:x.ga+' participações',detail:esc(peDetail(x))}));
   const champions=[];
   (D.officialEditions||[]).forEach(e=>{if(!publicEditionVisible(e))return;const id=e.champion_id||e.champion_team_id;if(!id)return;const ms=editions.get('official:'+e.id)||[];const x=teamEditions.find(t=>String(t.id)===String(id)&&t.matches===ms);if(x)champions.push(x);});
-  (D.weeklies||[]).forEach(w=>{if(!w.champion_id)return;const ms=editions.get('weekly:'+w.id)||[];const x=teamEditions.find(t=>String(t.id)===String(w.champion_id)&&t.matches===ms);if(x)champions.push(x);});
+  // Recordes de campeões desta seção são exclusivos das competições oficiais.
+  // Adicionar os campeões do arquivo histórico quando houver identificação
+  // explícita do campeão no cadastro da edição.
+  const openingEdition=(D.officialEditions||[]).find(e=>String(e.id)===openingEditionId);
+  const openingChampionId=openingEdition?.champion_id||openingEdition?.champion_team_id;
+  if(openingChampionId&&!champions.some(x=>String(x.id)===String(openingChampionId)&&x.matches[0]?.opening)){
+    const entry=teamEditions.find(x=>String(x.id)===String(openingChampionId)&&x.matches[0]?.opening);
+    if(entry)champions.push(entry);
+  }
   put('competitions','Mais gols marcados por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'),x=>x.gf),x=>({...teRow(x),metric:x.gf+' gols · '+x.j+' jogos'}));
   put('competitions','Menos gols sofridos por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'&&x.j>=2),x=>x.ga,'min'),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
   put('competitions','Mais gols sofridos por um clube em uma edição (todas as fases)',top(teamEditions.filter(x=>x.matches[0]?.category==='official'),x=>x.ga),x=>({...teRow(x),metric:x.ga+' gols · '+x.j+' jogos'}));
@@ -1364,7 +1390,7 @@ function recordCards(){
   put('competitions','Maior pontuação em uma edição de liga',top(leagueTeams,x=>x.pts),x=>({...teRow(x),metric:x.pts+' pontos'}));
   const gaps=[];editions.forEach(ms=>{const table=teamEditions.filter(x=>x.matches===ms).sort((a,b)=>b.pts-a.pts);if(table.length>=2)gaps.push({champ:table[0],runner:table[1],gap:table[0].pts-table[1].pts});});
   put('competitions','Maior diferença de pontos entre campeão e vice',top(gaps,x=>x.gap),x=>({value:recordLink(x.champ.name,'club',x.champ.id)+' / '+recordLink(x.runner.name,'club',x.runner.id),metric:x.gap+' pontos',detail:esc(x.champ.competition)}));
-  const editionTotals=[...editions.values()].map(ms=>({name:editionName(ms),goals:ms.reduce((sum,m)=>sum+m.hs+m.as,0)}));
+  const editionTotals=[...editions.values()].filter(ms=>ms[0]?.category==='official').map(ms=>({name:editionName(ms),goals:ms.reduce((sum,m)=>sum+m.hs+m.as,0)}));
   put('competitions','Maior número de gols em uma edição',top(editionTotals,x=>x.goals),x=>({value:esc(x.name),metric:x.goals+' gols'}));
   return groups;
 }
