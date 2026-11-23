@@ -53,7 +53,7 @@ function renderOpeningAdminArchive(){
   const payload={...original.payload};
   for(const input of row.querySelectorAll('[data-opening-field]')){
    const field=input.dataset.openingField,value=input.value.trim();
-   if(field.endsWith('_score')){if(!/^\\d{1,3}$/.test(value))return say('Informe gols inteiros de 0 a 999.',false);payload[field]=Number(value);}
+   if(field.endsWith('_score')){if(!/^[0-9]{1,3}$/.test(value))return say('Informe gols inteiros de 0 a 999.',false);payload[field]=Number(value);}
    else {if(!value)return say('Informe o nome do técnico.',false);payload[field]=value;}
   }
   button.disabled=true;
