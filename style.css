@@ -5572,10 +5572,16 @@ body>#navStatsMenu.nav-competition-menu a:focus-visible{
  color:#142b40!important;background-color:#f3f6f9!important;outline:none!important;
 }
 
-/* Gradientes mais presentes, inclusive o verde de SEMANAIS. */
+
+/* TABELAS: somente uma barra vertical colorida, sem degradês. */
 #nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry,
 body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry,
 #nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option,
 body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option{
- background:linear-gradient(90deg,#fff 0%,#fff 57%,color-mix(in srgb,var(--competition-tint) 29%,#fff) 100%)!important;
+ background:#fff!important;border-left:4px solid var(--competition-tint,#15995c)!important;
+ padding-left:11px!important;
 }
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry:hover,
+body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-competition-entry:hover,
+#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:hover,
+body>#navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:hover{background:#f3f6f9!important}
