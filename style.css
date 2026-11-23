@@ -5115,3 +5115,7 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 
 /* Barras sem contorno branco, preservando os cantos arredondados. */
 #match .cbpes-report-compare-track{border:0!important;border-radius:999px!important}
+
+/* Rankings gerais neutros: cores dos clubes reservadas às estatísticas de partida. */
+#statsGrid .cbpes-stats-player,#stats-detail .cbpes-stats-player{border-left-color:#dce3e8!important}
+#statsGrid .cbpes-stats-player .number,#stats-detail .cbpes-stats-player .number{color:inherit!important;background:#eef1f3!important}
