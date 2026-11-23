@@ -42,9 +42,28 @@ function renderOpeningAdminArchive(){
  const rows=openingAdminArchive.filter(x=>x.record_type==='match');
  const groups=new Map();
  rows.forEach(x=>{const p=x.payload||{},stage=p.phase||('Rodada '+(p.round||'?'));if(!groups.has(stage))groups.set(stage,[]);groups.get(stage).push(x);});
- const summary='<button class="btn" id="openingArchiveBack" style="margin-bottom:12px">VOLTAR A JOGOS</button><div class="card"><div class="cardhead"><h2>TORNEIO DE ABERTURA — ARQUIVO OFICIAL</h2><span class="pill">'+rows.length+' JOGOS</span></div><div class="cardbody"><p class="admin-help">Arquivo histórico separado da tabela matches. Inclui fase classificatória e mata-mata.</p>'+(openingAdminError?'<p>'+esc(openingAdminError)+'</p>':'')+[...groups].map(([stage,ms])=>'<h3 style="margin:16px 0 8px">'+esc(stage).toUpperCase()+' ('+ms.length+')</h3>'+ms.map(x=>{const m=x.payload||{};return '<div class="result-row"><div class="result-teams"><b>'+esc(m.home_coach||'—')+'</b> x <b>'+esc(m.away_coach||'—')+'</b><small>'+esc(x.source_key)+'</small></div><div class="result-score">'+esc(m.home_score)+' – '+esc(m.away_score)+'</div></div>';}).join('')).join('')+'</div></div>';
+ const field=(key,value,label)=>'<label class="field" style="min-width:90px"><span>'+label+'</span><input data-opening-field="'+key+'" value="'+esc(value??'')+'" '+(key.endsWith('_score')?'type="number" min="0" max="999" step="1"':'type="text"')+'></label>';
+ const summary='<button class="btn" id="openingArchiveBack" style="margin-bottom:12px">VOLTAR A JOGOS</button><div class="card"><div class="cardhead"><h2>TORNEIO DE ABERTURA — ARQUIVO OFICIAL</h2><span class="pill">'+rows.length+' JOGOS</span></div><div class="cardbody"><p class="admin-help">Edite os técnicos e placares do arquivo original. As estatísticas do campeonato são calculadas a partir desses jogos.</p>'+(openingAdminError?'<p>'+esc(openingAdminError)+'</p>':'')+[...groups].map(([stage,ms])=>'<h3 style="margin:16px 0 8px">'+esc(stage).toUpperCase()+' ('+ms.length+')</h3>'+ms.map(x=>{const m=x.payload||{};return '<div class="cbpes-admin-archive-row" data-opening-key="'+esc(x.source_key)+'" style="margin-bottom:8px"><div class="inline" style="align-items:end;gap:8px;flex-wrap:wrap">'+field('home_coach',m.home_coach,'TÉCNICO MANDANTE')+field('home_score',m.home_score,'GOLS')+'<b>×</b>'+field('away_score',m.away_score,'GOLS')+field('away_coach',m.away_coach,'TÉCNICO VISITANTE')+'<button type="button" class="btn sm primary" data-opening-save="1">SALVAR</button></div><small>'+esc(x.source_key)+'</small></div>';}).join('')).join('')+'</div></div>';
  $('view').innerHTML=summary;
  $('openingArchiveBack').onclick=()=>{gamesSubView='matches';vJogos();};
+ $('view').onclick=async e=>{
+  const button=e.target.closest('[data-opening-save]');if(!button)return;
+  const row=button.closest('[data-opening-key]'),key=row?.dataset.openingKey;
+  const original=openingAdminArchive.find(x=>x.source_key===key&&x.record_type==='match');if(!original)return say('Partida não encontrada.',false);
+  const payload={...original.payload};
+  for(const input of row.querySelectorAll('[data-opening-field]')){
+   const field=input.dataset.openingField,value=input.value.trim();
+   if(field.endsWith('_score')){if(!/^\\d{1,3}$/.test(value))return say('Informe gols inteiros de 0 a 999.',false);payload[field]=Number(value);}
+   else {if(!value)return say('Informe o nome do técnico.',false);payload[field]=value;}
+  }
+  button.disabled=true;
+  const {data,error}=await sb.from('opening_tournament_archive').update({payload}).eq('source_key',key).eq('edition_id',OPENING_EDITION_ID).eq('record_type','match').select('source_key,payload');
+  button.disabled=false;
+  if(error)return say(traduz(error),false);
+  if(!data?.length)return say('A edição não foi salva no banco. Verifique a permissão de administrador.',false);
+  original.payload=data[0].payload;
+  say('Partida histórica atualizada. As estatísticas públicas serão recalculadas a partir do arquivo.',true);
+ };
 }
 
 let adminCareerMatches = [];
