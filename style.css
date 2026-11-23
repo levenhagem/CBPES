@@ -4688,3 +4688,27 @@ body > #navStatsMenu.nav-competition-menu{
     z-index: 2;
   }
 }
+
+/* Navegação: tipografia mais firme e chevrons minimalistas. */
+body > header #nav > button,
+body > header #nav .nav-competition-wrap > button {
+  font-family: var(--f) !important;
+  font-weight: 800 !important;
+  letter-spacing: .025em !important;
+}
+body > header #nav .nav-competition-wrap > button > span[aria-hidden="true"] {
+  display: inline-block !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-left: 8px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .18s ease;
+  vertical-align: middle;
+}
+body > header #nav .nav-competition-wrap > button[aria-expanded="true"] > span[aria-hidden="true"] {
+  transform: translateY(2px) rotate(225deg);
+}
