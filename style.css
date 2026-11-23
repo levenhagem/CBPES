@@ -5112,3 +5112,6 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 #stats-detail .cbpes-stats-player:has(.cbpes-stats-player-crest){padding-left:44px!important}
 #statsGrid .cbpes-stats-player b:has(.cbpes-stats-player-crest) .rank-position,
 #stats-detail .cbpes-stats-player b:has(.cbpes-stats-player-crest) .rank-position{position:absolute!important;left:12px!important;top:50%!important;transform:translateY(-50%)!important;width:20px!important;text-align:center!important}
+
+/* Barras sem contorno branco, preservando os cantos arredondados. */
+#match .cbpes-report-compare-track{border:0!important;border-radius:999px!important}
