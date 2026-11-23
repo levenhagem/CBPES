@@ -707,19 +707,26 @@ const statsCompetitionMatch=m=>{
 // O Torneio de Abertura possui arquivo histórico completo (grupos + mata-mata).
 // Não combinar seus 93 registros parciais de matches com o arquivo: isso duplica jogos.
 const openingStatMatches=()=>{
+  // O arquivo contém 90 jogos da primeira fase e 30 do mata-mata.
+  // Nos 90 primeiros, os clubes são identificados pelos técnicos do snapshot histórico.
   const standingsRows=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload);
-  const byCoach=new Map(standingsRows.map(x=>[String(x.coach||'').trim().toLocaleLowerCase('pt-BR'),openingTeamName(x.team)]));
+  const coachKey=s=>String(s||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+  const byCoach=new Map(standingsRows.map(x=>[coachKey(x.coach),openingTeamName(x.team)]));
+  const clubs=new Map();
   const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]/g,'');
-  const participantByName=new Map(D.participants.map(p=>[normalize(p.name),p]));
-  const extra=new Map();
   const teamFor=(team,coach)=>{
-    const name=openingTeamName(team||byCoach.get(String(coach||'').trim().toLocaleLowerCase('pt-BR'))||'');
+    const name=openingTeamName(team||byCoach.get(coachKey(coach))||'');
     if(!name)return null;
     const key=normalize(name);
-    if(participantByName.has(key))return participantByName.get(key);
-    if(!extra.has(key))extra.set(key,{id:'opening-archive-'+key,name,coach_name:coach||''});
-    return extra.get(key);
+    if(!clubs.has(key)){
+      const participant=(D.participants||[]).find(p=>normalize(p.name)===key);
+      clubs.set(key,{...(participant||{}),id:'opening-archive-team-'+key,name,coach_name:coach||''});
+    }
+    return clubs.get(key);
   };
+  // Construir participantes exclusivos para esta edição, evitando misturar
+  // clubes atuais com seus registros históricos e garantindo os 30 clubes.
+  standingsRows.forEach(x=>teamFor(x.team,x.coach));
   const matches=openingArchive.filter(x=>x.record_type==='match').map(x=>{
     const p=x.payload||{},home=teamFor(p.home_team,p.home_coach),away=teamFor(p.away_team,p.away_coach);
     const hs=Number(p.home_score),as=Number(p.away_score);
@@ -727,7 +734,8 @@ const openingStatMatches=()=>{
     return {id:'opening-archive-'+x.source_key,category:'official',official_edition_id:openingEditionId,
       home_id:home.id,away_id:away.id,home,away,home_score:hs,away_score:as,played:true};
   }).filter(Boolean);
-  return {matches,participants:[...extra.values()]};
+  if(matches.length!==120||clubs.size!==30)console.warn('Arquivo Torneio de Abertura incompleto:',matches.length,'jogos;',clubs.size,'clubes');
+  return {matches,participants:[...clubs.values()]};
 };
 const statDataCache=new WeakMap();
 const statData=category=>{
