@@ -5040,3 +5040,10 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals.cb
 #match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{width:19px!important;height:19px!important;font-size:19px!important}
 #match .cbpes-report-goals-centered .cbpes-report-goal-column small{font-size:12px!important;font-weight:550!important}
 @media(max-width:600px){#match .cbpes-report-goals-centered .cbpes-report-goal-column{font-size:13px!important;gap:9px!important}#match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{font-size:17px!important;width:17px!important;height:17px!important}}
+
+/* Escudo na artilharia e gols no estilo PES 6. */
+.cbpes-stats-player-team{display:flex!important;align-items:center!important;gap:6px!important}
+.cbpes-stats-player-crest{width:18px!important;height:18px!important;object-fit:contain!important;flex-shrink:0!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column{font-weight:500!important;gap:4px!important;font-size:16px!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column small{font-size:13px!important;font-weight:450!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{font-size:17px!important;width:17px!important;height:17px!important}
