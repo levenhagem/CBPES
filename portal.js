@@ -1433,13 +1433,24 @@ function recordCards(){
 }
 function renderRecords(){
   const root=$('recordsView');if(!root||!D)return;
-  const groups=recordCards();const records=recordGroups.filter(group=>group[0]!=='players').flatMap(group=>groups[group[0]]||[]);
-  root.innerHTML='<div class="cbpes-records-simple">'+records.map((c,i)=>
+  const groups=recordCards();
+  const records=recordGroups.filter(group=>group[0]!=='players').flatMap(group=>groups[group[0]]||[]);
+  const leaders=new Map();
+  records.forEach(card=>card.rows.forEach(x=>{
+    const name=String(x.coach||((x.name&&!x.id&&x.wins!==undefined)?x.name:'')||((x.name&&x.matches)?'':x.name&&x.count!==undefined&&/técnic|semanais|títulos/i.test(card.title)?x.name:'')||'').trim();
+    if(!name)return;
+    const key=name.toLocaleLowerCase('pt-BR'),entry=leaders.get(key)||{name,titles:[]};
+    if(!entry.titles.includes(card.title))entry.titles.push(card.title);
+    leaders.set(key,entry);
+  }));
+  const leaderboard=[...leaders.values()].sort((a,b)=>b.titles.length-a.titles.length||a.name.localeCompare(b.name,'pt-BR'));
+  const recordHtml=records.map(c=>
     '<div class="cbpes-record-line"><div class="cbpes-record-label"><h2>'+esc(c.title)+'</h2></div><div class="cbpes-record-values">'+
     (c.rows.length?c.rows.map(x=>{const item=c.render(x);return '<div class="cbpes-record-value"><div class="cbpes-record-person"><strong>'+item.value+'</strong>'+(item.detail?'<small>'+item.detail+'</small>':'')+'</div><span class="cbpes-record-number">'+esc(item.metric||'')+'</span></div>';}).join(''):'<span class="cbpes-record-empty">Sem dados suficientes</span>')+
-    '</div></div>').join('')+'</div>';
+    '</div></div>').join('');
+  root.innerHTML='<div class="cbpes-records-layout"><div class="cbpes-records-simple">'+recordHtml+'</div><aside class="cbpes-record-leaders"><h2>MAIORES RECORDISTAS</h2><p>Recordes detidos por técnicos</p><table><thead><tr><th>TÉCNICO</th><th>RECORDES</th></tr></thead><tbody>'+leaderboard.map((x,i)=>
+    '<tr><td><details><summary>'+(i+1)+'. '+esc(x.name)+'</summary><div class="cbpes-record-leader-details">'+x.titles.map(t=>'<div>'+esc(t)+'</div>').join('')+'</div></details></td><td>'+x.titles.length+'</td></tr>').join('')+'</tbody></table></aside></div>';
 }
-
 function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
 async function boot() {
   try {
