@@ -99,6 +99,48 @@ function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real)
 }
 // Atualização incremental da Copa Master: mantém os inputs montados e o teclado
 // aberto, recalculando a tabela em cada evento input, sem esperar outra partida.
+
+// Chave da Copa Master: quartas (A1-B2, C1-D2, B1-A2, D1-C2),
+// semifinais (Q1-Q2, Q3-Q4) e final (S1-S2).
+function masterKnockout(edition,phase){
+ if(!state||state.kind!=='official'||!eq(state.id,edition.id))return null;
+ const assignments=(D.officialGroupTeams||[]).filter(a=>eq(a.official_edition_id,edition.id));
+ const groupPhase=(D.phases||[]).find(p=>eq(p.official_edition_id,edition.id)&&p.counts_in_standings);
+ const rounds=(D.rounds||[]).filter(r=>eq(r.phase_id,groupPhase?.id));
+ const roundIds=new Set(rounds.map(r=>String(r.id)));
+ const groupGames=masterProjectedMatches(edition,all().filter(m=>m.category==='official'&&roundIds.has(String(m.round_id))));
+ const hasSimulation=Object.entries(state.scores).some(([id,values])=>values.some(v=>v!=='')&&groupGames.some(m=>String(m.id)===id));
+ if(!hasSimulation)return null;
+ const participants=D.participants.filter(p=>assignments.some(a=>eq(a.participant_id,p.id)));
+ const ranked=standings(participants,groupGames.map(m=>({...m,played:done(m)})));
+ const group=g=>ranked.filter(x=>assignments.some(a=>eq(a.participant_id,x.p.id)&&String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g)).map(x=>x.p);
+ const groups={A:group('A'),B:group('B'),C:group('C'),D:group('D')};
+ const match=(stage,index,home,away)=>{
+  const id='master-ko-'+edition.id+'-'+stage+'-'+index;
+  const scores=state.scores[id]||['',''];
+  const played=!!home&&!!away&&scores.some(v=>v!=='');
+  const hs=played?Number(scores[0]||0):null,as=played?Number(scores[1]||0):null;
+  const winner=played&&hs!==as?(hs>as?home:away):null;
+  return {id,home,away,home_id:home?.id,away_id:away?.id,home_score:hs,away_score:as,played,winner,category:'official',official_edition_id:edition.id,home_coach_name:home?.coach_name,away_coach_name:away?.coach_name,virtualKnockout:true};
+ };
+ const q=[
+  match('q',0,groups.A[0],groups.B[1]),
+  match('q',1,groups.C[0],groups.D[1]),
+  match('q',2,groups.B[0],groups.A[1]),
+  match('q',3,groups.D[0],groups.C[1])
+ ];
+ const semi=[match('s',0,q[0].winner,q[1].winner),match('s',1,q[2].winner,q[3].winner)];
+ const final=[match('f',0,semi[0].winner,semi[1].winner)];
+ const stage=phase.phase_type==='final'?'f':/semi/i.test(phase.name||'')?'s':'q';
+ const fixtures=stage==='f'?final:stage==='s'?semi:q;
+ return '<div class="cbpes-master-sim-knockout">'+fixtures.map((m,index)=>{
+  const label=stage==='q'?'QUARTAS DE FINAL':stage==='s'?'SEMIFINAL':'FINAL';
+  const side=(p,position)=>p?'<div class="cbpes-master-ko-team">'+(typeof crestImg==='function'?crestImg(p):'')+'<span>'+esc(p.name)+'</span></div>':'<div class="cbpes-master-ko-team cbpes-master-ko-pending">A definir</div>';
+  const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state.scores[m.id]||['',''])[side])+'">';
+  return '<div class="cbpes-master-ko-match" data-cbpes-match-id="'+m.id+'"><div class="cbpes-master-ko-label">'+label+' • CONFRONTO '+(index+1)+'</div><div class="cbpes-master-ko-body">'+side(m.home,0)+'<div class="cbpes-master-ko-score">'+(m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'<span>—</span>')+'</div>'+side(m.away,1)+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
+ }).join('')+'</div>';
+}
+
 function updateMasterStandings(){
  if(!state||state.kind!=='official')return false;
  const groups=[...root()?.querySelectorAll('.cbpes-master-group')||[]];
@@ -176,7 +218,7 @@ function updateScore(el,immediate=false){
  if(!state||!el.matches('[data-sim-id]'))return;
  const key=String(el.dataset.simId),original=all().find(m=>eq(m.id,key));
  if(original&&done(original))return;
- if(!original&&!key.startsWith('master-virtual-'))return;
+ if(!original&&!key.startsWith('master-virtual-')&&!key.startsWith('master-ko-'))return;
  const v=el.value.trim(),side=Number(el.dataset.simSide);
  if(v!==''&&!valid(v)){el.value=state.scores[key]?.[side]||'';return;}
  const scores=state.scores[key]||['',''];scores[side]=v;state.scores[key]=scores;
@@ -193,7 +235,7 @@ function updateScore(el,immediate=false){
  };
  // A Copa Master atualiza apenas as linhas da classificação, preservando
  // os quadradinhos e o foco do teclado. Demais competições usam renderização normal.
- if(!updateMasterStandings())refresh();
+ if(key.startsWith('master-ko-')||!updateMasterStandings())refresh();
 }
 document.addEventListener('input',e=>updateScore(e.target));
 // O evento input já atualiza a tabela; change não deve reconstruí-la novamente.
@@ -204,5 +246,26 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state)exit();});
 const css=document.createElement('style');css.textContent='.cbpes-sim-launch{margin:10px 0;padding:7px 12px;border:1px solid var(--line,#ccc);border-radius:5px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-launch.cbpes-sim-active{background:#14784b;color:#fff}.cbpes-sim-inline{display:flex;align-items:center;justify-content:center;gap:4px}.cbpes-sim-inline input{box-sizing:border-box;width:36px;height:32px;border:1px solid #b9c6ca;border-radius:4px;background:#fff;color:#15232b;text-align:center;font-weight:800;font-size:15px;padding:2px;appearance:textfield;-moz-appearance:textfield}.cbpes-sim-inline input::-webkit-inner-spin-button,.cbpes-sim-inline input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#table[data-liga-pro="true"] .cbpes-sim-inline,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline{flex-direction:column;gap:4px}#table[data-liga-pro="true"] .cbpes-sim-colon,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-colon{display:none}#table[data-liga-pro="true"] .cbpes-sim-inline input{height:28px;width:36px}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline input{width:39px;height:31px;background:linear-gradient(135deg,#352c1a,#151616);border:1px solid #c6a45a;color:#fff4d0;box-shadow:inset 0 0 0 1px #655027;border-radius:4px;font-family:inherit;font-size:17px;font-weight:850}#table[data-liga-pro="true"] .cbpes-sim-inline input{background:linear-gradient(135deg,#17478c,#08275b);border:1px solid #6fa5ff;color:#fff;border-radius:4px}#table[data-winning-eleven="true"] .cbpes-sim-inline input{background:#8b1230;border:1px solid #ff6685;color:#fff}.cbpes-match-semanal .cbpes-sim-inline input{background:#0d5638;border:1px solid #6ee1aa;color:#fff}.cbpes-match:not(.cbpes-match-copa-master):not(.cbpes-match-liga-pro):not(.cbpes-match-semanal) .cbpes-sim-inline input{border-color:var(--match-color,#7c9ab1);box-shadow:inset 0 0 0 1px #ffffff45}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-match-score{z-index:4!important;position:relative!important}#cbpes-sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-size:11px;color:var(--muted,#777)}#cbpes-sim-controls button{border:1px solid var(--line,#ccc);border-radius:5px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer;font-weight:700}#table .cbpes-sim-active~* table tbody tr{transition:transform .28s ease,background-color .28s ease}@media(max-width:520px){.cbpes-sim-inline input{width:31px;height:30px;font-size:14px}}';document.head.appendChild(css);
-window.CBPESSimulator={exit,isActive:()=>!!state,virtualMasterGames,masterProjectedMatches,refresh:()=>{if(state&&!rendering)render();}};
+const masterCss=document.createElement('style');masterCss.textContent=`
+#fullTable .cbpes-sim-launch{display:flex;align-items:center;justify-content:center;gap:9px;margin:14px auto 18px;padding:11px 21px;border-radius:999px;border:1px solid #328969;background:linear-gradient(125deg,#126b4b,#16825a);color:white;font-size:12px;font-weight:800;letter-spacing:.055em;box-shadow:0 5px 16px rgba(13,92,62,.16);transition:transform .18s ease,box-shadow .18s ease;cursor:pointer}
+#fullTable .cbpes-sim-launch:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(13,92,62,.24)}
+#fullTable .cbpes-sim-launch.cbpes-sim-active{background:transparent;color:#14784b;box-shadow:none;border-color:#14784b}
+.cbpes-sim-launch svg{width:17px;height:17px;flex:none}
+.cbpes-master-sim-knockout{display:grid;gap:12px;width:100%;max-width:900px;margin:12px auto}
+.cbpes-master-ko-match{border:1px solid var(--line,#d6dce0);border-radius:10px;background:var(--card,#fff);padding:12px 15px}
+.cbpes-master-ko-label{font-size:10px;letter-spacing:.07em;font-weight:800;color:var(--muted,#8b929b);margin-bottom:12px}
+.cbpes-master-ko-body{display:grid;grid-template-columns:minmax(0,1fr) 86px minmax(0,1fr);align-items:center;gap:8px}
+.cbpes-master-ko-team{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;font-weight:700}
+.cbpes-master-ko-team:last-child{justify-content:flex-end;text-align:right;flex-direction:row-reverse}
+.cbpes-master-ko-team img{width:29px;height:29px;object-fit:contain;flex:none}
+.cbpes-master-ko-team span{min-width:0;overflow-wrap:anywhere}
+.cbpes-master-ko-pending{color:var(--muted,#929aa2);font-weight:500}
+.cbpes-master-ko-score{display:flex;justify-content:center}
+.cbpes-master-ko-score .cbpes-sim-inline{flex-direction:row!important;gap:5px!important}
+.cbpes-master-ko-score .cbpes-sim-colon{display:inline!important}
+.cbpes-master-ko-score input{width:34px!important;height:33px!important}
+.cbpes-master-ko-note{font-size:11px;color:var(--muted,#8a9096);text-align:center;margin-top:8px}
+@media(max-width:480px){.cbpes-master-ko-body{grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr);gap:5px}.cbpes-master-ko-team{font-size:11px;gap:4px}.cbpes-master-ko-team img{width:23px;height:23px}.cbpes-master-ko-match{padding:11px 9px}}
+`;document.head.appendChild(masterCss);
+window.CBPESSimulator={exit,isActive:()=>!!state,virtualMasterGames,masterProjectedMatches,masterKnockout,refresh:()=>{if(state&&!rendering)render();}};
 })();
