@@ -174,7 +174,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false) {
       <div class="cbpes-match-score"><span class="cbpes-score-inline">${score}</span><span class="cbpes-score-stacked" aria-label="Placar: ${score}"><span class="${!m.played?'pending':homeWon?'score-winner':'score-normal'}">${m.played?m.home_score:'–'}</span><span class="${!m.played?'pending':awayWon?'score-winner':'score-normal'}">${m.played?m.away_score:'–'}</span></span>${detailHTML}</div>
       <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a>${championTag(m.away_id)}</span><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
     </div>
-    ${(m.category||'official')==='official' ? `<a class="cbpes-match-report-link" href="#match/${encodeURIComponent(m.id)}" aria-label="Ver súmula de ${esc(m.home.name)} contra ${esc(m.away.name)}" title="Ver súmula da partida"><span aria-hidden="true">→</span></a>` : ''}
+    ${(m.category||'official')==='official' ? `<a class="cbpes-match-report-link" href="#match/${encodeURIComponent(m.id)}" aria-label="Ver súmula de ${esc(m.home.name)} contra ${esc(m.away.name)}" title="Ver súmula da partida"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12h13m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>` : ''}
   </div>`;
 }
 
