@@ -4798,3 +4798,29 @@ body > #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible)
 }
 .cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:hover,
 .cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:focus-visible{background:rgba(0,0,0,.08)}
+
+/* Refinamento: seta alongada, sem efeitos hover. */
+.cbpes-match .cbpes-match-report-link{width:37px!important;height:45px!important;right:2px!important;border-radius:0!important;background:transparent!important;transition:none!important}
+.cbpes-match .cbpes-match-report-link svg{width:31px!important;height:22px!important}
+.cbpes-match .cbpes-match-report-link:hover,.cbpes-match .cbpes-match-report-link:focus-visible{background:transparent!important;opacity:1!important;transform:translateY(-50%)!important}
+@media(max-width:700px){.cbpes-match .cbpes-match-report-link{width:29px!important;height:40px!important;right:1px!important}.cbpes-match .cbpes-match-report-link svg{width:26px!important;height:20px!important}}
+/* Súmula compacta com identidade da competição e gols por lado. */
+.cbpes-report-hero{max-width:960px;margin:0 auto 18px;padding:18px 24px 15px!important;border:1px solid rgba(255,255,255,.13);overflow:hidden}
+.cbpes-report-hero.cbpes-report-liga-pro{background:radial-gradient(ellipse 75% 150% at 102% -35%,rgba(61,160,255,.38),transparent 65%),linear-gradient(115deg,#06143d 0%,#08265c 47%,#06449c 100%)!important;border-color:#1754a3;border-left:4px solid #328cff}
+.cbpes-report-hero.cbpes-report-copa-master{background:radial-gradient(ellipse at 95% 8%,rgba(217,168,44,.23),transparent 54%),linear-gradient(110deg,#202124 0%,#30302b 51%,#645021 100%)!important;border-color:#806522;border-left:4px solid #dcae30}
+.cbpes-report-hero .cbpes-report-scoreboard{max-width:680px;margin:13px auto 10px;gap:15px}
+.cbpes-report-hero .cbpes-report-scoreboard>div{gap:4px}
+.cbpes-report-hero .cbpes-report-scoreboard img{max-width:76px;max-height:76px;width:auto;height:auto;object-fit:contain}
+.cbpes-report-hero .cbpes-report-scoreboard a{font-size:18px}
+.cbpes-report-hero .cbpes-report-scoreboard strong{font-size:clamp(30px,5vw,44px)}
+.cbpes-report-hero .cbpes-report-overline{font-size:11px}
+.cbpes-report-goals{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:680px;margin:12px auto 12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2);font-size:12px}
+.cbpes-report-goals-home,.cbpes-report-goals-away{display:flex;flex-direction:column;gap:7px}
+.cbpes-report-goals-home{align-items:flex-end;text-align:right}
+.cbpes-report-goals-away{align-items:flex-start;text-align:left}
+.cbpes-report-scorer{display:flex;align-items:center;gap:7px;min-height:17px;font-weight:600}
+.cbpes-report-goals-home .cbpes-report-scorer{flex-direction:row-reverse}
+.cbpes-report-scorer small{opacity:.75;font-size:11px}
+.cbpes-report-ball{font-size:12px;line-height:1}
+.cbpes-report-stats-card{max-width:960px;margin:0 auto}
+@media(max-width:700px){.cbpes-report-hero{padding:15px 12px 13px!important}.cbpes-report-hero .cbpes-report-scoreboard{margin:13px auto 10px;gap:8px}.cbpes-report-hero .cbpes-report-scoreboard img{max-width:58px;max-height:58px}.cbpes-report-hero .cbpes-report-scoreboard a{font-size:14px}.cbpes-report-goals{gap:10px;font-size:11px}.cbpes-report-scorer{gap:4px}}
