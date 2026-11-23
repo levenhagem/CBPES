@@ -97,6 +97,46 @@ function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real)
  }
  return virtual;
 }
+// Atualização incremental da Copa Master: mantém os inputs montados e o teclado
+// aberto, recalculando a tabela em cada evento input, sem esperar outra partida.
+function updateMasterStandings(){
+ if(!state||state.kind!=='official')return false;
+ const groups=[...root()?.querySelectorAll('.cbpes-master-group')||[]];
+ if(!groups.length)return false;
+ const edition=D.officialEditions.find(e=>eq(e.id,state.id));
+ if(!edition)return false;
+ const assignments=(D.officialGroupTeams||[]).filter(a=>eq(a.official_edition_id,edition.id));
+ const phase=(D.phases||[]).find(p=>eq(p.official_edition_id,edition.id)&&p.counts_in_standings);
+ const roundIds=new Set((D.rounds||[]).filter(r=>eq(r.phase_id,phase?.id)).map(r=>String(r.id)));
+ const actual=all().filter(m=>m.category==='official'&&roundIds.has(String(m.round_id)));
+ const projectedMatches=masterProjectedMatches(edition,actual).map(m=>({
+  ...m,played:done(m),home_score:done(m)?Number(m.home_score):null,away_score:done(m)?Number(m.away_score):null
+ }));
+ const ids=new Set(assignments.map(a=>String(a.participant_id)));
+ const ranking=standings(D.participants.filter(p=>ids.has(String(p.id))),projectedMatches);
+ const byTeam=new Map(ranking.map(x=>[String(x.p.id),x]));
+ const cells=x=>[x.pts,x.j,x.v,x.e,x.d,x.gp,x.gc,typeof sgf==='function'?sgf(x.sg):x.sg,x.ap];
+ for(const group of groups){
+  const name=group.querySelector('.cbpes-master-group-label b')?.textContent?.trim().toUpperCase();
+  if(!name)continue;
+  const members=new Set(assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===name).map(a=>String(a.participant_id)));
+  const ranked=ranking.filter(x=>members.has(String(x.p.id)));
+  const tbody=group.querySelector('tbody');
+  if(!tbody)continue;
+  const rows=new Map([...tbody.querySelectorAll('tr[data-master-team-id]')].map(tr=>[tr.dataset.masterTeamId,tr]));
+  ranked.forEach((x,index)=>{
+   const tr=rows.get(String(x.p.id));if(!tr)return;
+   const tds=[...tr.children];
+   const values=cells(x);
+   values.forEach((value,j)=>{if(tds[j+2]&&tds[j+2].textContent!==String(value))tds[j+2].textContent=String(value);});
+   const rank=tr.querySelector('.cbpes-master-group-rank');if(rank)rank.textContent=String(index+1);
+   const form=tr.querySelector('.cbpes-master-form');
+   if(form&&typeof formDots==='function')form.innerHTML=formDots(x.p.id,projectedMatches.filter(m=>members.has(String(m.home_id))||members.has(String(m.away_id))));
+   tbody.appendChild(tr);
+  });
+ }
+ return true;
+}
 function render(){
  if(!state||!root()||rendering)return;
  const old=D.matches,proj=projected(),byId=new Map(proj.map(m=>[String(m.id),m]));
@@ -151,8 +191,9 @@ function updateScore(el,immediate=false){
    if(next){next.focus({preventScroll:true});try{next.setSelectionRange?.(next.value.length,next.value.length);}catch(_){}}
   }
  };
- // Atualiza após cada digitação, inclusive quando apenas um lado possui gols.
- refresh();
+ // A Copa Master atualiza apenas as linhas da classificação, preservando
+ // os quadradinhos e o foco do teclado. Demais competições usam renderização normal.
+ if(!updateMasterStandings())refresh();
 }
 document.addEventListener('input',e=>updateScore(e.target));
 // O evento input já atualiza a tabela; change não deve reconstruí-la novamente.
