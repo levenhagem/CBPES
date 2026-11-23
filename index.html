@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBPES | Portal Oficial</title>
-<link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=cbpes-five-cards-no-blank-20261123-11">
+<link rel="icon" href="favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=cbpes-trophies-rounds-20261123-15">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
 <style>
 /* Estilo crítico: impede o layout sem CSS e os cards vazios durante a inicialização. */
@@ -20,7 +20,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
- <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a></div></div></nav>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a><a href="#trophies">SALA DE TROFÉUS</a></div></div></nav>
  <span class="season" id="season"></span>
 </div></header>
 <main>
@@ -65,6 +65,8 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 
 <section id="records" class="section"><div class="page-title"><div><div class="eyebrow">Livro dos recordes</div><h1>Recordes</h1><div class="sub">Marcas históricas de partidas, clubes, técnicos e competições.</div></div></div><div id="recordsView"></div></section>
 
+<section id="trophies" class="section"><div class="page-title"><div><div class="eyebrow">Conquistas da CBPES</div><h1>Sala de Troféus</h1><div class="sub">Títulos oficiais, semanais e conquistas especiais dos técnicos.</div></div></div><div id="trophiesView"></div></section>
+
 <section id="stats-detail" class="section"><div id="statsDetailView"></div></section>
 
 <section id="weeklies" class="section">
@@ -80,5 +82,5 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="lib.js?v=cbpes-records-weekly-20261123-10"></script>
-<script src="portal.js?v=cbpes-strip-sync-20261123-14"></script>
+<script src="portal.js?v=cbpes-trophies-rounds-20261123-15"></script>
 </body></html>
