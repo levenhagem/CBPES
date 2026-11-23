@@ -105,8 +105,16 @@ function champion(D) {
 }
 // Ordem de publicação do resultado, não a data histórica da partida.
 function matchResultOrder(a,b){
- const aTime=String(a.result_registered_at||a.created_at||'');
- const bTime=String(b.result_registered_at||b.created_at||'');
+ // Resultados históricos importados em lote recebem o mesmo horário da criação;
+ // nesse caso a data da partida é o desempate cronológico confiável.
+ const effectiveTime=m=>{
+   const registered=String(m.result_registered_at||'');
+   const created=String(m.created_at||'');
+   if(registered&&registered!==created)return registered;
+   return m.date?String(m.date).slice(0,10)+'T23:59:59':registered||created;
+ };
+ const aTime=effectiveTime(a);
+ const bTime=effectiveTime(b);
  return bTime.localeCompare(aTime)
    ||String(b.created_at||'').localeCompare(String(a.created_at||''))
    ||(Number(b.seq)||0)-(Number(a.seq)||0)
