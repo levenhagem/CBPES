@@ -5141,3 +5141,8 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
   border:0!important;border-radius:0!important;box-shadow:none!important;
   outline:0!important;padding:0!important;color:inherit!important;
 }
+
+/* Relatório de partida: todos os números e percentuais em branco, independente da cor do clube. */
+#match .cbpes-report-stats-card .cbpes-report-stat-heading b:first-child,
+#match .cbpes-report-stats-card .cbpes-report-stat-heading b:last-child,
+#match .cbpes-report-stat-heading b{color:#fff!important;-webkit-text-fill-color:#fff!important}
