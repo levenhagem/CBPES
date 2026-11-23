@@ -110,7 +110,7 @@ function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
-  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));const name=String(c?.name||e.name||'');const tint=/copa\s*master/i.test(name)?'#d8ad46':/liga\s*pro/i.test(name)?'#2b8ae8':/winning\s*eleven/i.test(name)?'#d83c3c':/liga\s*evo/i.test(name)?'#35b98c':'#7895b2';return '<a class="cbpes-nav-competition-entry" style="--competition-tint:'+tint+'" href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
+  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option" style="--competition-tint:#15995c">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));const name=String(c?.name||e.name||'');const tint=/copa\s*master/i.test(name)?'#d8ad46':/liga\s*pro/i.test(name)?'#2b8ae8':/winning\s*eleven/i.test(name)?'#d83c3c':/liga\s*evo/i.test(name)?'#35b98c':'#7895b2';return '<a class="cbpes-nav-competition-entry" style="--competition-tint:'+tint+'" href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
@@ -622,7 +622,9 @@ function renderTable() {
     // somente DEPOIS do cálculo global de pontos, gols e saldo.
     const gm=masterStandingsMatches.filter(m=>teamIds.has(String(m.home_id))||teamIds.has(String(m.away_id)));
     const ranking=masterGlobalRanking.filter(x=>teamIds.has(String(x.p.id)));
-    const slots=Array.from({length:Math.max(masterSlots,ranking.length)},(_,i)=>ranking[i]||null);
+    const registered=groupAssignments.map(a=>D.participants.find(t=>String(t.id)===String(a.participant_id))).filter(Boolean);
+    const completedRanking=ranking.concat(registered.filter(t=>!ranking.some(x=>String(x.p.id)===String(t.id))).map(t=>({p:t,pts:0,j:0,v:0,e:0,d:0,gp:0,gc:0,sg:0,ap:0})));
+    const slots=Array.from({length:Math.max(masterSlots,completedRanking.length)},(_,i)=>completedRanking[i]||null);
     return '<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header"><span class="cbpes-master-group-heading"><span class="cbpes-master-group-label">GRUPO <b>'+g+'</b></span></span></div><div class="cbpes-master-group-scroll"><table class="table cbpes-master-group-table"><thead><tr><th class="cbpes-master-position"></th><th class="cbpes-master-club"></th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th><th>FORMA</th></tr></thead><tbody>'+
       slots.map((x,i)=>{
         const n=i+1,qualified=!!zoneAt(masterGroupZones,n);
