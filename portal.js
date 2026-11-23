@@ -241,7 +241,7 @@ function renderHome() {
   // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
   const sl = played.slice(0,6);
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
-  const m = played.find(x=>x.is_featured) || D.matches.find(x=>x.is_featured && x.played) || played[0];
+  const m = played[0];
   const featured = !!m?.is_featured;
   const featuredEdition=(D.officialEditions||[]).find(e=>String(e.id)===String(m?.official_edition_id));
   const featuredCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(featuredEdition?.competition_id));
@@ -323,7 +323,15 @@ function renderGames() {
     return String(b.created_at||'').localeCompare(String(a.created_at||''))
       ||(Number(b.seq)||0)-(Number(a.seq)||0);
   });
-  const timelineHtml = chronological.map(m=>matchRow(m,false,true)).join('');
+  const timelineHtml = chronological.map(m=>{
+    const registered=String(m.result_registered_at||m.created_at||'');
+    const date=registered?new Date(registered):null;
+    const dateLabel=date&&!Number.isNaN(date.getTime())
+      ?date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:'America/Sao_Paulo'})
+      :(m.date?fd(m.date).slice(0,5):'SEM DATA');
+    const kind=m.category==='friendly'?'AMISTOSO':m.category==='weekly'?'SEMANAL':'OFICIAL';
+    return '<div class="cbpes-games-chronological-item"><div class="cbpes-games-registration-label">'+kind+' · REGISTRADO EM '+dateLabel+'</div>'+matchRow(m,false,true)+'</div>';
+  }).join('');
   $('gamesList').innerHTML = timelineHtml || empty('Nenhuma partida encontrada.');
 }
 
