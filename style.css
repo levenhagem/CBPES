@@ -5146,3 +5146,7 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 #match .cbpes-report-stats-card .cbpes-report-stat-heading b:first-child,
 #match .cbpes-report-stats-card .cbpes-report-stat-heading b:last-child,
 #match .cbpes-report-stat-heading b{color:#fff!important;-webkit-text-fill-color:#fff!important}
+
+/* Linha do tempo única da aba Jogos: data do registro acima de cada confronto. */
+.cbpes-games-chronological-item{margin-bottom:14px}
+.cbpes-games-registration-label{font-size:10px;font-weight:700;letter-spacing:.055em;color:#667581;margin:0 0 5px 3px;text-transform:uppercase}
