@@ -704,15 +704,19 @@ function archivedFriendlies(){
   unique.add(String(m.source_key||m.id));return true;
  }).sort((a,b)=>String(b.played_on||'').localeCompare(String(a.played_on||''))||String(b.source_key||'').localeCompare(String(a.source_key||'')));
 }
+let friendlyCoachFilter='all';
 function vJogos() {
   if(gamesSubView==='editor')return vMatchEditor();
   if(gamesSubView==='reports')return vSumulas();
   const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><button class="btn cbpes-report-tab" data-open-reports="1"><iconify-icon icon="lucide:clipboard-list"></iconify-icon> SÚMULAS OFICIAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
   if (activeCategory === 'friendly') {
-    const ms = curMatches();
+    const coachNames=[...new Set([...adminCareerMatches.flatMap(m=>[m.home_coach,m.away_coach]),...curMatches().flatMap(m=>[m.home_coach_name,m.away_coach_name])].map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const coachFilter='<div class="card" style="margin-bottom:12px"><div class="cardbody inline"><label for="friendlyCoachFilter"><strong>FILTRAR POR TÉCNICO</strong></label><select id="friendlyCoachFilter"><option value="all">TODOS OS TÉCNICOS</option>'+coachNames.map(name=>'<option value="'+esc(name)+'"'+(friendlyCoachFilter===name?' selected':'')+'>'+esc(name)+'</option>').join('')+'</select></div></div>';
+    const coachMatches=m=>friendlyCoachFilter==='all'||[m.home_coach,m.away_coach,m.home_coach_name,m.away_coach_name].some(name=>String(name||'').toLocaleLowerCase('pt-BR')===friendlyCoachFilter.toLocaleLowerCase('pt-BR'));
+    const ms = curMatches().filter(coachMatches);
     const form = `<div class="card" style="margin-bottom:12px"><div class="cardhead"><h2>NOVO AMISTOSO</h2></div><div class="cardbody"><div class="inline"><div class="field"><label>Mandante</label><select id="fh">${opts(D.participants,null,p=>p.name)}</select></div><span>x</span><div class="field"><label>Visitante</label><select id="fa">${opts(D.participants,null,p=>p.name)}</select></div><div class="field"><label>Data</label><input type="date" id="fdt" value="${today()}"></div><button class="btn primary" data-fadd="1">CADASTRAR AMISTOSO</button></div></div></div>`;
     const rows = ms.length ? ms.map(rowHTML).join('') : '<div class="empty">Nenhum amistoso cadastrado.</div>';
-    const archive=archivedFriendlies();
+    const archive=archivedFriendlies().filter(coachMatches);
     const competitionOptions=(D.officialCompetitions||[]).map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
     const historicalRows=archive.map(m=>{
       const selected=String(m.official_competition_id||'');
@@ -720,7 +724,8 @@ function vJogos() {
       return '<div class="cbpes-admin-archive-row"><div><strong>'+esc(m.home_club||m.home_coach)+' '+esc(m.home_score)+' × '+esc(m.away_score)+' '+esc(m.away_club||m.away_coach)+'</strong><div class="admin-help">'+esc(m.home_coach)+' × '+esc(m.away_coach)+' · '+esc(m.played_on||'Sem data')+'</div></div><div class="cbpes-archive-competition-editor"><label class="admin-help" for="career-comp-'+esc(m.id)+'">COMPETIÇÃO</label><select id="career-comp-'+esc(m.id)+'" data-archive-competition="'+esc(m.id)+'">'+options+'</select><button type="button" class="btn" data-save-archive-competition="'+esc(m.id)+'">SALVAR</button></div></div>';
     }).join('');
 
-    $('view').innerHTML = switcher + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div><div class="card"><div class="cardhead"><h2>AMISTOSOS DO HISTÓRICO DOS TÉCNICOS (${archive.length})</h2><small class="admin-help">EDIÇÃO DE COMPETIÇÃO ATIVA · 23/11</small></div><div class="cardbody">${historicalRows||'<div class="empty">Nenhum amistoso histórico.</div>'}</div></div>`;
+    $('view').innerHTML = switcher + coachFilter + form + `<div class="card"><div class="cardhead"><h2>AMISTOSOS CADASTRADOS (${ms.length})</h2></div><div class="cardbody">${rows}</div></div><div class="card"><div class="cardhead"><h2>AMISTOSOS DO HISTÓRICO DOS TÉCNICOS (${archive.length})</h2><small class="admin-help">EDIÇÃO DE COMPETIÇÃO ATIVA · 23/11</small></div><div class="cardbody">${historicalRows||'<div class="empty">Nenhum amistoso histórico.</div>'}</div></div>`;
+    $('view').onchange=e=>{if(e.target.id==='friendlyCoachFilter'){friendlyCoachFilter=e.target.value;vJogos();}};
     $('view').onkeydown=e=>{if(e.key==='Enter'&&e.target.dataset.m)saveOne(e.target.dataset.m)};
     $('view').onclick=async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
       if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
