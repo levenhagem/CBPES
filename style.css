@@ -4909,8 +4909,9 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 
 
 /* Link DETALHES centralizado na base dos cards de rodadas. */
-#table .cbpes-match:has(.cbpes-match-report-details){padding-right:initial!important;padding-bottom:32px!important;position:relative!important}
-#table .cbpes-match-report-link.cbpes-match-report-details{position:absolute!important;top:auto!important;bottom:5px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;display:inline-flex!important;justify-content:center!important;align-items:center!important;white-space:nowrap!important;z-index:3!important}
+#table .cbpes-match:has(.cbpes-match-report-details){padding-right:initial!important;padding-bottom:0!important;position:relative!important}
+#table .cbpes-match-report-link.cbpes-match-report-details{position:absolute!important;top:50%!important;bottom:auto!important;left:50%!important;right:auto!important;transform:translate(-50%,-50%)!important;display:inline-flex!important;justify-content:center!important;align-items:center!important;white-space:nowrap!important;z-index:3!important;text-decoration:underline!important;text-underline-offset:3px!important}
+#table .cbpes-match-report-link.cbpes-match-report-details:hover{transform:translate(-50%,-50%)!important;opacity:.78!important}
 #table .cbpes-match-team.away .featured-juventus-name-row>.featured-juventus-champion{order:2!important;margin-left:3px!important}
 
 .cbpes-friendly-reclassify{display:inline-flex;align-items:center;flex-wrap:wrap;gap:7px;max-width:100%}
@@ -4986,3 +4987,18 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 .cbpes-admin-ui .cbpes-admin-report-tabs{border-top:1px solid #e1e9e4;border-radius:10px;margin:15px 0}
 .cbpes-admin-ui .cbpes-admin-report-panel[hidden]{display:none!important}
 @media(max-width:620px){.cbpes-admin-ui .cbpes-admin-editor-hero{grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);padding:18px 10px}.cbpes-admin-ui .cbpes-admin-editor-hero>span{font-size:13px}.cbpes-admin-ui .cbpes-admin-editor-hero>strong{font-size:21px}.cbpes-admin-ui .cbpes-admin-editor-tabs button{flex:1 1 auto;justify-content:center;padding:9px 8px;font-size:11px}.cbpes-admin-ui .cbpes-admin-editor-score{gap:4px}}
+
+/* Teste de visual contínuo da súmula Liga PRO: sem cartões ou retângulos. */
+body.cbpes-report-page-liga-pro{background:linear-gradient(180deg,#061634 0%,#09265b 30%,#103e87 61%,#09265a 83%,#05142f 100%)!important;background-attachment:fixed!important}
+body.cbpes-report-page-liga-pro #match{background:transparent!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-hero.cbpes-report-liga-pro{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:100%!important;margin:0 auto!important;padding:27px 20px 29px!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals{border-top:1px solid rgba(209,228,255,.25)!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card{max-width:960px!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;margin:0 auto!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead{background:transparent!important;border:0!important;border-top:1px solid rgba(205,225,255,.28)!important;border-radius:0!important;padding:22px 10px 14px!important;text-align:center!important;justify-content:center!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead h2{color:#fff!important;font-size:14px!important;letter-spacing:.13em!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardbody{background:transparent!important;border:0!important;padding:12px clamp(8px,4vw,42px) 30px!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-mvp{max-width:960px!important;margin:0 auto 25px!important;border:0!important;border-top:1px solid rgba(205,225,255,.28)!important;border-radius:0!important;background:transparent!important;text-align:center!important;padding:22px 10px!important;color:#eaf3ff!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stat{border:0!important}
+#match .cbpes-report-ball{display:inline-flex;align-items:center;justify-content:center;font-size:15px}
+#match .cbpes-report-ball iconify-icon{display:block;width:16px;height:16px;font-size:16px}
+@media(max-width:700px){body.cbpes-report-page-liga-pro #match .cbpes-report-hero.cbpes-report-liga-pro{padding:20px 8px 25px!important}body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardbody{padding:12px 5px 25px!important}}
