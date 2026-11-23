@@ -241,7 +241,7 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = played.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'') || (b.date||'').localeCompare(a.date||'')).slice(0,5);
+  const recentHome = played.slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
@@ -305,9 +305,9 @@ function renderGames() {
   const visibleGames=ms.filter(m=>m.category!=='official'||filter==='next'||!m.round_id||officialRoundsWithResults.has(String(m.round_id)));
   const chronological = visibleGames.slice().sort((a,b)=>{
     if(Boolean(a.played)!==Boolean(b.played))return a.played?-1:1;
-    const createdA=String(a.created_at||''),createdB=String(b.created_at||'');
-    if(createdA!==createdB)return createdB.localeCompare(createdA);
-    return (Number(b.seq)||0)-(Number(a.seq)||0);
+    if(a.played&&b.played)return matchResultOrder(a,b);
+    return String(b.created_at||'').localeCompare(String(a.created_at||''))
+      ||(Number(b.seq)||0)-(Number(a.seq)||0);
   });
   const timelineHtml = chronological.map(m=>matchRow(m,false,true)).join('');
   $('gamesList').innerHTML = timelineHtml || empty('Nenhuma partida encontrada.');
