@@ -104,18 +104,13 @@ function champion(D) {
   return ties.length === 1 && ties[0].winner ? ties[0].winner : null;
 }
 // Ordem de publicação do resultado, não a data histórica da partida.
+// Linha do tempo: priorizar o instante em que o resultado foi registrado,
+// independentemente da data em que a partida ocorreu ou de sua competição.
+function matchRegistrationTime(m){
+ return String(m.result_registered_at||m.created_at||m.date||'');
+}
 function matchResultOrder(a,b){
- // Resultados históricos importados em lote recebem o mesmo horário da criação;
- // nesse caso a data da partida é o desempate cronológico confiável.
- const effectiveTime=m=>{
-   const registered=String(m.result_registered_at||'');
-   const created=String(m.created_at||'');
-   if(registered&&registered!==created)return registered;
-   return m.date?String(m.date).slice(0,10)+'T23:59:59':registered||created;
- };
- const aTime=effectiveTime(a);
- const bTime=effectiveTime(b);
- return bTime.localeCompare(aTime)
+ return matchRegistrationTime(b).localeCompare(matchRegistrationTime(a))
    ||String(b.created_at||'').localeCompare(String(a.created_at||''))
    ||(Number(b.seq)||0)-(Number(a.seq)||0)
    ||String(b.id||'').localeCompare(String(a.id||''));
