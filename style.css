@@ -5023,3 +5023,20 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead h2{fon
 .cbpes-admin-ui .cbpes-goalkeeper-saves{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #e4e9ed;border-bottom:1px solid #e4e9ed;font-size:12px}
 .cbpes-admin-ui .cbpes-goalkeeper-saves span{font-weight:800}
 @media(max-width:620px){.cbpes-admin-ui .cbpes-goalkeepers-admin{grid-template-columns:1fr}}
+
+/* Súmula: um único ícone central entre as duas listas de artilheiros. */
+body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals.cbpes-report-goals-centered,
+#match .cbpes-report-hero .cbpes-report-goals.cbpes-report-goals-centered{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr)!important;
+  align-items:center!important;justify-items:stretch!important;gap:12px!important;
+  border:0!important;border-top:0!important;border-bottom:0!important;
+  box-shadow:none!important;padding:0!important;margin:15px auto 0!important;
+  max-width:680px!important
+}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column{display:flex!important;flex-direction:column!important;gap:10px!important;font-size:15px!important;font-weight:700!important;line-height:1.35!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-home{text-align:right!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-away{text-align:left!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center{align-self:center!important;justify-self:center!important;display:flex!important;align-items:center!important;justify-content:center!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{width:19px!important;height:19px!important;font-size:19px!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column small{font-size:12px!important;font-weight:550!important}
+@media(max-width:600px){#match .cbpes-report-goals-centered .cbpes-report-goal-column{font-size:13px!important;gap:9px!important}#match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{font-size:17px!important;width:17px!important;height:17px!important}}
