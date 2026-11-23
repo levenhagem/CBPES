@@ -1598,7 +1598,7 @@ function renderTrophyRoom(){
       '<div class="cbpes-trophy-ranking-achievements">'+coach.items.map(t=>'<div class="cbpes-trophy-ranking-achievement">'+esc(trophyLabel(t))+'</div>').join('')+'</div>'+
       '</div>').join('')+'</div>':empty('Nenhum troféu registrado até o momento.');
 }
-function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); if(window.CBPESBelts)CBPESBelts.renderPublic(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'TEMPORADA ' + SET.season; }
+function renderAll() { renderNavCompetitions(); renderHome(); renderGames(); renderTable(); renderWeeklies(); renderStats(); renderRecords(); renderTrophyRoom(); if(window.CBPESBelts)CBPESBelts.renderPublic(); const raw=location.hash.slice(1), parts=raw.split('/'); if(parts[1]){const value=decodeURIComponent(parts.slice(1).join('/'));if(parts[0]==='participant')renderParticipant(value);if(parts[0]==='team')renderTeam(value);if(parts[0]==='coach')renderCoach(value);if(parts[0]==='stats-detail')renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));} $('season').textContent = 'COMMITS #01'; }
 async function boot() {
   try {
     if (CBPES.url.startsWith('COLE')) throw new Error('config.js ainda não foi preenchido.');
