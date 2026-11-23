@@ -4781,3 +4781,20 @@ body > #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible)
 .cbpes-report-bars i:last-child{background:#1b648b}
 .cbpes-report-mvp{margin-top:16px;padding:18px;background:#e6f5e9;border-left:4px solid #078a45;font-size:13px}
 @media(max-width:700px){.cbpes-report-grid{grid-template-columns:1fr}.cbpes-report-scoreboard a{font-size:15px}.cbpes-report-scoreboard .crest,.cbpes-report-scoreboard img{max-width:48px;max-height:48px}.cbpes-report-hero{padding:22px 12px}}
+
+/* Seta minimalista da súmula: branca em cards escuros, preta em cards claros. */
+.cbpes-match .cbpes-match-report-link,
+.cbpes-match .cbpes-match-report-link:hover,
+.cbpes-match .cbpes-match-report-link:focus-visible{
+  color:#fff!important;
+}
+.cbpes-match .cbpes-match-report-link svg{display:block;width:17px;height:17px;flex:none}
+.cbpes-match .cbpes-match-report-link:hover,
+.cbpes-match .cbpes-match-report-link:focus-visible{background:rgba(255,255,255,.14)}
+.cbpes-competition-neutral .cbpes-match .cbpes-match-report-link,
+.cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:hover,
+.cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:focus-visible{
+  color:#111!important;
+}
+.cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:hover,
+.cbpes-competition-neutral .cbpes-match .cbpes-match-report-link:focus-visible{background:rgba(0,0,0,.08)}
