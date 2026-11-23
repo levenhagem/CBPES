@@ -36,12 +36,12 @@ function koSpec(ids, cfg) { // ids em ordem de chave: (0x1), (2x3)...
 }
 
 async function load() {
-  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'competition_phases', 'coach_profiles', 'coach_trophies', 'standings_zones', 'official_competitions', 'official_editions'];
+  const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'competition_phases', 'coach_profiles', 'coach_trophies', 'standings_zones', 'official_competitions', 'official_editions', 'stadiums', 'match_statistics'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const groupRes = await sb.from('official_group_teams').select('*');
   if(groupRes.error && !/does not exist|schema cache|could not find/i.test(groupRes.error.message||''))throw groupRes.error;
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
-  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, phases, coachProfiles, coachTrophies, standingsZones, officialCompetitions, officialEditions] = res.map(x => x.data);
+  const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, phases, coachProfiles, coachTrophies, standingsZones, officialCompetitions, officialEditions, stadiums, matchStatistics] = res.map(x => x.data);
   p.sort((a, b) => a.name.localeCompare(b.name)); r.sort((a, b) => a.number - b.number);
   if (s[0]) SET = s[0];
   const P = Object.fromEntries(p.map(x => [x.id, x])), R = Object.fromEntries(r.map(x => [x.id, x])), WR = Object.fromEntries((weeklyRounds || []).map(x => [x.id, x])), PH = Object.fromEntries((phases || []).map(x => [x.id, x]));
@@ -55,7 +55,7 @@ async function load() {
     date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
   })).filter(x => x.home && x.away).sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.seq || 0) - (b.seq || 0));
   const players = pl.map(x => ({ ...x, team: P[x.participant_id] })).filter(x => x.team).sort((a, b) => a.name.localeCompare(b.name));
-  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, phases: phases || [], weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], standingsZones: standingsZones || [], officialCompetitions: officialCompetitions || [], officialEditions: officialEditions || [], officialGroupTeams: groupRes.data || [], settings: SET };
+  return { participants: p, rounds: r, matches, players, events: ev, coachHistory, phases: phases || [], weeklies: (weeklies || []).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')), weeklyParticipants: weeklyParticipants || [], weeklyRounds: weeklyRounds || [], coachProfiles: coachProfiles || [], coachTrophies: coachTrophies || [], standingsZones: standingsZones || [], officialCompetitions: officialCompetitions || [], officialEditions: officialEditions || [], officialGroupTeams: groupRes.data || [], stadiums: stadiums || [], matchStatistics: matchStatistics || [], settings: SET };
 }
 
 // Desempate: pontos, vitórias, saldo, gols pró, nome.
@@ -174,6 +174,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false) {
       <div class="cbpes-match-score"><span class="cbpes-score-inline">${score}</span><span class="cbpes-score-stacked" aria-label="Placar: ${score}"><span class="${!m.played?'pending':homeWon?'score-winner':'score-normal'}">${m.played?m.home_score:'–'}</span><span class="${!m.played?'pending':awayWon?'score-winner':'score-normal'}">${m.played?m.away_score:'–'}</span></span>${detailHTML}</div>
       <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a>${championTag(m.away_id)}</span><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
     </div>
+    ${(m.category||'official')==='official' ? `<a class="cbpes-match-report-link" href="#match/${encodeURIComponent(m.id)}" aria-label="Ver súmula de ${esc(m.home.name)} contra ${esc(m.away.name)}">VER SÚMULA DA PARTIDA →</a>` : ''}
   </div>`;
 }
 
