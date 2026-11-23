@@ -5014,3 +5014,12 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-stat{border:0!important}
 body.cbpes-report-page-liga-pro #match .cbpes-report-goals-centered{border:0!important}
 body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead h2{font-weight:900!important}
 @media(max-width:650px){#match .cbpes-report-goal-row{gap:5px;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);font-size:11px}#match .cbpes-report-goal-center iconify-icon{font-size:14px;width:14px;height:14px}}
+
+/* Seleção de goleiros e defesas automáticas na súmula administrativa. */
+.cbpes-admin-ui .cbpes-goalkeepers-admin{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:4px 0 14px}
+.cbpes-admin-ui .cbpes-goalkeepers-admin>div{display:flex;flex-direction:column;gap:7px;min-width:0}
+.cbpes-admin-ui .cbpes-goalkeepers-admin label{font-size:11px;font-weight:800;color:#61717d}
+.cbpes-admin-ui .cbpes-goalkeepers-admin select{width:100%}
+.cbpes-admin-ui .cbpes-goalkeeper-saves{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #e4e9ed;border-bottom:1px solid #e4e9ed;font-size:12px}
+.cbpes-admin-ui .cbpes-goalkeeper-saves span{font-weight:800}
+@media(max-width:620px){.cbpes-admin-ui .cbpes-goalkeepers-admin{grid-template-columns:1fr}}
