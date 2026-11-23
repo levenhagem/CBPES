@@ -156,7 +156,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const homeWon = m.played && (m.home_score > m.away_score || (winnerByPens&&m.home_pen>m.away_pen));
   const awayWon = m.played && (m.away_score > m.home_score || (winnerByPens&&m.away_pen>m.home_pen));
   const category = m.category === 'weekly' ? 'SEMANAL' : m.category === 'friendly' ? 'AMISTOSO' : 'OFICIAL';
-  const championTag = id => String(m.champion_team_id||'')===String(id) ? '<span class="featured-juventus-champion">CAMPEÃO</span>' : '';
+  const championTag = id => String(m.champion_team_id||'')===String(id) ? '<span class="featured-juventus-champion cbpes-champion-icon" role="img" aria-label="Campeão" title="Campeão"><iconify-icon icon="at-icons:trophy" aria-hidden="true"></iconify-icon></span>' : '';
   const color = matchColor(m);
   const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
   const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
