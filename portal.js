@@ -241,7 +241,7 @@ function renderHome() {
   // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
   const sl = played.slice(0,10);
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') + '<a class="sc-end" href="#games">TODOS OS JOGOS →</a>' : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
-  const m = played.find(x=>x.is_featured) || played.find(x=>x.category==='official') || played[0];
+  const m = played.find(x=>x.category==='official') || played[0];
   const featured = !!m?.is_featured;
   const featuredEdition=(D.officialEditions||[]).find(e=>String(e.id)===String(m?.official_edition_id));
   const featuredCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(featuredEdition?.competition_id));
