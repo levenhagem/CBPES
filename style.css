@@ -5054,3 +5054,15 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals.cb
 .cbpes-admin-ui .cbpes-stats-image-import small{font-size:11px;color:#657a70}
 .cbpes-admin-ui .cbpes-stats-image-import label.btn{cursor:pointer}
 .cbpes-admin-ui #reportImageStatus{flex-basis:100%;font-size:11px;color:#226a45}
+
+/* Artilharia: coluna de posição independente do bloco nome/clube. */
+#statsGrid .cbpes-stats-player,#stats-detail .cbpes-stats-player{position:relative!important;padding-left:44px!important;border-left:3px solid var(--cbpes-team-accent,#186a55)!important}
+#statsGrid .cbpes-stats-player>div,#stats-detail .cbpes-stats-player>div{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:3px!important}
+#statsGrid .cbpes-stats-player b,#stats-detail .cbpes-stats-player b{display:block!important;line-height:1.3!important}
+#statsGrid .cbpes-stats-player .rank-position,#stats-detail .cbpes-stats-player .rank-position{position:absolute!important;left:12px!important;top:50%!important;transform:translateY(-50%)!important;width:20px!important;text-align:center!important;margin:0!important}
+#statsGrid .cbpes-stats-player-team,#stats-detail .cbpes-stats-player-team{display:flex!important;align-items:center!important;gap:6px!important;margin:0!important}
+#statsGrid .cbpes-stats-player-crest,#stats-detail .cbpes-stats-player-crest{width:18px!important;height:18px!important;object-fit:contain!important;flex:none!important}
+#statsGrid .cbpes-stats-player .number,#stats-detail .cbpes-stats-player .number{margin-left:auto!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center{display:flex!important;align-items:center!important;justify-content:center!important;align-self:center!important;line-height:1!important;transform:translateY(0)!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-center iconify-icon{display:block!important;vertical-align:middle!important;width:21px!important;height:21px!important;font-size:21px!important;line-height:1!important}
+#match .cbpes-report-goals-centered .cbpes-report-goal-column{justify-content:center!important;line-height:1.45!important}
