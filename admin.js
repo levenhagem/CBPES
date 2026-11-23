@@ -693,7 +693,7 @@ function vMatchEditor(){
 
 // Histórico de técnicos: partidas amistosas importadas, sem copiar registros para matches.
 function archivedFriendlies(){
- const normalize=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const normalize=v=>String(v||'').normalize('NFD').replace(/[^\x00-\x7F]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const official=new Set(D.matches.filter(m=>m.category==='official'&&m.played).map(m=>
   [normalize(m.home?.name),normalize(m.away?.name),m.home_score,m.away_score,String(m.played_on||m.date||'').slice(0,10)].join('|')));
  const unique=new Set();
