@@ -35,7 +35,7 @@ function projected(){
  const getPhase=m=>phases.find(p=>eq(p.id,getRound(m)?.phase_id));
  for(const m of projected){
   const scores=state.scores[String(m.id)];
-  if(!done(m)&&scores&&scores.every(x=>x!=='')){m.home_score=Number(scores[0]);m.away_score=Number(scores[1]);m.played=true;}
+  if(!done(m)&&scores&&scores.some(x=>x!=='')){m.home_score=Number(scores[0]||0);m.away_score=Number(scores[1]||0);m.played=true;}
  }
  const groupPhase=phases.find(p=>p.counts_in_standings);
  const groupGames=projected.filter(m=>eq(getPhase(m)?.id,groupPhase?.id));
@@ -80,8 +80,8 @@ function virtualMasterGames(edition,assignments,calendar,rounds,groupNames,real)
    const exists=real.some(m=>eq(m.round_id,round?.id)&&[String(m.home_id),String(m.away_id)].sort().join('|')===[String(home.id),String(away.id)].sort().join('|'));
    if(exists)continue;
    const id='master-virtual-'+edition.id+'-'+ri+'-'+group+'-'+left+'-'+right;
-   const values=state.scores[id]||['',''],completed=values.every(x=>x!=='');
-   virtual.push({id,home_id:home.id,away_id:away.id,home,away,home_coach_name:home.coach_name,away_coach_name:away.coach_name,home_score:completed?Number(values[0]):null,away_score:completed?Number(values[1]):null,played:completed,category:'official',group_name:group,round_id:round?.id||null,virtualRoundIndex:ri,official_edition_id:edition.id,seq:ri*100+group.charCodeAt(0),date:round?.date||null});
+   const values=state.scores[id]||['',''],completed=values.some(x=>x!=='');
+   virtual.push({id,home_id:home.id,away_id:away.id,home,away,home_coach_name:home.coach_name,away_coach_name:away.coach_name,home_score:completed?Number(values[0]||0):null,away_score:completed?Number(values[1]||0):null,played:completed,category:'official',group_name:group,round_id:round?.id||null,virtualRoundIndex:ri,official_edition_id:edition.id,seq:ri*100+group.charCodeAt(0),date:round?.date||null});
   }
  }
  return virtual;
@@ -135,13 +135,14 @@ function updateScore(el,immediate=false){
   render();
   if(focusKey!==undefined&&focusSide!==undefined){
    const next=[...root()?.querySelectorAll('[data-sim-id]')||[]].find(x=>x.dataset.simId===focusKey&&x.dataset.simSide===focusSide);
-   if(next){next.focus({preventScroll:true});next.select();}
+   if(next){next.focus({preventScroll:true});try{next.setSelectionRange?.(next.value.length,next.value.length);}catch(_){}}
   }
  };
- if(immediate||scores.every(x=>x!==''))typingTimer=setTimeout(refresh,immediate?0:180);
+ // Atualiza após cada digitação, inclusive quando apenas um lado possui gols.
+ refresh();
 }
 document.addEventListener('input',e=>updateScore(e.target));
-document.addEventListener('change',e=>updateScore(e.target,true));
+// O evento input já atualiza a tabela; change não deve reconstruí-la novamente.
 document.addEventListener('click',e=>{
  if(!state)return;
  const nav=e.target.closest('#phasePrev,#phaseNext,[data-official-round-prev],[data-official-round-next],[data-master-round-prev],[data-master-round-next]');
