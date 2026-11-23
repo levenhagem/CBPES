@@ -120,7 +120,11 @@ function masterKnockout(edition,phase){
  const groupTeams={};
  for(const letter of ['A','B','C','D']){
   const ids=new Set(assignments.filter(a=>normalizeGroup(a.group_name)===letter).map(a=>String(a.participant_id)));
-  groupTeams[letter]=ranking.filter(x=>ids.has(String(x.p.id))).map(x=>x.p);
+  const ranked=ranking.filter(x=>ids.has(String(x.p.id))).map(x=>x.p);
+  // Sem resultados ainda, standings pode omitir participantes. Preencher as
+  // vagas com os clubes cadastrados na fase de grupos (ordem de slot).
+  const registered=assignments.filter(a=>normalizeGroup(a.group_name)===letter).sort((a,b)=>Number(a.slot||0)-Number(b.slot||0)).map(a=>team(a.participant_id)).filter(Boolean);
+  groupTeams[letter]=ranked.concat(registered.filter(p=>!ranked.some(x=>eq(x.id,p.id))));
  }
  const groups=groupTeams;
  const match=(stage,index,home,away)=>{
