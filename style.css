@@ -5161,3 +5161,5 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 @media(min-width:901px){body.cbpes-liga-pro-page #table .cbpes-competition-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:start!important}body.cbpes-liga-pro-page #table .cbpes-standings-panel,body.cbpes-liga-pro-page #table .cbpes-results-panel,body.cbpes-liga-pro-page #table .round-switcher{width:100%!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important}}
 .cbpes-admin-archive-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #e5eaf0;flex-wrap:wrap}
 .cbpes-admin-archive-row select{min-width:160px;max-width:250px;padding:7px;border:1px solid #cbd5dc;border-radius:4px;background:#fff;color:#15303a}
+
+.cbpes-archive-competition-editor{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cbpes-archive-competition-editor select{min-width:190px}.cbpes-archive-competition-editor .btn{white-space:nowrap}
