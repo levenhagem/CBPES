@@ -599,7 +599,7 @@ function renderTable() {
   const masterGroupNames=Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i));
   // Jogos virtuais só existem enquanto o simulador da Copa Master está ligado.
   // Nunca entram no banco nem nos resultados oficiais.
-  const masterSimGames=isCopaMaster&&window.CBPESSimulator?.virtualMasterGames?.(edition,(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id)),masterCalendar,masterGroupRounds,Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i)),masterGroupMatches)||[];
+  const masterSimGames=isCopaMaster&&!masterGroupMatches.length&&window.CBPESSimulator?.virtualMasterGames?.(edition,masterAssignments,masterCalendar,masterGroupRounds,masterGroupNames,masterGroupMatches)||[];
   const masterStandingsMatches=masterGroupMatches.concat(masterSimGames).map(m=>{
     // A pontuação da simulação depende dos placares preenchidos, nunca da flag de banco.
     // Jogos reais sem resultado e jogos virtuais com gols simulados são tratados igualmente.
@@ -607,12 +607,18 @@ function renderTable() {
     return {...m,played:hasScore};
   });
 
+  // A Copa Master possui confrontos ENTRE GRUPOS. Cada partida pontua para os dois
+  // clubes, cada qual na tabela do seu próprio grupo. Não filtrar por group_name.
+  const masterAllTeamIds=new Set(masterAssignments.map(a=>String(a.participant_id)));
+  const masterAllTeams=D.participants.filter(team=>masterAllTeamIds.has(String(team.id)));
+  const masterGlobalRanking=standings(masterAllTeams,masterStandingsMatches);
   const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
     const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
-    const gm=masterStandingsMatches.filter(m=>String(m.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g);
-    const teamIds=[...new Set([...groupAssignments.map(a=>String(a.participant_id)),...gm.flatMap(m=>[String(m.home_id),String(m.away_id)])])];
-    const teams=teamIds.map(id=>D.participants.find(p=>String(p.id)===id)).filter(Boolean);
-    const ranking=standings(teams,gm);
+    const teamIds=new Set(groupAssignments.map(a=>String(a.participant_id)));
+    // Inclui resultados contra adversários de outros grupos; classificação filtrada
+    // somente DEPOIS do cálculo global de pontos, gols e saldo.
+    const gm=masterStandingsMatches.filter(m=>teamIds.has(String(m.home_id))||teamIds.has(String(m.away_id)));
+    const ranking=masterGlobalRanking.filter(x=>teamIds.has(String(x.p.id)));
     const slots=Array.from({length:Math.max(masterSlots,ranking.length)},(_,i)=>ranking[i]||null);
     return '<div class="card cbpes-master-group"><div class="cardhead cbpes-master-group-header"><span class="cbpes-master-group-heading"><span class="cbpes-master-group-label">GRUPO <b>'+g+'</b></span></span></div><div class="cbpes-master-group-scroll"><table class="table cbpes-master-group-table"><thead><tr><th class="cbpes-master-position"></th><th class="cbpes-master-club"></th><th>PTS</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>%</th><th>FORMA</th></tr></thead><tbody>'+
       slots.map((x,i)=>{
