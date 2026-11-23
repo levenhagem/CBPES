@@ -5002,3 +5002,15 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-stat{border:0!important}
 #match .cbpes-report-ball{display:inline-flex;align-items:center;justify-content:center;font-size:15px}
 #match .cbpes-report-ball iconify-icon{display:block;width:16px;height:16px;font-size:16px}
 @media(max-width:700px){body.cbpes-report-page-liga-pro #match .cbpes-report-hero.cbpes-report-liga-pro{padding:20px 8px 25px!important}body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardbody{padding:12px 5px 25px!important}}
+
+/* Gols: uma única bola no eixo central por linha, nomes em cada lado. */
+#match .cbpes-report-goals-centered{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;max-width:680px!important;margin:12px auto!important;padding:4px 0 8px!important;border-top:0!important;border-bottom:0!important}
+#match .cbpes-report-goal-row{display:grid;grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);align-items:center;gap:10px;min-height:20px;font-size:12px;font-weight:650}
+#match .cbpes-report-goal-home{text-align:right}
+#match .cbpes-report-goal-away{text-align:left}
+#match .cbpes-report-goal-center{display:flex;justify-content:center;align-items:center;color:inherit}
+#match .cbpes-report-goal-center iconify-icon{font-size:16px;width:16px;height:16px}
+#match .cbpes-report-goal-row small{font-size:11px;opacity:.75}
+body.cbpes-report-page-liga-pro #match .cbpes-report-goals-centered{border:0!important}
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cardhead h2{font-weight:900!important}
+@media(max-width:650px){#match .cbpes-report-goal-row{gap:5px;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);font-size:11px}#match .cbpes-report-goal-center iconify-icon{font-size:14px;width:14px;height:14px}}
