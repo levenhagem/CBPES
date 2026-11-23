@@ -715,10 +715,56 @@ const friendlyCoachDefinitions=()=>{
     def('goal-difference','SALDO DE GOLS',x=>sgf(x.sg))
   ];
 };
+const officialMatchMetricDefinitions=()=>{
+  const metrics=[
+    ['possession','POSSE DE BOLA (MÉDIA)','%'],
+    ['shots','CHUTES (MÉDIA)',''],
+    ['shots_on_target','CHUTES A GOL (MÉDIA)',''],
+    ['goalkeeper_saves','DEFESAS DO GOLEIRO (MÉDIA)',''],
+    ['corners','ESCANTEIOS (MÉDIA)',''],
+    ['penalties','PÊNALTIS (MÉDIA)',''],
+    ['fouls','FALTAS COMETIDAS (MÉDIA)',''],
+    ['offsides','IMPEDIMENTOS (MÉDIA)',''],
+    ['yellow_cards','CARTÕES AMARELOS (MÉDIA)',''],
+    ['red_cards','CARTÕES VERMELHOS (MÉDIA)','']
+  ];
+  const statsByMatch=new Map((D.matchStatistics||[]).map(s=>[String(s.match_id),s]));
+  const teams=new Map();
+  D.matches.filter(m=>m.played&&m.category==='official'&&publicCompetitionMatch(m)&&statsCompetitionMatch(m)).forEach(m=>{
+    const s=statsByMatch.get(String(m.id));
+    if(!s)return;
+    [['home',m.home_id,m.home],['away',m.away_id,m.away]].forEach(([side,id,team])=>{
+      if(!id||!team)return;
+      const key=String(id);
+      if(!teams.has(key))teams.set(key,{p:team,totals:{},counts:{}});
+      const row=teams.get(key);
+      metrics.forEach(([metric])=>{
+        let n=s[side+'_'+metric];
+        if(metric==='goalkeeper_saves'&&(n==null||n==='')){
+          const opponent=side==='home'?'away':'home';
+          const onTarget=Number(s[opponent+'_shots_on_target']);
+          const goals=Number(m[opponent+'_score']);
+          if(s[opponent+'_shots_on_target']!=null&&m[opponent+'_score']!=null&&Number.isFinite(onTarget)&&Number.isFinite(goals))n=Math.max(0,onTarget-goals);
+        }
+        if(n==null||n==='')return;
+        const value=Number(n);
+        if(!Number.isFinite(value))return;
+        row.totals[metric]=(row.totals[metric]||0)+value;
+        row.counts[metric]=(row.counts[metric]||0)+1;
+      });
+    });
+  });
+  const format=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+  return metrics.map(([key,title,unit])=>{
+    const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key]}))
+      .sort((a,b)=>b.average-a.average||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
+    return {key:'match-'+key,title,rows,value:x=>format(x.average),unit};
+  });
+};
 const visibleStatDefinitions=category=>{
   if(category==='friendly')return friendlyCoachDefinitions();
   const defs=statDefinitions(statData(category));
-  if(category==='official')return defs.filter(d=>!['wins','draws','losses','efficiency'].includes(d.key));
+  if(category==='official')return [...defs.filter(d=>!['wins','draws','losses','efficiency'].includes(d.key)),...officialMatchMetricDefinitions()];
   return defs.filter(d=>!d.players);
 };
 const defenseDefinition=definition=>{
