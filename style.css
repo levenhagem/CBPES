@@ -5186,3 +5186,9 @@ body.cbpes-copa-master-page #table .cbpes-form-dot:not(.win):not(.draw):not(.los
 #table .cbpes-knockout-full .cbpes-results-panel>.cbpes-match{
  width:100%!important;max-width:none!important;box-sizing:border-box!important;
 }
+
+/* Sem sexto cartão vazio: manter o espaço livre à direita dos cinco resultados. */
+#home .strip{background:transparent!important;border:0!important;gap:0!important}
+#home .strip .sc{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#home .strip .sc:first-child{border-left:1px solid var(--line)}
+#home .strip .sc:last-child{border-right:1px solid var(--line)}
