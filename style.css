@@ -4638,3 +4638,27 @@ body > #navStatsMenu.nav-competition-menu{
 #navStatsMenu.nav-competition-menu[hidden]{display:none!important}
 #navStatsMenu.nav-competition-menu a{display:flex;flex-direction:column;gap:3px;padding:11px 15px;color:#fff;text-decoration:none;font:700 13px Barlow,sans-serif;border-bottom:1px solid rgba(180,213,255,.12)}
 #navStatsMenu.nav-competition-menu a:hover,#navStatsMenu.nav-competition-menu a:focus-visible{background:#13549d;outline:none}
+
+/* CBPES — destaque desktop: etiqueta do campeão sem sobrepor o placar.
+   A coluna do mandante tem largura fixa; a etiqueta ocupa sua própria linha. */
+@media (min-width: 641px) {
+  #latest .cbpes-match-main .cbpes-match-team.home .featured-juventus-name-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    column-gap: 6px !important;
+    row-gap: 4px !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+  }
+  #latest .cbpes-match-main .cbpes-match-team.home .featured-juventus-champion {
+    position: static !important;
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  #latest .cbpes-match-main .cbpes-match-team.home .featured-juventus-name-row:has(.featured-juventus-champion) .featured-juventus-champion {
+    flex-basis: max-content !important;
+  }
+}
