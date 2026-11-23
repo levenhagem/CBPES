@@ -5192,3 +5192,32 @@ body.cbpes-copa-master-page #table .cbpes-form-dot:not(.win):not(.draw):not(.los
 #home .strip .sc{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 #home .strip .sc:first-child{border-left:1px solid var(--line)}
 #home .strip .sc:last-child{border-right:1px solid var(--line)}
+
+/* Rodadas da Liga PRO: cartões mais altos e legíveis. */
+body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match{
+  min-height:116px!important;padding:17px 19px!important;margin-bottom:12px!important;
+}
+body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-height:65px!important}
+#table .cbpes-match-report-link.cbpes-match-report-details,
+#table .cbpes-competition-neutral .cbpes-match-report-link.cbpes-match-report-details{
+ font-size:14px!important;font-weight:800!important;line-height:1.35!important;
+ padding:8px 10px!important;letter-spacing:.025em!important;text-decoration:none!important;
+}
+#table .cbpes-match-report-link.cbpes-match-report-details:hover{text-decoration:none!important}
+/* Sala de Troféus */
+#trophies .cbpes-trophy-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+#trophies .cbpes-trophy-overview>div{background:#fff;border:1px solid #dce5df;padding:18px 15px;display:flex;flex-direction:column;gap:6px}
+#trophies .cbpes-trophy-overview strong{font-size:30px;color:#08784d}
+#trophies .cbpes-trophy-overview span{font-size:11px;font-weight:800;color:#65766b}
+#trophies .cbpes-trophy-coaches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#trophies .cbpes-trophy-coach{background:#fff;border:1px solid #dce5df;min-width:0}
+#trophies .cbpes-trophy-coach-heading{display:flex;align-items:center;gap:10px;padding:15px;border-bottom:1px solid #e5ece8}
+#trophies .cbpes-trophy-coach-heading h2{font-size:17px;margin:0;flex:1}
+#trophies .cbpes-trophy-coach-heading h2 a{color:#076b46;text-decoration:none}
+#trophies .cbpes-trophy-rank{color:#899b90;font-weight:800}
+#trophies .cbpes-trophy-total{font-weight:800;color:#096c49}
+#trophies .cbpes-trophy-item{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid #edf1ee}
+#trophies .cbpes-trophy-item>div{flex:1;min-width:0}
+#trophies .cbpes-trophy-item strong{display:block;font-size:13px}
+#trophies .cbpes-trophy-item small{display:block;color:#6d8073;margin-top:4px}
+@media(max-width:760px){#trophies .cbpes-trophy-overview{grid-template-columns:repeat(2,minmax(0,1fr))}#trophies .cbpes-trophy-coaches{grid-template-columns:1fr}body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match{padding:15px 12px!important}}
