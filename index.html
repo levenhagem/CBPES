@@ -20,7 +20,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <div class="topline"></div>
 <header><div class="head">
  <a class="brand" href="#home"><img src="logo.png" alt="Símbolo CBPES"><span><span class="brandname">CBPES</span><small>PORTAL OFICIAL</small></span></a>
- <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a><a href="#trophies">SALA DE TROFÉUS</a></div></div></nav>
+ <nav id="nav"><button data-page="home">INÍCIO</button><button data-page="games">JOGOS</button><button data-page="belts">CINTURÕES</button><div class="nav-competition-wrap" id="navCompetitionWrap"><button type="button" data-page="table" id="navCompetitionButton" aria-haspopup="true" aria-expanded="false" aria-controls="navCompetitionMenu">TABELA <span aria-hidden="true">▾</span></button><div id="navCompetitionMenu" class="nav-competition-menu" hidden></div></div><div class="nav-competition-wrap" id="navStatsWrap"><button type="button" data-page="stats" id="navStatsButton" aria-haspopup="true" aria-expanded="false" aria-controls="navStatsMenu">ESTATÍSTICAS <span aria-hidden="true">▾</span></button><div id="navStatsMenu" class="nav-competition-menu" hidden><a href="#stats">ESTATÍSTICAS GERAIS</a><a href="#records">RECORDES</a><a href="#trophies">SALA DE TROFÉUS</a></div></div></nav>
  <span class="season" id="season"></span>
 </div></header>
 <main>
@@ -44,6 +44,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
  <small id="hSeason" class="hidden"></small>
 </section>
 
+<section id="belts" class="section"><div class="page-title"><div><div class="eyebrow">Títulos itinerantes</div><h1>Cinturões CBPES</h1><div class="sub">Oficial, Semanal e Geral — quem derrota o detentor conquista o cinturão.</div></div></div><div id="beltsView"></div></section>
 <section id="match" class="section"><div id="matchReportView"></div></section>
 <section id="games" class="section">
  <div class="page-title"><div><div class="eyebrow">Calendário</div><h1>Jogos e resultados</h1><div class="sub">Consulte as partidas por rodada.</div></div></div>
@@ -82,6 +83,7 @@ html.cbpes-preboot body::after{content:"";position:fixed;z-index:100000;left:50%
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="lib.js?v=cbpes-simulator-inline-20261123-3"></script>
+<script src="belts.js?v=cbpes-belts-20261123-1"></script>
 <script src="portal.js?v=cbpes-opening-full-20261123-5"></script>
 <script src="simulator.js?v=20261123-3"></script>
 </body></html>
