@@ -5330,3 +5330,31 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 }
 #table[data-winning-eleven="true"] .cbpes-match-main,
 #table[data-winning-eleven="true"] .cbpes-match-top{position:relative!important;z-index:1!important}
+
+/* Supercopa: mesma altura e preenchimento dos cartões do mata-mata Liga PRO. */
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-playoff-template>.cbpes-match,
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-results-panel .cbpes-match{
+ min-height:116px!important;
+ padding:17px 19px!important;
+ margin-bottom:12px!important;
+ width:100%!important;
+ max-width:100%!important;
+}
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-playoff-template>.cbpes-match .cbpes-match-main,
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-results-panel .cbpes-match .cbpes-match-main{
+ min-height:65px!important;
+}
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-results-panel,
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-competition-neutral{
+ width:100%!important;max-width:none!important;
+}
+@media(max-width:620px){
+ #table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-playoff-template>.cbpes-match,
+ #table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-results-panel .cbpes-match{
+ min-height:116px!important;padding:15px 12px!important;
+ }
+}
+/* Copa Master: confrontos por extenso, com quebra de linha quando necessário. */
+#table .cbpes-playoff-template .cbpes-team-name{
+ white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.35!important;
+}
