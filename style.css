@@ -5127,3 +5127,17 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 #stats-detail .cbpes-stats-card .cbpes-stats-player .number{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;color:inherit!important}
 #statsGrid .cbpes-stats-card .cbpes-stats-player .rank-position:empty,
 #stats-detail .cbpes-stats-card .cbpes-stats-player .rank-position:empty{visibility:hidden!important}
+
+/* Rankings: remover DEFINITIVAMENTE qualquer bloco cinza dos valores e das linhas. */
+.cbpes-stats-card .player.cbpes-stats-player,
+.cbpes-stats-card .player.cbpes-stats-player:hover{
+  background:none!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;border-bottom:1px solid #e8edf0!important;
+  border-radius:0!important;box-shadow:none!important;outline:0!important;
+}
+.cbpes-stats-card .player.cbpes-stats-player .number,
+.cbpes-stats-card .player.cbpes-stats-player .number:hover{
+  background:none!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  outline:0!important;padding:0!important;color:inherit!important;
+}
