@@ -31,8 +31,23 @@ $('pass').onkeydown = e => { if (e.key === 'Enter') $('loginBtn').click(); };
 $('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 $('tabs').onclick = e => { const btn=e.target.closest('button[data-t]'); if(btn){ tab=btn.dataset.t; if(tab==='jogos'){gamesSubView='matches';editingMatchId=null;matchEditorTab='result';} draft=null; render(); } };
 
+
+const OPENING_EDITION_ID='16917e42-3fc8-4aca-8cdc-4c008254dbe1';
+let openingAdminArchive=[],openingAdminError='';
+async function loadOpeningAdminArchive(){
+ const {data,error}=await sb.from('opening_tournament_archive').select('source_key,record_type,payload').eq('edition_id',OPENING_EDITION_ID).order('source_key');
+ openingAdminError=error?.message||'';openingAdminArchive=error?[]:data||[];
+}
+function renderOpeningAdminArchive(){
+ const rows=openingAdminArchive.filter(x=>x.record_type==='match');
+ const groups=new Map();
+ rows.forEach(x=>{const p=x.payload||{},stage=p.phase||('Rodada '+(p.round||'?'));if(!groups.has(stage))groups.set(stage,[]);groups.get(stage).push(x);});
+ const summary='<div class="card"><div class="cardhead"><h2>TORNEIO DE ABERTURA — ARQUIVO OFICIAL</h2><span class="pill">'+rows.length+' JOGOS</span></div><div class="cardbody"><p class="admin-help">Arquivo histórico separado da tabela matches. Inclui fase classificatória e mata-mata.</p>'+(openingAdminError?'<p>'+esc(openingAdminError)+'</p>':'')+[...groups].map(([stage,ms])=>'<h3 style="margin:16px 0 8px">'+esc(stage).toUpperCase()+' ('+ms.length+')</h3>'+ms.map(x=>{const m=x.payload||{};return '<div class="result-row"><div class="result-teams"><b>'+esc(m.home_coach||'—')+'</b> x <b>'+esc(m.away_coach||'—')+'</b><small>'+esc(x.source_key)+'</small></div><div class="result-score">'+esc(m.home_score)+' – '+esc(m.away_score)+'</div></div>';}).join('')).join('')+'</div></div>';
+ $('view').innerHTML=summary;
+}
+
 let adminCareerMatches = [];
-async function refresh() { const y = window.scrollY; try { D = await load(); const archiveResponse=await sb.from('career_matches').select('*'); if(archiveResponse.error)throw archiveResponse.error; adminCareerMatches=archiveResponse.data||[]; await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
+async function refresh() { const y = window.scrollY; try { D = await load(); const archiveResponse=await sb.from('career_matches').select('*'); if(archiveResponse.error)throw archiveResponse.error; adminCareerMatches=archiveResponse.data||[]; await loadOpeningAdminArchive(); await syncAutomaticCoachTrophies(); const {data: trophies, error} = await sb.from('coach_trophies').select('*'); if (error) throw error; D.coachTrophies = trophies || []; } catch (e) { return say(traduz(e), false); } if (firstLoad) { firstLoad = false; if (D.rounds.length) tab = 'jogos'; } render(); window.scrollTo(0, y); }
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   $('view').onclick = null; $('view').onchange = null; $('view').onkeydown = null;
@@ -707,9 +722,10 @@ function archivedFriendlies(){
 }
 let friendlyCoachFilter='all';
 function vJogos() {
+  if(gamesSubView==='opening-archive')return renderOpeningAdminArchive();
   if(gamesSubView==='editor')return vMatchEditor();
   if(gamesSubView==='reports')return vSumulas();
-  const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><button class="btn cbpes-report-tab" data-open-reports="1"><iconify-icon icon="lucide:clipboard-list"></iconify-icon> SÚMULAS OFICIAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
+  const switcher = `<div class="card" style="margin-bottom:12px"><div class="cardbody inline" style="padding:10px"><button class="btn ${activeCategory==='official'?'primary':''}" data-category="official">JOGOS OFICIAIS</button><button class="btn ${activeCategory==='friendly'?'primary':''}" data-category="friendly">AMISTOSOS</button><button class="btn ${activeCategory==='weekly'?'primary':''}" data-category="weekly">SEMANAIS</button><button class="btn" data-opening-admin="1">TORNEIO DE ABERTURA</button><button class="btn cbpes-report-tab" data-open-reports="1"><iconify-icon icon="lucide:clipboard-list"></iconify-icon> SÚMULAS OFICIAIS</button><span class="admin-help">${activeCategory==='friendly'?'Partidas independentes, sem rodada.':activeCategory==='weekly'?'Partidas vinculadas a uma edição semanal.':'Partidas vinculadas às rodadas da competição oficial.'}</span></div></div>`;
   if (activeCategory === 'friendly') {
     const coachNames=[...new Set([...adminCareerMatches.flatMap(m=>[m.home_coach,m.away_coach]),...curMatches().flatMap(m=>[m.home_coach_name,m.away_coach_name,m.home_coach,m.away_coach]),...(D.coachProfiles||[]).map(p=>p.name),...D.participants.map(p=>p.coach_name)].map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     const coachFilter='<div class="card cbpes-friendly-coach-filter" style="margin-bottom:12px"><div class="cardbody inline"><label for="friendlyCoachFilter"><strong>FILTRAR AMISTOSOS POR TÉCNICO</strong></label><select id="friendlyCoachFilter"><option value="all">TODOS OS TÉCNICOS</option>'+coachNames.map(name=>'<option value="'+esc(name)+'"'+(friendlyCoachFilter===name?' selected':'')+'>'+esc(name)+'</option>').join('')+'</select></div></div>';
@@ -746,6 +762,7 @@ function vJogos() {
       if(d.orderUp||d.orderDown)return moveMatchOrder(d.orderUp||d.orderDown,d.orderUp?-1:1,curMatches());
       if(d.editMatch){editingMatchId=d.editMatch;matchEditorTab='result';gamesSubView='editor';openGoals=null;return vMatchEditor();}
       if(d.editReport){reportMatchId=d.editReport;reportSection='stats';gamesSubView='reports';return vSumulas();}
+      if(d.openingAdmin){gamesSubView='opening-archive';return vJogos();}
       if(d.openReports){gamesSubView='reports';return vSumulas();}
       if(d.category){editingMatchId=null;activeCategory=d.category;selRound=null;return vJogos();}
       if(d.saveCareerMatch){
