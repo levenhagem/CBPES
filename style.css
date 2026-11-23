@@ -5443,3 +5443,20 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
  display:block;border:0;background:transparent;
 }
 .cbpes-home-scorer .cbpes-home-scorer-name{justify-content:center}
+
+/* Supercopa: emblema compacto e WINNING ELEVEN vermelho no título. */
+#table[data-winning-eleven="true"] #tableCompetitionName .cbpes-winning-title-red{
+ color:#f50935!important;
+}
+#table[data-winning-eleven="true"] #tableCompetitionName .cbpes-winning-title-supercopa{
+ color:#17151a!important;
+}
+#table[data-winning-eleven="true"] .cbpes-competition-emblem{
+ width:35px!important;height:35px!important;min-width:35px!important;
+ flex:0 0 35px!important;border-radius:7px!important;
+ padding:3px!important;font-size:12px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+}
+#table[data-winning-eleven="true"] .cbpes-competition-emblem img{
+ max-width:100%!important;max-height:100%!important;object-fit:contain!important;
+}
