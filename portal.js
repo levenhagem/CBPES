@@ -255,15 +255,17 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">PARTIDA EM DESTAQUE</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  // Importações em lote compartilham exatamente o mesmo timestamp.
-  // Na vitrine, um lote semanal não pode ocupar os cinco resultados de uma vez
-  // e esconder partidas oficiais registradas separadamente.
-  const recentBatches=new Set();
+  // Manter os jogos semanais recentes, mas limitar a quatro partidas
+  // por importação simultânea para não esconder o próximo resultado
+  // registrado separadamente (oficial ou amistoso).
+  const recentBatchCounts=new Map();
   const recentHome=played.filter(m=>{
     const registered=String(m.result_registered_at||m.created_at||'');
-    const key=m.category==='weekly'&&registered?'weekly-batch:'+registered:'match:'+m.id;
-    if(recentBatches.has(key))return false;
-    recentBatches.add(key);
+    if(m.category!=='weekly'||!registered)return true;
+    const key='weekly-batch:'+registered;
+    const count=recentBatchCounts.get(key)||0;
+    if(count>=4)return false;
+    recentBatchCounts.set(key,count+1);
     return true;
   }).slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
