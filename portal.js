@@ -600,7 +600,12 @@ function renderTable() {
   // Jogos virtuais só existem enquanto o simulador da Copa Master está ligado.
   // Nunca entram no banco nem nos resultados oficiais.
   const masterSimGames=isCopaMaster&&window.CBPESSimulator?.virtualMasterGames?.(edition,(D.officialGroupTeams||[]).filter(a=>String(a.official_edition_id)===String(edition.id)),masterCalendar,masterGroupRounds,Array.from({length:masterGroupCount},(_,i)=>String.fromCharCode(65+i)),masterGroupMatches)||[];
-  const masterStandingsMatches=masterGroupMatches.concat(masterSimGames);
+  const masterStandingsMatches=masterGroupMatches.concat(masterSimGames).map(m=>{
+    // A pontuação da simulação depende dos placares preenchidos, nunca da flag de banco.
+    // Jogos reais sem resultado e jogos virtuais com gols simulados são tratados igualmente.
+    const hasScore=m.home_score!==null&&m.home_score!==undefined&&m.away_score!==null&&m.away_score!==undefined&&Number.isFinite(Number(m.home_score))&&Number.isFinite(Number(m.away_score));
+    return {...m,played:hasScore};
+  });
 
   const masterGroupsHtml='<section class="cbpes-master-groups-preview"><div class="cbpes-master-groups-grid">'+masterGroupNames.map(g=>{
     const groupAssignments=masterAssignments.filter(a=>String(a.group_name).trim().toUpperCase().replace(/^GRUPO\s+/,'')===g).sort((a,b)=>(a.slot||0)-(b.slot||0));
