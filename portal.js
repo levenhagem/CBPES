@@ -238,9 +238,7 @@ function renderHome() {
     const title=m.category==='weekly'?'SEMANAL':m.category==='friendly'?'AMISTOSO':competition?.name||edition?.name||SET.name;
     return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
   };
-  // latestPlayed já retorna a ordem decrescente; não inverter os resultados.
-  const sl = played.slice(0,5);
-  $('strip').innerHTML = sl.length ? sl.map(sc).join('') : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';
+
   const m = played.find(x=>x.category==='official') || played[0];
   const featured = !!m?.is_featured;
   const featuredEdition=(D.officialEditions||[]).find(e=>String(e.id)===String(m?.official_edition_id));
@@ -268,7 +266,10 @@ function renderHome() {
     recentBatchCounts.set(key,count+1);
     return true;
   }).slice(0,5);
-  // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
+  // A faixa superior e o painel Últimos Resultados usam exatamente
+  // a mesma seleção de cinco partidas, na mesma ordem de registro.
+  const sl = recentHome;
+  $('strip').innerHTML = sl.length ? sl.map(sc).join('') : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';  // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
   const editionOf=m=>String(m.official_edition_id||m.round?.official_edition_id||'');
