@@ -428,7 +428,7 @@ function renderOpeningArchive(){
 }
 
 function renderTable() {
-  const simulatorButton=(kind,id)=>'<button type="button" class="cbpes-sim-launch" data-simulator-kind="'+kind+'" data-simulator-id="'+esc(id)+'">⚽ SIMULAR CAMPEONATO</button>';
+  const simulatorButton=(kind,id)=>'<button type="button" class="cbpes-sim-launch" data-simulator-kind="'+kind+'" data-simulator-id="'+esc(id)+'">SIMULADOR</button>';
 
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
@@ -464,7 +464,7 @@ function renderTable() {
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
   document.getElementById('table').dataset.copaMaster=String(isMaster);
   document.body.classList.toggle('cbpes-copa-master-page', location.hash.slice(1).split('/')[0]==='table' && isMaster);
-  if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();return;}
+  if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();if(selectedEdition) $('fullTable')?.insertAdjacentHTML('afterbegin',simulatorButton('official',selectedEdition.id));return;}
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
     const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
