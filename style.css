@@ -5383,3 +5383,54 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
  #navStatsMenu:not([hidden]){position:fixed!important;z-index:99999!important;display:flex!important;flex-direction:column!important;overflow:visible!important;background:#fff!important;border:1px solid #d9e2e4!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
  #navStatsMenu:not([hidden]) a{display:block!important;padding:14px 16px!important;color:#12333b!important;text-decoration:none!important;white-space:nowrap}
 }
+
+/* Copa Master: nomes completos de cruzamentos com alinhamento igual às demais tabelas. */
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match{
+ width:100%!important;min-width:0!important;box-sizing:border-box!important;
+}
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-main{
+ display:grid!important;grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr)!important;
+ gap:12px!important;align-items:center!important;width:100%!important;min-height:76px!important;
+}
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-team{
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ min-width:0!important;width:100%!important;text-align:center!important;
+}
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-club,
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-club-text{
+ display:flex!important;flex-direction:column!important;align-items:center!important;
+ justify-content:center!important;min-width:0!important;width:100%!important;
+}
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-team-name{
+ display:block!important;width:100%!important;max-width:100%!important;
+ white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;
+ text-align:center!important;line-height:1.4!important;font-size:12px!important;
+ font-weight:650!important;hyphens:auto!important;
+}
+#table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-score{
+ text-align:center!important;white-space:nowrap!important;align-self:center!important;
+}
+@media(max-width:620px){
+ #table[data-copa-master="true"] .cbpes-playoff-template .cbpes-match-main{
+ grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;gap:5px!important;
+ }
+ #table[data-copa-master="true"] .cbpes-playoff-template .cbpes-team-name{
+ font-size:10px!important;line-height:1.35!important;
+ }
+}
+/* Supercopa Winning Eleven: estrela vermelha grande ocupando quase todo o canto direito. */
+#table[data-winning-eleven="true"] .cbpes-playoff-template>.cbpes-match::before,
+#table[data-winning-eleven="true"] .cbpes-results-panel .cbpes-match::before,
+#table[data-winning-eleven="true"] .cbpes-knockout-full .cbpes-match::before{
+ content:""!important;display:block!important;position:absolute!important;
+ width:clamp(150px,28vw,280px)!important;height:clamp(150px,28vw,280px)!important;
+ right:-24px!important;top:50%!important;left:auto!important;bottom:auto!important;
+ transform:translateY(-50%) rotate(12deg)!important;
+ background:linear-gradient(145deg,#ff365d 0%,#ec0035 58%,#a80029 100%)!important;
+ clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 92%,50% 71%,21% 92%,32% 57%,2% 35%,39% 35%)!important;
+ opacity:.32!important;z-index:0!important;pointer-events:none!important;
+}
+#table[data-winning-eleven="true"] .cbpes-match-main,
+#table[data-winning-eleven="true"] .cbpes-match-top{
+ position:relative!important;z-index:2!important;
+}
