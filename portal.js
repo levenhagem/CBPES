@@ -653,6 +653,11 @@ function renderTable() {
     const masterNav=html.match(/^<div class="phase-switcher"[\s\S]*?<\/div>/)?.[0]||'';
     html=masterNav+'<div class="cbpes-competition-neutral cbpes-master-two-column"><div class="cbpes-master-standings-column">'+masterGroupsHtml+'</div><aside class="cbpes-master-fixtures-column">'+masterFixtures+'</aside></div>';
   }
+  // A classificação por grupos deve permanecer visível em qualquer fase da Copa Master.
+  // Não substituir as equipes por placeholders quando o visitante navega às quartas.
+  if(isCopaMaster && masterAssignments.length && !(masterGroupPhase && String(selectedOfficialPhase)===String(masterGroupPhase.id))){
+    html='<div class="cbpes-master-always-groups">'+masterGroupsHtml+'</div>'+html;
+  }
   const drawNotice='';
   $('tblTitle').textContent = 'COMPETIÇÕES CBPES'; $('tblPill').textContent = ''; $('tblPill').hidden = true; $('fullTable').innerHTML = drawNotice+html;
   // Copa Master: classificação por grupo à esquerda; confrontos de toda a rodada
