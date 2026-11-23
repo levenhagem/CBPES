@@ -143,7 +143,7 @@ function crestImg(p,cls='') {
   return `<img class="cbpes-crest ${cls}" src="${esc(p.crest_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`;
 }
 function teamWithCrest(p) { return `<span class="cbpes-team-inline">${crestImg(p)}<span>${esc(p.name)}</span></span>`; }
-function matchRow(m, hideDate = false, showOfficialRound = false) {
+function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode = 'arrow') {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
   const details = [];
@@ -174,7 +174,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false) {
       <div class="cbpes-match-score"><span class="cbpes-score-inline">${score}</span><span class="cbpes-score-stacked" aria-label="Placar: ${score}"><span class="${!m.played?'pending':homeWon?'score-winner':'score-normal'}">${m.played?m.home_score:'–'}</span><span class="${!m.played?'pending':awayWon?'score-winner':'score-normal'}">${m.played?m.away_score:'–'}</span></span>${detailHTML}</div>
       <div class="cbpes-match-team away ${awayWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.away)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.away_id}">${esc(m.away.name)}</a>${championTag(m.away_id)}</span><small>${coach(m.away_coach_name || m.away.coach_name)}</small></div></div></div>
     </div>
-    ${(m.category||'official')==='official' ? `<a class="cbpes-match-report-link" href="#match/${encodeURIComponent(m.id)}" aria-label="Ver súmula de ${esc(m.home.name)} contra ${esc(m.away.name)}" title="Ver súmula da partida"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12h13m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>` : ''}
+    ${(m.category||'official')==='official' && reportLinkMode!=='none' ? `<a class="cbpes-match-report-link ${reportLinkMode==='details'?'cbpes-match-report-details':''}" href="#match/${encodeURIComponent(m.id)}" aria-label="Ver súmula de ${esc(m.home.name)} contra ${esc(m.away.name)}" title="Ver súmula da partida">${reportLinkMode==='details'?'DETALHES':`<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12h13m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`}</a>` : ''}
   </div>`;
 }
 
