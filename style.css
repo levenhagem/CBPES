@@ -4916,3 +4916,23 @@ body.cbpes-report-page-copa-master #match .cbpes-report-compare-away{background:
 .cbpes-friendly-reclassify{display:inline-flex;align-items:center;flex-wrap:wrap;gap:7px;max-width:100%}
 .cbpes-friendly-reclassify select{max-width:min(100%,350px);min-width:170px}
 @media(max-width:600px){.cbpes-friendly-reclassify{width:100%}.cbpes-friendly-reclassify select{flex:1;min-width:0}}
+
+/* Admin: navegação compacta, organizada e responsiva. */
+.cbpes-admin-ui #app{max-width:1400px;margin-inline:auto}
+.cbpes-admin-ui .cbpes-admin-nav{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;margin:16px 0 22px!important;padding:6px 12px!important;background:#fff!important;border:1px solid #e4e8ee!important;border-radius:12px!important;box-shadow:0 2px 10px rgba(20,35,50,.035)!important;overflow:visible!important}
+.cbpes-admin-ui .cbpes-admin-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:9px 0}
+.cbpes-admin-ui .cbpes-admin-nav-group+.cbpes-admin-nav-group{border-top:1px solid #edf0f3}
+.cbpes-admin-ui .cbpes-admin-nav-label{display:inline-block;min-width:170px;margin-right:8px;font-size:10px;font-weight:750;letter-spacing:.11em;color:#82909c}
+.cbpes-admin-ui .cbpes-admin-nav button{display:inline-flex!important;align-items:center;justify-content:center;gap:7px!important;padding:9px 13px!important;border:1px solid transparent!important;border-radius:7px!important;background:transparent!important;color:#536272!important;font-size:12px!important;font-weight:650!important;letter-spacing:0!important;box-shadow:none!important;transition:background .15s,color .15s!important}
+.cbpes-admin-ui .cbpes-admin-nav button iconify-icon{font-size:17px}
+.cbpes-admin-ui .cbpes-admin-nav button:hover{background:#f1f5f7!important;color:#1b3442!important}
+.cbpes-admin-ui .cbpes-admin-nav button.on{background:#e9f5ee!important;color:#147548!important;border-color:#cde9d8!important}
+.cbpes-admin-ui #view .cardhead{gap:10px;flex-wrap:wrap}
+.cbpes-admin-ui #view .cardhead h2{font-size:13px;letter-spacing:.035em}
+.cbpes-admin-ui #view .btn{border-radius:7px}
+.cbpes-admin-ui #view select,.cbpes-admin-ui #view input{border-radius:6px}
+.cbpes-admin-ui .cbpes-report-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:11px 14px;border:1px solid #e4e8ee;border-radius:10px;background:#fff;color:#283b47;font-size:12px;font-weight:800;letter-spacing:.04em}
+.cbpes-admin-ui .cbpes-report-toolbar span small{color:#7d8b97;font-weight:450;letter-spacing:0}
+.cbpes-admin-ui .cbpes-report-toolbar .btn,.cbpes-admin-ui .cbpes-report-tab{display:inline-flex!important;align-items:center;gap:6px!important}
+.cbpes-admin-ui .cbpes-report-tab iconify-icon{font-size:17px}
+@media(max-width:720px){.cbpes-admin-ui .cbpes-admin-nav{padding:5px 8px!important}.cbpes-admin-ui .cbpes-admin-nav-label{display:block;flex-basis:100%;padding:4px 6px;min-width:0}.cbpes-admin-ui .cbpes-admin-nav-group{gap:3px}.cbpes-admin-ui .cbpes-admin-nav button{flex:1 1 auto!important;padding:9px 8px!important;font-size:11px!important}.cbpes-admin-ui .cbpes-report-toolbar{align-items:flex-start;flex-direction:column;gap:8px}}
