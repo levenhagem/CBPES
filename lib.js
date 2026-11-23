@@ -182,7 +182,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const registeredDate=registeredAt?new Date(registeredAt):null;
   const dateText=showRegistrationDate&&registeredDate&&!Number.isNaN(registeredDate.getTime())?registeredDate.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):fd(m.date);
   const meta=hideDate||!dateText?'':`<span class="match-date">${esc(dateText)}</span>`;
-  return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
+  return `<div data-cbpes-match-id="${esc(m.id)}" class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${meta}</div>
     <div class="cbpes-match-main">
       <div class="cbpes-match-team home ${homeWon?'winner':''}"><div class="cbpes-match-club">${crestImg(m.home)}<div class="cbpes-match-club-text"><span class="featured-juventus-name-row"><a class="cbpes-team-name" href="#team/${m.home_id}">${esc(m.home.name)}</a>${championTag(m.home_id)}</span><small>${coach(m.home_coach_name || m.home.coach_name)}</small></div></div></div>
