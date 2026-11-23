@@ -1088,11 +1088,11 @@ function renderCoach(name) {
   // Categorias selecionáveis: histórico PES6 é composto por amistosos importados.
   const coachCareerRows=[
     ...matches.map(m=>{const home=String(m.home_coach_name||'').trim().toLocaleLowerCase()===key;const own=home?m.home_score:m.away_score,opp=home?m.away_score:m.home_score;return {category:m.category==='weekly'?'weekly':m.category==='friendly'?'friendly':'official',own,opp};}),
-    ...historicCoach.map(m=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===key;return {category:'friendly',own:home?m.home_score:m.away_score,opp:home?m.away_score:m.home_score};})
+    ...historicCoach.map(m=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===key;return {category:m.official_competition_id?'official':'friendly',own:home?m.home_score:m.away_score,opp:home?m.away_score:m.home_score};})
   ];
   const coachFormMatches=[
     ...matches.map(m=>{const home=String(m.home_coach_name||'').trim().toLocaleLowerCase()===key;return {category:m.category==='weekly'?'weekly':m.category==='friendly'?'friendly':'official',own:home?Number(m.home_score):Number(m.away_score),opp:home?Number(m.away_score):Number(m.home_score),date:m.played_on||m.date||m.updated_at||m.created_at||'',id:String(m.id||'')};}),
-    ...historicCoach.map((m,i)=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===key;return {category:'friendly',own:Number(home?m.home_score:m.away_score),opp:Number(home?m.away_score:m.home_score),date:m.played_on||m.date||'',id:'archive-'+i};})
+    ...historicCoach.map((m,i)=>{const home=String(m.home_coach||'').trim().toLocaleLowerCase()===key;return {category:m.official_competition_id?'official':'friendly',own:Number(home?m.home_score:m.away_score),opp:Number(home?m.away_score:m.home_score),date:m.played_on||m.date||'',id:'archive-'+i};})
   ].filter(m=>Number.isFinite(m.own)&&Number.isFinite(m.opp)).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.id).localeCompare(String(a.id)));
   // SVG independente do CSS: os resultados permanecem círculos mesmo com estilos antigos em cache.
   const coachFormSvg = rows => {
