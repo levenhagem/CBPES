@@ -5163,3 +5163,19 @@ body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report
 .cbpes-admin-archive-row select{min-width:160px;max-width:250px;padding:7px;border:1px solid #cbd5dc;border-radius:4px;background:#fff;color:#15303a}
 
 .cbpes-archive-competition-editor{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cbpes-archive-competition-editor select{min-width:190px}.cbpes-archive-competition-editor .btn{white-space:nowrap}
+
+/* Ajustes CBPES: recordistas, sequências e fases ainda sem jogos. */
+#records .cbpes-records-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(245px,310px);gap:20px;align-items:start}
+#records .cbpes-record-leaders{position:sticky;top:16px;background:#fff;border:1px solid #e0e8e3;padding:16px;color:#18382b}
+#records .cbpes-record-leaders h2{font-size:15px;margin:0 0 6px}
+#records .cbpes-record-leaders p{font-size:12px;color:#68786f;margin:0 0 12px}
+#records .cbpes-record-leaders table{width:100%;border-collapse:collapse;font-size:12px}
+#records .cbpes-record-leaders th,#records .cbpes-record-leaders td{padding:10px 5px;text-align:left;border-bottom:1px solid #e4eae6}
+#records .cbpes-record-leaders td:last-child,#records .cbpes-record-leaders th:last-child{text-align:right}
+#records .cbpes-record-leaders summary,#records .cbpes-record-streak-games summary{cursor:pointer;font-weight:700}
+#records .cbpes-record-leader-details{padding:8px 0 2px 12px;line-height:1.6;font-size:11px;color:#53685d}
+#records .cbpes-record-streak-games{margin-top:9px;max-width:100%;font-size:12px}
+#records .cbpes-record-streak-games>div{padding:4px 0;border-bottom:1px solid #edf0ee}
+body.cbpes-copa-master-page #table .cbpes-form-dot:not(.win):not(.draw):not(.loss){opacity:.24!important}
+#table .cbpes-knockout-full .cbpes-results-panel .result-row{width:100%;max-width:none;box-sizing:border-box}
+@media(max-width:900px){#records .cbpes-records-layout{grid-template-columns:minmax(0,1fr)}#records .cbpes-record-leaders{position:static;order:-1}}
