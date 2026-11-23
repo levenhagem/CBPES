@@ -233,7 +233,7 @@ function renderHome() {
   const featuredCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(featuredEdition?.competition_id));
   const featuredIsLigaPro=m?.category==='official' && /liga\s*pro/i.test([featuredEdition?.name,featuredCompetition?.name].filter(Boolean).join(' '));
   const featuredRow = () => matchRow(m);
-  const championTag = team => String(m.champion_team_id||'')===String(team?.id) ? '<span class="featured-juventus-champion">CAMPEÃO</span>' : '';
+  const championTag = team => String(m.champion_team_id||'')===String(team?.id) ? '<span class="featured-juventus-champion cbpes-champion-icon" role="img" aria-label="Campeão" title="Campeão"><iconify-icon icon="at-icons:trophy" aria-hidden="true"></iconify-icon></span>' : '';
   // O destaque oficial reutiliza o mesmo cartão das partidas da competição.
   // Assim, escudos, técnicos, placar e identidade da Liga Pro permanecem idênticos.
   $('latest').innerHTML = m
