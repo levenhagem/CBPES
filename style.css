@@ -5221,3 +5221,18 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 #trophies .cbpes-trophy-item strong{display:block;font-size:13px}
 #trophies .cbpes-trophy-item small{display:block;color:#6d8073;margin-top:4px}
 @media(max-width:760px){#trophies .cbpes-trophy-overview{grid-template-columns:repeat(2,minmax(0,1fr))}#trophies .cbpes-trophy-coaches{grid-template-columns:1fr}body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match{padding:15px 12px!important}}
+
+/* Torneio de Abertura: logotipo em quadrado branco, sem corte. */
+#table[data-opening-tournament="true"] .cbpes-competition-emblem{
+  background:#fff!important;border:1px solid #dfe5e2!important;border-radius:4px!important;
+  padding:4px!important;box-sizing:border-box!important;
+}
+#table[data-opening-tournament="true"] .cbpes-competition-emblem img{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:contain!important;object-position:center!important;
+}
+#trophies .cbpes-trophy-coach:first-child{border-top:4px solid #d5aa29}
+#trophies .cbpes-trophy-coach:nth-child(2){border-top:4px solid #9ca7b2}
+#trophies .cbpes-trophy-total{white-space:nowrap;font-size:12px}
+.cbpes-friendly-coach-filter .cardbody{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cbpes-friendly-coach-filter select{min-width:210px;max-width:100%;padding:10px}
