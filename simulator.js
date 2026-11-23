@@ -108,11 +108,11 @@ function masterKnockout(edition,phase){
  const groupPhase=(D.phases||[]).find(p=>eq(p.official_edition_id,edition.id)&&p.counts_in_standings);
  const rounds=(D.rounds||[]).filter(r=>eq(r.phase_id,groupPhase?.id));
  const roundIds=new Set(rounds.map(r=>String(r.id)));
- const groupGames=masterProjectedMatches(edition,all().filter(m=>m.category==='official'&&roundIds.has(String(m.round_id))));
+ const groupGames=masterProjectedMatches(edition,all().filter(m=>(m.category||'official')==='official'&&(roundIds.has(String(m.round_id))||eq(m.official_edition_id,edition.id)&&eq(m.round?.phase_id,groupPhase?.id))));
  // A chave acompanha a classificação projetada desde que o simulador é ligado.
  // Não exigir partidas completas nem depender de IDs do calendário para ativá-la.
  const participants=D.participants.filter(p=>assignments.some(a=>eq(a.participant_id,p.id)));
- const ranked=standings(participants,groupGames.map(m=>({...m,played:done(m)})));
+ const ranked=standings(participants,groupGames.map(m=>({...m,played:done(m)})),{ptsW:3,ptsD:1});
  const group=g=>ranked.filter(x=>assignments.some(a=>eq(a.participant_id,x.p.id)&&String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g)).map(x=>x.p);
  const groups={A:group('A'),B:group('B'),C:group('C'),D:group('D')};
  const match=(stage,index,home,away)=>{
@@ -190,7 +190,7 @@ function render(){
  }catch(err){console.error('Erro ao recalcular simulador:',err);}
  finally{D.matches=old;rendering=false;}
  const btn=root()?.querySelector('[data-simulator-kind]');
- if(btn){btn.textContent='SAIR DO SIMULADOR';btn.classList.add('cbpes-sim-active');}
+ if(btn){btn.innerHTML='<span>SAIR DO SIMULADOR</span>';btn.classList.add('cbpes-sim-active');}
  // Simulação não oferece súmulas/detalhes: o placar é hipotético.
  root().querySelectorAll('.cbpes-match-report-link').forEach(link=>link.remove());
  const cards=[...root().querySelectorAll('[data-cbpes-match-id]')];
@@ -242,7 +242,7 @@ document.addEventListener('input',e=>updateScore(e.target));
 document.addEventListener('click',e=>{
  if(!state)return;
  const nav=e.target.closest('#phasePrev,#phaseNext,[data-official-round-prev],[data-official-round-next],[data-master-round-prev],[data-master-round-next]');
- if(nav)requestAnimationFrame(()=>{if(state)render();});
+ if(nav)requestAnimationFrame(()=>{if(state){const btn=root()?.querySelector('[data-simulator-kind]');if(btn){btn.classList.add('cbpes-sim-active');btn.innerHTML='<span>SAIR DO SIMULADOR</span>';}render();}});
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state)exit();});
 const css=document.createElement('style');css.textContent='.cbpes-sim-launch{margin:10px 0;padding:7px 12px;border:1px solid var(--line,#ccc);border-radius:5px;background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer}.cbpes-sim-launch.cbpes-sim-active{background:#14784b;color:#fff}.cbpes-sim-inline{display:flex;align-items:center;justify-content:center;gap:4px}.cbpes-sim-inline input{box-sizing:border-box;width:36px;height:32px;border:1px solid #b9c6ca;border-radius:4px;background:#fff;color:#15232b;text-align:center;font-weight:800;font-size:15px;padding:2px;appearance:textfield;-moz-appearance:textfield}.cbpes-sim-inline input::-webkit-inner-spin-button,.cbpes-sim-inline input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#table[data-liga-pro="true"] .cbpes-sim-inline,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline{flex-direction:column;gap:4px}#table[data-liga-pro="true"] .cbpes-sim-colon,#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-colon{display:none}#table[data-liga-pro="true"] .cbpes-sim-inline input{height:28px;width:36px}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-sim-inline input{width:39px;height:31px;background:linear-gradient(135deg,#352c1a,#151616);border:1px solid #c6a45a;color:#fff4d0;box-shadow:inset 0 0 0 1px #655027;border-radius:4px;font-family:inherit;font-size:17px;font-weight:850}#table[data-liga-pro="true"] .cbpes-sim-inline input{background:linear-gradient(135deg,#17478c,#08275b);border:1px solid #6fa5ff;color:#fff;border-radius:4px}#table[data-winning-eleven="true"] .cbpes-sim-inline input{background:#8b1230;border:1px solid #ff6685;color:#fff}.cbpes-match-semanal .cbpes-sim-inline input{background:#0d5638;border:1px solid #6ee1aa;color:#fff}.cbpes-match:not(.cbpes-match-copa-master):not(.cbpes-match-liga-pro):not(.cbpes-match-semanal) .cbpes-sim-inline input{border-color:var(--match-color,#7c9ab1);box-shadow:inset 0 0 0 1px #ffffff45}#table[data-copa-master="true"] .cbpes-match-copa-master .cbpes-match-score{z-index:4!important;position:relative!important}#cbpes-sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-size:11px;color:var(--muted,#777)}#cbpes-sim-controls button{border:1px solid var(--line,#ccc);border-radius:5px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer;font-weight:700}#table .cbpes-sim-active~* table tbody tr{transition:transform .28s ease,background-color .28s ease}@media(max-width:520px){.cbpes-sim-inline input{width:31px;height:30px;font-size:14px}}';document.head.appendChild(css);
