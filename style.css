@@ -4712,3 +4712,23 @@ body > header #nav .nav-competition-wrap > button > span[aria-hidden="true"] {
 body > header #nav .nav-competition-wrap > button[aria-expanded="true"] > span[aria-hidden="true"] {
   transform: translateY(2px) rotate(225deg);
 }
+
+/* Navegação: todos os itens compartilham a mesma linha de base e altura. */
+body > header #nav {
+  align-items: stretch;
+}
+body > header #nav > button,
+body > header #nav > .nav-competition-wrap > button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: stretch !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+body > header #nav > .nav-competition-wrap {
+  align-items: stretch !important;
+}
