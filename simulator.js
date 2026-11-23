@@ -111,10 +111,17 @@ function masterKnockout(edition,phase){
  const groupGames=masterProjectedMatches(edition,all().filter(m=>(m.category||'official')==='official'&&(roundIds.has(String(m.round_id))||eq(m.official_edition_id,edition.id)&&eq(m.round?.phase_id,groupPhase?.id))));
  // A chave acompanha a classificação projetada desde que o simulador é ligado.
  // Não exigir partidas completas nem depender de IDs do calendário para ativá-la.
+ // Classificação única considera TODOS os confrontos cruzados A×D e B×C.
+ // Só depois dividimos o ranking por grupo para obter o 1º e o 2º.
  const participants=D.participants.filter(p=>assignments.some(a=>eq(a.participant_id,p.id)));
- const ranked=standings(participants,groupGames.map(m=>({...m,played:done(m)})),{ptsW:3,ptsD:1});
- const group=g=>ranked.filter(x=>assignments.some(a=>eq(a.participant_id,x.p.id)&&String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===g)).map(x=>x.p);
- const groups={A:group('A'),B:group('B'),C:group('C'),D:group('D')};
+ const ranking=standings(participants,groupGames.map(m=>({...m,played:done(m)})),{ptsW:3,ptsD:1});
+ const normalizeGroup=value=>String(value||'').trim().toUpperCase().replace(/^GRUPO\s+/,'');
+ const groupTeams={};
+ for(const letter of ['A','B','C','D']){
+  const ids=new Set(assignments.filter(a=>normalizeGroup(a.group_name)===letter).map(a=>String(a.participant_id)));
+  groupTeams[letter]=ranking.filter(x=>ids.has(String(x.p.id))).map(x=>x.p);
+ }
+ const groups=groupTeams;
  const match=(stage,index,home,away)=>{
   const id='master-ko-'+edition.id+'-'+stage+'-'+index;
   const scores=state.scores[id]||['',''];
@@ -123,21 +130,26 @@ function masterKnockout(edition,phase){
   const winner=played&&hs!==as?(hs>as?home:away):null;
   return {id,home,away,home_id:home?.id,away_id:away?.id,home_score:hs,away_score:as,played,winner,category:'official',official_edition_id:edition.id,home_coach_name:home?.coach_name,away_coach_name:away?.coach_name,virtualKnockout:true};
  };
- const q=[
+ // Posições de classificação vinculadas diretamente às quatro tabelas.
+ const quarterSlots=[['A',0,'B',1],['C',0,'D',1],['B',0,'A',1],['D',0,'C',1]];
+ const q=quarterSlots.map(([hg,hi,ag,ai],index)=>match('q',index,groups[hg]?.[hi],groups[ag]?.[ai]));
+ /*const q=[
   match('q',0,groups.A[0],groups.B[1]),
   match('q',1,groups.C[0],groups.D[1]),
   match('q',2,groups.B[0],groups.A[1]),
   match('q',3,groups.D[0],groups.C[1])
- ];
+ ];*/
  const semi=[match('s',0,q[0].winner,q[1].winner),match('s',1,q[2].winner,q[3].winner)];
  const final=[match('f',0,semi[0].winner,semi[1].winner)];
  const stage=phase.phase_type==='final'?'f':/semi/i.test(phase.name||'')?'s':'q';
  const fixtures=stage==='f'?final:stage==='s'?semi:q;
  return '<div class="cbpes-master-sim-knockout">'+fixtures.map((m,index)=>{
   const label=stage==='q'?'QUARTAS DE FINAL':stage==='s'?'SEMIFINAL':'FINAL';
+  const slotLabels=stage==='q'?quarterSlots[index]:null;
+  const labelSuffix=slotLabels?' • '+(slotLabels[1]+1)+'º '+slotLabels[0]+' × '+(slotLabels[3]+1)+'º '+slotLabels[2]:'';
   const side=(p,position)=>p?'<div class="cbpes-master-ko-team">'+(typeof crestImg==='function'?crestImg(p):'')+'<span>'+esc(p.name)+'</span></div>':'<div class="cbpes-master-ko-team cbpes-master-ko-pending">A definir</div>';
   const input=side=>'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+side+'" aria-label="Gols '+(side?'visitante':'mandante')+'" value="'+esc((state.scores[m.id]||['',''])[side])+'">';
-  return '<div class="cbpes-master-ko-match" data-cbpes-match-id="'+m.id+'"><div class="cbpes-master-ko-label">'+label+' • CONFRONTO '+(index+1)+'</div><div class="cbpes-master-ko-body">'+side(m.home,0)+'<div class="cbpes-master-ko-score">'+(m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'<span>—</span>')+'</div>'+side(m.away,1)+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
+  return '<div class="cbpes-master-ko-match" data-cbpes-match-id="'+m.id+'"><div class="cbpes-master-ko-label">'+label+' • CONFRONTO '+(index+1)+labelSuffix+'</div><div class="cbpes-master-ko-body">'+side(m.home,0)+'<div class="cbpes-master-ko-score">'+(m.home&&m.away?'<div class="cbpes-sim-inline">'+input(0)+'<span class="cbpes-sim-colon">:</span>'+input(1)+'</div>':'<span>—</span>')+'</div>'+side(m.away,1)+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
  }).join('')+'</div>';
 }
 
@@ -161,7 +173,7 @@ function updateMasterStandings(){
  for(const group of groups){
   const name=group.querySelector('.cbpes-master-group-label b')?.textContent?.trim().toUpperCase();
   if(!name)continue;
-  const members=new Set(assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\\s+/,'')===name).map(a=>String(a.participant_id)));
+  const members=new Set(assignments.filter(a=>String(a.group_name||'').trim().toUpperCase().replace(/^GRUPO\s+/,'')===name).map(a=>String(a.participant_id)));
   const ranked=ranking.filter(x=>members.has(String(x.p.id)));
   const tbody=group.querySelector('tbody');
   if(!tbody)continue;
