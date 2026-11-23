@@ -5369,3 +5369,17 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 .cbpes-archive-competition-editor select{min-width:180px;max-width:100%}
 .cbpes-archive-competition-editor .btn.danger{background:#fff1f1;color:#b52d37;border:1px solid #f0c1c6}
 @media(max-width:560px){.cbpes-archive-edit-fields{grid-template-columns:1fr}.cbpes-archive-competition-editor .btn{width:100%}}
+
+/* Ranking de artilheiros da Liga PRO na página inicial. */
+.cbpes-home-scorers{display:flex;flex-direction:column}
+.cbpes-home-scorer{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #e0e7e4}
+.cbpes-home-scorer:last-child{border-bottom:0}
+.cbpes-home-scorer-rank{font-size:13px;font-weight:800;color:#63767a;width:18px;text-align:center}
+.cbpes-home-scorer-name{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.cbpes-home-scorer-name strong{font-size:13px;color:#142b35}
+.cbpes-home-scorer-name small{font-size:11px;color:#738187}
+.cbpes-home-scorer>b{white-space:nowrap;font-size:13px;color:#00643f}
+@media(max-width:700px){
+ #navStatsMenu:not([hidden]){position:fixed!important;z-index:99999!important;display:flex!important;flex-direction:column!important;overflow:visible!important;background:#fff!important;border:1px solid #d9e2e4!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+ #navStatsMenu:not([hidden]) a{display:block!important;padding:14px 16px!important;color:#12333b!important;text-decoration:none!important;white-space:nowrap}
+}
