@@ -448,7 +448,7 @@ function renderOpeningArchive(){
 }
 
 function renderTable() {
-  const simulatorButton=(kind,id)=>'<button type="button" class="cbpes-sim-launch" data-simulator-kind="'+kind+'" data-simulator-id="'+esc(id)+'">SIMULADOR</button>';
+  const simulatorButton=(kind,id)=>'<button type="button" class="cbpes-sim-launch" data-simulator-kind="'+kind+'" data-simulator-id="'+esc(id)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M18.4 5.6l-2.1 2.1m-8.6 8.6-2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg><span>SIMULADOR</span></button>';
 
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
@@ -532,7 +532,8 @@ function renderTable() {
       html='';
     }
     const configuredSlots=Array.isArray(active.playoff_config?.placeholder_matches)?active.playoff_config.placeholder_matches:[];
-    const placeholderHtml=['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
+    const masterKnockoutHtml=/copa\s*master/i.test([edition.name,competitions.find(c=>String(c.id)===String(edition.competition_id))?.name||''].join(' '))?window.CBPESSimulator?.masterKnockout?.(edition,active):null;
+    const placeholderHtml=masterKnockoutHtml||(['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match ${isLigaProTable?'cbpes-match-liga-pro':''}" style="--match-color:#bfcbd3">
         ${active.phase_type==='final'?'':`<div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>`}
         <div class="cbpes-match-main">
@@ -540,7 +541,7 @@ function renderTable() {
           <div class="cbpes-match-score">– : –</div>
           <div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[1]||'A definir'))}</span></div></div></div>
         </div>
-      </div>`).join('')+'</div>':'';
+      </div>`).join('')+'</div>':'');
     const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):window.CBPESSimulator?.isActive()?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):tieRows(tiesOf(currentGames)));
     const editionCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
     const isLigaEvo=/liga\s*evo/i.test((editionCompetition?.name||'')+' '+(edition.name||''));
