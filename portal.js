@@ -541,7 +541,7 @@ function renderTable() {
           <div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[1]||'A definir'))}</span></div></div></div>
         </div>
       </div>`).join('')+'</div>':'';
-    const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):tieRows(tiesOf(currentGames)));
+    const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):window.CBPESSimulator?.isActive()?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):tieRows(tiesOf(currentGames)));
     const editionCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
     const isLigaEvo=/liga\s*evo/i.test((editionCompetition?.name||'')+' '+(edition.name||''));
     if(isLigaEvo&&ix===0){
