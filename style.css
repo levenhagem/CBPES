@@ -5072,3 +5072,24 @@ body.cbpes-report-page-liga-pro #match .cbpes-report-hero .cbpes-report-goals.cb
 #match .cbpes-report-goals-centered .cbpes-report-goal-center{align-self:start!important;justify-self:center!important;margin-top:1px!important;transform:none!important}
 #match .cbpes-report-goals-centered .cbpes-report-goal-column{align-self:start!important}
 #statsGrid .cbpes-stats-player,#stats-detail .cbpes-stats-player{border-left-color:var(--cbpes-team-accent,#186a55)!important}
+
+/* Edição manual: indicadores em linhas, mandante e visitante em colunas. */
+.cbpes-admin-ui .cbpes-admin-stat-table{display:flex;flex-direction:column;gap:0;margin:20px 0 22px;border-top:1px solid #dce5e8}
+.cbpes-admin-ui .cbpes-admin-stat-row{display:grid;grid-template-columns:minmax(65px,1fr) minmax(120px,2fr) minmax(65px,1fr);align-items:center;gap:14px;min-height:65px;padding:10px 14px;border-bottom:1px solid #e5ebee;background:#fff}
+.cbpes-admin-ui .cbpes-admin-stat-row:nth-child(odd):not(.cbpes-admin-stat-head){background:#f7faf9}
+.cbpes-admin-ui .cbpes-admin-stat-row>span{text-align:center;color:#425766;font-weight:700;font-size:13px}
+.cbpes-admin-ui .cbpes-admin-stat-row>input{width:100%!important;max-width:115px!important;min-width:0!important;min-height:42px!important;margin:0!important;text-align:center!important;font-size:16px!important;font-weight:750!important;justify-self:center;border:1px solid #d4e0e5;border-radius:7px}
+.cbpes-admin-ui .cbpes-admin-stat-head{background:#edf4f1!important;min-height:49px}
+.cbpes-admin-ui .cbpes-admin-stat-head strong{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
+.cbpes-admin-ui .cbpes-admin-stat-head strong:last-child{text-align:right}
+.cbpes-admin-ui .cbpes-admin-stat-head span{font-size:11px;letter-spacing:.06em}
+@media(max-width:600px){.cbpes-admin-ui .cbpes-admin-stat-row{grid-template-columns:minmax(52px,1fr) minmax(95px,1.4fr) minmax(52px,1fr);gap:6px;padding:9px 5px}.cbpes-admin-ui .cbpes-admin-stat-row>span{font-size:11px}.cbpes-admin-ui .cbpes-admin-stat-row>input{min-height:40px!important;font-size:14px!important}.cbpes-admin-ui .cbpes-admin-stat-head strong{font-size:10px}}
+/* As cores cadastradas dos clubes substituem os tons genéricos das barras. */
+#match .cbpes-report-stats-card .cbpes-report-compare-home,
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cbpes-report-compare-home,
+body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report-compare-home{background:var(--cbpes-home-club,#2678a9)!important}
+#match .cbpes-report-stats-card .cbpes-report-compare-away,
+body.cbpes-report-page-liga-pro #match .cbpes-report-stats-card .cbpes-report-compare-away,
+body.cbpes-report-page-copa-master #match .cbpes-report-stats-card .cbpes-report-compare-away{background:var(--cbpes-away-club,#d0a52e)!important}
+#match .cbpes-report-stats-card .cbpes-report-stat-heading b:first-child{color:var(--cbpes-home-club,#2678a9)!important}
+#match .cbpes-report-stats-card .cbpes-report-stat-heading b:last-child{color:var(--cbpes-away-club,#d0a52e)!important}
