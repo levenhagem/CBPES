@@ -4662,3 +4662,29 @@ body > #navStatsMenu.nav-competition-menu{
     z-index: 2;
   }
 }
+
+/* Cards compactos: selo à esquerda do escudo, sem modificar o grid do confronto. */
+@media (min-width: 641px) {
+  :is(#recent, #next, #games, #table) .cbpes-match-main .cbpes-match-club:has(.featured-juventus-champion) {
+    position: relative;
+  }
+  :is(#recent, #next, #games, #table) .cbpes-match-main .featured-juventus-name-row:has(.featured-juventus-champion) {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    max-width: 100% !important;
+  }
+  :is(#recent, #next, #games, #table) .cbpes-match-main .featured-juventus-name-row .featured-juventus-champion {
+    position: absolute !important;
+    top: 50% !important;
+    left: -65px !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    padding: 2px 5px !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    z-index: 2;
+  }
+}
