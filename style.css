@@ -4733,29 +4733,23 @@ body > header #nav > .nav-competition-wrap {
   align-items: stretch !important;
 }
 
-/* Menu TABELA: competições oficiais em verde-claro; SEMANAIS mantém a paleta original. */
-#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option),
-body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) {
-  background: #d9f3e3 !important;
-  color: #124b32 !important;
-  border-bottom-color: #b9dfc8 !important;
+/* Menu TABELA: SEMANAIS em primeiro, destacado na paleta original. */
+#nav #navCompetitionMenu a.cbpes-nav-weeklies-option,
+body > #navCompetitionMenu a.cbpes-nav-weeklies-option {
+  background: #0c6745 !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border-left: 4px solid #f2c500 !important;
+  border-bottom: 1px solid #2b9068 !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
 }
-#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) small,
-body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option) small {
-  color: #367455 !important;
+#nav #navCompetitionMenu a.cbpes-nav-weeklies-option small,
+body > #navCompetitionMenu a.cbpes-nav-weeklies-option small {
+  color: #d1f1dd !important;
 }
-#nav #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option):is(:hover,:focus-visible),
-body > #navCompetitionMenu.nav-competition-menu a:not(.cbpes-nav-weeklies-option):is(:hover,:focus-visible) {
-  background: #b6e7ca !important;
-  color: #0b3c27 !important;
-}
-#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option,
-body > #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option {
-  background: transparent !important;
-  color: #f4f8f6 !important;
-}
-#nav #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible),
-body > #navCompetitionMenu.nav-competition-menu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible) {
-  background: #08643f !important;
+#nav #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible),
+body > #navCompetitionMenu a.cbpes-nav-weeklies-option:is(:hover,:focus-visible) {
+  background: #128257 !important;
   color: #fff !important;
 }
