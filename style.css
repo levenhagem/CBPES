@@ -5236,3 +5236,14 @@ body.cbpes-liga-pro-page #table .cbpes-results-panel .cbpes-match-main{min-heigh
 #trophies .cbpes-trophy-total{white-space:nowrap;font-size:12px}
 .cbpes-friendly-coach-filter .cardbody{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .cbpes-friendly-coach-filter select{min-width:210px;max-width:100%;padding:10px}
+
+/* Sala de Troféus: ranking em linhas, com conquistas empilhadas à direita. */
+#trophies .cbpes-trophy-ranking{border:1px solid #dce5df;background:#fff}
+#trophies .cbpes-trophy-ranking-row{display:grid;grid-template-columns:52px minmax(130px,210px) minmax(0,1fr);align-items:start;gap:16px;padding:19px 20px;border-bottom:1px solid #e3e9e5}
+#trophies .cbpes-trophy-ranking-row:last-child{border-bottom:0}
+#trophies .cbpes-trophy-ranking-row:first-child{background:#f6faf7}
+#trophies .cbpes-trophy-ranking-position{font-size:22px;font-weight:800;color:#08784d;line-height:1.2}
+#trophies .cbpes-trophy-ranking-coach a{font-size:16px;font-weight:800;color:#153a2a;text-decoration:none}
+#trophies .cbpes-trophy-ranking-achievements{display:flex;flex-direction:column;gap:10px}
+#trophies .cbpes-trophy-ranking-achievement{font-size:13px;font-weight:700;color:#344c40;line-height:1.5}
+@media(max-width:600px){#trophies .cbpes-trophy-ranking-row{grid-template-columns:32px minmax(80px,105px) minmax(0,1fr);gap:8px;padding:14px 10px}#trophies .cbpes-trophy-ranking-coach a{font-size:13px}#trophies .cbpes-trophy-ranking-achievement{font-size:11px}}
