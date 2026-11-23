@@ -439,6 +439,7 @@ function renderTable() {
   }
 
   document.getElementById('table').dataset.openingTournament=String(/torneio\s*de\s*abertura/i.test(headingName));
+  document.getElementById('table').dataset.winningEleven=String(/supercopa\s*winning\s*eleven/i.test(headingName));
   document.getElementById('table').dataset.ligaPro=String(isLigaProTable);
   document.body.classList.toggle('cbpes-liga-pro-page', location.hash.slice(1).split('/')[0]==='table' && isLigaProTable);
   const isMaster=/copa\s*master/i.test([selectedEdition?.name,selectedCompetition?.name,selectedWeekly?.name].filter(Boolean).join(' '));
