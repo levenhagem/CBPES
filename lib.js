@@ -155,7 +155,7 @@ function crestImg(p,cls='') {
   return `<img class="cbpes-crest ${cls}" src="${esc(p.crest_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`;
 }
 function teamWithCrest(p) { return `<span class="cbpes-team-inline">${crestImg(p)}<span>${esc(p.name)}</span></span>`; }
-function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode = 'arrow') {
+function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode = 'arrow', showRegistrationDate = false) {
   const coach = name => name ? `<a class="coach-link" href="#coach/${encodeURIComponent(name)}">${esc(name)}</a>` : '';
   const score = m.played ? `${m.home_score} - ${m.away_score}` : '– : –';
   const details = [];
@@ -178,7 +178,10 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const officialPhase = (D.phases||[]).find(p=>String(p.id)===String(m.round?.phase_id||''));
   const officialRound = m.round ? (officialPhase && !officialPhase.counts_in_standings ? officialPhase.name : roundLabel(m.round)) : (officialPhase?.name||'');
   const categoryLabel = m.category==='official' ? esc(officialName)+(showOfficialRound && officialRound ? ' • '+esc(officialRound).toUpperCase() : '') : category;
-  const meta = hideDate || !m.date ? '' : `<span class="match-date">${fd(m.date)}</span>`;
+  const registeredAt=m.result_registered_at||m.created_at;
+  const registeredDate=registeredAt?new Date(registeredAt):null;
+  const dateText=showRegistrationDate&&registeredDate&&!Number.isNaN(registeredDate.getTime())?registeredDate.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):fd(m.date);
+  const meta=hideDate||!dateText?'':`<span class="match-date">${esc(dateText)}</span>`;
   return `<div class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${meta}</div>
     <div class="cbpes-match-main">
