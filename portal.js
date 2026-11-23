@@ -255,7 +255,17 @@ function renderHome() {
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
         : `<div class="eyebrow" style="margin-bottom:5px">PARTIDA EM DESTAQUE</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
-  const recentHome = played.slice(0,5);
+  // Importações em lote compartilham exatamente o mesmo timestamp.
+  // Na vitrine, um lote semanal não pode ocupar os cinco resultados de uma vez
+  // e esconder partidas oficiais registradas separadamente.
+  const recentBatches=new Set();
+  const recentHome=played.filter(m=>{
+    const registered=String(m.result_registered_at||m.created_at||'');
+    const key=m.category==='weekly'&&registered?'weekly-batch:'+registered:'match:'+m.id;
+    if(recentBatches.has(key))return false;
+    recentBatches.add(key);
+    return true;
+  }).slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
   const officialPending=nx.filter(m=>m.category==='official');
@@ -279,7 +289,7 @@ function renderHome() {
     return (a.seq||0)-(b.seq||0)||(a.date||'9999').localeCompare(b.date||'9999');
   });
   const nextHome=[...orderedOfficial,...nx.filter(m=>m.category==='friendly'),...nx.filter(m=>m.category==='weekly')].slice(0,5);
-  $('recent').innerHTML = recentHome.length ? recentHome.map(matchRow).join('') : empty('Nenhum resultado cadastrado.');
+  $('recent').innerHTML = recentHome.length ? recentHome.map(m=>matchRow(m,false,false,'arrow',true)).join('') : empty('Nenhum resultado cadastrado.');
   $('next').innerHTML = nextHome.length ? nextHome.map(matchRow).join('') : empty('Nenhuma partida agendada.');
   // Painel lateral da Liga Pro: classificação, últimos resultados e números exclusivos.
   const proEdition=(D.officialEditions||[]).find(e=>/liga\s*pro/i.test(((D.officialCompetitions||[]).find(c=>c.id===e.competition_id)?.name||'')+' '+e.name));
