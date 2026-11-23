@@ -380,6 +380,23 @@ function openingTeamView(coach,team){
   const img='';
   return '<div class="cbpes-opening-team">'+img+'<div class="cbpes-opening-team-names"><strong>'+esc(name||'—')+'</strong><small>'+esc(coach||'—')+'</small></div></div>';
 }
+
+// Contagem única de TODOS os jogos do arquivo, inclusive mata-mata.
+function openingFullTotals(){
+ const normalize=v=>String(v||'').trim().toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const standings=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload);
+ const map=new Map(standings.map(x=>[normalize(x.coach),{...x,team:openingTeamName(x.team),j:0,v:0,e:0,d:0,gp:0,gc:0,points:0}]));
+ openingArchive.filter(x=>x.record_type==='match').forEach(x=>{
+  const m=x.payload||{},hs=Number(m.home_score),as=Number(m.away_score);
+  if(!Number.isFinite(hs)||!Number.isFinite(as))return;
+  [[m.home_coach,hs,as],[m.away_coach,as,hs]].forEach(([coach,gf,ga])=>{
+   const row=map.get(normalize(coach));if(!row)return;
+   row.j++;row.gp+=gf;row.gc+=ga;if(gf>ga)row.v++;else if(gf===ga)row.e++;else row.d++;
+  });
+ });
+ return [...map.values()].map(x=>({...x,sg:x.gp-x.gc,points:x.v*3+x.e})).sort((x,y)=>y.points-x.points||y.sg-x.sg||y.gp-x.gp);
+}
+
 function renderOpeningArchive(){
   const root=$('fullTable');if(!root)return;
   $('tblTitle').textContent='TORNEIO DE ABERTURA 2026';
@@ -388,6 +405,7 @@ function renderOpeningArchive(){
   if(!openingArchive.length){root.innerHTML=empty('Histórico do Torneio de Abertura ainda não disponível.');return;}
   const entries=openingArchive.filter(x=>x.record_type==='match').map(x=>({...x.payload,key:x.source_key}));
   const standing=openingArchive.filter(x=>x.record_type==='standing').map(x=>x.payload).sort((a,b)=>Number(a.position)-Number(b.position));
+  const fullTotals=openingFullTotals();
   const stages=[['classification','FASE CLASSIFICATÓRIA'],['round_of_16','OITAVAS DE FINAL'],['quarterfinal','QUARTAS DE FINAL'],['semifinal','SEMIFINAIS'],['final','FINAL']];
   if(!stages.some(x=>x[0]===openingArchiveTab))openingArchiveTab='classification';
   const phaseIndex=stages.findIndex(x=>x[0]===openingArchiveTab);
@@ -401,11 +419,12 @@ function renderOpeningArchive(){
   const podium='<div class="cbpes-opening-podium"><div class="cbpes-opening-champion"><span class="cbpes-opening-medal">🏆 CAMPEÃO</span><strong>Tirol</strong><small>Auxerre</small></div><div class="cbpes-opening-runnerup"><span class="cbpes-opening-medal">🥈 VICE-CAMPEÃO</span><strong>William Hard</strong><small>Olympiacos Piraeus</small></div></div>';
   let content='';
   if(openingArchiveTab==='classification'){
+    const fullTable='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>CLUBE / TÉCNICO</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+fullTotals.map(x=>'<tr><td>'+participant(x.coach,x.team)+'</td>'+[x.j,x.v,x.e,x.d,x.gp,x.gc,x.sg].map(v=>'<td>'+esc(String(v))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
     const table='<div class="scroll"><table class="cbpes-opening-table"><thead><tr><th>#</th><th>CLUBE / TÉCNICO</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th></tr></thead><tbody>'+standing.map(x=>'<tr class="'+(Number(x.position)>=1&&Number(x.position)<=16?'cbpes-opening-qualified':'')+'"><td>'+esc(String(x.position))+'</td><td>'+participant(x.coach,x.team)+'</td>'+[x.points,x.played,x.wins,x.draws,x.losses,x.goals_for,x.goals_against,x.goal_difference].map(v=>'<td>'+esc(String(v??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
     const rounds=entries.filter(x=>Number(x.round)>=1&&Number(x.round)<=6);
     const selector='<div class="cbpes-opening-round-nav"><button class="phase-arrow" type="button" data-opening-round="-1" '+(openingArchiveRound<=1?'disabled':'')+' aria-label="Rodada anterior">‹</button><b>RODADA '+openingArchiveRound+'</b><button class="phase-arrow" type="button" data-opening-round="1" '+(openingArchiveRound>=6?'disabled':'')+' aria-label="Próxima rodada">›</button></div>';
     const fixtures='<div class="cbpes-opening-fixtures">'+selector+'<div class="cbpes-opening-games">'+rounds.filter(x=>Number(x.round)===openingArchiveRound).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0)).map(game).join('')+'</div></div>';
-    content='<div class="cbpes-opening-two-column"><div class="cbpes-opening-standings"><h3>CLASSIFICAÇÃO</h3>'+table+'<p class="admin-help">Classificação histórica original após seis rodadas.</p></div><aside class="cbpes-opening-fixtures-column"><h3>JOGOS E RESULTADOS</h3>'+fixtures+'</aside></div>';
+    content='<div class="cbpes-opening-two-column"><div class="cbpes-opening-standings"><h3>CLASSIFICAÇÃO — PRIMEIRA FASE</h3>'+table+'<p class="admin-help">Classificação histórica após seis rodadas.</p><h3>ESTATÍSTICAS — CAMPEONATO COMPLETO (120 JOGOS)</h3>'+fullTable+'<p class="admin-help">Inclui todas as fases. GP e GC são somados diretamente dos placares de cada partida.</p></div><aside class="cbpes-opening-fixtures-column"><h3>JOGOS E RESULTADOS</h3>'+fixtures+'</aside></div>';
   }else{
     const phase=openingArchiveTab;
     const games=entries.filter(x=>x.phase===phase);
