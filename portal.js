@@ -253,7 +253,7 @@ function renderHome() {
   $('latest').innerHTML = m
     ? (m.category === 'official'
         ? '<div class="cbpes-home-featured-match"><div class="cbpes-featured-label">PARTIDA EM DESTAQUE</div>' + matchRow(m) + '</div>'
-        : `<div class="eyebrow" style="margin-bottom:5px">${featured?'PARTIDA EM DESTAQUE':'ÚLTIMA PARTIDA'}</div>${featuredRow()}`)
+        : `<div class="eyebrow" style="margin-bottom:5px">PARTIDA EM DESTAQUE</div>${featuredRow()}`)
     : `<div class="card"><div class="cardbody">${empty('Nenhuma partida realizada ainda.')}</div></div>`;
   const recentHome = played.slice(0,5);
   // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
@@ -677,11 +677,18 @@ const statsCompetitionMatch=m=>{
   const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
   return String(edition?.competition_id||'')===statsCompetition;
 };
+const statDataCache=new WeakMap();
 const statData=category=>{
+  let cached=statDataCache.get(D);
+  if(!cached){cached=new Map();statDataCache.set(D,cached);}
+  const key=category+'|'+(category==='official'?statsCompetition:'all');
+  if(cached.has(key))return cached.get(key);
   const ms=D.matches.filter(m=>m.category===category&&publicCompetitionMatch(m)&&(category!=='official'||statsCompetitionMatch(m)));
   const ids=new Set(ms.map(m=>m.id));
   const filtered={...D,matches:ms,events:D.events.filter(e=>ids.has(e.match_id))};
-  return stats(filtered,category);
+  const result=stats(filtered,category);
+  cached.set(key,result);
+  return result;
 };
 const friendlyCoachDefinitions=()=>{
   const coaches=new Map();
@@ -830,6 +837,16 @@ function generalStatsData(category){
   return {games:records.length,goals,average:records.length?goals/records.length:0,biggest};
 }
 function renderStats(){
+  // Definir a competição antes de calcular qualquer indicador.
+  if(statsCategory==='official'){
+    const available=activeVisibleStatCompetitions();
+    if(statsCompetition===null){
+      const liga=available.find(x=>/liga\s*pro/i.test(String(x.name||'')));
+      statsCompetition=liga?String(liga.id):'all';
+    }else if(statsCompetition!=='all'&&!available.some(x=>String(x.id)===statsCompetition)){
+      statsCompetition='all';
+    }
+  }
   const generalData=generalStatsData(statsCategory),b=generalData.biggest;
   const bigTxt=b?(b.archive?coachLink(b.home):'<a href="#team/'+encodeURIComponent(b.homeId)+'">'+esc(b.home)+'</a>')+' '+b.hs+' x '+b.as+' '+(b.archive?coachLink(b.away):'<a href="#team/'+encodeURIComponent(b.awayId)+'">'+esc(b.away)+'</a>'):'—';
   const filter='<div class="stats-category-filter" role="group" aria-label="Filtrar estatísticas">'+Object.entries(statCategoryLabels).map(([v,l])=>'<button data-stats-category="'+v+'" class="'+(statsCategory===v?'selected':'')+'">'+l+'</button>').join('')+'</div>';
