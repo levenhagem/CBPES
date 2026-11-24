@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 /* CBPES — visual de portal esportivo: plano, denso, sem sombras nem cantos arredondados */
 :root{--green:#078a45;--yellow:#f2c500;--blue:#173d70;--navy:#002b36;--ink:#14232b;--muted:#66767f;--line:#dde2e5;--bg:#f2f4f5;--white:#fff;--soft:#eef2f4;
@@ -5806,3 +5807,10 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #coachView .cbpes-trophy-item b{font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.25px;line-height:1.3;color:#fff!important;}
 #coachView .cbpes-trophy-item small{font-family:var(--f);font-size:11px;font-weight:400;color:#e3f4e9!important;line-height:1.3;}
 @media(max-width:600px){#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{padding:18px 12px!important;gap:12px;}#coachView .cbpes-trophy-item{width:calc((100% - 12px)/2);}#coachView .cbpes-trophy-item img{width:108px;height:108px;max-width:100%;}}
+
+/* Individual square trophy tiles. */
+#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{background:transparent!important;padding:12px!important;gap:12px;}
+#coachView .cbpes-trophy-item{background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%);width:180px;aspect-ratio:1;box-sizing:border-box;padding:12px;justify-content:center;gap:6px;}
+#coachView .cbpes-trophy-item img{width:110px;height:110px;max-width:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25)) drop-shadow(0 0 7px rgba(255,205,74,.65));}
+#coachView .cbpes-trophy-item b,#coachView .cbpes-trophy-item small{font-family:'Lato',var(--f)!important;}
+@media(max-width:600px){#coachView .cbpes-trophy-item{width:min(180px,calc((100% - 12px)/2));padding:8px;}#coachView .cbpes-trophy-item img{width:55%;height:auto;aspect-ratio:1;}}
