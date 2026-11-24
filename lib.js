@@ -103,11 +103,9 @@ function champion(D) {
   const ties = tiesOf(D.matches.filter(m => m.round_id === rs[rs.length - 1].id));
   return ties.length === 1 && ties[0].winner ? ties[0].winner : null;
 }
-// Ordem de publicação do resultado, não a data histórica da partida.
-// Linha do tempo: priorizar o instante em que o resultado foi registrado,
-// independentemente da data em que a partida ocorreu ou de sua competição.
+// Linha do tempo: priorizar a data real da partida, não o cadastro.
 function matchRegistrationTime(m){
- return String(m.result_registered_at||m.created_at||m.date||'');
+ return String(m.played_on||m.date||m.result_registered_at||m.created_at||'').slice(0,10);
 }
 function matchResultOrder(a,b){
  return matchRegistrationTime(b).localeCompare(matchRegistrationTime(a))
@@ -180,7 +178,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const categoryLabel = m.category==='official' ? esc(officialName)+(showOfficialRound && officialRound ? ' • '+esc(officialRound).toUpperCase() : '') : category;
   const registeredAt=m.result_registered_at||m.created_at;
   const registeredDate=registeredAt?new Date(registeredAt):null;
-  const dateText=showRegistrationDate&&registeredDate&&!Number.isNaN(registeredDate.getTime())?registeredDate.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):fd(m.date);
+  const dateText=fd(m.played_on||m.date);
   const meta=hideDate||!dateText?'':`<span class="match-date">${esc(dateText)}</span>`;
   return `<div data-cbpes-match-id="${esc(m.id)}" class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${meta}</div>
