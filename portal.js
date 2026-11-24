@@ -40,13 +40,15 @@ function renderMatchReport(matchId){
   document.body.classList.toggle('cbpes-report-page-liga-pro',isLigaPro);
   document.body.classList.toggle('cbpes-report-page-copa-master',isCopaMaster);
   const goalTeam=e=>e.team_id||(e.goal_type==='own_goal'?(player(e.scorer_id)?.participant_id===m.home_id?m.away_id:m.home_id):player(e.scorer_id)?.participant_id);
-  const goalName=e=>esc(e.goal_type==='own_goal'?'Gol contra':player(e.scorer_id)?.name||'Jogador não informado')+(e.minute!=null?' <small>'+esc(String(e.minute))+'’</small>':'')+(e.goal_type==='penalty'?' <small>(P)</small>':'');
+  const ownGoalPlayer=e=>{const name=String(player(e.scorer_id)?.name||'').trim();return name&&!/^(gol\s+contra|não identificado|desconhecido|jogador não informado)/i.test(name)?name:'';};
+  const goalLabel=e=>e.goal_type==='own_goal'?(ownGoalPlayer(e)?ownGoalPlayer(e)+' (GC)':'Gol contra'):(player(e.scorer_id)?.name||'Jogador não informado');
+  const goalName=e=>esc(goalLabel(e))+(e.minute!=null?' <small>'+esc(String(e.minute))+'’</small>':'')+(e.goal_type==='penalty'?' <small>(P)</small>':'');
   const groupedGoalRows=items=>{
     const groups=new Map();
-    for(const e of items){const key=e.goal_type==='own_goal'?'own_goal':e.scorer_id; if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);}
+    for(const e of items){const key=e.goal_type==='own_goal'?'own_goal:'+(ownGoalPlayer(e)?e.scorer_id:'unknown'):e.scorer_id; if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);}
     return [...groups.values()].map(list=>{
       if(list.length===1)return '<div>'+goalName(list[0])+'</div>';
-      const e=list[0],name=e.goal_type==='own_goal'?'Gol contra':player(e.scorer_id)?.name||'Jogador não informado';
+      const e=list[0],name=goalLabel(e);
       const minutes=list.filter(g=>g.minute!=null).map(g=>esc(String(g.minute))+'’'+(g.goal_type==='penalty'?' (P)':''));
       return '<div>'+esc(name)+' ('+list.length+')'+(minutes.length?' <small>'+minutes.join(', ')+'</small>':'')+'</div>';
     }).join('');
