@@ -5757,3 +5757,9 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 .table td:has(> .cbpes-form){vertical-align:middle!important;text-align:center!important;}
 .table td > .cbpes-form,.table.cbpes-liga-pro-table td:last-child > .cbpes-form{display:flex!important;align-items:center!important;justify-content:center!important;margin:0 auto!important;line-height:1!important;min-width:0;}
 .table td > .cbpes-form > .cbpes-form-dot{align-self:center;flex-shrink:0;box-sizing:border-box;}
+
+/* Form markers: identical geometry regardless of result or inherited styles. */
+.table .cbpes-form{display:inline-grid!important;grid-template-columns:repeat(5,9px);grid-auto-rows:9px;gap:4px;align-items:center!important;justify-content:center!important;vertical-align:middle!important;width:max-content!important;min-width:0!important;}
+.table .cbpes-form > .cbpes-form-dot{display:block!important;width:9px!important;height:9px!important;min-width:9px!important;min-height:9px!important;max-width:9px!important;max-height:9px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;position:static!important;transform:none!important;translate:none!important;box-sizing:border-box!important;align-self:center!important;justify-self:center!important;}
+#home .cbpes-home-league-compact .cbpes-form{grid-template-columns:repeat(5,8px);grid-auto-rows:8px;gap:3px;}
+#home .cbpes-home-league-compact .cbpes-form > .cbpes-form-dot{width:8px!important;height:8px!important;min-width:8px!important;min-height:8px!important;max-width:8px!important;max-height:8px!important;}
