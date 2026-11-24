@@ -146,7 +146,7 @@ function masterKnockout(edition,phase){
  return '<div class="cbpes-playoff-template">'+fixtures.map((m,index)=>{
   const label=esc(String(phase.name||'').toUpperCase());
   const team=(p,side)=>'<div class="cbpes-master-ko-row '+side+'"><div class="cbpes-master-ko-identity">'+(p?crestImg(p):'')+'<span class="cbpes-master-ko-team-info"><span class="cbpes-master-ko-name">'+(p?'<a href="#team/'+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>':'A definir')+'</span>'+(p?.coach_name?'<small class="cbpes-master-ko-coach">'+esc(p.coach_name)+'</small>':'')+'</span></div><div class="cbpes-master-ko-goals">'+(p?'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+(side==='home'?0:1)+'" aria-label="Gols '+(side==='home'?'mandante':'visitante')+'" value="'+esc((state.scores[m.id]||['',''])[side==='home'?0:1])+'">':'<span>–</span>')+'</div></div>';
-  return '<div class="cbpes-match cbpes-match-copa-master cbpes-master-ko-simulator-card cbpes-master-ko-stacked" style="--match-color:#bfcbd3" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+label+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-master-ko-rows">'+team(m.home,'home')+team(m.away,'away')+'</div>'+(m.played&&m.home_score===m.away_score?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>';
+  return '<div class="cbpes-match cbpes-match-copa-master cbpes-master-ko-simulator-card cbpes-master-ko-stacked" style="--match-color:#bfcbd3" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+label+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-master-ko-rows">'+team(m.home,'home')+team(m.away,'away')+'</div>'+(m.played&&m.home_score===m.away_score?'':'')+'</div>';
  }).join('')+'</div>';
 }
 
@@ -174,7 +174,7 @@ function ligaProKnockout(edition,phase){
   const v=state.scores[m.id]||['',''],index=side==='home'?0:1;
   return '<div class="cbpes-master-ko-row '+side+'"><div class="cbpes-master-ko-identity">'+(p?crestImg(p):'')+'<span class="cbpes-master-ko-team-info"><span class="cbpes-master-ko-name">'+(p?'<a href="#team/'+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>':'A definir')+'</span>'+(p?.coach_name?'<small class="cbpes-master-ko-coach">'+esc(p.coach_name)+'</small>':'')+'</span></div><div class="cbpes-master-ko-goals">'+(p?'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+index+'" aria-label="Gols '+(index?'visitante':'mandante')+'" value="'+esc(v[index])+'">':'<span>–</span>')+'</div></div>';
  };
- return '<div class="cbpes-playoff-template cbpes-liga-pro-knockout">'+fixtures.map((m,index)=>'<div class="cbpes-match cbpes-match-liga-pro cbpes-master-ko-stacked cbpes-liga-pro-ko-card" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+esc(String(phase.name||'').toUpperCase())+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-master-ko-rows">'+row(m,m.home,'home')+row(m,m.away,'away')+'</div>'+(m.tied?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>').join('')+'</div>';
+ return '<div class="cbpes-playoff-template cbpes-liga-pro-knockout">'+fixtures.map((m,index)=>'<div class="cbpes-match cbpes-match-liga-pro cbpes-master-ko-stacked cbpes-liga-pro-ko-card" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+esc(String(phase.name||'').toUpperCase())+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-master-ko-rows">'+row(m,m.home,'home')+row(m,m.away,'away')+'</div>'+(m.tied?'':'')+'</div>').join('')+'</div>';
 }
 function updateMasterStandings(){
  if(!state||state.kind!=='official')return false;
@@ -267,7 +267,7 @@ function render(){
  }
  let bar=root().querySelector('#cbpes-sim-controls');
  if(!bar){bar=document.createElement('div');bar.id='cbpes-sim-controls';root().prepend(bar);}
- bar.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button><span>Simulação temporária — nenhum resultado oficial será alterado.</span>';
+ bar.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button>';
  root().querySelectorAll('table tbody tr').forEach(tr=>{const key=tr.querySelector('a[href^="#team/"]')?.getAttribute('href');const from=positions.get(key);if(from===undefined)return;const delta=from-tr.getBoundingClientRect().top;if(Math.abs(delta)>2&&Math.abs(delta)<650)tr.animate([{transform:'translateY('+delta+'px)',backgroundColor:'rgba(40,153,104,.19)'},{transform:'translateY(0)',backgroundColor:'transparent'}],{duration:340,easing:'ease-out'});});
 }
 function exit(){if(typingTimer)clearTimeout(typingTimer);typingTimer=null;state=null;renderTable();}
