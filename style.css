@@ -5715,3 +5715,16 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #table a.cbpes-match-report-link.cbpes-match-report-details{width:28px!important;height:28px!important;padding:0!important;opacity:.8!important;letter-spacing:0!important;text-decoration:none!important}
 #table a.cbpes-match-report-link.cbpes-match-report-details svg{width:16px!important;height:16px!important}
 #table a.cbpes-match-report-link.cbpes-match-report-details:hover,#table a.cbpes-match-report-link.cbpes-match-report-details:focus-visible{opacity:1!important}
+
+#table .cbpes-round-clean{display:flex;align-items:center;gap:16px;width:100%;box-sizing:border-box;padding:8px 12px;color:inherit}
+#table .cbpes-round-clean-teams{flex:1;min-width:0}
+#table .cbpes-round-clean-row{display:grid;grid-template-columns:36px minmax(0,1fr) 32px;align-items:center;gap:12px;min-height:50px;padding:5px 0;box-sizing:border-box}
+#table .cbpes-round-clean-row+.cbpes-round-clean-row{border-top:1px solid rgba(128,128,128,.25)}
+#table .cbpes-round-clean-row .cbpes-crest{width:36px!important;height:36px!important;object-fit:contain}
+#table .cbpes-round-clean-identity{min-width:0;text-align:left;display:block}
+#table .cbpes-round-clean-identity a{color:inherit!important;text-decoration:none;font-size:16px!important;line-height:1.2;font-weight:700}
+#table .cbpes-round-clean-identity small{display:block;font-size:11px;opacity:.8;line-height:1.3}
+#table .cbpes-round-clean-goals{text-align:center;font-size:22px;font-variant-numeric:tabular-nums}
+#table .cbpes-round-clean-link{display:flex;align-items:center;justify-content:center;flex:0 0 28px;height:44px;color:inherit;text-decoration:none}
+#table .cbpes-round-clean-link svg{width:19px;height:19px}
+@media(max-width:620px){#table .cbpes-round-clean{gap:8px;padding:6px 8px}#table .cbpes-round-clean-row{grid-template-columns:30px minmax(0,1fr) 26px;gap:8px}#table .cbpes-round-clean-row .cbpes-crest{width:30px!important;height:30px!important}#table .cbpes-round-clean-identity a{font-size:14px!important}}
