@@ -220,7 +220,7 @@ async function generateEditionGroupRounds(){
 }
 const weeklyMedalPath=kind=>'trophies/weekly/medalha-'+kind+'.png';
 function weeklyMedalAdmin(){
-  return '<div class="card" style="margin:12px 0"><div class="cardhead"><h2>SEMANAIS — MEDALHAS</h2></div><div class="cardbody">'+['prata','bronze'].map(kind=>'<div class="field" style="margin:12px 0"><label>MEDALHA DE '+kind.toUpperCase()+' ('+(kind==='prata'?'2º':'3º')+' LUGAR)</label><img src="'+esc(sb.storage.from('club-crests').getPublicUrl(weeklyMedalPath(kind)).data.publicUrl)+'?v='+Date.now()+'" style="width:90px;height:90px;object-fit:contain" onerror="this.hidden=true" alt="Medalha"><input type="file" accept="image/png,.png" data-weekly-medal-file="'+kind+'"><button class="btn primary sm" data-weekly-medal-save="'+kind+'">ENVIAR MEDALHA</button></div>').join('')+'</div></div>';
+  return '<div class="card" style="margin:12px 0"><div class="cardhead"><h2>SEMANAIS — TROFÉU E MEDALHAS</h2></div><div class="cardbody">'+['campeao','prata','bronze'].map(kind=>'<div class="field" style="margin:12px 0"><label>'+(kind==='campeao'?'TROFÉU DO CAMPEÃO':'MEDALHA DE '+kind.toUpperCase()+' ('+(kind==='prata'?'2º':'3º')+' LUGAR)')+'</label><img src="'+esc(sb.storage.from('club-crests').getPublicUrl(weeklyMedalPath(kind)).data.publicUrl)+'?v='+Date.now()+'" style="width:90px;height:90px;object-fit:contain" onerror="this.hidden=true" alt="Medalha"><input type="file" accept="image/png,.png" data-weekly-medal-file="'+kind+'"><button class="btn primary sm" data-weekly-medal-save="'+kind+'">ENVIAR '+(kind==='campeao'?'TROFÉU':'MEDALHA')+'</button></div>').join('')+'</div></div>';
 }
 function vCamp() {
   const ocList=D.officialCompetitions||[], oeList=D.officialEditions||[];
@@ -230,7 +230,7 @@ function vCamp() {
       const medal=e.target.closest('[data-weekly-medal-save]');
       if(medal){
         const kind=medal.dataset.weeklyMedalSave;
-        if(!['prata','bronze'].includes(kind))return;
+        if(!['campeao','prata','bronze'].includes(kind))return;
         const file=$('view').querySelector('[data-weekly-medal-file="'+kind+'"]')?.files?.[0];
         if(!file||file.type!=='image/png'||file.size>2097152)return say('Selecione um PNG de até 2 MB.',false);
         medal.disabled=true;
