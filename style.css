@@ -5780,3 +5780,10 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 
 /* Liga PRO standings: use available width and distribute columns. */
 @media(min-width:901px){body.cbpes-liga-pro-page #table .cbpes-competition-layout{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table{width:100%!important;table-layout:auto!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table th,body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table td{padding-left:6px!important;padding-right:6px!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table td{font-size:14px!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table th:first-child{width:auto!important;}}
+
+/* Compact official and weekly coach history cards. */
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly){padding:7px 10px!important;min-height:0!important;gap:4px!important;}
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:0 0 3px!important;line-height:1.2!important;min-height:0!important;}
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date{display:inline!important;margin:0!important;padding:0!important;font-size:inherit!important;line-height:inherit!important;white-space:nowrap;}
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date::before{content:"•";margin-right:5px;}
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-line{min-height:0!important;padding:0!important;margin:0!important;}
