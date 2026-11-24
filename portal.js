@@ -742,6 +742,7 @@ function renderWeeklies() {
 const statCategoryLabels={official:'COMPETIÇÕES OFICIAIS',weekly:'SEMANAIS',friendly:'AMISTOSOS — TÉCNICOS'};
 const statDefinitions=S=>[
   {key:'scorers',title:'ARTILHARIA',rows:S.artilheiros,value:x=>x.g,unit:'gols',players:true},
+  {key:'own-goals',title:'GOLS CONTRA',rows:S.ownGoals||[],value:x=>x.og,unit:'',players:true},
   {key:'attack',title:'MELHOR ATAQUE (GOLS/JOGO)',rows:S.ataque.slice().sort((a,b)=>b.gp/b.j-a.gp/a.j),value:x=>fmt1(x.gp/x.j)},
   {key:'defense',title:'MELHOR DEFESA',rows:S.defesa,value:x=>x.gc},
   {key:'goals',title:'GOLS MARCADOS',rows:S.ataque,value:x=>x.gp},
