@@ -5738,3 +5738,15 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 /* Secondary coach typography in round cards */
 #table .cbpes-round-clean-identity small,#table .cbpes-round-clean-identity small a.coach-link{font-weight:400!important;font-size:11px!important;line-height:1.3!important;letter-spacing:normal!important;color:inherit!important;text-decoration:none!important}
 #table .cbpes-round-clean-identity small{opacity:.72!important}
+
+/* Opening tournament: consistent neutral cards for native and reclassified matches. */
+#coachView .cbpes-coach-history .cbpes-coach-match-row.cbpes-coach-opening-match{background:#f5f6f7!important;border:1px solid #dce1e5!important;color:#26313b!important;box-shadow:none!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{display:grid!important;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;align-items:center!important;gap:12px!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side{display:flex!important;flex-direction:column!important;min-width:0!important;width:100%!important;gap:3px!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:first-child{align-items:flex-end!important;text-align:right!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:last-child{align-items:flex-start!important;text-align:left!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{display:inline-flex!important;align-items:center!important;gap:6px!important;width:auto!important;max-width:100%!important;color:#26313b!important;font-weight:650!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club a{color:inherit!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small,#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small a,#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-meta small{color:#69747e!important;font-weight:400!important}
+#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#26313b!important;text-align:center!important;justify-self:center!important}
+@media(max-width:600px){#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr)!important;gap:5px!important}}
