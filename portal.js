@@ -281,7 +281,7 @@ function renderHome() {
     return true;
   }).slice(0,5);
   // A faixa superior e o painel Últimos Resultados usam exatamente
-  // a mesma seleção de cinco partidas, na mesma ordem de registro.
+  // a mesma seleção de cinco partidas, na mesma ordem cronológica.
   const sl = recentHome;
   $('strip').innerHTML = sl.length ? sl.map(sc).join('') : '<div class="sc-end" style="padding:14px 16px">Nenhuma partida cadastrada.</div>';  // Próximos jogos: terminar a rodada pendente antes de avançar à seguinte.
   // Não usar a data como prioridade entre rodadas: partidas podem ser registradas fora de ordem.
@@ -356,7 +356,7 @@ function renderGames() {
   document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('selected', b.dataset.f === filter));
   const ms = D.matches.filter(publicCompetitionMatch).filter(m=>String(m.official_edition_id||m.round?.official_edition_id||'')!==openingEditionId).filter(m => ['all','done','next'].includes(filter) ? (filter === 'all' || (filter === 'done' ? m.played : !m.played)) : (m.category || 'official') === filter);
   // Linha do tempo única: partidas oficiais, amistosas e semanais intercaladas
-  // pela data/hora de cadastro, sem agrupar resultados por competição ou rodada.
+  // pela data real da partida, sem agrupar resultados por competição ou rodada.
   const visibleGames=ms;
   const chronological = visibleGames.slice().sort((a,b)=>{
     if(Boolean(a.played)!==Boolean(b.played))return a.played?-1:1;
