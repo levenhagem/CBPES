@@ -150,6 +150,32 @@ function masterKnockout(edition,phase){
  }).join('')+'</div>';
 }
 
+function ligaProKnockout(edition,phase){
+ if(!state||state.kind!=='official'||!eq(state.id,edition.id))return null;
+ const sc=scope();if(!sc)return null;
+ const group=sc.phases.find(p=>p.counts_in_standings);
+ const roundIds=new Set(sc.rounds.filter(r=>eq(r.phase_id,group?.id)).map(r=>String(r.id)));
+ const groupGames=projected().filter(m=>roundIds.has(String(m.round_id)));
+ const ids=new Set(groupGames.flatMap(m=>[String(m.home_id),String(m.away_id)]));
+ const ranking=standings(D.participants.filter(p=>ids.has(String(p.id))),groupGames).map(x=>x.p);
+ const match=(stage,index,home,away)=>{
+  const id='liga-pro-ko-'+edition.id+'-'+stage+'-'+index;
+  const values=state.scores[id]||['',''];
+  const played=!!home&&!!away&&values[0]!==''&&values[1]!=='';
+  const h=Number(values[0]),a=Number(values[1]);
+  return {id,home,away,played,winner:played&&h!==a?(h>a?home:away):null,tied:played&&h===a};
+ };
+ const play=[match('p',0,ranking[2],ranking[5]),match('p',1,ranking[3],ranking[4])];
+ const semis=[match('s',0,ranking[0],play[1].winner),match('s',1,ranking[1],play[0].winner)];
+ const final=[match('f',0,semis[0].winner,semis[1].winner)];
+ const stage=phase.phase_type==='final'?'f':/semi/i.test(phase.name||'')?'s':'p';
+ const fixtures=stage==='f'?final:stage==='s'?semis:play;
+ const row=(m,p,side)=>{
+  const v=state.scores[m.id]||['',''],index=side==='home'?0:1;
+  return '<div class="cbpes-master-ko-row '+side+'"><div class="cbpes-master-ko-identity">'+(p?crestImg(p):'')+'<span class="cbpes-master-ko-team-info"><span class="cbpes-master-ko-name">'+(p?'<a href="#team/'+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>':'A definir')+'</span>'+(p?.coach_name?'<small class="cbpes-master-ko-coach">'+esc(p.coach_name)+'</small>':'')+'</span></div><div class="cbpes-master-ko-goals">'+(p?'<input type="number" min="0" max="999" inputmode="numeric" data-sim-id="'+m.id+'" data-sim-side="'+index+'" aria-label="Gols '+(index?'visitante':'mandante')+'" value="'+esc(v[index])+'">':'<span>–</span>')+'</div></div>';
+ };
+ return '<div class="cbpes-playoff-template cbpes-liga-pro-knockout">'+fixtures.map((m,index)=>'<div class="cbpes-match cbpes-match-liga-pro cbpes-master-ko-stacked cbpes-liga-pro-ko-card" data-cbpes-match-id="'+m.id+'">'+(stage==='f'?'':'<div class="cbpes-match-top"><span class="cbpes-match-category">'+esc(String(phase.name||'').toUpperCase())+' • CHAVE '+(index+1)+'</span></div>')+'<div class="cbpes-master-ko-rows">'+row(m,m.home,'home')+row(m,m.away,'away')+'</div>'+(m.tied?'<div class="cbpes-master-ko-note">Empate: altere o placar para definir o classificado</div>':'')+'</div>').join('')+'</div>';
+}
 function updateMasterStandings(){
  if(!state||state.kind!=='official')return false;
  const groups=[...root()?.querySelectorAll('.cbpes-master-group')||[]];
@@ -254,7 +280,7 @@ function updateScore(el,immediate=false){
  if(!state||!el.matches('[data-sim-id]'))return;
  const key=String(el.dataset.simId),original=all().find(m=>eq(m.id,key));
  if(original&&done(original))return;
- if(!original&&!key.startsWith('master-virtual-')&&!key.startsWith('master-ko-'))return;
+ if(!original&&!key.startsWith('master-virtual-')&&!key.startsWith('master-ko-')&&!key.startsWith('liga-pro-ko-'))return;
  const v=el.value.trim(),side=Number(el.dataset.simSide);
  if(v!==''&&!valid(v)){el.value=state.scores[key]?.[side]||'';return;}
  const scores=state.scores[key]||['',''];scores[side]=v;state.scores[key]=scores;
@@ -271,7 +297,7 @@ function updateScore(el,immediate=false){
  };
  // A Copa Master atualiza apenas as linhas da classificação, preservando
  // os quadradinhos e o foco do teclado. Demais competições usam renderização normal.
- if(key.startsWith('master-ko-')||!updateMasterStandings())refresh();
+ if(key.startsWith('master-ko-')||key.startsWith('liga-pro-ko-')||!updateMasterStandings())refresh();
 }
 document.addEventListener('input',e=>updateScore(e.target));
 // O evento input já atualiza a tabela; change não deve reconstruí-la novamente.
@@ -303,5 +329,5 @@ const masterCss=document.createElement('style');masterCss.textContent=`
 .cbpes-master-ko-note{font-size:11px;color:var(--muted,#8a9096);text-align:center;margin-top:8px}
 @media(max-width:480px){.cbpes-master-ko-body{grid-template-columns:minmax(0,1fr) 75px minmax(0,1fr);gap:5px}.cbpes-master-ko-team{font-size:11px;gap:4px}.cbpes-master-ko-team img{width:23px;height:23px}.cbpes-master-ko-match{padding:11px 9px}}
 `;document.head.appendChild(masterCss);
-window.CBPESSimulator={exit,isActive:()=>!!state,virtualMasterGames,masterProjectedMatches,masterKnockout,refresh:()=>{if(state&&!rendering)render();}};
+window.CBPESSimulator={exit,isActive:()=>!!state,virtualMasterGames,masterProjectedMatches,masterKnockout,ligaProKnockout,refresh:()=>{if(state&&!rendering)render();}};
 })();
