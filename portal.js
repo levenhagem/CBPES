@@ -40,11 +40,11 @@ function renderMatchReport(matchId){
   document.body.classList.toggle('cbpes-report-page-liga-pro',isLigaPro);
   document.body.classList.toggle('cbpes-report-page-copa-master',isCopaMaster);
   const goalTeam=e=>e.team_id||(e.goal_type==='own_goal'?(player(e.scorer_id)?.participant_id===m.home_id?m.away_id:m.home_id):player(e.scorer_id)?.participant_id);
-  const goalName=e=>esc(player(e.scorer_id)?.name||'Jogador não informado')+(e.minute!=null?' <small>'+esc(String(e.minute))+'’</small>':'')+(e.goal_type==='own_goal'?' <small>(GC)</small>':e.goal_type==='penalty'?' <small>(P)</small>':'');
+  const goalName=e=>esc(e.goal_type==='own_goal'?'Gol contra':player(e.scorer_id)?.name||'Jogador não informado')+(e.minute!=null?' <small>'+esc(String(e.minute))+'’</small>':'')+(e.goal_type==='penalty'?' <small>(P)</small>':'');
   const homeGoals=goals.filter(e=>goalTeam(e)===m.home_id);
   const awayGoals=goals.filter(e=>goalTeam(e)===m.away_id);
   const goalRows='<div class="cbpes-report-goal-column cbpes-report-goal-home">'+homeGoals.map(e=>'<div>'+goalName(e)+'</div>').join('')+'</div><span class="cbpes-report-goal-center" aria-hidden="true"><iconify-icon icon="iconoir:soccer-ball"></iconify-icon></span><div class="cbpes-report-goal-column cbpes-report-goal-away">'+awayGoals.map(e=>'<div>'+goalName(e)+'</div>').join('')+'</div>';
-  const saveStats=(stat&&m.played&&stat.home_shots_on_target!=null&&stat.away_shots_on_target!=null)?{home:Math.max(0,Number(stat.away_shots_on_target)-Number(m.away_score)),away:Math.max(0,Number(stat.home_shots_on_target)-Number(m.home_score))}:null;
+  const saveStats=(stat&&m.played&&stat.home_shots_on_target!=null&&stat.away_shots_on_target!=null)?{home:Math.max(0,Number(stat.away_shots_on_target)-Number(m.away_score)+awayGoals.filter(e=>e.goal_type==='own_goal').length),away:Math.max(0,Number(stat.home_shots_on_target)-Number(m.home_score)+homeGoals.filter(e=>e.goal_type==='own_goal').length)}:null;
   const statDefs=[['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['goalkeeper_saves','Defesas do goleiro','',false],['corners','Escanteios','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
   const clubColor=team=>{
     const valid=x=>/^#[0-9a-f]{6}$/i.test(x||'');
@@ -54,7 +54,7 @@ function renderMatchReport(matchId){
     // Fundo escuro do relatório: usar a alternativa mais legível quando a primária for apagada.
     return secondary&&luminance(secondary)>luminance(primary)&&luminance(primary)<.17?secondary:primary;
   };
-  const reportClubStyle='--cbpes-home-club:'+clubColor(m.home)+';--cbpes-away-club:'+clubColor(m.away)+';';
+  const reportClubStyle='--cbpes-home-club:'+clubColor(m.home)+';--cbpes-away-club:'+(m.id==='d137ef2a-32fc-4270-8a6a-66ecf104988f'?'#facc15':clubColor(m.away))+';';
   const statHTML=statDefs.map(([key,label,suffix,conditional])=>{
     const a=key==='goalkeeper_saves'?saveStats?.home:stat?.['home_'+key],b=key==='goalkeeper_saves'?saveStats?.away:stat?.['away_'+key];
     if(conditional&&!(Number(a)>0||Number(b)>0))return '';
