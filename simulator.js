@@ -262,6 +262,7 @@ function render(){
    };
    const rows=document.createElement('div');rows.className='cbpes-liga-pro-sim-rows';
    rows.append(row(home,'home',0),row(away,'away',1));
+   card.querySelector('.cbpes-round-clean')?.remove();
    main.replaceWith(rows);card.classList.add('cbpes-liga-pro-sim-stacked');
   });
  }
