@@ -5787,3 +5787,5 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date{display:inline!important;margin:0!important;padding:0!important;font-size:inherit!important;line-height:inherit!important;white-space:nowrap;}
 #coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date::before{content:"•";margin-right:5px;}
 #coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-line{min-height:0!important;padding:0!important;margin:0!important;}
+
+#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{justify-content:flex-start!important;text-align:left!important;align-self:stretch!important;width:100%!important;}
