@@ -327,7 +327,7 @@ function renderHome() {
   const proScorers=new Map();
   (D.events||[]).filter(e=>proMatchIds.has(String(e.match_id))&&e.scorer_id&&e.goal_type!=='own_goal').forEach(e=>{
     const player=(D.players||[]).find(p=>String(p.id)===String(e.scorer_id));
-    if(!player)return;
+    if(!player||/^gol\s+contra\b/i.test(String(player.name||'').trim()))return;
     const key=String(player.id);
     const entry=proScorers.get(key)||{player,goals:0};
     entry.goals++;proScorers.set(key,entry);
@@ -1511,7 +1511,7 @@ function recordCards(){
   const weekMap=new Map();weeklyChampions.forEach(x=>{if(x.name)weekMap.set(x.name,(weekMap.get(x.name)||0)+1);});
   put('coaches','Maior vencedor de semanais',top([...weekMap].map(([name,count])=>({name,count})),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos semanais'}));
   const officialIds=new Set(official.map(m=>String(m.id)));
-  const scorerEvents=(D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.scorer_id&&e.goal_type!=='own_goal');
+  const scorerEvents=(D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.scorer_id&&e.goal_type!=='own_goal'&&!(D.players||[]).some(p=>String(p.id)===String(e.scorer_id)&&/^gol\s+contra\b/i.test(String(p.name||'').trim())));
   const players=new Map(D.players.map(p=>[String(p.id),p]));
   const playerEvents=new Map();
   scorerEvents.forEach(e=>{const key=String(e.match_id)+':'+e.scorer_id;playerEvents.set(key,(playerEvents.get(key)||0)+1);});
