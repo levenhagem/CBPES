@@ -88,7 +88,9 @@ function route() {
   if(nextHash.startsWith('#match/')&&!previousPortalHash.startsWith('#match/'))matchReturn={hash:previousPortalHash,scroll:previousPortalScroll};
   previousPortalHash=nextHash;
   const raw = location.hash.slice(1), parts = raw.split('/');
-  document.body.classList.remove('cbpes-report-page','cbpes-report-page-liga-pro','cbpes-report-page-copa-master');
+  const sameLigaTheme=returning&&document.body.classList.contains('cbpes-report-page-liga-pro')&&nextHash.startsWith('#table');
+  if(sameLigaTheme)document.body.classList.add('cbpes-liga-pro-page');
+  if(!sameLigaTheme)document.body.classList.remove('cbpes-report-page','cbpes-report-page-liga-pro','cbpes-report-page-copa-master');
   const profile = ['participant','team','coach','match'].includes(parts[0]) && parts.length > 1;
   const id = profile ? parts[0] : (parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
@@ -107,6 +109,7 @@ function route() {
     if (id === 'coach') renderCoach(value);
     if (id === 'match') renderMatchReport(value);
   }
+  if(sameLigaTheme)document.body.classList.remove('cbpes-report-page','cbpes-report-page-liga-pro','cbpes-report-page-copa-master');
   window.scrollTo(0, returning?matchReturn.scroll:0);
 }
 function closeNavCompetitionMenu(){
