@@ -137,7 +137,7 @@ function stats(D, category = 'official') {
   const by = (f, dir = -1) => st.filter(x => x.j > 0).sort((a, b) => dir * (f(a) - f(b)) || a.p.name.localeCompare(b.p.name));
   const big = played.slice().sort((a, b) => Math.abs(b.home_score - b.away_score) - Math.abs(a.home_score - a.away_score) || (b.home_score + b.away_score) - (a.home_score + a.away_score))[0];
   const g = {}, a = {};
-  events.forEach(e => { g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
+  events.forEach(e => { if(e.goal_type!=='own_goal') g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
   const pl = D.players.map(x => ({ ...x, g: g[x.id] || 0, a: a[x.id] || 0 }));
   const cmp = (k, k2) => (x, y) => y[k] - x[k] || y[k2] - x[k2] || x.name.localeCompare(y.name);
   return {
