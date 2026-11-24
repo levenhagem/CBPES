@@ -5825,3 +5825,8 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #coachView .cbpes-trophy-item::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:108px;left:-8px;right:-8px;height:6px;background:linear-gradient(180deg,rgba(224,190,112,.55) 0 1px,#064a32 1px,#053d2b 100%);box-shadow:0 3px 5px rgba(0,0,0,.16);}
 #coachView .cbpes-trophy-item img{position:relative;z-index:1;}
 #coachView .cbpes-trophy-item b{margin-top:4px;}
+
+/* Trophy typography: high contrast, no shelf. */
+#coachView .cbpes-trophy-item::after{content:none!important;display:none!important;}
+#coachView .cbpes-trophy-item b{font-family:'Inter',system-ui,sans-serif!important;font-size:14px!important;font-weight:800!important;letter-spacing:.15px;color:#fff!important;line-height:1.2;margin-top:0!important;}
+#coachView .cbpes-trophy-item small{font-family:'Inter',system-ui,sans-serif!important;font-size:12px!important;font-weight:600!important;color:#fff!important;opacity:1!important;}
