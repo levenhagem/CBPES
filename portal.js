@@ -1247,7 +1247,7 @@ function renderCoach(name) {
   const weeklyMedals=[2,3].map(place=>({place,items:achievements.filter(a=>a.category==='SEMANAL'&&a.place===place)})).filter(g=>g.items.length);
   const weeklyMedalHtml=weeklyMedals.map(g=>{
     const label=g.place===2?'2º LUGAR':'3º LUGAR';
-    const url='medalha-semanal-'+(g.place===2?'prata':'bronze')+'.png';
+    const url=esc(sb.storage.from('club-crests').getPublicUrl('trophies/weekly/medalha-'+(g.place===2?'prata':'bronze')+'.png').data.publicUrl);
     return '<div class="cbpes-trophy-item" style="position:relative;box-shadow:none"><img src="'+url+'" alt="'+label+'" style="filter:none;box-shadow:none" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="cbpes-trophy-placeholder" hidden>'+(g.place===2?'🥈':'🥉')+'</span>'+(g.items.length>=2?'<span style="position:absolute;top:6px;right:6px;display:grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border-radius:50%;background:#fff;color:#173b29;font-weight:800;box-shadow:none">'+g.items.length+'</span>':'')+'<b style="font-family:Lato,sans-serif">SEMANAL • '+label+'</b></div>';
   }).join('');
   const officialAchievements=achievements.filter(a=>a.category!=='SEMANAL');
