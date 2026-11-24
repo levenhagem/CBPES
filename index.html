@@ -32,6 +32,7 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 #coachCompareResult > .cbpes-compare-board,#coachCompareResult > .cbpes-compare-achievements{animation:cbpesCompareIn .2s ease-out}
 @media(prefers-reduced-motion:reduce){dialog.cbpes-coach-compare[open],dialog.cbpes-coach-compare[open]::backdrop,#coachCompareResult > *{animation:none!important}}
 </style>
+<style>#coachView dialog.cbpes-coach-compare .cbpes-compare-picker{display:block!important;height:auto!important;min-height:0!important}#coachView dialog.cbpes-coach-compare .cbpes-compare-picker>label{display:block!important;height:14px!important;min-height:0!important;line-height:14px!important;margin:0 0 5px!important;padding:0!important}#coachView dialog.cbpes-coach-compare .cbpes-compare-picker>select{display:block!important;margin:0!important;position:static!important;transform:none!important}</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -101,13 +102,13 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 <script src="config.js"></script>
 <script src="lib.js?v=actual-match-date-20261124"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
-<script src="portal.js?v=c5c6758"></script>
+<script src="portal.js?v=680bb407"></script>
 <script src="simulator.js?v=sim-refresh-20261124"></script>
 <script>
 (function(){
   const label=document.getElementById('season');
   if(!label)return;
-  const sha='c5c6758094554767846cd3fd1e2bd853902c7b12';
+  const sha='680bb407be6fd9afc106fde8df249b31147e7f45';
   if(/^[0-9a-f]{40}$/i.test(sha))label.textContent='COMMIT '+sha.slice(0,7);
   else label.textContent='COMMIT —';
 })();
