@@ -325,7 +325,7 @@ function renderHome() {
   // Artilharia exclusiva da Liga PRO, contabilizando apenas gols dos jogos desta edição.
   const proMatchIds=new Set(proMatches.filter(m=>m.played).map(m=>String(m.id)));
   const proScorers=new Map();
-  (D.events||[]).filter(e=>proMatchIds.has(String(e.match_id))&&e.scorer_id).forEach(e=>{
+  (D.events||[]).filter(e=>proMatchIds.has(String(e.match_id))&&e.scorer_id&&e.goal_type!=='own_goal').forEach(e=>{
     const player=(D.players||[]).find(p=>String(p.id)===String(e.scorer_id));
     if(!player)return;
     const key=String(player.id);
@@ -1511,7 +1511,7 @@ function recordCards(){
   const weekMap=new Map();weeklyChampions.forEach(x=>{if(x.name)weekMap.set(x.name,(weekMap.get(x.name)||0)+1);});
   put('coaches','Maior vencedor de semanais',top([...weekMap].map(([name,count])=>({name,count})),x=>x.count),x=>({value:recordLink(x.name,'coach'),metric:x.count+' títulos semanais'}));
   const officialIds=new Set(official.map(m=>String(m.id)));
-  const scorerEvents=(D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.scorer_id);
+  const scorerEvents=(D.events||[]).filter(e=>officialIds.has(String(e.match_id))&&e.scorer_id&&e.goal_type!=='own_goal');
   const players=new Map(D.players.map(p=>[String(p.id),p]));
   const playerEvents=new Map();
   scorerEvents.forEach(e=>{const key=String(e.match_id)+':'+e.scorer_id;playerEvents.set(key,(playerEvents.get(key)||0)+1);});
