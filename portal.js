@@ -887,7 +887,7 @@ const officialMatchMetricDefinitions=()=>{
   });
   const format=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
   return metrics.map(([key,title,unit])=>{
-    const mode=key==='possession'?'average':key==='penalties'?'total':(matchMetricModes[key]||'average');
+    const mode=key==='possession'?'average':['penalties','red_cards'].includes(key)?'total':(matchMetricModes[key]||'average');
     const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key],total:x.totals[key]}))
       .sort((a,b)=>(mode==='total'?b.total-a.total:b.average-a.average)||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
     return {key:'match-'+key,title,rows,value:x=>mode==='total'?String(x.total):format(x.average),unit,matchMetric:key,metricMode:mode};
@@ -945,7 +945,7 @@ const defenseDefinition=definition=>{
   });
   return {...definition,rows,value:x=>perGame?fmt1(x.gc/x.j):x.gc,unit:perGame?'gols/jogo':'gols'};
 };
-const matchMetricPicker=definition=>definition.matchMetric&&!['possession','penalties'].includes(definition.matchMetric)
+const matchMetricPicker=definition=>definition.matchMetric&&!['possession','penalties','red_cards'].includes(definition.matchMetric)
   ?'<div class="stats-category-filter cbpes-defense-picker" role="group" aria-label="Exibição de '+esc(definition.title)+'"><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="average" class="'+(definition.metricMode==='average'?'selected':'')+'">MÉDIA</button><button type="button" data-match-metric="'+esc(definition.matchMetric)+'" data-match-mode="total" class="'+(definition.metricMode==='total'?'selected':'')+'">TOTAL</button></div>'
   :'';
 const changeMatchMetricMode=e=>{
