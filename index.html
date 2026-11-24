@@ -101,4 +101,33 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
     .catch(()=>{label.textContent='COMMIT';});
 })();
 </script>
+<script>
+(function(){
+ const mobile=matchMedia('(max-width: 620px)');
+ const full='Manchester United', short='Man. United';
+ const selector='.cbpes-team-name,.cbpes-opening-team-names strong,.cbpes-master-ko-team span,td a,td strong,td span';
+ let pending=false;
+ function refresh(){
+  pending=false;
+  document.querySelectorAll(selector).forEach(el=>{
+   if(el.children.length || ![full,short].includes(el.textContent.trim()))return;
+   const box=el.closest('.cbpes-match-club-text,.cbpes-opening-team-names,.cbpes-master-ko-team,td')||el.parentElement;
+   if(!box||!box.clientWidth)return;
+   const style=getComputedStyle(el), canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+   ctx.font=[style.fontWeight,style.fontSize,style.fontFamily].join(' ');
+   const bs=getComputedStyle(box);
+   let width=box.clientWidth-parseFloat(bs.paddingLeft||0)-parseFloat(bs.paddingRight||0);
+   if(box.matches('.cbpes-master-ko-team,td')){const img=box.querySelector('img');if(img)width-=img.getBoundingClientRect().width+8;}
+   const next=mobile.matches&&ctx.measureText(full).width>width+1?short:full;
+   if(el.textContent!==next)el.textContent=next;
+   if(next===short)el.title=full;
+  });
+ }
+ function schedule(){if(!pending){pending=true;requestAnimationFrame(refresh);}}
+ new MutationObserver(schedule).observe(document.querySelector('main'),{childList:true,subtree:true,characterData:true});
+ addEventListener('resize',schedule);mobile.addEventListener('change',schedule);
+ if(document.fonts)document.fonts.ready.then(schedule);
+ schedule();
+})();
+</script>
 </body></html>
