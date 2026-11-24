@@ -105,12 +105,13 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
 (function(){
  const mobile=matchMedia('(max-width: 620px)');
  const full='Manchester United', short='Man. United';
- const selector='.cbpes-team-name,.cbpes-opening-team-names strong,.cbpes-master-ko-team span,td a,td strong,td span';
+ const selector='.cbpes-team-name,.cbpes-opening-team-names strong,.cbpes-master-ko-team span,td a,td strong,td span,#home a,#home strong,#home span,#home div';
  let pending=false;
  function refresh(){
   pending=false;
   document.querySelectorAll(selector).forEach(el=>{
    if(el.children.length || ![full,short].includes(el.textContent.trim()))return;
+   if(el.closest('#home') && !el.closest('td') && el.closest('.cbpes-match,.card')){const next=mobile.matches?short:full;if(el.textContent!==next)el.textContent=next;el.title=full;return;}
    const box=el.closest('.cbpes-match-club-text,.cbpes-opening-team-names,.cbpes-master-ko-team,td')||el.parentElement;
    if(!box||!box.clientWidth)return;
    const style=getComputedStyle(el), canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
