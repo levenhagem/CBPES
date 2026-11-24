@@ -5835,3 +5835,8 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #coachView .cbpes-weekly-medal::before,#coachView .cbpes-weekly-medal::after{content:none!important;display:none!important}
 #coachView .cbpes-weekly-medal img{filter:none!important;box-shadow:none!important}
 #coachView .cbpes-coach-achievements .cardhead h2{margin:0}
+
+/* Divisória interna entre títulos e conquistas */
+#coachView .cbpes-coach-trophies .cbpes-coach-achievements{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important}
+#coachView .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:#eff6f2!important;padding:18px 19px!important;box-shadow:none!important}
+#coachView .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead h2{font-family:var(--f)!important;font-size:14px!important;font-weight:700!important;color:#075b3c!important;margin:0!important}
