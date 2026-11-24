@@ -56,6 +56,17 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 #coachView dialog.cbpes-coach-compare .cardbody,#coachView dialog.cbpes-coach-compare .coach-picker-new,#coachView dialog.cbpes-coach-compare .coach-choice-list{max-height:none!important;height:auto!important;overflow:visible!important}
 #coachView dialog.cbpes-coach-compare .coach-choice-list{position:relative!important;z-index:10002!important}
 html:has(dialog.cbpes-coach-compare[open]){overflow-y:auto!important}
+</style><style>
+#coachView dialog.cbpes-coach-compare .coach-picker-new{display:block!important;padding:16px!important;background:#f2f7f4!important;border:1px solid #d6e4dc!important}
+#coachView dialog.cbpes-coach-compare .coach-picker-new>span{display:block!important;font:800 12px Lato,sans-serif!important;letter-spacing:.5px;margin:0 0 12px!important}
+#coachView dialog.cbpes-coach-compare .coach-choice-list{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px!important}
+#coachView dialog.cbpes-coach-compare .coach-choice{display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:44px;padding:10px 12px;background:#fff;border:1px solid #cbdcd3;border-radius:0;font:700 13px Lato,sans-serif;color:#174536;text-align:left;transition:background .15s,border-color .15s,color .15s}
+#coachView dialog.cbpes-coach-compare .coach-choice::before{content:"";width:8px;height:8px;border:2px solid #8ba99a;border-radius:50%;flex:none}
+#coachView dialog.cbpes-coach-compare .coach-choice:hover{background:#e4f1e9;border-color:#087644}
+#coachView dialog.cbpes-coach-compare .coach-choice[aria-pressed=true]{background:#087644;color:#fff;border-color:#087644}
+#coachView dialog.cbpes-coach-compare .coach-choice[aria-pressed=true]::before{border-color:#fff;background:#fff;box-shadow:inset 0 0 0 2px #087644}
+#coachView dialog.cbpes-coach-compare .coach-choice:focus-visible{outline:2px solid #087644;outline-offset:2px}
+@media(max-width:480px){#coachView dialog.cbpes-coach-compare .coach-choice-list{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView dialog.cbpes-coach-compare .coach-picker-new{padding:10px!important}}
 </style></head>
 <body>
 <div class="topline"></div>
