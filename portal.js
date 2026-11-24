@@ -58,14 +58,7 @@ function renderMatchReport(matchId){
   const goalRows='<div class="cbpes-report-goal-column cbpes-report-goal-home">'+groupedGoalRows(homeGoals)+'</div><span class="cbpes-report-goal-center" aria-hidden="true"><iconify-icon icon="iconoir:soccer-ball"></iconify-icon></span><div class="cbpes-report-goal-column cbpes-report-goal-away">'+groupedGoalRows(awayGoals)+'</div>';
   const saveStats=(stat&&m.played&&stat.home_shots_on_target!=null&&stat.away_shots_on_target!=null)?{home:Math.max(0,Number(stat.away_shots_on_target)-Number(m.away_score)+awayGoals.filter(e=>e.goal_type==='own_goal').length),away:Math.max(0,Number(stat.home_shots_on_target)-Number(m.home_score)+homeGoals.filter(e=>e.goal_type==='own_goal').length)}:null;
   const statDefs=[['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['goalkeeper_saves','Defesas do goleiro','',false],['corners','Escanteios','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
-  const clubColor=team=>{
-    const valid=x=>/^#[0-9a-f]{6}$/i.test(x||'');
-    const luminance=hex=>{const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
-    const primary=valid(team?.primary_color)?team.primary_color:'#2678a9';
-    const secondary=valid(team?.secondary_color)?team.secondary_color:null;
-    // Fundo escuro do relatório: usar a alternativa mais legível quando a primária for apagada.
-    return secondary&&luminance(secondary)>luminance(primary)&&luminance(primary)<.17?secondary:primary;
-  };
+  const clubColor=team=>/^#[0-9a-f]{6}$/i.test(team?.primary_color||'')?team.primary_color:'#2678a9';
   const reportColor=(side,team)=>/^#[0-9a-f]{6}$/i.test(stat?.[side+'_color']||'')?stat[side+'_color']:clubColor(team);
   const reportClubStyle='--cbpes-home-club:'+reportColor('home',m.home)+';--cbpes-away-club:'+reportColor('away',m.away)+';';
   const statHTML=statDefs.map(([key,label,suffix,conditional])=>{
