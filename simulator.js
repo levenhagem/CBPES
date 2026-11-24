@@ -246,6 +246,7 @@ function render(){
    const home=main.querySelector('.cbpes-match-team.home'),away=main.querySelector('.cbpes-match-team.away');
    const score=main.querySelector('.cbpes-match-score');
    if(!home||!away||!score)return;
+   const original=old.find(m=>eq(m.id,card.dataset.cbpesMatchId));
    const inputs=[...score.querySelectorAll('[data-sim-id]')];
    const nums=[...score.querySelectorAll('.cbpes-score-number')];
    const row=(element,side,index)=>{
@@ -256,7 +257,7 @@ function render(){
     else identity.appendChild(element);
     const goal=document.createElement('div');goal.className='cbpes-liga-pro-sim-goals';
     if(inputs[index])goal.appendChild(inputs[index]);
-    else{const span=document.createElement('span');span.textContent=nums[index]?.textContent?.trim()||'–';goal.appendChild(span);}
+    else{const span=document.createElement('span');span.textContent=original&&done(original)?String(original[side+'_score']??'–'):(nums[index]?.textContent?.trim()||'–');goal.appendChild(span);}
     const line=document.createElement('div');line.className='cbpes-liga-pro-sim-row '+side;
     line.append(identity,goal);return line;
    };
