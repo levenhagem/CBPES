@@ -89,15 +89,15 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
 <script src="config.js"></script>
 <script src="lib.js?v=identified-own-goals-ranking-20261124"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
-<script src="portal.js?v=singular-goal-20261124"></script>
+<script src="portal.js?v=match-colors-20261124"></script>
 <script src="simulator.js?v=sim-playoff-master-inputs-20261124"></script>
 <script>
 (function(){
   const label=document.getElementById('season');
   if(!label)return;
-  fetch('https://api.github.com/repos/levenhagem/CBPES/commits/main',{cache:'no-store',headers:{'Accept':'application/vnd.github+json'}})
+  fetch('https://api.github.com/repos/levenhagem/CBPES/actions/workflows/pages-build-deployment/runs?status=success&per_page=1',{cache:'no-store',headers:{'Accept':'application/vnd.github+json'}})
     .then(response=>{if(!response.ok)throw new Error('GitHub API indisponível');return response.json()})
-    .then(commit=>{if(/^[0-9a-f]{40}$/i.test(commit.sha||''))label.textContent='COMMIT '+commit.sha.slice(0,7)})
+    .then(data=>{const sha=data.workflow_runs?.[0]?.head_sha;if(/^[0-9a-f]{40}$/i.test(sha||''))label.textContent='COMMIT '+sha.slice(0,7);else label.textContent='COMMIT —';})
     .catch(()=>{label.textContent='COMMIT';});
 })();
 </script>
