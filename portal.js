@@ -66,7 +66,8 @@ function renderMatchReport(matchId){
     // Fundo escuro do relatório: usar a alternativa mais legível quando a primária for apagada.
     return secondary&&luminance(secondary)>luminance(primary)&&luminance(primary)<.17?secondary:primary;
   };
-  const reportClubStyle='--cbpes-home-club:'+clubColor(m.home)+';--cbpes-away-club:'+(m.id==='d137ef2a-32fc-4270-8a6a-66ecf104988f'?'#facc15':clubColor(m.away))+';';
+  const reportColor=(side,team)=>/^#[0-9a-f]{6}$/i.test(stat?.[side+'_color']||'')?stat[side+'_color']:clubColor(team);
+  const reportClubStyle='--cbpes-home-club:'+reportColor('home',m.home)+';--cbpes-away-club:'+reportColor('away',m.away)+';';
   const statHTML=statDefs.map(([key,label,suffix,conditional])=>{
     const a=key==='goalkeeper_saves'?saveStats?.home:stat?.['home_'+key],b=key==='goalkeeper_saves'?saveStats?.away:stat?.['away_'+key];
     if(conditional&&!(Number(a)>0||Number(b)>0))return '';
