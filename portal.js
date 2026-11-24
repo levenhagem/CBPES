@@ -492,7 +492,7 @@ function renderTable() {
     const champion=w?.champion_id?D.participants.find(p=>p.id===w.champion_id):null;
     const info=`<div class="notice"><b>Formato:</b> ${esc(w?.format_description||'Não informado')}<br><b>Participantes:</b> ${w?.participant_count||roster.length||ids.size}${champion?`<br><b>Campeão:</b> <a href="#team/${champion.id}">${esc(champion.name)}</a>${w.champion_coach_name?' • '+coachLink(w.champion_coach_name):''}`:'<br><b>Campeão:</b> ainda não definido'}</div>`;
     const rounds=[...new Map(allMs.filter(m=>m.weeklyRound).map(m=>[m.weeklyRound.id,m.weeklyRound])).values()].sort((a,b)=>a.number-b.number);const results=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+allMs.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')).join('')+(allMs.some(m=>!m.weekly_round_id)?heading('PARTIDAS SEM RODADA')+allMs.filter(m=>!m.weekly_round_id).map(matchRow).join(''):'');
-    $('fullTable').innerHTML=info+`<div class="admin-help">A classificação considera somente as fases classificatórias. Partidas de mata-mata são exibidas separadamente e não somam pontos.</div>`+(st.length?`<div class="eyebrow" style="margin:12px 0 4px">RESUMO ESTATÍSTICO DA EDIÇÃO (RESUMO: 3 PTS POR VITÓRIA, 1 POR EMPATE)</div>${fullTbl(st,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id),allMs.filter(m=>m.round?.phase?.counts_in_standings))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
+    $('fullTable').innerHTML=info+``+(st.length?`<div class="eyebrow" style="margin:12px 0 4px">RESUMO ESTATÍSTICO DA EDIÇÃO (RESUMO: 3 PTS POR VITÓRIA, 1 POR EMPATE)</div>${fullTbl(st,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id),allMs.filter(m=>m.round?.phase?.counts_in_standings))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
     $('fullTable').insertAdjacentHTML('afterbegin',simulatorButton('weekly',selectedWeeklyTable));
     return;
   }
@@ -1022,7 +1022,7 @@ function renderStatsDetail(category,key){
   const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
   if(!definition){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
   root.onclick=e=>{if(changeDefenseMode(e))return;changeMatchMetricMode(e);};
-  root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1><div class="sub">Classificação completa da estatística selecionada.</div></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
+  root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
 }
 
 function renderParticipant(id) {
