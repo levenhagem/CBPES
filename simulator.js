@@ -212,6 +212,33 @@ function render(){
   const field=(side,label)=>'<input type="number" inputmode="numeric" min="0" max="999" aria-label="'+label+'" data-sim-id="'+id+'" data-sim-side="'+side+'" value="'+values[side]+'">';
   score.innerHTML='<div class="cbpes-sim-inline">'+field(0,'Gols mandante')+'<span class="cbpes-sim-colon">:</span>'+field(1,'Gols visitante')+'</div>';
  }
+ // Liga PRO: o mesmo card de duas linhas da Copa Master, preservando os inputs e os jogos oficiais.
+ if(document.getElementById('table')?.dataset.ligaPro==='true'){
+  root().querySelectorAll('.cbpes-match[data-cbpes-match-id]').forEach(card=>{
+   const main=card.querySelector('.cbpes-match-main');
+   if(!main||card.classList.contains('cbpes-liga-pro-sim-stacked'))return;
+   const home=main.querySelector('.cbpes-match-team.home'),away=main.querySelector('.cbpes-match-team.away');
+   const score=main.querySelector('.cbpes-match-score');
+   if(!home||!away||!score)return;
+   const inputs=[...score.querySelectorAll('[data-sim-id]')];
+   const nums=[...score.querySelectorAll('.cbpes-score-number')];
+   const row=(element,side,index)=>{
+    const identity=document.createElement('div');
+    identity.className='cbpes-liga-pro-sim-identity';
+    const club=element.querySelector('.cbpes-match-club');
+    if(club)identity.appendChild(club);
+    else identity.appendChild(element);
+    const goal=document.createElement('div');goal.className='cbpes-liga-pro-sim-goals';
+    if(inputs[index])goal.appendChild(inputs[index]);
+    else{const span=document.createElement('span');span.textContent=nums[index]?.textContent?.trim()||'–';goal.appendChild(span);}
+    const line=document.createElement('div');line.className='cbpes-liga-pro-sim-row '+side;
+    line.append(identity,goal);return line;
+   };
+   const rows=document.createElement('div');rows.className='cbpes-liga-pro-sim-rows';
+   rows.append(row(home,'home',0),row(away,'away',1));
+   main.replaceWith(rows);card.classList.add('cbpes-liga-pro-sim-stacked');
+  });
+ }
  let bar=root().querySelector('#cbpes-sim-controls');
  if(!bar){bar=document.createElement('div');bar.id='cbpes-sim-controls';root().prepend(bar);}
  bar.innerHTML='<button type="button" data-sim-clear>REINICIAR PLACARES</button><span>Simulação temporária — nenhum resultado oficial será alterado.</span>';
