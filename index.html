@@ -44,6 +44,13 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 #coachView dialog.cbpes-coach-compare .coach-picker-new>span{position:relative!important;flex:0 0 auto!important;align-self:center!important;line-height:1.2!important;margin:0!important}
 #coachView dialog.cbpes-coach-compare .coach-picker-new>#coachCompareWith{position:relative!important;z-index:10001!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;align-self:center!important;flex:1 1 auto!important;width:auto!important;min-width:80px!important;max-width:100%!important;margin:0!important;top:auto!important;left:auto!important;transform:none!important;clip-path:none!important}
 #coachView dialog.cbpes-coach-compare #coachCompareResult{position:relative!important;z-index:0!important}
+</style><style>
+#coachView dialog.cbpes-coach-compare{height:auto!important;max-height:88vh!important;overflow:auto!important;top:0!important;bottom:0!important}
+#coachView dialog.cbpes-coach-compare .coach-picker-new{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:10px!important;height:auto!important;min-height:0!important}
+#coachView .coach-choice-list{display:flex;flex:1 1 240px;flex-wrap:wrap;gap:6px}
+#coachView .coach-choice{border:1px solid #b8d0c5;border-radius:0;background:white;color:#075b3c;padding:8px 12px;font:700 12px Lato,sans-serif;cursor:pointer}
+#coachView .coach-choice[aria-pressed=true]{background:#087644;color:white;border-color:#087644}
+#coachView dialog.cbpes-coach-compare input[type=hidden]{display:none!important}
 </style></head>
 <body>
 <div class="topline"></div>
@@ -113,7 +120,7 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 <script src="config.js"></script>
 <script src="lib.js?v=actual-match-date-20261124"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
-<script src="portal.js?v=d5f94b03"></script>
+<script src="portal.js?v=e2ca472"></script>
 <script src="simulator.js?v=sim-refresh-20261124"></script>
 <script>
 (function(){
