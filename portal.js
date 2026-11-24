@@ -1645,4 +1645,4 @@ async function boot() {
   }
 }
 boot();
-setInterval(async () => { if (D && !document.hidden) { try { D = await load(); await loadCareerArchive(); await loadOpeningArchive(); renderAll(); } catch (e) {} } }, 60000);
+setInterval(async () => { if (D && !document.hidden && !window.CBPESSimulator?.isActive?.()) { try { const next=await load(); if(window.CBPESSimulator?.isActive?.())return; D=next; await loadCareerArchive(); await loadOpeningArchive(); if(!window.CBPESSimulator?.isActive?.())renderAll(); } catch (e) {} } }, 60000);
