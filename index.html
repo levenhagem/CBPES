@@ -51,6 +51,11 @@ dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-
 #coachView .coach-choice{border:1px solid #b8d0c5;border-radius:0;background:white;color:#075b3c;padding:8px 12px;font:700 12px Lato,sans-serif;cursor:pointer}
 #coachView .coach-choice[aria-pressed=true]{background:#087644;color:white;border-color:#087644}
 #coachView dialog.cbpes-coach-compare input[type=hidden]{display:none!important}
+</style><style>
+#coachView dialog.cbpes-coach-compare[open]{position:absolute!important;inset:auto!important;top:24px!important;left:50%!important;transform:translateX(-50%)!important;margin:0!important;height:auto!important;max-height:none!important;overflow:visible!important;animation:cbpesCompareFade .2s ease-out!important}
+#coachView dialog.cbpes-coach-compare .cardbody,#coachView dialog.cbpes-coach-compare .coach-picker-new,#coachView dialog.cbpes-coach-compare .coach-choice-list{max-height:none!important;height:auto!important;overflow:visible!important}
+#coachView dialog.cbpes-coach-compare .coach-choice-list{position:relative!important;z-index:10002!important}
+html:has(dialog.cbpes-coach-compare[open]){overflow-y:auto!important}
 </style></head>
 <body>
 <div class="topline"></div>
