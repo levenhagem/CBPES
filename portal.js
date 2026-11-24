@@ -831,7 +831,7 @@ const friendlyCoachDefinitions=()=>{
     });
   };
   D.matches.filter(m=>m.played&&m.category==='friendly').forEach(m=>add(m.home_coach_name,m.away_coach_name,m.home_score,m.away_score));
-  (careerArchive||[]).forEach(m=>add(m.home_coach,m.away_coach,m.home_score,m.away_score));
+  (careerArchive||[]).filter(m=>!m.official_competition_id).forEach(m=>add(m.home_coach,m.away_coach,m.home_score,m.away_score));
   const rows=[...coaches.values()].map(x=>({...x,sg:x.gp-x.gc,ap:x.j?Math.round((3*x.v+x.e)/(3*x.j)*1000)/10:0}));
   const ranked=(value,ascending=false)=>rows.slice().sort((a,b)=>(ascending?Number(value(a))-Number(value(b)):Number(value(b))-Number(value(a)))||a.name.localeCompare(b.name,'pt-BR'));
   const def=(key,title,value,unit='',ascending=false)=>({key,title,rows:ranked(value,ascending),value,unit,coaches:true});
@@ -989,7 +989,7 @@ function generalStatsData(category){
     hs:Number(m.home_score),as:Number(m.away_score),archive:category==='weekly'
   }));
   if(category==='friendly'){
-    (careerArchive||[]).forEach(m=>{
+    (careerArchive||[]).filter(m=>!m.official_competition_id).forEach(m=>{
       const hs=Number(m.home_score),as=Number(m.away_score);
       if(!Number.isFinite(hs)||!Number.isFinite(as))return;
       records.push({home:m.home_coach||m.home_club||'Mandante',away:m.away_coach||m.away_club||'Visitante',hs,as,archive:true});
@@ -1216,7 +1216,8 @@ function renderCoach(name) {
     const isHome=String(m.home_coach||'').trim().toLocaleLowerCase()===key;
     const own=isHome?m.home_score:m.away_score,other=isHome?m.away_score:m.home_score;
     const outcome=own>other?'win':own<other?'loss':'draw';
-    return `<div class="result-row cbpes-coach-match-row cbpes-coach-match-friendly"><span class="cbpes-coach-match-meta">${m.date?esc(fd(m.date)):m.played_on?esc(fd(m.played_on)):"Data não informada"}</span><div class="cbpes-coach-match-line"><span>${coachLink(m.home_coach)}</span><strong class="cbpes-coach-match-score ${outcome}">${m.home_score}–${m.away_score}</strong><span>${coachLink(m.away_coach)}</span></div></div>`;
+    const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(m.official_competition_id));
+    return `<div class="result-row cbpes-coach-match-row ${m.official_competition_id?'cbpes-coach-match-official':'cbpes-coach-match-friendly'}"><span class="cbpes-coach-match-meta">${esc(m.official_competition_id?(competition?.name||'OFICIAL'):'AMISTOSO')}<small class="cbpes-coach-match-date">${m.date?esc(fd(m.date)):m.played_on?esc(fd(m.played_on)):"Data não informada"}</small></span><div class="cbpes-coach-match-line"><span>${coachLink(m.home_coach)}</span><strong class="cbpes-coach-match-score ${outcome}">${m.home_score}–${m.away_score}</strong><span>${coachLink(m.away_coach)}</span></div></div>`;
   }).join('');
   const coachTrophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.awarded_on||'').localeCompare(a.awarded_on||''));
   const profile=(D.coachProfiles||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase()===key);
@@ -1245,7 +1246,7 @@ function renderCoach(name) {
     const otherKey=otherName.trim().toLocaleLowerCase();
     const allDirect=[
       ...D.matches.filter(m=>m.played&&publicCompetitionMatch(m)).map(m=>({h:String(m.home_coach_name||'').trim().toLocaleLowerCase(),a:String(m.away_coach_name||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score,date:m.date,home:m.home?.name||m.home_coach_name,away:m.away?.name||m.away_coach_name,category:m.category||'official'})),
-      ...careerArchive.map(m=>({h:String(m.home_coach||'').trim().toLocaleLowerCase(),a:String(m.away_coach||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score,date:m.played_on||m.match_date||m.date,home:m.home_club||m.home_coach,away:m.away_club||m.away_coach,category:'friendly'}))
+      ...careerArchive.map(m=>({h:String(m.home_coach||'').trim().toLocaleLowerCase(),a:String(m.away_coach||'').trim().toLocaleLowerCase(),hs:m.home_score,as:m.away_score,date:m.played_on||m.match_date||m.date,home:m.home_club||m.home_coach,away:m.away_club||m.away_coach,category:m.official_competition_id?'official':'friendly'}))
     ].filter(m=>(m.h===key&&m.a===otherKey)||(m.h===otherKey&&m.a===key));
     const direct={games:allDirect.length,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0};
     allDirect.forEach(m=>{const own=m.h===key?m.hs:m.as,opp=m.h===key?m.as:m.hs;direct.goalsFor+=Number(own)||0;direct.goalsAgainst+=Number(opp)||0;if(own>opp)direct.wins++;else if(own<opp)direct.losses++;else direct.draws++;});
@@ -1311,14 +1312,14 @@ function renderCoach(name) {
       body.appendChild(section);
     };
     body.innerHTML='';
-    makeSection('PARTIDAS OFICIAIS / SEMANAIS',officialRows,10);
+
     const imported=document.createElement('div');imported.innerHTML=historicResults;
     // Une amistosos do portal e histórico PES6 em ordem cronológica decrescente,
     // independentemente do adversário. Datas ausentes ficam por último.
     const importedRows=[...imported.querySelectorAll('.result-row')];
     const friendlyDated=[
       ...friendlyRows.map(row=>({row,date:matches[existing.indexOf(row)]?.date||matches[existing.indexOf(row)]?.played_on||''})),
-      ...importedRows.map((row,i)=>({row,date:historicCoach[i]?.played_on||historicCoach[i]?.date||''}))
+      ...importedRows.map((row,i)=>({row,date:historicCoach[i]?.played_on||historicCoach[i]?.date||'',official:!!historicCoach[i]?.official_competition_id})).filter(x=>!x.official)
     ];
     const dateValue=value=>{
       if(!value)return -Infinity;
@@ -1328,6 +1329,9 @@ function renderCoach(name) {
       const timestamp=Date.parse(normalized);
       return Number.isFinite(timestamp)?timestamp:-Infinity;
     };
+    const officialDated=[...officialRows.map(row=>({row,date:matches[existing.indexOf(row)]?.date||matches[existing.indexOf(row)]?.played_on||''})),...importedRows.map((row,i)=>({row,date:historicCoach[i]?.played_on||historicCoach[i]?.date||'',official:!!historicCoach[i]?.official_competition_id})).filter(x=>x.official)];
+    officialDated.sort((a,b)=>dateValue(b.date)-dateValue(a.date));
+    makeSection('PARTIDAS OFICIAIS / SEMANAIS',officialDated.map(x=>x.row),10);
     friendlyDated.sort((a,b)=>dateValue(b.date)-dateValue(a.date));
     makeSection('PARTIDAS AMISTOSAS',friendlyDated.map(item=>item.row));
     historyCard.querySelector('.cardhead h2').textContent='HISTÓRICO DO TÉCNICO';
