@@ -5817,3 +5817,11 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 
 #coachView .cbpes-trophy-item img{filter:drop-shadow(0 3px 4px rgba(0,0,0,.22)) drop-shadow(0 0 5px rgba(255,205,74,.28));}
 #coachView .cbpes-trophy-item b{font-family:'Lato',var(--f)!important;font-weight:700!important;}
+
+/* Trophy room: subtle overhead lighting and continuous display shelf. */
+#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;}
+#coachView .cbpes-trophy-item{position:relative;isolation:isolate;}
+#coachView .cbpes-trophy-item::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-18px;left:50%;transform:translateX(-50%);width:160px;height:130px;background:radial-gradient(ellipse at 50% 0%,rgba(255,235,167,.23),rgba(255,235,167,.07) 48%,transparent 74%);}
+#coachView .cbpes-trophy-item::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:108px;left:-8px;right:-8px;height:6px;background:linear-gradient(180deg,rgba(224,190,112,.55) 0 1px,#064a32 1px,#053d2b 100%);box-shadow:0 3px 5px rgba(0,0,0,.16);}
+#coachView .cbpes-trophy-item img{position:relative;z-index:1;}
+#coachView .cbpes-trophy-item b{margin-top:4px;}
