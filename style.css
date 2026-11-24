@@ -5766,3 +5766,8 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 
 /* Liga PRO home section titles follow competition identity. */
 #home #miniTitle,#home #miniTitle .cbpes-home-heading-link,#home #leagueRecentCard .cardhead h2,#home #leagueRecentCard .cardhead .cbpes-home-heading-link{color:#123f86!important;}
+
+/* Competition dropdown: permanent color stripe and themed hover gradient. */
+#nav #navCompetitionMenu.nav-competition-menu a,body>#navCompetitionMenu.nav-competition-menu a{border-left:4px solid var(--nav-comp-color,#159b60)!important;transition:background .18s ease,color .18s ease;}
+#nav #navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible),body>#navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible){background:linear-gradient(90deg,color-mix(in srgb,var(--nav-comp-color,#159b60) 42%,#10202b),#10202b)!important;color:#fff!important;}
+#nav #navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible) small,body>#navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible) small{color:#e4ebf1!important;}
