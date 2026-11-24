@@ -155,9 +155,8 @@ function ligaProKnockout(edition,phase){
  const sc=scope();if(!sc)return null;
  const group=sc.phases.find(p=>p.counts_in_standings);
  const roundIds=new Set(sc.rounds.filter(r=>eq(r.phase_id,group?.id)).map(r=>String(r.id)));
- const groupGames=projected().filter(m=>roundIds.has(String(m.round_id)));
- const ids=new Set(groupGames.flatMap(m=>[String(m.home_id),String(m.away_id)]));
- const ranking=standings(D.participants.filter(p=>ids.has(String(p.id))),groupGames).map(x=>x.p);
+ const groupGames=all().filter(m=>roundIds.has(String(m.round_id))).map(m=>{const v=state.scores[String(m.id)];return v&&v.some(x=>x!=='')?{...m,home_score:Number(v[0]||0),away_score:Number(v[1]||0),played:true}:m;});
+ const ranking=standings(D.participants.filter(p=>p.participates_in_competition!==false),groupGames).map(x=>x.p);
  const match=(stage,index,home,away)=>{
   const id='liga-pro-ko-'+edition.id+'-'+stage+'-'+index;
   const values=state.scores[id]||['',''];
@@ -233,9 +232,14 @@ function render(){
   const id=card.dataset.cbpesMatchId,official=old.find(m=>eq(m.id,id));
   if(official&&done(official))continue;
   if(!official&&!id.startsWith('master-virtual-'))continue;
-  const score=card.querySelector('.cbpes-match-score');if(!score)continue;
+  const score=card.querySelector('.cbpes-match-score');
   const values=state.scores[id]||['',''];
   const field=(side,label)=>'<input type="number" inputmode="numeric" min="0" max="999" aria-label="'+label+'" data-sim-id="'+id+'" data-sim-side="'+side+'" value="'+values[side]+'">';
+  if(document.getElementById('table')?.dataset.copaMaster==='true'&&card.querySelector('.cbpes-round-clean')){
+   card.querySelectorAll('.cbpes-round-clean-goals').forEach((node,index)=>{node.innerHTML=field(index,index?'Gols visitante':'Gols mandante');});
+   card.querySelector('.cbpes-round-clean-link')?.remove();continue;
+  }
+  if(!score)continue;
   score.innerHTML='<div class="cbpes-sim-inline">'+field(0,'Gols mandante')+'<span class="cbpes-sim-colon">:</span>'+field(1,'Gols visitante')+'</div>';
  }
  // Liga PRO: o mesmo card de duas linhas da Copa Master, preservando os inputs e os jogos oficiais.
@@ -299,7 +303,7 @@ function updateScore(el,immediate=false){
  };
  // A Copa Master atualiza apenas as linhas da classificação, preservando
  // os quadradinhos e o foco do teclado. Demais competições usam renderização normal.
- if(key.startsWith('master-ko-')||key.startsWith('liga-pro-ko-')||!updateMasterStandings())refresh();
+ if(key.startsWith('master-ko-')||key.startsWith('liga-pro-ko-')||key.startsWith('master-virtual-')||!updateMasterStandings())refresh();
 }
 document.addEventListener('input',e=>updateScore(e.target));
 // O evento input já atualiza a tabela; change não deve reconstruí-la novamente.
