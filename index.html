@@ -87,7 +87,7 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="lib.js?v=cbpes-simulator-inline-20261123-3"></script>
+<script src="lib.js?v=round-united-20261123"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
 <script src="portal.js?v=grouped-scorers-20261123"></script>
 <script src="simulator.js?v=6bb7635-white-button"></script>
@@ -111,6 +111,7 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
   pending=false;
   document.querySelectorAll(selector).forEach(el=>{
    if(el.children.length || ![full,short].includes(el.textContent.trim()))return;
+   if(el.matches('.cbpes-team-name')){if(el.textContent!==short)el.textContent=short;el.title=full;return;}
    if(el.closest('#home') && !el.closest('td') && el.closest('.cbpes-match,.card')){const next=mobile.matches?short:full;if(el.textContent!==next)el.textContent=next;el.title=full;return;}
    const box=el.closest('.cbpes-match-club-text,.cbpes-opening-team-names,.cbpes-master-ko-team,td')||el.parentElement;
    if(!box||!box.clientWidth)return;
