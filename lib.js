@@ -136,14 +136,14 @@ function stats(D, category = 'official') {
   const goals = played.reduce((s, m) => s + m.home_score + m.away_score, 0);
   const by = (f, dir = -1) => st.filter(x => x.j > 0).sort((a, b) => dir * (f(a) - f(b)) || a.p.name.localeCompare(b.p.name));
   const big = played.slice().sort((a, b) => Math.abs(b.home_score - b.away_score) - Math.abs(a.home_score - a.away_score) || (b.home_score + b.away_score) - (a.home_score + a.away_score))[0];
-  const g = {}, a = {};
-  events.forEach(e => { if(e.goal_type!=='own_goal') g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
-  const pl = D.players.filter(x=>!/^gol\s+contra\b/i.test(String(x.name||'').trim())).map(x => ({ ...x, g: g[x.id] || 0, a: a[x.id] || 0 }));
+  const g = {}, a = {}, og = {};
+  events.forEach(e => { if(e.goal_type==='own_goal'&&e.scorer_id) og[e.scorer_id]=(og[e.scorer_id]||0)+1; if(e.goal_type!=='own_goal') g[e.scorer_id] = (g[e.scorer_id] || 0) + 1; if (e.assist_id) a[e.assist_id] = (a[e.assist_id] || 0) + 1; });
+  const pl = D.players.filter(x=>!/^gol\s+contra\b/i.test(String(x.name||'').trim())).map(x => ({ ...x, g: g[x.id] || 0, a: a[x.id] || 0, og: og[x.id] || 0 }));
   const cmp = (k, k2) => (x, y) => y[k] - x[k] || y[k2] - x[k2] || x.name.localeCompare(y.name);
   return {
     st, jogos: played.length, gols: goals, media: played.length ? goals / played.length : 0, big,
     ataque: by(x => x.gp), defesa: by(x => x.gc, 1), aprov: by(x => x.ap), vit: by(x => x.v), emp: by(x => x.e), der: by(x => x.d), gols_part: by(x => x.gp + x.gc),
-    artilheiros: pl.filter(x => x.g > 0).sort(cmp('g', 'a')), garcons: pl.filter(x => x.a > 0).sort(cmp('a', 'g')),
+    ownGoals: pl.filter(x=>x.og>0&&String(x.name||'').trim()&&!/^(gol\s+contra|não identificado|desconhecido|jogador não informado)/i.test(String(x.name).trim())).sort((a,b)=>b.og-a.og||a.name.localeCompare(b.name,'pt-BR')), artilheiros: pl.filter(x => x.g > 0).sort(cmp('g', 'a')), garcons: pl.filter(x => x.a > 0).sort(cmp('a', 'g')),
     part: pl.filter(x => x.g + x.a > 0).map(x => ({ ...x, ga: x.g + x.a })).sort(cmp('ga', 'g'))
   };
 }
