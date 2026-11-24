@@ -5776,3 +5776,7 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 body.cbpes-liga-pro-page #table{position:relative;isolation:isolate;}
 body.cbpes-liga-pro-page #table::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("liga-pro-watermark.svg") no-repeat right -7vw center / min(76vw,1050px) auto;opacity:.19;}
 @media(max-width:700px){body.cbpes-liga-pro-page #table::before{background-position:center 25vh;background-size:110vw auto;opacity:.15;}}
+
+/* Tables dropdown: subtle right-edge tint, no yellow hover stripe. */
+#nav #navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible),body>#navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible){background:linear-gradient(90deg,#fff 0%,#fff 58%,color-mix(in srgb,var(--nav-comp-color,#159b60) 22%,#fff) 100%)!important;color:#142b40!important;box-shadow:none!important;border-left:4px solid var(--nav-comp-color,#159b60)!important;}
+#nav #navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible) small,body>#navCompetitionMenu.nav-competition-menu a:is(:hover,:focus-visible) small{color:#526779!important;}
