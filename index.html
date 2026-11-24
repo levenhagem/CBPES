@@ -1,5 +1,3 @@
----
----
 <!DOCTYPE html>
 <html lang="pt-BR" class="cbpes-preboot">
 <head>
@@ -97,9 +95,9 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
 (function(){
   const label=document.getElementById('season');
   if(!label)return;
-  const sha='{{ site.github.build_revision }}';
+  const sha='e23fe5360005c2d371b6cd3d6e1dc1471957098f';
   if(/^[0-9a-f]{40}$/i.test(sha))label.textContent='COMMIT '+sha.slice(0,7);
-  else label.textContent='COMMIT 0b1484a';
+  else label.textContent='COMMIT —';
 })();
 </script>
 <script>
