@@ -1230,6 +1230,7 @@ function renderCoach(name) {
   }).join('');
   const coachTrophies=(D.coachTrophies||[]).filter(t=>String(t.coach_name||'').trim().toLocaleLowerCase()===key).sort((a,b)=>(b.awarded_on||'').localeCompare(a.awarded_on||''));
 
+  const achievementsFor=key=>{
   const achievements=[];
   for(const p of D.phases||[]){
     if(!['final','third_place'].includes(p.phase_type))continue;
@@ -1243,6 +1244,9 @@ function renderCoach(name) {
     achievements.push({place,name:edition?.name||(weekly?'Semanal':'Oficial'),date:m.played_on||m.date||'',category:weekly?'SEMANAL':'OFICIAL'});
   }
   if((key==='hard'||key==='william hard')&&!achievements.some(a=>/abertura/i.test(a.name)))achievements.push({place:2,name:'Torneio de Abertura',date:'',category:'OFICIAL'});
+  return achievements;
+  };
+  const achievements=achievementsFor(key);
   achievements.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   const weeklyMedals=[2,3].map(place=>({place,items:achievements.filter(a=>a.category==='SEMANAL'&&a.place===place)})).filter(g=>g.items.length);
   const weeklyMedalHtml=weeklyMedals.map(g=>{
@@ -1300,8 +1304,8 @@ function renderCoach(name) {
       return '<div class="cbpes-direct-fixture"><div class="cbpes-direct-fixture-info"><span>'+category+'</span><small>'+recordDate(m.date)+'</small></div><div class="cbpes-direct-fixture-score"><span>'+esc(homeLabel)+'</span><strong>'+homeGoals+' – '+awayGoals+'</strong><span>'+esc(awayLabel)+'</span></div><div class="cbpes-direct-fixture-result"><span class="cbpes-direct-result-badge cbpes-direct-result-'+result.toLowerCase()+'" title="'+(result==='V'?'Vitória':result==='D'?'Derrota':'Empate')+' de '+esc(name)+'">'+result+'</span></div></div>';
     }).join('')+'</div>':'';
     const trophiesA=coachSummary(name).trophies,trophiesB=coachSummary(otherName).trophies;
-    const trophies=(items)=>items.length?items.map(t=>`<div class="cbpes-compare-achievement">🏆 ${esc(t.title)}</div>`).join(''):'Nenhuma conquista registrada';
-    out.innerHTML=`<div class="cbpes-compare-modes" role="group" aria-label="Tipo de comparação"><button type="button" class="${mode==='career'?'active':''}" data-compare-mode="career" aria-pressed="${mode==='career'}">CARREIRA COMPLETA</button><button type="button" class="${mode==='direct'?'active':''}" data-compare-mode="direct" aria-pressed="${mode==='direct'}">CONFRONTO DIRETO</button></div><div class="cbpes-compare-board"><div class="cbpes-compare-names"><strong>${coachLink(name)}</strong><span>VS</span><strong>${coachLink(otherName)}</strong></div>${bars}<div class="cbpes-compare-legend"><span>■ ${esc(name)}</span><span>■ ${esc(otherName)}</span></div></div>${directMatches}${mode==='direct'&&!direct.games?'<div class="admin-help">Nenhuma partida entre estes técnicos foi registrada. As barras de comparação ficam neutras.</div>':''}<div class="cbpes-compare-achievements"><h3>CONQUISTAS</h3><div class="cbpes-compare-achievements-grid"><div><b>${esc(name)}</b>${trophies(trophiesA)}</div><div><b>${esc(otherName)}</b>${trophies(trophiesB)}</div></div></div>`;
+    const trophies=(items,coachKey)=>{const medals=achievementsFor(coachKey);return items.map(t=>`<div class="cbpes-compare-achievement">🏆 ${esc(t.title||t.competition_name)}</div>`).join('')+medals.map(m=>`<div class="cbpes-compare-achievement">${m.place===2?'🥈':'🥉'} ${esc(m.name)} • ${m.place}º LUGAR</div>`).join('')||'Nenhuma conquista registrada';};
+    out.innerHTML=`<div class="cbpes-compare-modes" role="group" aria-label="Tipo de comparação"><button type="button" class="${mode==='career'?'active':''}" data-compare-mode="career" aria-pressed="${mode==='career'}">CARREIRA COMPLETA</button><button type="button" class="${mode==='direct'?'active':''}" data-compare-mode="direct" aria-pressed="${mode==='direct'}">CONFRONTO DIRETO</button></div><div class="cbpes-compare-board"><div class="cbpes-compare-names"><strong>${coachLink(name)}</strong><span>VS</span><strong>${coachLink(otherName)}</strong></div>${bars}<div class="cbpes-compare-legend"><span>■ ${esc(name)}</span><span>■ ${esc(otherName)}</span></div></div>${directMatches}${mode==='direct'&&!direct.games?'<div class="admin-help">Nenhuma partida entre estes técnicos foi registrada. As barras de comparação ficam neutras.</div>':''}<div class="cbpes-compare-achievements"><h3>CONQUISTAS</h3><div class="cbpes-compare-achievements-grid"><div><b>${esc(name)}</b>${trophies(trophiesA,key)}</div><div><b>${esc(otherName)}</b>${trophies(trophiesB,otherKey)}</div></div></div>`;
     out.querySelectorAll('[data-compare-mode]').forEach(btn=>btn.addEventListener('click',()=>renderCoachComparison(otherName,btn.dataset.compareMode)));
   };
   const previousClubs=[...new Map(assignments.map(h=>D.participants.find(p=>String(p.id)===String(h.participant_id))).filter(t=>t&&String(t.id)!==String(currentTeam?.id)).map(t=>[String(t.id),t])).values()];
@@ -1671,4 +1675,4 @@ async function boot() {
   }
 }
 boot();
-setInterval(async () => { if (D && !document.hidden && !window.CBPESSimulator?.isActive?.()) { try { const next=await load(); if(window.CBPESSimulator?.isActive?.())return; D=next; await loadCareerArchive(); await loadOpeningArchive(); if(!window.CBPESSimulator?.isActive?.())renderAll(); } catch (e) {} } }, 60000);
+setInterval(async () => { if (D && !document.hidden && !document.querySelector('dialog.cbpes-coach-compare[open]') && !window.CBPESSimulator?.isActive?.()) { try { const next=await load(); if(window.CBPESSimulator?.isActive?.())return; D=next; await loadCareerArchive(); await loadOpeningArchive(); if(!window.CBPESSimulator?.isActive?.()&&!document.querySelector('dialog.cbpes-coach-compare[open]'))renderAll(); } catch (e) {} } }, 60000);
