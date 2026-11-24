@@ -21,6 +21,17 @@ button.cbpes-sim-launch svg{display:none!important}
 button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width:18px;height:18px;flex:none;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2'/%3E%3Cpath d='M8 6h8M8 11h2m4 0h2m-8 4h2m4 0h2m-8 4h2m4 0h2'/%3E%3C/svg%3E") center/contain no-repeat}
 </style>
 <style>dialog.cbpes-coach-compare:not([open]){display:none!important}dialog.cbpes-coach-compare::backdrop{background:rgba(0,0,0,.55)}</style>
+<style>
+dialog.cbpes-coach-compare .cardbody > .field{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:6px!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important}
+dialog.cbpes-coach-compare .cardbody > .field > label{margin:0!important;padding:0!important;min-height:0!important;height:auto!important}
+dialog.cbpes-coach-compare .cardbody > .field > select{margin:0!important}
+@keyframes cbpesCompareIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes cbpesCompareFade{from{opacity:0}to{opacity:1}}
+dialog.cbpes-coach-compare[open]{animation:cbpesCompareIn .22s ease-out}
+dialog.cbpes-coach-compare[open]::backdrop{animation:cbpesCompareFade .22s ease-out}
+#coachCompareResult > .cbpes-compare-board,#coachCompareResult > .cbpes-compare-achievements{animation:cbpesCompareIn .2s ease-out}
+@media(prefers-reduced-motion:reduce){dialog.cbpes-coach-compare[open],dialog.cbpes-coach-compare[open]::backdrop,#coachCompareResult > *{animation:none!important}}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -90,13 +101,13 @@ button.cbpes-sim-launch::before{content:"" !important;display:inline-block;width
 <script src="config.js"></script>
 <script src="lib.js?v=actual-match-date-20261124"></script>
 <script src="belts.js?v=cbpes-belts-20261123-1"></script>
-<script src="portal.js?v=c56174c"></script>
+<script src="portal.js?v=c5c6758"></script>
 <script src="simulator.js?v=sim-refresh-20261124"></script>
 <script>
 (function(){
   const label=document.getElementById('season');
   if(!label)return;
-  const sha='c56174c1139938dab574b4c89af62fbeda3c857b';
+  const sha='c5c6758094554767846cd3fd1e2bd853902c7b12';
   if(/^[0-9a-f]{40}$/i.test(sha))label.textContent='COMMIT '+sha.slice(0,7);
   else label.textContent='COMMIT —';
 })();
