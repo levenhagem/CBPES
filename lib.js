@@ -180,7 +180,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const registeredDate=registeredAt?new Date(registeredAt):null;
   const dateText=fd(m.played_on||m.date);
   const meta=hideDate||!dateText?'':`<span class="match-date">${esc(dateText)}</span>`;
-  return `<div data-cbpes-match-id="${esc(m.id)}" class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""}" style="--match-color:${color}">
+  return `<div data-cbpes-match-id="${esc(m.id)}" class="cbpes-match ${m.is_liga_evo?"cbpes-match-evo":""} ${isLigaPro?"cbpes-match-liga-pro":""} ${isCopaMaster?"cbpes-match-copa-master":""} ${m.category==="weekly"?"cbpes-match-semanal":""} ${m.category==="friendly"?"cbpes-match-friendly":""}" style="--match-color:${color}">
     <div class="cbpes-match-top"><span class="cbpes-match-category">${categoryLabel}</span>${meta}</div>
     ${reportLinkMode==='details'? `<div class="cbpes-round-clean">
       <div class="cbpes-round-clean-teams">${['home','away'].map(side=>`<div class="cbpes-round-clean-row">${crestImg(m[side])}<div class="cbpes-round-clean-identity"><a class="cbpes-team-name" href="#team/${m[side+'_id']}">${esc(m[side].name)}</a>${championTag(m[side+'_id'])}<small>${coach(m[side+'_coach_name']||m[side].coach_name)}</small></div><b class="cbpes-round-clean-goals">${m.played?m[side+'_score']:'–'}</b></div>`).join('')}${detailHTML}</div>
