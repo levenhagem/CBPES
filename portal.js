@@ -87,7 +87,8 @@ function route() {
   if(sameLigaTheme)document.body.classList.add('cbpes-liga-pro-page');
   if(!sameLigaTheme)document.body.classList.remove('cbpes-report-page','cbpes-report-page-liga-pro','cbpes-report-page-copa-master');
   const profile = ['participant','team','coach','match'].includes(parts[0]) && parts.length > 1;
-  const id = profile ? parts[0] : (parts[0]==='belts' ? 'belts' : parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (PAGES.includes(raw) ? raw : 'home')));
+  const id = profile ? parts[0] : (parts[0]==='belts' ? 'belts' : parts[0]==='table' ? 'table' : (parts[0]==='stats-detail' ? 'stats-detail' : (parts[0]==='stats' ? 'stats' : (PAGES.includes(raw) ? raw : 'home'))));
+  if(id==='stats' && D && parts[1]){const cid=decodeURIComponent(parts[1]);if(activeVisibleStatCompetitions().some(c=>String(c.id)===cid)){statsCategory='official';statsCompetition=cid;renderStats();}}
   if(id==='stats-detail' && D)renderStatsDetail(decodeURIComponent(parts[1]||'official'),decodeURIComponent(parts[2]||''));
   if(id==='table' && D){if(parts[1]){const requested=decodeURIComponent(parts.slice(1).join('/'));if((D.officialEditions||[]).some(e=>String(e.id)===requested&&publicEditionVisible(e)))selectedWeeklyTable=requested;}renderTable();}
   closeNavCompetitionMenu();
@@ -465,6 +466,8 @@ function renderTable() {
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
   const headingName=selectedCompetition?.name||selectedEdition?.name||selectedWeekly?.name||'Tabela do campeonato';
   const heading=$('tableCompetitionName'), emblem=$('tableCompetitionEmblem');
+  const shortcuts=$('tableStatShortcuts');
+  if(shortcuts){const cid=selectedEdition?.competition_id;shortcuts.hidden=!cid;shortcuts.querySelector('[data-comp-stats]').href='#stats/'+encodeURIComponent(cid||'');shortcuts.querySelector('[data-comp-scorers]').href='#stats-detail/official/scorers/'+encodeURIComponent(cid||'');}
   if(heading){
     if(/copa\s*master/i.test(headingName)){
       heading.innerHTML='<span class="cbpes-master-title-copa">COPA</span> <span class="cbpes-master-title-master">MASTER</span>';
@@ -1048,7 +1051,7 @@ function renderStatsDetail(category,key){
   const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
   if(!definition){root.innerHTML='<div class="page-title"><h1>Estatística indisponível</h1></div><a class="cbpes-stats-back" href="#stats">VOLTAR ÀS ESTATÍSTICAS</a>';return;}
   root.onclick=e=>{if(changeDefenseMode(e))return;changeMatchMetricMode(e);};
-  root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+statCategoryLabels[valid]+'</div><h1>'+esc(definition.title)+'</h1></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
+  root.innerHTML='<div class="page-title cbpes-stats-detail-title"><div><div class="eyebrow">'+esc(valid==='official'&&statsCompetition!=='all'?(activeVisibleStatCompetitions().find(c=>String(c.id)===String(statsCompetition))?.name||statCategoryLabels[valid]):statCategoryLabels[valid])+'</div><h1>'+esc(definition.title)+'</h1></div></div><a class="cbpes-stats-back" href="#stats">← VOLTAR ÀS ESTATÍSTICAS</a>'+statCard(definition,valid,true);
 }
 
 function renderParticipant(id) {
