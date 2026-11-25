@@ -159,8 +159,8 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const details = [];
   if(m.went_to_extra_time)details.push('PRORROGAÇÃO');
   if(m.golden_goal)details.push('GOL DE OURO');
-  if(m.home_pen!=null&&m.away_pen!=null)details.push(`PÊNALTIS ${m.home_pen}–${m.away_pen}`);
-  const detailHTML=details.length?`<div class="cbpes-match-details">${details.map(t=>`<span>${t}</span>`).join('')}</div>`:'';
+  if(m.home_pen!=null&&m.away_pen!=null)details.push(`pên. ${m.home_pen}-${m.away_pen}`);
+  const detailHTML=details.length?`<div class="cbpes-match-details">${details.map(t=>`<span${t.startsWith("pên.")?' class="cbpes-penalty-score"':""}>${t}</span>`).join('')}</div>`:'';
   const winnerByPens=m.played&&m.home_score===m.away_score&&m.home_pen!=null&&m.away_pen!=null;
 
   const homeWon = m.played && (m.home_score > m.away_score || (winnerByPens&&m.home_pen>m.away_pen));
