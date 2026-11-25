@@ -112,7 +112,7 @@ function syncOfficialCardTags(){
  const eligible=officialCardIds.has(String(card.dataset.cbpesMatchId));
  if(!eligible){existing?.remove();return;}
  if(existing)return;
- const tag=document.createElement('a');tag.className='cbpes-official-belt-tag';tag.href='#belts/official';tag.textContent='CINTURÃO OFICIAL';top.appendChild(tag);
+ const tag=document.createElement('a');tag.className='cbpes-official-belt-tag';tag.href='#belts/official';tag.textContent='CINTURÃO OFICIAL EM JOGO';top.appendChild(tag);
  });
 }
 function setOfficialCardTags(belts,data){
