@@ -13,7 +13,7 @@ function matches(data,career){
   if(!validDate(date))continue;
   const home=m.home_coach_name||m.home?.coach_name,away=m.away_coach_name||m.away?.coach_name;
   if(!norm(home)||!norm(away)||norm(home)===norm(away))continue;
-  results.push({id:'m:'+m.id,category:m.category||'official',date,sortTime:m.result_registered_at||m.created_at||date,order:Number(m.seq||m.display_order||0),home,away,hs:Number(m.home_score),as:Number(m.away_score),competition:m.competition?.name||m.edition?.name,source:'CBPES'});
+  results.push({id:'m:'+m.id,category:m.category||'official',date,sortTime:m.result_registered_at||m.created_at||date,order:Number(m.seq||m.display_order||0),home,away,hs:Number(m.home_score),as:Number(m.away_score),hp:m.home_pen,ap:m.away_pen,competition:m.competition?.name||m.edition?.name,source:'CBPES'});
  }
  for(const m of career||[]){
   if(m.home_score==null||m.away_score==null||!validDate(m.played_on)||!norm(m.home_coach)||!norm(m.away_coach)||norm(m.home_coach)===norm(m.away_coach))continue;
@@ -30,7 +30,7 @@ function calculate(config,all){
   if(m.date<config.starts_on||!allowed.includes(m.category))continue;
   const home=norm(m.home)===norm(current),away=norm(m.away)===norm(current);
   if(!home&&!away)continue;
-  const conceded=home?m.as:m.hs,scored=home?m.hs:m.as,previous=current;
+  const shootout=m.hs===m.as&&m.hp!=null&&m.ap!=null&&Number(m.hp)!==Number(m.ap);const conceded=shootout?Number(home?m.ap:m.hp):(home?m.as:m.hs),scored=shootout?Number(home?m.hp:m.ap):(home?m.hs:m.as),previous=current;
   if(scored<conceded){current=home?m.away:m.home;streak=0;transfers++;events.push({...m,kind:'transfer',previous,current});}
   else {streak++;defenses++;events.push({...m,kind:scored===conceded?'draw':'defense',previous,current});}
  }
