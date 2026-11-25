@@ -688,7 +688,11 @@ function renderTable() {
     }
   }
 
-  if(edition && $('fullTable') && !/supercopa|torneio\s*de\s*abertura/i.test([edition.name,selectedCompetition?.name].join(' '))) $('fullTable').insertAdjacentHTML('afterbegin',simulatorButton('official',edition.id));
+  if(edition && $('fullTable')){
+    const simAllowed=!/supercopa|torneio\s*de\s*abertura/i.test([edition.name,selectedCompetition?.name].join(' '));
+    $('fullTable').insertAdjacentHTML('afterbegin','<div class="competition-action-bar">'+(simAllowed?simulatorButton('official',edition.id):'')+(shortcuts&&!shortcuts.hidden?shortcuts.innerHTML:'')+'</div>');
+    if(shortcuts)shortcuts.hidden=true;
+  }
   $('fullTable').onclick=e=>{const phaseButton=e.target.closest('#phasePrev,#phaseNext');if(phaseButton){const i=phases.findIndex(p=>String(p.id)===String(selectedOfficialPhase));const nextIndex=Math.max(0,Math.min(phases.length-1,i+(phaseButton.id==='phaseNext'?1:-1)));if(phases[nextIndex]&&nextIndex!==i){selectedOfficialPhase=phases[nextIndex].id;if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();}return;}const masterButton=e.target.closest('[data-master-round-prev],[data-master-round-next]');if(masterButton){const key='master-template-'+edition.id;const current=Number(selectedOfficialRoundByPhase[key])||0;selectedOfficialRoundByPhase[key]=Math.max(0,Math.min(Math.max(masterCalendar.length,masterGroupRounds.length,1)-1,current+(masterButton.hasAttribute('data-master-round-next')?1:-1)));if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();return;}const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();};
   // As setas de fase são tratadas por delegação no contêiner, inclusive após recriar os cards.
 }
