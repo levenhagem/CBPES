@@ -57,17 +57,19 @@ function renderMatchReport(matchId){
   const awayGoals=goals.filter(e=>goalTeam(e)===m.away_id);
   const goalRows='<div class="cbpes-report-goal-column cbpes-report-goal-home">'+groupedGoalRows(homeGoals)+'</div><span class="cbpes-report-goal-center" aria-hidden="true"><iconify-icon icon="iconoir:soccer-ball"></iconify-icon></span><div class="cbpes-report-goal-column cbpes-report-goal-away">'+groupedGoalRows(awayGoals)+'</div>';
   const saveStats=(stat&&m.played&&stat.home_shots_on_target!=null&&stat.away_shots_on_target!=null)?{home:Math.max(0,Number(stat.away_shots_on_target)-Number(m.away_score)+awayGoals.filter(e=>e.goal_type==='own_goal').length),away:Math.max(0,Number(stat.home_shots_on_target)-Number(m.home_score)+homeGoals.filter(e=>e.goal_type==='own_goal').length)}:null;
-  const statDefs=[['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['goalkeeper_saves','Defesas do goleiro','',false],['corners','Escanteios','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
+  const statDefs=[['possession','Posse de bola','%',false],['shots','Chutes','',false],['shots_on_target','Chutes a gol','',false],['shot_accuracy','Precisão nas finalizações','%',false],['goalkeeper_saves','Defesas do goleiro','',false],['corners','Escanteios','',false],['penalties','Pênaltis','',true],['fouls','Faltas cometidas','',false],['offsides','Impedimentos','',true],['yellow_cards','Cartões amarelos','',false],['red_cards','Cartões vermelhos','',true]];
   const clubColor=team=>/^#[0-9a-f]{6}$/i.test(team?.primary_color||'')?team.primary_color:'#2678a9';
   const reportColor=(side,team)=>/^#[0-9a-f]{6}$/i.test(stat?.[side+'_color']||'')?stat[side+'_color']:clubColor(team);
   const reportClubStyle='--cbpes-home-club:'+reportColor('home',m.home)+';--cbpes-away-club:'+reportColor('away',m.away)+';';
   const statHTML=statDefs.map(([key,label,suffix,conditional])=>{
-    const a=key==='goalkeeper_saves'?saveStats?.home:stat?.['home_'+key],b=key==='goalkeeper_saves'?saveStats?.away:stat?.['away_'+key];
+    const accuracy=side=>stat?.[side+'_shots']>0&&stat?.[side+'_shots_on_target']!=null?100*Number(stat[side+'_shots_on_target'])/Number(stat[side+'_shots']):null;
+    const a=key==='shot_accuracy'?accuracy('home'):key==='goalkeeper_saves'?saveStats?.home:stat?.['home_'+key],b=key==='shot_accuracy'?accuracy('away'):key==='goalkeeper_saves'?saveStats?.away:stat?.['away_'+key];
+    const display=n=>key==='shot_accuracy'?n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+suffix:n+suffix;
     if(conditional&&!(Number(a)>0||Number(b)>0))return '';
     if(a==null&&b==null)return '';
     const left=Number(a)||0,right=Number(b)||0,total=left+right;
     const lPct=total?100*left/total:50,rPct=total?100*right/total:50;
-    return '<div class="cbpes-report-stat cbpes-report-stat-compare"><div class="cbpes-report-stat-heading"><b>'+(a==null?(key==='yellow_cards'?'0':'—'):a+suffix)+'</b><span>'+label+'</span><b>'+(b==null?(key==='yellow_cards'?'0':'—'):b+suffix)+'</b></div><div class="cbpes-report-compare-track" role="img" aria-label="'+esc(label)+': '+(a??'não informado')+' contra '+(b??'não informado')+'"><span class="cbpes-report-compare-home" style="width:'+lPct+'%"></span><span class="cbpes-report-compare-away" style="width:'+rPct+'%"></span></div></div>';
+    return '<div class="cbpes-report-stat cbpes-report-stat-compare"><div class="cbpes-report-stat-heading"><b>'+(a==null?(key==='yellow_cards'?'0':'—'):display(a))+'</b><span>'+label+'</span><b>'+(b==null?(key==='yellow_cards'?'0':'—'):display(b))+'</b></div><div class="cbpes-report-compare-track" role="img" aria-label="'+esc(label)+': '+(a??'não informado')+' contra '+(b??'não informado')+'"><span class="cbpes-report-compare-home" style="width:'+lPct+'%"></span><span class="cbpes-report-compare-away" style="width:'+rPct+'%"></span></div></div>';
   }).join('');
   root.innerHTML='<a class="cbpes-report-back" href="'+esc(matchReturn.hash||'#games')+'">← VOLTAR</a><div class="cbpes-report-hero '+theme+'"><div class="cbpes-report-overline">'+(m.date?'<span class="cbpes-report-date-inline">'+fd(m.date)+'</span><span class="cbpes-report-separator"> • </span>':'')+'<strong class="cbpes-report-competition-name">'+esc(competition?.name||edition?.name||'CBPES')+'</strong>'+(m.round?' <span class="cbpes-report-separator">•</span> <strong class="cbpes-report-round-name">'+esc(m.round.name||'RODADA '+m.round.number)+'</strong>':'')+'</div><div class="cbpes-report-heading-date">'+(stadium?'<iconify-icon class="cbpes-stadium-icon" icon="material-symbols:stadium-outline" aria-hidden="true"></iconify-icon><span>'+esc(stadium.name)+'</span>':'')+'</div><div class="cbpes-report-scoreboard"><div>'+crestImg(m.home)+'<a href="#team/'+m.home_id+'">'+esc(m.home.name)+'</a><small>'+esc(m.home_coach_name||m.home.coach_name||'')+'</small></div><strong>'+(m.played?m.home_score+' : '+m.away_score:'– : –')+'</strong><div>'+crestImg(m.away)+'<a href="#team/'+m.away_id+'">'+esc(m.away.name)+'</a><small>'+esc(m.away_coach_name||m.away.coach_name||'')+'</small></div></div>'+(m.played&&goals.length?'<div class="cbpes-report-goals cbpes-report-goals-centered">'+goalRows+'</div>':'')+'<div class="cbpes-report-meta">'+(m.home_pen!=null&&m.away_pen!=null?'PÊNALTIS '+m.home_pen+'–'+m.away_pen:'')+'</div></div>'+(m.played?'<div class="card cbpes-report-stats-card" style="'+reportClubStyle+'"><div class="cardhead"><h2>ESTATÍSTICAS DA PARTIDA</h2></div><div class="cardbody">'+(statHTML||'<div class="empty">Estatísticas ainda não informadas.</div>')+'</div></div>':'')+(m.played&&m.mvp_player_id?'<div class="cbpes-report-mvp">★ MELHOR JOGADOR DA PARTIDA: <b>'+esc(player(m.mvp_player_id)?.name||'')+'</b></div>':'');
 }
@@ -866,6 +868,7 @@ const officialMatchMetricDefinitions=()=>{
     ['possession','POSSE DE BOLA','%'],
     ['shots','CHUTES ',''],
     ['shots_on_target','CHUTES A GOL ',''],
+    ['shot_accuracy','PRECISÃO NAS FINALIZAÇÕES','%'],
     ['goalkeeper_saves','DEFESAS DO GOLEIRO ',''],
     ['corners','ESCANTEIOS ',''],
     ['penalties','PÊNALTIS (TOTAL) ',''],
@@ -884,6 +887,7 @@ const officialMatchMetricDefinitions=()=>{
       const key=String(id);
       if(!teams.has(key))teams.set(key,{p:team,totals:{},counts:{}});
       const row=teams.get(key);
+      if(s[side+'_shots']>0&&s[side+'_shots_on_target']!=null){row.accuracyShots=(row.accuracyShots||0)+Number(s[side+'_shots']);row.accuracyTargets=(row.accuracyTargets||0)+Number(s[side+'_shots_on_target']);}
       metrics.forEach(([metric])=>{
         let n=s[side+'_'+metric];
         if(metric==='goalkeeper_saves'&&(n==null||n==='')){
@@ -902,6 +906,7 @@ const officialMatchMetricDefinitions=()=>{
   });
   const format=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
   return metrics.map(([key,title,unit])=>{
+    if(key==='shot_accuracy'){const rows=[...teams.values()].filter(x=>x.accuracyShots>0).map(x=>({...x,average:100*x.accuracyTargets/x.accuracyShots})).sort((a,b)=>b.average-a.average);return {key:'match-'+key,title,rows,value:x=>format(x.average),unit};}
     const mode=key==='possession'?'average':['penalties','red_cards'].includes(key)?'total':(matchMetricModes[key]||'average');
     const rows=[...teams.values()].filter(x=>x.counts[key]>0).map(x=>({...x,average:x.totals[key]/x.counts[key],total:x.totals[key]}))
       .sort((a,b)=>(mode==='total'?b.total-a.total:b.average-a.average)||String(a.p.name||'').localeCompare(String(b.p.name||''),'pt-BR'));
