@@ -466,7 +466,7 @@ function renderTable() {
   const isLigaProTable=/liga\s*pro/i.test([selectedEdition?.name,selectedCompetition?.name].filter(Boolean).join(' '));
   const headingName=selectedCompetition?.name||selectedEdition?.name||selectedWeekly?.name||'Tabela do campeonato';
   const heading=$('tableCompetitionName'), emblem=$('tableCompetitionEmblem');
-  const shortcuts=$('tableStatShortcuts');
+  const shortcuts=$('tableStatShortcuts');const titleActions=$('tableTitleActions');if(titleActions)titleActions.replaceChildren();
   if(shortcuts){const cid=selectedEdition?.competition_id;shortcuts.hidden=!cid;shortcuts.querySelector('[data-comp-stats]').href='#stats/'+encodeURIComponent(cid||'');shortcuts.querySelector('[data-comp-scorers]').href='#stats-detail/official/scorers/'+encodeURIComponent(cid||'');}
   if(heading){
     if(/copa\s*master/i.test(headingName)){
@@ -546,7 +546,7 @@ function renderTable() {
     const placeholderHtml=ligaProKnockoutHtml||masterKnockoutHtml||(isMasterKnockout&&window.CBPESSimulator?.isActive?.()?'<div class="cbpes-master-ko-pending">Preparando projeção do mata-mata…</div>':null)||(['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match ${isLigaProTable?'cbpes-match-liga-pro':''}" style="--match-color:#bfcbd3">
         ${active.phase_type==='final'?'':`<div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>`}
-        ${isMasterKnockout?`<div class="master-future-fixture"><div class="master-future-row"><span>${esc(String(pair[0]||'A definir'))}</span><b>–</b></div><div class="master-future-row"><span>${esc(String(pair[1]||'A definir'))}</span><b>–</b></div></div>`:`<div class="cbpes-match-main">
+        ${isMasterKnockout?`<div class="master-future-fixture"><span class="master-future-home">${esc(String(pair[0]||'A definir'))}</span><b class="master-future-score">– : –</b><span class="master-future-away">${esc(String(pair[1]||'A definir'))}</span></div>`:`<div class="cbpes-match-main">
           <div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[0]||'A definir'))}</span></div></div></div>
           <div class="cbpes-match-score">– : –</div>
           <div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[1]||'A definir'))}</span></div></div></div>
@@ -690,7 +690,7 @@ function renderTable() {
 
   if(edition && $('fullTable')){
     const simAllowed=!/supercopa|torneio\s*de\s*abertura/i.test([edition.name,selectedCompetition?.name].join(' '));
-    $('fullTable').insertAdjacentHTML('afterbegin','<div class="competition-action-bar">'+(simAllowed?simulatorButton('official',edition.id):'')+(shortcuts&&!shortcuts.hidden?shortcuts.innerHTML:'')+'</div>');
+    (titleActions||$('fullTable')).insertAdjacentHTML('afterbegin','<div class="competition-action-bar">'+(simAllowed?simulatorButton('official',edition.id):'')+(shortcuts&&!shortcuts.hidden?shortcuts.innerHTML:'')+'</div>');
     if(shortcuts)shortcuts.hidden=true;
   }
   $('fullTable').onclick=e=>{const phaseButton=e.target.closest('#phasePrev,#phaseNext');if(phaseButton){const i=phases.findIndex(p=>String(p.id)===String(selectedOfficialPhase));const nextIndex=Math.max(0,Math.min(phases.length-1,i+(phaseButton.id==='phaseNext'?1:-1)));if(phases[nextIndex]&&nextIndex!==i){selectedOfficialPhase=phases[nextIndex].id;if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();}return;}const masterButton=e.target.closest('[data-master-round-prev],[data-master-round-next]');if(masterButton){const key='master-template-'+edition.id;const current=Number(selectedOfficialRoundByPhase[key])||0;selectedOfficialRoundByPhase[key]=Math.max(0,Math.min(Math.max(masterCalendar.length,masterGroupRounds.length,1)-1,current+(masterButton.hasAttribute('data-master-round-next')?1:-1)));if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();return;}const b=e.target.closest('[data-official-round-prev],[data-official-round-next]');if(!b)return;const key=b.dataset.officialRoundPrev||b.dataset.officialRoundNext;const rs=officialRounds.filter(r=>key==='league'?!r.phase_id:String(r.phase_id)===String(key)).sort((a,c)=>a.number-c.number);selectedOfficialRoundByPhase[key]=changeRound(rs,selectedOfficialRoundByPhase[key],b.dataset.officialRoundNext?1:-1);if(window.CBPESSimulator?.isActive?.())window.CBPESSimulator.refresh();else renderTable();};
