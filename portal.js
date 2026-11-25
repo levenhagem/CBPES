@@ -114,14 +114,7 @@ function closeNavCompetitionMenu(){
 }
 function openNavCompetitionMenu(){
   const m=$('navCompetitionMenu'),b=$('navCompetitionButton');if(!m||!b)return;
-  if(window.matchMedia('(max-width:700px)').matches){
-    document.body.appendChild(m);
-    const rect=b.getBoundingClientRect(),width=Math.min(340,window.innerWidth-24);
-    m.style.width=width+'px';m.style.maxWidth=width+'px';
-    m.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-width-12))+'px';
-    m.style.top=Math.min(rect.bottom+2,window.innerHeight-80)+'px';
-    m.style.right='auto';
-  }
+  if(window.matchMedia('(max-width:700px)').matches){const wrap=b.parentElement;if(m.parentElement!==wrap)wrap.appendChild(m);}
   m.hidden=false;b.setAttribute('aria-expanded','true');
 }
 function renderNavCompetitions(){
@@ -160,13 +153,7 @@ function closeNavStatsMenu(){
 }
 function openNavStatsMenu(){
   const m=$('navStatsMenu'),b=$('navStatsButton');if(!m||!b)return;
-  if(window.matchMedia('(max-width:700px)').matches){
-    document.body.appendChild(m);
-    const rect=b.getBoundingClientRect(),width=Math.min(340,window.innerWidth-24);
-    m.style.width=width+'px';m.style.maxWidth=width+'px';
-    m.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-width-12))+'px';
-    m.style.top=Math.min(rect.bottom+2,window.innerHeight-80)+'px';m.style.right='auto';
-  }
+  if(window.matchMedia('(max-width:700px)').matches){const wrap=b.parentElement;if(m.parentElement!==wrap)wrap.appendChild(m);}
   m.hidden=false;b.setAttribute('aria-expanded','true');
 }
 const navStatsWrap=$('navStatsWrap'),navStatsButton=$('navStatsButton');
@@ -327,7 +314,7 @@ function renderHome() {
   const proTeams=participants.filter(p=>proTeamIds.has(String(p.id)));
   const proStanding=standings(proTeams,proLeagueMatches);
   const recentLigaProLink=document.querySelector('#leagueRecentCard .cbpes-home-heading-link');
-  if(recentLigaProLink)recentLigaProLink.href=proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table';
+  if(recentLigaProLink)recentLigaProLink.href=proEdition?'#stats-detail/official/scorers/'+encodeURIComponent(proEdition.competition_id):'#stats';
   $('miniTitle').innerHTML='<a class="cbpes-home-heading-link" href="'+(proEdition?'#table/'+encodeURIComponent(proEdition.id):'#table')+'">'+(proEdition?'LIGA PRO — CLASSIFICAÇÃO':'CLASSIFICAÇÃO')+'</a>';
   $('miniTable').innerHTML=proEdition?(proStanding.length?'<div class="cbpes-home-league-compact">'+miniTable(proStanding.slice(0,6),zonesFor('official',null,(D.phases||[]).find(p=>String(p.official_edition_id)===String(proEdition.id)&&p.counts_in_standings)?.id),proLeagueMatches)+'</div>':empty('Nenhuma equipe vinculada à fase classificatória.')):empty('Liga Pro não cadastrada.');
   // Artilharia exclusiva da Liga PRO, contabilizando apenas gols dos jogos desta edição.
@@ -1055,6 +1042,7 @@ function renderStats(){
   $('statsGrid').onclick=e=>{if(changeDefenseMode(e)||changeMatchMetricMode(e))return;const btn=e.target.closest('[data-stats-category]');if(!btn)return;statsCategory=btn.dataset.statsCategory;renderStats();};
 }
 function renderStatsDetail(category,key){
+  const parts=location.hash.slice(1).split('/');if(category==='official'&&parts[3]){const id=decodeURIComponent(parts[3]);if(activeVisibleStatCompetitions().some(c=>String(c.id)===id)){statsCategory='official';statsCompetition=id;}}
   const root=$('statsDetailView');if(!root)return;
   const valid=Object.hasOwn(statCategoryLabels,category)?category:'official';
   const definition=visibleStatDefinitions(valid).find(d=>d.key===key);
