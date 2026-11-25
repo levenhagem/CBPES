@@ -741,6 +741,11 @@ function renderWeeklies() {
       if(active.phase_type==='final'&&!has('final'))rows=placeholder(1,2)+rows;
       if(phases.some(p=>p.phase_type==='third_place')&&!has('third_place'))rows+='<div class="cbpes-weekly-third-label">DISPUTA DE 3º LUGAR</div>'+placeholder(3,4);
     }
+    if(active.counts_in_standings&&chosen&&teams.length%2===1&&selectedGames.length===Math.floor(teams.length/2)){
+      const playing=new Set(selectedGames.flatMap(m=>[m.home_id,m.away_id]));
+      const resting=teams.filter(p=>!playing.has(p.id));
+      if(resting.length===1)rows+='<div style="padding:12px 4px;font-weight:700">FOLGA: '+esc(resting[0].coach_name||resting[0].name)+'</div>';
+    }
     const finalPhase = phaseList.find(p=>p.phase_type==='final');
     const thirdPhase = phases.find(p=>p.phase_type==='third_place');
     const finalRoundIds=(D.weeklyRounds||[]).filter(r=>r.phase_id===finalPhase?.id).map(r=>r.id);
