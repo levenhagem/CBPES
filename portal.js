@@ -128,7 +128,7 @@ function renderNavCompetitions(){
   const menu=$('navCompetitionMenu');if(!menu||!D)return;
   const competitions=D.officialCompetitions||[];
   const editions=(D.officialEditions||[]).filter(e=>publicEditionVisible(e));
-  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option" style="--nav-comp-color:#159b60">SEMANAIS <small>Edições e resultados</small></a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));const name=String(c?.name||e.name||'');const color=/liga\s*pro/i.test(name)?'#397de0':/copa\s*master/i.test(name)?'#d4a72c':/supercopa|winning eleven/i.test(name)?'#e13d50':/abertura/i.test(name)?'#a0a9b2':/^#[0-9a-f]{6}$/i.test(c?.color||'')?c.color:'#159b60';return '<a style="--nav-comp-color:'+color+'" href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+' <small>'+esc(e.name||'')+'</small></a>';}).join(''):'');
+  menu.innerHTML='<a href="#weeklies" class="cbpes-nav-weeklies-option" style="--nav-comp-color:#159b60">SEMANAIS</a>'+(editions.length?editions.map(e=>{const c=competitions.find(c=>String(c.id)===String(e.competition_id));const name=String(c?.name||e.name||'');const color=/liga\s*pro/i.test(name)?'#397de0':/copa\s*master/i.test(name)?'#d4a72c':/supercopa|winning eleven/i.test(name)?'#e13d50':/abertura/i.test(name)?'#a0a9b2':/^#[0-9a-f]{6}$/i.test(c?.color||'')?c.color:'#159b60';return '<a style="--nav-comp-color:'+color+'" href="#table/'+encodeURIComponent(e.id)+'">'+esc(c?.name||'Competição')+'</a>';}).join(''):'');
 }
 const navCompetitionWrap=$('navCompetitionWrap'),navCompetitionButton=$('navCompetitionButton');
 if(navCompetitionWrap&&navCompetitionButton){
