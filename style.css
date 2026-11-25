@@ -2087,15 +2087,15 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 #coachView .cbpes-coach-trophies .player b,#coachView .cbpes-coach-teams .player b{font-size:13px;color:#193641}
 #coachView .cbpes-coach-trophies .player small,#coachView .cbpes-coach-teams .player small{display:block;margin-top:5px;color:#71838c;font-size:11px}
 #coachView .cbpes-coach-trophies .pill,#coachView .cbpes-coach-teams .pill{font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;border:1px solid #c7e2d4;background:#eaf6ef;color:#096c44}
-#coachView .cbpes-coach-compare .field{max-width:440px}
-#coachView .cbpes-coach-compare .field label{font-size:11px;font-weight:800;color:#607781;margin-bottom:7px}
-#coachView .cbpes-coach-compare select{width:100%;min-height:43px;border:1px solid #cbdcda;border-radius:9px;background:#f9fbfa;color:#1a3942;padding:9px 12px}
-#coachView .cbpes-coach-compare select:focus{outline:2px solid #4ca781;outline-offset:1px}
-#coachView .cbpes-coach-compare #coachCompareResult>.admin-help{background:#f4f8f6;border:1px dashed #d5e5dd;border-radius:9px;padding:13px;color:#617b73;font-size:12px}
-#coachView .cbpes-coach-compare #coachCompareResult>.notice{border-radius:9px;background:#f0f7f3;border:1px solid #d6e9dd;padding:15px;color:#214a39}
-#coachView .cbpes-coach-compare #coachCompareResult .card{border:1px solid #e0e9e9;border-radius:10px;overflow:hidden;box-shadow:none}
-#coachView .cbpes-coach-compare #coachCompareResult .cardhead{background:#f7faf9;border-bottom:1px solid #e6eeeb;padding:13px 15px}
-#coachView .cbpes-coach-compare #coachCompareResult .cardbody{padding:14px}
+:is(#coachView,#compareView) .cbpes-coach-compare .field{max-width:440px}
+:is(#coachView,#compareView) .cbpes-coach-compare .field label{font-size:11px;font-weight:800;color:#607781;margin-bottom:7px}
+:is(#coachView,#compareView) .cbpes-coach-compare select{width:100%;min-height:43px;border:1px solid #cbdcda;border-radius:9px;background:#f9fbfa;color:#1a3942;padding:9px 12px}
+:is(#coachView,#compareView) .cbpes-coach-compare select:focus{outline:2px solid #4ca781;outline-offset:1px}
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help{background:#f4f8f6;border:1px dashed #d5e5dd;border-radius:9px;padding:13px;color:#617b73;font-size:12px}
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.notice{border-radius:9px;background:#f0f7f3;border:1px solid #d6e9dd;padding:15px;color:#214a39}
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .card{border:1px solid #e0e9e9;border-radius:10px;overflow:hidden;box-shadow:none}
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .cardhead{background:#f7faf9;border-bottom:1px solid #e6eeeb;padding:13px 15px}
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .cardbody{padding:14px}
 #coachView .cbpes-coach-history .result-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-bottom:1px solid #eaf0f0;background:#fff}
 #coachView .cbpes-coach-history .result-row:last-of-type{border-bottom:0}
 #coachView .cbpes-coach-history .result-row:hover{background:#f8fbfa}
@@ -2109,20 +2109,20 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 @media(max-width:640px){#coachView .page-title{padding:16px}#coachView>.card>.cardhead{padding:14px}#coachView>.card>.cardbody{padding:14px}#coachView .cbpes-coach-history .result-row{gap:8px;padding:12px 4px}#coachView .cbpes-coach-history .result-teams{font-size:12px}#coachView .cbpes-coach-history .result-score{font-size:13px}#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{padding:12px 9px}}
 
 /* Perfil dos técnicos — geometria mais quadrada, estilo painel esportivo. */
-#coachView .page-title,
-#coachView>.card,
-#coachView .cbpes-coach-rivalry-card,
-#coachView .cbpes-coach-rivalry-card.nemesis,
-#coachView .cbpes-coach-kpi,
-#coachView .cbpes-coach-rivalry-icon,
-#coachView .cbpes-coach-filter label,
-#coachView .cbpes-coach-trophies .player,
-#coachView .cbpes-coach-teams .player,
-#coachView .cbpes-coach-compare select,
-#coachView .cbpes-coach-compare #coachCompareResult>.admin-help,
-#coachView .cbpes-coach-compare #coachCompareResult>.notice,
-#coachView .cbpes-coach-compare #coachCompareResult .card,
-#coachView .cbpes-coach-history-toggle{border-radius:4px!important}
+:is(#coachView,#compareView) .page-title,
+:is(#coachView,#compareView)>.card,
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card,
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis,
+:is(#coachView,#compareView) .cbpes-coach-kpi,
+:is(#coachView,#compareView) .cbpes-coach-rivalry-icon,
+:is(#coachView,#compareView) .cbpes-coach-filter label,
+:is(#coachView,#compareView) .cbpes-coach-trophies .player,
+:is(#coachView,#compareView) .cbpes-coach-teams .player,
+:is(#coachView,#compareView) .cbpes-coach-compare select,
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help,
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.notice,
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .card,
+:is(#coachView,#compareView) .cbpes-coach-history-toggle{border-radius:4px!important}
 #coachView .cbpes-coach-rivalry-card,
 #coachView .cbpes-coach-rivalry-card.nemesis{box-shadow:none}
 #coachView>.card{box-shadow:none}
@@ -2155,36 +2155,36 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-coach-history-section>.result-row[hidden]{display:none!important}
 #coachView .cbpes-coach-history-empty{padding:15px;color:#71828a;font-size:12px;margin:0}
 #coachView .cbpes-coach-history-section .cbpes-coach-history-toggle{width:calc(100% - 24px);margin:12px}
-#coachView .cbpes-compare-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
-#coachView .cbpes-compare-modes button{padding:10px 13px;border:1px solid #d2dfd9;border-radius:4px;background:#f3f6f5;color:#466255;font-size:11px;font-weight:850;cursor:pointer}
-#coachView .cbpes-compare-modes button.active{background:#086b43;border-color:#086b43;color:white}
-#coachView .cbpes-compare-board{padding:18px;border:1px solid #dce7e2;border-radius:4px;background:#fff}
-#coachView .cbpes-compare-names{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:23px;color:#17333d}
-#coachView .cbpes-compare-names strong{font-size:17px;overflow-wrap:anywhere}
-#coachView .cbpes-compare-names strong:last-child{text-align:right}
-#coachView .cbpes-compare-names>span{font-size:10px;font-weight:850;color:#82918b}
-#coachView .cbpes-compare-metric{margin-bottom:19px}
-#coachView .cbpes-compare-metric-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:8px;margin-bottom:8px}
-#coachView .cbpes-compare-metric-head b{font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;color:#086b43}
-#coachView .cbpes-compare-metric-head b:last-child{text-align:right;color:#b88418}
-#coachView .cbpes-compare-metric-head span{font-size:10px;font-weight:850;color:#637881;letter-spacing:.055em}
-#coachView .cbpes-compare-track{display:flex;width:100%;height:13px;overflow:hidden;background:#e7eeeb;border-radius:3px}
-#coachView .cbpes-compare-left{background:#087b4d;height:100%}
-#coachView .cbpes-compare-right{background:#e3aa36;height:100%}
-#coachView .cbpes-compare-legend{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:750;color:#657b79}
-#coachView .cbpes-compare-legend span:first-child{color:#087b4d}
-#coachView .cbpes-compare-legend span:last-child{color:#b88418}
-#coachView .cbpes-compare-achievements{margin-top:16px;padding:17px;border:1px solid #dce7e2;border-radius:4px}
-#coachView .cbpes-compare-achievements h3{margin:0 0 14px;font-size:12px;color:#17333d}
-#coachView .cbpes-compare-achievements-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-#coachView .cbpes-compare-achievements-grid>div{min-width:0}
-#coachView .cbpes-compare-achievements-grid>div>b{display:block;margin-bottom:9px;font-size:12px;color:#23433d}
-#coachView .cbpes-compare-achievement{padding:9px 10px;margin-bottom:7px;background:#f6f9f7;border:1px solid #e2ebe5;border-radius:4px;font-size:12px;overflow-wrap:anywhere}
-@media(max-width:640px){#coachView .cbpes-compare-board{padding:12px}#coachView .cbpes-compare-achievements-grid{gap:9px}#coachView .cbpes-compare-names strong{font-size:14px}#coachView .cbpes-coach-history-section>.result-row{margin:0 6px}}
+:is(#coachView,#compareView) .cbpes-compare-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+:is(#coachView,#compareView) .cbpes-compare-modes button{padding:10px 13px;border:1px solid #d2dfd9;border-radius:4px;background:#f3f6f5;color:#466255;font-size:11px;font-weight:850;cursor:pointer}
+:is(#coachView,#compareView) .cbpes-compare-modes button.active{background:#086b43;border-color:#086b43;color:white}
+:is(#coachView,#compareView) .cbpes-compare-board{padding:18px;border:1px solid #dce7e2;border-radius:4px;background:#fff}
+:is(#coachView,#compareView) .cbpes-compare-names{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:23px;color:#17333d}
+:is(#coachView,#compareView) .cbpes-compare-names strong{font-size:17px;overflow-wrap:anywhere}
+:is(#coachView,#compareView) .cbpes-compare-names strong:last-child{text-align:right}
+:is(#coachView,#compareView) .cbpes-compare-names>span{font-size:10px;font-weight:850;color:#82918b}
+:is(#coachView,#compareView) .cbpes-compare-metric{margin-bottom:19px}
+:is(#coachView,#compareView) .cbpes-compare-metric-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:8px;margin-bottom:8px}
+:is(#coachView,#compareView) .cbpes-compare-metric-head b{font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;color:#086b43}
+:is(#coachView,#compareView) .cbpes-compare-metric-head b:last-child{text-align:right;color:#b88418}
+:is(#coachView,#compareView) .cbpes-compare-metric-head span{font-size:10px;font-weight:850;color:#637881;letter-spacing:.055em}
+:is(#coachView,#compareView) .cbpes-compare-track{display:flex;width:100%;height:13px;overflow:hidden;background:#e7eeeb;border-radius:3px}
+:is(#coachView,#compareView) .cbpes-compare-left{background:#087b4d;height:100%}
+:is(#coachView,#compareView) .cbpes-compare-right{background:#e3aa36;height:100%}
+:is(#coachView,#compareView) .cbpes-compare-legend{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:750;color:#657b79}
+:is(#coachView,#compareView) .cbpes-compare-legend span:first-child{color:#087b4d}
+:is(#coachView,#compareView) .cbpes-compare-legend span:last-child{color:#b88418}
+:is(#coachView,#compareView) .cbpes-compare-achievements{margin-top:16px;padding:17px;border:1px solid #dce7e2;border-radius:4px}
+:is(#coachView,#compareView) .cbpes-compare-achievements h3{margin:0 0 14px;font-size:12px;color:#17333d}
+:is(#coachView,#compareView) .cbpes-compare-achievements-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+:is(#coachView,#compareView) .cbpes-compare-achievements-grid>div{min-width:0}
+:is(#coachView,#compareView) .cbpes-compare-achievements-grid>div>b{display:block;margin-bottom:9px;font-size:12px;color:#23433d}
+:is(#coachView,#compareView) .cbpes-compare-achievement{padding:9px 10px;margin-bottom:7px;background:#f6f9f7;border:1px solid #e2ebe5;border-radius:4px;font-size:12px;overflow-wrap:anywhere}
+@media(max-width:640px){:is(#coachView,#compareView) .cbpes-compare-board{padding:12px}:is(#coachView,#compareView) .cbpes-compare-achievements-grid{gap:9px}:is(#coachView,#compareView) .cbpes-compare-names strong{font-size:14px}#coachView .cbpes-coach-history-section>.result-row{margin:0 6px}}
 
 /* Comparação: o valor inferior tem peso visual secundário. */
-#coachView .cbpes-compare-metric-head b.cbpes-compare-lower,
-#coachView .cbpes-compare-metric-head b.cbpes-compare-lower:last-child{
+:is(#coachView,#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower,
+:is(#coachView,#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower:last-child{
  font-size:15px;font-weight:650;color:#92a0a3;opacity:.82;
 }
  
@@ -2209,26 +2209,26 @@ button,.btn,input,select,textarea,
 #coachView .cbpes-coach-kpi{border-color:#d6e7dc;background:#f5faf6}
 #coachView .cbpes-coach-kpi b,#coachView .cbpes-coach-kpi strong{color:#086b43}
 #coachView .cbpes-coach-history-section>h3{background:#eaf5ee;color:#075b3a}
-#coachView .cbpes-compare-board{border-color:#cddfd2}
-#coachView .cbpes-compare-achievements{border-color:#d5e6da}
+:is(#coachView,#compareView) .cbpes-compare-board{border-color:#cddfd2}
+:is(#coachView,#compareView) .cbpes-compare-achievements{border-color:#d5e6da}
 #coachView .cbpes-coach-history-toggle{background:#087b4d;color:#fff}
 
 /* Confronto direto: jogos e empates são iguais para ambos, barra neutra. */
-#coachView .cbpes-compare-track.cbpes-compare-track-neutral{
+:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{
  background:#fff;border:1px solid #087b4d;height:13px;
 }
-#coachView .cbpes-compare-track-neutral .cbpes-compare-left,
-#coachView .cbpes-compare-track-neutral .cbpes-compare-right{
+:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left,
+:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-right{
  background:transparent!important;
 }
-#coachView .cbpes-compare-track-neutral .cbpes-compare-left{
+:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{
  border-right:1px solid #087b4d;
 }
 
 /* Jogos e empates no confronto direto: uma única contagem centralizada. */
-#coachView .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-#coachView .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
-#coachView .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
+:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
+:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
 
 /* Perfil do técnico: empate é neutro, nunca verde. */
 #coachView .cbpes-coach-kpi.draws strong,
@@ -2704,40 +2704,40 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 }
 /* Comparador: manter o seletor e sua lista acima dos demais cards,
    sem recorte pelo contêiner do perfil. */
-#coachView .cbpes-coach-compare,
-#coachView .cbpes-coach-compare .cardbody,
-#coachView .cbpes-coach-compare .field{
+:is(#coachView,#compareView) .cbpes-coach-compare,
+:is(#coachView,#compareView) .cbpes-coach-compare .cardbody,
+:is(#coachView,#compareView) .cbpes-coach-compare .field{
  overflow:visible!important;
 }
-#coachView .cbpes-coach-compare{position:relative!important;z-index:5!important}
-#coachView .cbpes-coach-compare .field{position:relative!important;z-index:6!important}
-#coachView #coachCompareWith{
+:is(#coachView,#compareView) .cbpes-coach-compare{position:relative!important;z-index:5!important}
+:is(#coachView,#compareView) .cbpes-coach-compare .field{position:relative!important;z-index:6!important}
+:is(#coachView,#compareView) #coachCompareWith{
  position:relative!important;z-index:7!important;
  appearance:auto!important;-webkit-appearance:menulist!important;
  background:#f9fbfa!important;color:#1a3942!important;
 }
-#coachView #coachCompareWith option{
+:is(#coachView,#compareView) #coachCompareWith option{
  background:#fff!important;color:#14232b!important;
 }
 
 /* Comparação de técnicos: layout compacto sem espaço reservado para ajuda. */
-#coachView .cbpes-coach-compare>.cardbody{
+:is(#coachView,#compareView) .cbpes-coach-compare>.cardbody{
  padding:12px 16px!important;
 }
-#coachView .cbpes-coach-compare .field{
+:is(#coachView,#compareView) .cbpes-coach-compare .field{
  margin:0!important;display:flex!important;flex-direction:column!important;
  gap:6px!important;max-width:440px!important;
 }
-#coachView .cbpes-coach-compare .field label{
+:is(#coachView,#compareView) .cbpes-coach-compare .field label{
  margin:0!important;line-height:1.25!important;
 }
-#coachView .cbpes-coach-compare #coachCompareWith{
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareWith{
  margin:0!important;min-height:38px!important;
 }
-#coachView .cbpes-coach-compare #coachCompareResult:empty{
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult:empty{
  display:none!important;
 }
-#coachView .cbpes-coach-compare #coachCompareResult:not(:empty){
+:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult:not(:empty){
  margin-top:12px!important;
 }
 
@@ -3873,7 +3873,7 @@ html body #table[data-copa-master="true"] .cbpes-competition-heading > #tableCom
 }
 
 /* Confronto direto: totais neutros de jogos e empates em preto. */
-#coachView .cbpes-compare-metric-head-neutral > b{
+:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral > b{
  color:#111111!important;
 }
 
@@ -4170,15 +4170,15 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #records .cbpes-record-person small .cbpes-record-streak-label:first-child{margin-top:0}
 
 /* Confronto direto dos técnicos: barras compactas em formato de pílula. */
-#coachView .cbpes-compare-track{height:7px;border-radius:999px;overflow:hidden}
-#coachView .cbpes-compare-track.cbpes-compare-track-neutral{height:7px;border-radius:999px}
-#coachView .cbpes-compare-left,#coachView .cbpes-compare-right{height:100%}
+:is(#coachView,#compareView) .cbpes-compare-track{height:7px;border-radius:999px;overflow:hidden}
+:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{height:7px;border-radius:999px}
+:is(#coachView,#compareView) .cbpes-compare-left,:is(#coachView,#compareView) .cbpes-compare-right{height:100%}
 
 /* Barras do confronto direto com pontas totalmente circulares. */
-#coachView .cbpes-compare-track,#coachView .cbpes-compare-track.cbpes-compare-track-neutral{border-radius:9999px!important;overflow:hidden}
-#coachView .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
-#coachView .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
-#coachView .cbpes-compare-track .cbpes-compare-left:only-child,#coachView .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
+:is(#coachView,#compareView) .cbpes-compare-track,:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{border-radius:9999px!important;overflow:hidden}
+:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
+:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
+:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-left:only-child,:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
 
 /* Histórico de confrontos diretos entre técnicos */
 #coachView .cbpes-direct-fixtures{margin-top:20px;border-top:1px solid #dce5e0}
@@ -4213,7 +4213,7 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 @media(max-width:600px){#statsGrid .cbpes-stats-competition-filter{align-items:stretch;flex-direction:column;gap:6px}#statsGrid .cbpes-stats-competition-filter select{width:100%}}
 
 /* Aproxima o seletor do rótulo na comparação de técnicos. */
-#coachView .cbpes-coach-compare .cardbody>.field{
+:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field{
   display:grid!important;
   grid-template-columns:minmax(0,1fr)!important;
   grid-template-rows:auto auto!important;
@@ -4224,14 +4224,14 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   min-height:0!important;
   padding:0!important;
 }
-#coachView .cbpes-coach-compare .cardbody>.field>label{
+:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field>label{
   display:block!important;
   height:auto!important;
   min-height:0!important;
   padding:0!important;
   margin:0!important;
 }
-#coachView .cbpes-coach-compare .cardbody>.field>#coachCompareWith{
+:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field>#coachCompareWith{
   display:block!important;
   margin:0!important;
   align-self:start!important;
