@@ -68,21 +68,7 @@ html:has(dialog.cbpes-coach-compare[open]){overflow-y:auto!important}
 #coachView dialog.cbpes-coach-compare .coach-choice:focus-visible{outline:2px solid #087644;outline-offset:2px}
 @media(max-width:480px){#coachView dialog.cbpes-coach-compare .coach-choice-list{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView dialog.cbpes-coach-compare .coach-picker-new{padding:10px!important}}
 </style><style>#table[data-winning-eleven="true"] #tableCompetitionEmblem{background:#ed1539!important;color:#fff!important;border-color:#ed1539!important}</style><link href="https://fonts.googleapis.com/css2?family=Tomorrow:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>.table tbody tr:first-child .cbpes-zone-position{border-left-width:3px!important;box-shadow:none!important}.table tbody tr .cbpes-zone-position{border-left-width:3px!important}</style><style id="home-editorial-style">
-#home .home-editorial-hero{position:relative;overflow:hidden;background:linear-gradient(115deg,#052d24,#07563d 70%,#168057);color:white;padding:clamp(20px,4vw,44px);margin:16px 0 12px;border-radius:4px;isolation:isolate}
-#home .home-editorial-hero:after{content:'';position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(125deg,transparent 0 45px,#ffffff0b 45px 47px,transparent 47px 90px);pointer-events:none}
-#home .home-editorial-kicker{font:700 11px Tomorrow,sans-serif;letter-spacing:.14em;color:#c6e5d3}
-#home .home-editorial-hero h1{font:800 clamp(25px,5vw,52px)/1.12 Tomorrow,sans-serif;margin:12px 0 20px;color:white}
-#homeHeadline{display:grid;gap:5px;border-left:3px solid #e8c54e;padding-left:12px}#homeHeadline span{font:700 10px Tomorrow,sans-serif;color:#c6e5d3}#homeHeadline strong{font:700 clamp(14px,2vw,22px) Tomorrow,sans-serif}
-#home .home-editorial-extras{margin:24px 0}#home .home-editorial-extras h2,#home .cardhead h2{font-family:Tomorrow,sans-serif;font-weight:800}#home .home-editorial-extras h2{font-size:19px;margin:22px 0 10px}
-#homeCompetitionTiles,#homeBeltTiles,#homeTrendTiles{display:grid;gap:10px;grid-template-columns:repeat(4,minmax(0,1fr))}
-#homeBeltTiles,#homeTrendTiles{grid-template-columns:repeat(3,minmax(0,1fr))}
-#homeCompetitionTiles a,#homeBeltTiles a,#homeTrendTiles a{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:0;text-decoration:none;border-radius:4px;padding:18px;background:linear-gradient(135deg,var(--tile,#07543a),#142c2b);color:#fff;overflow:hidden}
-#homeCompetitionTiles b,#homeBeltTiles b,#homeTrendTiles b{font:800 clamp(13px,2vw,21px) Tomorrow,sans-serif;overflow-wrap:anywhere}
-#homeCompetitionTiles small,#homeBeltTiles small,#homeTrendTiles small,#homeCompetitionTiles span{font:600 10px Lato,sans-serif;letter-spacing:.06em;color:#e1eee8}
-#homeBeltTiles a{text-align:center;align-items:center}#homeBeltTiles img{width:100%;height:88px;object-fit:contain}#homeTrendTiles a{background:var(--card,#fff);color:var(--text,#173a30);border:1px solid var(--line,#d7e2dc);border-left:4px solid #168057}#homeTrendTiles small{color:var(--muted,#64756d)}
-@media(max-width:620px){#homeCompetitionTiles{grid-template-columns:repeat(2,minmax(0,1fr))}#homeBeltTiles a{padding:9px 5px}#homeBeltTiles img{height:55px}#homeBeltTiles small{font-size:8px}#homeTrendTiles{grid-template-columns:1fr}#homeCompetitionTiles a{padding:14px}}
-</style></head>
+<style>.table tbody tr:first-child .cbpes-zone-position{border-left-width:3px!important;box-shadow:none!important}.table tbody tr .cbpes-zone-position{border-left-width:3px!important}</style></head>
 <body>
 <div class="topline"></div>
 <header><div class="head">
@@ -193,22 +179,4 @@ html:has(dialog.cbpes-coach-compare[open]){overflow-y:auto!important}
  schedule();
 })();
 </script>
-<script>
-(function(){
-const home=document.getElementById('home');if(!home)return;
-const escHome=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hero=document.createElement('div');hero.className='home-editorial-hero';hero.innerHTML='<div class="home-editorial-kicker">CBPES • TEMPORADA 2006/07</div><h1>O FUTEBOL VIVE AQUI.</h1><div id="homeHeadline"></div>';home.insertBefore(hero,home.querySelector('#latest'));
-const extras=document.createElement('div');extras.className='home-editorial-extras';extras.innerHTML='<h2>COMPETIÇÕES</h2><div id="homeCompetitionTiles"></div><h2>OS DETENTORES</h2><div id="homeBeltTiles"></div><h2>EM ALTA NO CBPES</h2><div id="homeTrendTiles"></div>';home.insertBefore(extras,home.querySelector('.cols'));
-let lastData=null;
-async function refresh(){
-if(typeof D==='undefined'||!D||!D.matches||D===lastData)return;lastData=D;
-const data=D,played=data.matches.filter(m=>m.played&&m.home&&m.away).sort((a,b)=>String(b.result_registered_at||b.date||'').localeCompare(String(a.result_registered_at||a.date||'')));
-const m=played[0];document.getElementById('homeHeadline').innerHTML=m?'<span>ÚLTIMO RESULTADO</span><strong>'+escHome(m.home.name)+' '+m.home_score+' × '+m.away_score+' '+escHome(m.away.name)+'</strong>':'';
-const competitions=[['Liga PRO','#174b83'],['Copa Master','#927024'],['Supercopa','#962c35']];document.getElementById('homeCompetitionTiles').innerHTML=competitions.map(([name,color])=>{const c=(data.officialCompetitions||[]).find(x=>String(x.name).toLowerCase().includes(name.toLowerCase()));const e=(data.officialEditions||[]).find(x=>x.competition_id===c?.id);return '<a style="--tile:'+color+'" href="'+(e?'#table/'+encodeURIComponent(e.id):'#table')+'"><small>COMPETIÇÃO</small><b>'+name.toUpperCase()+'</b><span>CLASSIFICAÇÃO E JOGOS →</span></a>';}).join('')+'<a style="--tile:#08734e" href="#weeklies"><small>COMPETIÇÃO</small><b>SEMANAIS</b><span>VER EDIÇÕES →</span></a>';
-const official=played.filter(m=>m.category==='official');const big=official.slice().sort((a,b)=>Math.abs(b.home_score-b.away_score)-Math.abs(a.home_score-a.away_score))[0];const next=data.matches.find(m=>!m.played&&m.category==='official'&&m.home&&m.away);
-document.getElementById('homeTrendTiles').innerHTML=(big?'<a href="#match/'+big.id+'"><small>MAIOR GOLEADA • OFICIAIS</small><b>'+escHome(big.home.name)+' '+big.home_score+' × '+big.away_score+' '+escHome(big.away.name)+'</b></a>':'')+(next?'<a href="#games"><small>CONFRONTO A DISPUTAR</small><b>'+escHome(next.home.name)+' × '+escHome(next.away.name)+'</b></a>':'')+'<a href="#records"><small>HISTÓRIA DO CBPES</small><b>Livro dos recordes →</b></a>';
-try{const api=window.CBPESBelts;if(!api)return;const [cfg,hist]=await Promise.all([api.loadConfig(),api.loadHistory()]);if(lastData!==data)return;const all=api.matches(data,hist);document.getElementById('homeBeltTiles').innerHTML=['official','weekly','general'].map((t,i)=>{const c=cfg.find(x=>x.belt_type===t),b=c&&api.calculate(c,all);const art=sb.storage.from('club-crests').getPublicUrl('belts/'+t+'.png').data.publicUrl;return '<a href="#belts" style="--tile:'+['#455560','#096448','#86611f'][i]+'"><small>CINTURÃO '+['OFICIAL','SEMANAL','GERAL'][i]+'</small><img src="'+escHome(art)+'" alt="" onerror="this.hidden=true"><b>'+escHome(b?.holder||'A definir')+'</b></a>';}).join('');}catch(e){document.getElementById('homeBeltTiles').innerHTML='<a href="#belts">Consultar cinturões →</a>';}
-}
-const observer=new MutationObserver(()=>{if(home.classList.contains('active')||home.offsetParent!==null)refresh();});observer.observe(document.getElementById('latest'),{childList:true,subtree:true});refresh();
-})();
-</script></body></html>
+</body></html>
