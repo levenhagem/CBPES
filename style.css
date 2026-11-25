@@ -1935,199 +1935,199 @@ body.cbpes-copa-master-page{--blue:#f4ad24;--navy:#ffc65c;--line:#635038;backgro
 }
 
 /* Perfil dos técnicos — painel de desempenho e rivalidades. */
-#coachView .cbpes-coach-performance .cardbody{padding:18px}
-#coachView .cbpes-coach-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-#coachView .cbpes-coach-kpi{position:relative;min-width:0;padding:18px 16px 15px;border-radius:12px;background:#f5f7f8;border:1px solid #e4e9ec;display:flex;flex-direction:column;gap:6px}
-#coachView .cbpes-coach-kpi::before{content:"";position:absolute;top:14px;right:14px;width:7px;height:7px;border-radius:50%;background:#607b8b}
-#coachView .cbpes-coach-kpi.wins::before{background:#169b62}
-#coachView .cbpes-coach-kpi.draws::before{background:#d29b28}
-#coachView .cbpes-coach-kpi.losses::before{background:#d35b5b}
-#coachView .cbpes-coach-kpi-label{font-size:10px;font-weight:850;letter-spacing:.09em;color:#627481}
-#coachView .cbpes-coach-kpi strong{font-size:clamp(26px,3vw,38px);font-weight:850;line-height:1.1;color:#172e3a;font-variant-numeric:tabular-nums}
-#coachView .cbpes-coach-kpi.wins strong{color:#098753}
-#coachView .cbpes-coach-kpi.losses strong{color:#bb4a4a}
-#coachView .cbpes-coach-kpi small{font-size:11px;color:#687983}
-#coachView .cbpes-coach-performance-bar{display:flex;overflow:hidden;height:7px;border-radius:99px;margin-top:16px;background:#e8edf0}
-#coachView .cbpes-coach-performance-bar span{height:100%;display:block}
-#coachView .cbpes-coach-performance-bar .wins{background:#159d63}
-#coachView .cbpes-coach-performance-bar .draws{background:#d7a539}
-#coachView .cbpes-coach-performance-bar .losses{background:#d65b5b}
-#coachView .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
-#coachView .cbpes-coach-rivalry-card{padding:20px 22px;background:#fff;border:1px solid #e0e7e9;border-radius:14px;box-shadow:0 3px 12px rgba(0,34,40,.035);min-width:0}
-#coachView .cbpes-coach-rivalry-card.victim{border-top:3px solid #139c61}
-#coachView .cbpes-coach-rivalry-card.nemesis{border-top:3px solid #ce6262}
-#coachView .cbpes-coach-rivalry-label{display:flex;align-items:center;gap:9px;color:#657782;font-size:11px;font-weight:850;letter-spacing:.075em}
-#coachView .cbpes-coach-rivalry-symbol{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#e5f5ed;color:#118451;font-size:18px;letter-spacing:0}
-#coachView .nemesis .cbpes-coach-rivalry-symbol{background:#fcecec;color:#bd5050}
-#coachView .cbpes-coach-rivalry-name{margin:14px 0 13px;font-size:clamp(18px,2.3vw,24px);font-weight:800;color:#17303b;overflow-wrap:anywhere}
-#coachView .cbpes-coach-rivalry-name a{color:inherit;text-decoration:none}
-#coachView .cbpes-coach-rivalry-name a:hover{text-decoration:underline}
-#coachView .cbpes-coach-rivalry-record{display:flex;align-items:center;gap:13px;color:#667580;font-size:13px}
-#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){display:flex;flex-direction:column;gap:3px;font-size:23px;font-weight:850;font-variant-numeric:tabular-nums}
-#coachView .cbpes-coach-rivalry-record small{font-size:10px;font-weight:750;letter-spacing:.06em;color:#7b8992}
-#coachView .cbpes-coach-record-w{color:#0b9259}
-#coachView .cbpes-coach-record-l{color:#c34e4e}
-#coachView .cbpes-coach-record-divider{color:#b9c2c7}
-@media(max-width:700px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}#coachView .cbpes-coach-kpi{padding:14px 12px}#coachView .cbpes-coach-rivalry-card{padding:17px}}
+:is(#coachView,#compareView) .cbpes-coach-performance .cardbody{padding:18px}
+:is(#coachView,#compareView) .cbpes-coach-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+:is(#coachView,#compareView) .cbpes-coach-kpi{position:relative;min-width:0;padding:18px 16px 15px;border-radius:12px;background:#f5f7f8;border:1px solid #e4e9ec;display:flex;flex-direction:column;gap:6px}
+:is(#coachView,#compareView) .cbpes-coach-kpi::before{content:"";position:absolute;top:14px;right:14px;width:7px;height:7px;border-radius:50%;background:#607b8b}
+:is(#coachView,#compareView) .cbpes-coach-kpi.wins::before{background:#169b62}
+:is(#coachView,#compareView) .cbpes-coach-kpi.draws::before{background:#d29b28}
+:is(#coachView,#compareView) .cbpes-coach-kpi.losses::before{background:#d35b5b}
+:is(#coachView,#compareView) .cbpes-coach-kpi-label{font-size:10px;font-weight:850;letter-spacing:.09em;color:#627481}
+:is(#coachView,#compareView) .cbpes-coach-kpi strong{font-size:clamp(26px,3vw,38px);font-weight:850;line-height:1.1;color:#172e3a;font-variant-numeric:tabular-nums}
+:is(#coachView,#compareView) .cbpes-coach-kpi.wins strong{color:#098753}
+:is(#coachView,#compareView) .cbpes-coach-kpi.losses strong{color:#bb4a4a}
+:is(#coachView,#compareView) .cbpes-coach-kpi small{font-size:11px;color:#687983}
+:is(#coachView,#compareView) .cbpes-coach-performance-bar{display:flex;overflow:hidden;height:7px;border-radius:99px;margin-top:16px;background:#e8edf0}
+:is(#coachView,#compareView) .cbpes-coach-performance-bar span{height:100%;display:block}
+:is(#coachView,#compareView) .cbpes-coach-performance-bar .wins{background:#159d63}
+:is(#coachView,#compareView) .cbpes-coach-performance-bar .draws{background:#d7a539}
+:is(#coachView,#compareView) .cbpes-coach-performance-bar .losses{background:#d65b5b}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card{padding:20px 22px;background:#fff;border:1px solid #e0e7e9;border-radius:14px;box-shadow:0 3px 12px rgba(0,34,40,.035);min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.victim{border-top:3px solid #139c61}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{border-top:3px solid #ce6262}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-label{display:flex;align-items:center;gap:9px;color:#657782;font-size:11px;font-weight:850;letter-spacing:.075em}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-symbol{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#e5f5ed;color:#118451;font-size:18px;letter-spacing:0}
+:is(#coachView,#compareView) .nemesis .cbpes-coach-rivalry-symbol{background:#fcecec;color:#bd5050}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-name{margin:14px 0 13px;font-size:clamp(18px,2.3vw,24px);font-weight:800;color:#17303b;overflow-wrap:anywhere}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-name a{color:inherit;text-decoration:none}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-name a:hover{text-decoration:underline}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record{display:flex;align-items:center;gap:13px;color:#667580;font-size:13px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){display:flex;flex-direction:column;gap:3px;font-size:23px;font-weight:850;font-variant-numeric:tabular-nums}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record small{font-size:10px;font-weight:750;letter-spacing:.06em;color:#7b8992}
+:is(#coachView,#compareView) .cbpes-coach-record-w{color:#0b9259}
+:is(#coachView,#compareView) .cbpes-coach-record-l{color:#c34e4e}
+:is(#coachView,#compareView) .cbpes-coach-record-divider{color:#b9c2c7}
+@media(max-width:700px){:is(#coachView,#compareView) .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#coachView,#compareView) .cbpes-coach-rivalry-grid{grid-template-columns:1fr}:is(#coachView,#compareView) .cbpes-coach-kpi{padding:14px 12px}:is(#coachView,#compareView) .cbpes-coach-rivalry-card{padding:17px}}
 
 /* Técnico: rivalidades em faixas horizontais, com emojis e placar V–D. */
-#coachView .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
-#coachView .cbpes-coach-rivalry-card{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card{
  display:flex;align-items:center;gap:16px;min-height:104px;padding:17px 20px;
  border:1px solid #dfe8e6;border-left:4px solid #159965;border-top:1px solid #dfe8e6;
  border-radius:12px;background:linear-gradient(105deg,#f0f9f5 0%,#fff 55%);
  box-shadow:none;min-width:0
 }
-#coachView .cbpes-coach-rivalry-card.nemesis{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{
  border-left-color:#c85a59;border-top:1px solid #ece2e2;
  background:linear-gradient(105deg,#fff3f2 0%,#fff 55%)
 }
-#coachView .cbpes-coach-rivalry-icon{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-icon{
  flex:0 0 54px;width:54px;height:54px;display:grid;place-items:center;
  border-radius:14px;background:#dff2e8;font-size:27px;line-height:1
 }
-#coachView .nemesis .cbpes-coach-rivalry-icon{background:#fae4e2}
-#coachView .cbpes-coach-rivalry-info{flex:1;min-width:0}
-#coachView .cbpes-coach-rivalry-label{display:block;color:#627681;font-size:10px;font-weight:850;letter-spacing:.09em}
-#coachView .cbpes-coach-rivalry-name{margin:7px 0 0;font-size:clamp(17px,2.2vw,23px);font-weight:850;line-height:1.2;color:#18343e;overflow-wrap:anywhere}
-#coachView .cbpes-coach-rivalry-empty{display:block;margin-top:6px;color:#72838b}
-#coachView .cbpes-coach-rivalry-record{display:flex;flex:0 0 auto;align-items:center;gap:10px;border-left:1px solid #e2e8e8;padding-left:20px}
-#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){display:flex;align-items:baseline;gap:4px;font-size:27px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
-#coachView .cbpes-coach-rivalry-record small{font-size:11px;font-weight:800;color:#72838b}
-#coachView .cbpes-coach-record-divider{color:#aeb9be;font-size:20px}
+:is(#coachView,#compareView) .nemesis .cbpes-coach-rivalry-icon{background:#fae4e2}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-info{flex:1;min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-label{display:block;color:#627681;font-size:10px;font-weight:850;letter-spacing:.09em}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-name{margin:7px 0 0;font-size:clamp(17px,2.2vw,23px);font-weight:850;line-height:1.2;color:#18343e;overflow-wrap:anywhere}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-empty{display:block;margin-top:6px;color:#72838b}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record{display:flex;flex:0 0 auto;align-items:center;gap:10px;border-left:1px solid #e2e8e8;padding-left:20px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){display:flex;align-items:baseline;gap:4px;font-size:27px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record small{font-size:11px;font-weight:800;color:#72838b}
+:is(#coachView,#compareView) .cbpes-coach-record-divider{color:#aeb9be;font-size:20px}
 @media(max-width:500px){
- #coachView .cbpes-coach-rivalry-card{gap:10px;padding:13px 11px;min-height:85px}
- #coachView .cbpes-coach-rivalry-icon{flex-basis:40px;width:40px;height:40px;border-radius:10px;font-size:22px}
- #coachView .cbpes-coach-rivalry-record{gap:5px;padding-left:9px}
- #coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:20px;gap:2px}
- #coachView .cbpes-coach-rivalry-record small{font-size:9px}
- #coachView .cbpes-coach-rivalry-name{font-size:16px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-card{gap:10px;padding:13px 11px;min-height:85px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-icon{flex-basis:40px;width:40px;height:40px;border-radius:10px;font-size:22px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-record{gap:5px;padding-left:9px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:20px;gap:2px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-record small{font-size:9px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-name{font-size:16px}
 }
 
 /* Técnicos — estatísticas limpas e rivalidades em formato de placar compacto. */
-#coachView .cbpes-coach-kpi::before{content:none!important;display:none!important}
-#coachView .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
-#coachView .cbpes-coach-rivalry-card,
-#coachView .cbpes-coach-rivalry-card.nemesis{
+:is(#coachView,#compareView) .cbpes-coach-kpi::before{content:none!important;display:none!important}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card,
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{
  display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto;
  align-items:center;gap:12px 13px;min-height:0;padding:17px;
  border:1px solid #dce6e8;border-radius:12px;
  background:#fff;box-shadow:0 2px 8px rgba(16,41,47,.035);
 }
-#coachView .cbpes-coach-rivalry-card.victim{border-top:3px solid #169965}
-#coachView .cbpes-coach-rivalry-card.nemesis{border-top:3px solid #c65a59}
-#coachView .cbpes-coach-rivalry-icon,
-#coachView .nemesis .cbpes-coach-rivalry-icon{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.victim{border-top:3px solid #169965}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{border-top:3px solid #c65a59}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-icon,
+:is(#coachView,#compareView) .nemesis .cbpes-coach-rivalry-icon{
  grid-column:1;grid-row:1;display:grid;place-items:center;
  width:42px;height:42px;flex-basis:auto;border-radius:10px;
  background:#f1f5f5;font-size:24px
 }
-#coachView .cbpes-coach-rivalry-info{grid-column:2;grid-row:1;min-width:0}
-#coachView .cbpes-coach-rivalry-label{font-size:10px;letter-spacing:.075em}
-#coachView .cbpes-coach-rivalry-name{font-size:19px;margin:5px 0 0}
-#coachView .cbpes-coach-rivalry-record{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-info{grid-column:2;grid-row:1;min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-label{font-size:10px;letter-spacing:.075em}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-name{font-size:19px;margin:5px 0 0}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record{
  grid-column:1 / -1;grid-row:2;display:flex;align-items:center;justify-content:center;
  border-left:0;border-top:1px solid #e9eef0;padding:13px 0 0;
  background:none;gap:12px
 }
-#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){
  font-size:28px;line-height:1.1;display:block;font-weight:850
 }
-#coachView .cbpes-coach-rivalry-record .cbpes-coach-record-divider{font-size:20px;color:#a5b2b8}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record .cbpes-coach-record-divider{font-size:20px;color:#a5b2b8}
 @media(max-width:640px){
- #coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}
- #coachView .cbpes-coach-rivalry-card,#coachView .cbpes-coach-rivalry-card.nemesis{padding:14px}
- #coachView .cbpes-coach-rivalry-record{justify-content:flex-start;padding-left:55px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-grid{grid-template-columns:1fr}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-card,:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{padding:14px}
+ :is(#coachView,#compareView) .cbpes-coach-rivalry-record{justify-content:flex-start;padding-left:55px}
 }
 
 /* Filtros multisseleção e quinto indicador da carreira. */
-#coachView .cbpes-coach-filter{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-bottom:17px}
-#coachView .cbpes-coach-filter>span{font-size:10px;font-weight:850;letter-spacing:.09em;color:#70818a;margin-right:5px}
-#coachView .cbpes-coach-filter label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:8px 11px;border:1px solid #dce6e9;border-radius:8px;background:#f7f9fa;color:#29414c;font-size:11px;font-weight:800;letter-spacing:.035em}
-#coachView .cbpes-coach-filter label:has(input:checked){border-color:#9dcfbb;background:#eaf6f0;color:#08784c}
-#coachView .cbpes-coach-filter input{accent-color:#0b9458;margin:0;width:14px;height:14px;cursor:pointer}
-#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
-#coachView .cbpes-coach-kpi.efficiency strong{color:#176c91}
-#coachView .cbpes-coach-rivalry-card,
-#coachView .cbpes-coach-rivalry-card.nemesis{
+:is(#coachView,#compareView) .cbpes-coach-filter{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-bottom:17px}
+:is(#coachView,#compareView) .cbpes-coach-filter>span{font-size:10px;font-weight:850;letter-spacing:.09em;color:#70818a;margin-right:5px}
+:is(#coachView,#compareView) .cbpes-coach-filter label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:8px 11px;border:1px solid #dce6e9;border-radius:8px;background:#f7f9fa;color:#29414c;font-size:11px;font-weight:800;letter-spacing:.035em}
+:is(#coachView,#compareView) .cbpes-coach-filter label:has(input:checked){border-color:#9dcfbb;background:#eaf6f0;color:#08784c}
+:is(#coachView,#compareView) .cbpes-coach-filter input{accent-color:#0b9458;margin:0;width:14px;height:14px;cursor:pointer}
+:is(#coachView,#compareView) .cbpes-coach-kpi-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+:is(#coachView,#compareView) .cbpes-coach-kpi.efficiency strong{color:#176c91}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card,
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{
  display:flex;align-items:center;gap:12px;padding:17px 18px;min-height:85px
 }
-#coachView .cbpes-coach-rivalry-icon{flex:0 0 42px}
-#coachView .cbpes-coach-rivalry-info{flex:1;min-width:0}
-#coachView .cbpes-coach-rivalry-record{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-icon{flex:0 0 42px}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-info{flex:1;min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record{
  flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;
  border-top:0;border-left:1px solid #e8eef0;padding:0 0 0 14px;gap:7px
 }
-#coachView .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:24px}
-@media(max-width:900px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:640px){#coachView .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#coachView .cbpes-coach-rivalry-grid{grid-template-columns:1fr}#coachView .cbpes-coach-rivalry-record{padding-left:10px}#coachView .cbpes-coach-filter>span{width:100%}}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-record>span:not(.cbpes-coach-record-divider){font-size:24px}
+@media(max-width:900px){:is(#coachView,#compareView) .cbpes-coach-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){:is(#coachView,#compareView) .cbpes-coach-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#coachView,#compareView) .cbpes-coach-rivalry-grid{grid-template-columns:1fr}:is(#coachView,#compareView) .cbpes-coach-rivalry-record{padding-left:10px}:is(#coachView,#compareView) .cbpes-coach-filter>span{width:100%}}
 
 /* Técnico — filtros sem check visível e histórico expansível. */
-#coachView .cbpes-coach-filter label{position:relative;background:#f4f6f7;border:1px solid #d6dfe2;color:#526670;transition:background .15s,border-color .15s,color .15s}
-#coachView .cbpes-coach-filter label:has(input:checked){background:#086b43!important;border-color:#065c39!important;color:#fff!important;box-shadow:0 1px 4px rgba(0,79,45,.17)}
-#coachView .cbpes-coach-filter input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;pointer-events:none!important}
-#coachView .cbpes-coach-filter label:focus-within{outline:2px solid #0b8a58;outline-offset:2px}
-#coachView .cbpes-coach-kpi.efficiency small:empty{display:none}
-#coachView .cbpes-coach-history-extra[hidden]{display:none!important}
-#coachView .cbpes-coach-history-toggle{display:block;width:100%;margin-top:13px;padding:12px 14px;border:1px solid #cbded5;border-radius:9px;background:#f0f8f3;color:#09683f;font-size:11px;font-weight:850;letter-spacing:.04em;cursor:pointer;text-align:center}
-#coachView .cbpes-coach-history-toggle:hover{background:#e2f2e9;border-color:#8fc3a8}
+:is(#coachView,#compareView) .cbpes-coach-filter label{position:relative;background:#f4f6f7;border:1px solid #d6dfe2;color:#526670;transition:background .15s,border-color .15s,color .15s}
+:is(#coachView,#compareView) .cbpes-coach-filter label:has(input:checked){background:#086b43!important;border-color:#065c39!important;color:#fff!important;box-shadow:0 1px 4px rgba(0,79,45,.17)}
+:is(#coachView,#compareView) .cbpes-coach-filter input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;pointer-events:none!important}
+:is(#coachView,#compareView) .cbpes-coach-filter label:focus-within{outline:2px solid #0b8a58;outline-offset:2px}
+:is(#coachView,#compareView) .cbpes-coach-kpi.efficiency small:empty{display:none}
+:is(#coachView,#compareView) .cbpes-coach-history-extra[hidden]{display:none!important}
+:is(#coachView,#compareView) .cbpes-coach-history-toggle{display:block;width:100%;margin-top:13px;padding:12px 14px;border:1px solid #cbded5;border-radius:9px;background:#f0f8f3;color:#09683f;font-size:11px;font-weight:850;letter-spacing:.04em;cursor:pointer;text-align:center}
+:is(#coachView,#compareView) .cbpes-coach-history-toggle:hover{background:#e2f2e9;border-color:#8fc3a8}
 
 /* Perfil do técnico — linguagem visual uniforme em todas as seções. */
-#coachView{--coach-border:#dce6e8;--coach-ink:#17333d;--coach-muted:#6a7e87;--coach-green:#086b43}
-#coachView .page-title{margin-bottom:19px;padding:20px 22px;background:linear-gradient(110deg,#f0f7f4,#fff 72%);border:1px solid var(--coach-border);border-radius:14px}
-#coachView .page-title h1{color:var(--coach-ink);letter-spacing:-.035em}
-#coachView .page-title .eyebrow{font-size:10px;font-weight:800;letter-spacing:.075em;color:var(--coach-green)}
-#coachView .page-title .sub{color:var(--coach-muted)}
-#coachView>.card{border:1px solid var(--coach-border);border-radius:13px;overflow:hidden;box-shadow:0 2px 9px rgba(16,41,47,.035);background:#fff}
-#coachView>.card>.cardhead{padding:17px 20px;background:#f7faf9;border-bottom:1px solid #e6eeeb;display:flex;align-items:center;justify-content:space-between;gap:12px}
-#coachView>.card>.cardhead h2{font-size:13px;letter-spacing:.045em;font-weight:850;color:var(--coach-ink);margin:0}
-#coachView>.card>.cardbody{padding:18px 20px}
-#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 12px;border:1px solid #e6edee;border-radius:9px;margin:0 0 9px;background:#fbfcfc}
-#coachView .cbpes-coach-trophies .player:last-child,#coachView .cbpes-coach-teams .player:last-child{margin-bottom:0}
-#coachView .cbpes-coach-trophies .player b,#coachView .cbpes-coach-teams .player b{font-size:13px;color:#193641}
-#coachView .cbpes-coach-trophies .player small,#coachView .cbpes-coach-teams .player small{display:block;margin-top:5px;color:#71838c;font-size:11px}
-#coachView .cbpes-coach-trophies .pill,#coachView .cbpes-coach-teams .pill{font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;border:1px solid #c7e2d4;background:#eaf6ef;color:#096c44}
-:is(#coachView,#compareView) .cbpes-coach-compare .field{max-width:440px}
-:is(#coachView,#compareView) .cbpes-coach-compare .field label{font-size:11px;font-weight:800;color:#607781;margin-bottom:7px}
-:is(#coachView,#compareView) .cbpes-coach-compare select{width:100%;min-height:43px;border:1px solid #cbdcda;border-radius:9px;background:#f9fbfa;color:#1a3942;padding:9px 12px}
-:is(#coachView,#compareView) .cbpes-coach-compare select:focus{outline:2px solid #4ca781;outline-offset:1px}
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help{background:#f4f8f6;border:1px dashed #d5e5dd;border-radius:9px;padding:13px;color:#617b73;font-size:12px}
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.notice{border-radius:9px;background:#f0f7f3;border:1px solid #d6e9dd;padding:15px;color:#214a39}
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .card{border:1px solid #e0e9e9;border-radius:10px;overflow:hidden;box-shadow:none}
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .cardhead{background:#f7faf9;border-bottom:1px solid #e6eeeb;padding:13px 15px}
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .cardbody{padding:14px}
-#coachView .cbpes-coach-history .result-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-bottom:1px solid #eaf0f0;background:#fff}
-#coachView .cbpes-coach-history .result-row:last-of-type{border-bottom:0}
-#coachView .cbpes-coach-history .result-row:hover{background:#f8fbfa}
-#coachView .cbpes-coach-history .result-teams{flex:1;min-width:0;font-size:13px;color:#193641}
-#coachView .cbpes-coach-history .result-teams small{display:block;color:#7a8991;font-size:11px;margin-top:4px}
-#coachView .cbpes-coach-history .result-score{flex:0 0 auto;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;color:#183541}
-#coachView .cbpes-coach-history .round-label{font-size:10px;font-weight:850;letter-spacing:.03em;min-width:40px;text-align:center}
-#coachView .cbpes-coach-history .coach-career-result{margin-right:5px;font-weight:850}
-#coachView .cbpes-coach-history-toggle{background:#086b43;color:#fff;border-color:#086b43;transition:background .15s}
-#coachView .cbpes-coach-history-toggle:hover{background:#065735;color:#fff;border-color:#065735}
-@media(max-width:640px){#coachView .page-title{padding:16px}#coachView>.card>.cardhead{padding:14px}#coachView>.card>.cardbody{padding:14px}#coachView .cbpes-coach-history .result-row{gap:8px;padding:12px 4px}#coachView .cbpes-coach-history .result-teams{font-size:12px}#coachView .cbpes-coach-history .result-score{font-size:13px}#coachView .cbpes-coach-trophies .player,#coachView .cbpes-coach-teams .player{padding:12px 9px}}
+:is(#coachView,#compareView){--coach-border:#dce6e8;--coach-ink:#17333d;--coach-muted:#6a7e87;--coach-green:#086b43}
+:is(#coachView,#compareView) .page-title{margin-bottom:19px;padding:20px 22px;background:linear-gradient(110deg,#f0f7f4,#fff 72%);border:1px solid var(--coach-border);border-radius:14px}
+:is(#coachView,#compareView) .page-title h1{color:var(--coach-ink);letter-spacing:-.035em}
+:is(#coachView,#compareView) .page-title .eyebrow{font-size:10px;font-weight:800;letter-spacing:.075em;color:var(--coach-green)}
+:is(#coachView,#compareView) .page-title .sub{color:var(--coach-muted)}
+:is(#coachView,#compareView)>.card{border:1px solid var(--coach-border);border-radius:13px;overflow:hidden;box-shadow:0 2px 9px rgba(16,41,47,.035);background:#fff}
+:is(#coachView,#compareView)>.card>.cardhead{padding:17px 20px;background:#f7faf9;border-bottom:1px solid #e6eeeb;display:flex;align-items:center;justify-content:space-between;gap:12px}
+:is(#coachView,#compareView)>.card>.cardhead h2{font-size:13px;letter-spacing:.045em;font-weight:850;color:var(--coach-ink);margin:0}
+:is(#coachView,#compareView)>.card>.cardbody{padding:18px 20px}
+:is(#coachView,#compareView) .cbpes-coach-trophies .player,:is(#coachView,#compareView) .cbpes-coach-teams .player{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 12px;border:1px solid #e6edee;border-radius:9px;margin:0 0 9px;background:#fbfcfc}
+:is(#coachView,#compareView) .cbpes-coach-trophies .player:last-child,:is(#coachView,#compareView) .cbpes-coach-teams .player:last-child{margin-bottom:0}
+:is(#coachView,#compareView) .cbpes-coach-trophies .player b,:is(#coachView,#compareView) .cbpes-coach-teams .player b{font-size:13px;color:#193641}
+:is(#coachView,#compareView) .cbpes-coach-trophies .player small,:is(#coachView,#compareView) .cbpes-coach-teams .player small{display:block;margin-top:5px;color:#71838c;font-size:11px}
+:is(#coachView,#compareView) .cbpes-coach-trophies .pill,:is(#coachView,#compareView) .cbpes-coach-teams .pill{font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;border:1px solid #c7e2d4;background:#eaf6ef;color:#096c44}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field{max-width:440px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field label{font-size:11px;font-weight:800;color:#607781;margin-bottom:7px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare select{width:100%;min-height:43px;border:1px solid #cbdcda;border-radius:9px;background:#f9fbfa;color:#1a3942;padding:9px 12px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare select:focus{outline:2px solid #4ca781;outline-offset:1px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help{background:#f4f8f6;border:1px dashed #d5e5dd;border-radius:9px;padding:13px;color:#617b73;font-size:12px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult>.notice{border-radius:9px;background:#f0f7f3;border:1px solid #d6e9dd;padding:15px;color:#214a39}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult .card{border:1px solid #e0e9e9;border-radius:10px;overflow:hidden;box-shadow:none}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult .cardhead{background:#f7faf9;border-bottom:1px solid #e6eeeb;padding:13px 15px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult .cardbody{padding:14px}
+:is(#coachView,#compareView) .cbpes-coach-history .result-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-bottom:1px solid #eaf0f0;background:#fff}
+:is(#coachView,#compareView) .cbpes-coach-history .result-row:last-of-type{border-bottom:0}
+:is(#coachView,#compareView) .cbpes-coach-history .result-row:hover{background:#f8fbfa}
+:is(#coachView,#compareView) .cbpes-coach-history .result-teams{flex:1;min-width:0;font-size:13px;color:#193641}
+:is(#coachView,#compareView) .cbpes-coach-history .result-teams small{display:block;color:#7a8991;font-size:11px;margin-top:4px}
+:is(#coachView,#compareView) .cbpes-coach-history .result-score{flex:0 0 auto;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;color:#183541}
+:is(#coachView,#compareView) .cbpes-coach-history .round-label{font-size:10px;font-weight:850;letter-spacing:.03em;min-width:40px;text-align:center}
+:is(#coachView,#compareView) .cbpes-coach-history .coach-career-result{margin-right:5px;font-weight:850}
+:is(#coachView,#compareView) .cbpes-coach-history-toggle{background:#086b43;color:#fff;border-color:#086b43;transition:background .15s}
+:is(#coachView,#compareView) .cbpes-coach-history-toggle:hover{background:#065735;color:#fff;border-color:#065735}
+@media(max-width:640px){:is(#coachView,#compareView) .page-title{padding:16px}:is(#coachView,#compareView)>.card>.cardhead{padding:14px}:is(#coachView,#compareView)>.card>.cardbody{padding:14px}:is(#coachView,#compareView) .cbpes-coach-history .result-row{gap:8px;padding:12px 4px}:is(#coachView,#compareView) .cbpes-coach-history .result-teams{font-size:12px}:is(#coachView,#compareView) .cbpes-coach-history .result-score{font-size:13px}:is(#coachView,#compareView) .cbpes-coach-trophies .player,:is(#coachView,#compareView) .cbpes-coach-teams .player{padding:12px 9px}}
 
 /* Perfil dos técnicos — geometria mais quadrada, estilo painel esportivo. */
-:is(#coachView,#compareView) .page-title,
-:is(#coachView,#compareView)>.card,
+:is(:is(#coachView,#compareView),#compareView) .page-title,
+:is(:is(#coachView,#compareView),#compareView)>.card,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-rivalry-card,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-rivalry-card.nemesis,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-kpi,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-rivalry-icon,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-filter label,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-trophies .player,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-teams .player,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare select,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult>.notice,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult .card,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-history-toggle{border-radius:4px!important}
 :is(#coachView,#compareView) .cbpes-coach-rivalry-card,
-:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis,
-:is(#coachView,#compareView) .cbpes-coach-kpi,
-:is(#coachView,#compareView) .cbpes-coach-rivalry-icon,
-:is(#coachView,#compareView) .cbpes-coach-filter label,
-:is(#coachView,#compareView) .cbpes-coach-trophies .player,
-:is(#coachView,#compareView) .cbpes-coach-teams .player,
-:is(#coachView,#compareView) .cbpes-coach-compare select,
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.admin-help,
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult>.notice,
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult .card,
-:is(#coachView,#compareView) .cbpes-coach-history-toggle{border-radius:4px!important}
-#coachView .cbpes-coach-rivalry-card,
-#coachView .cbpes-coach-rivalry-card.nemesis{box-shadow:none}
-#coachView>.card{box-shadow:none}
-#coachView .cbpes-coach-kpi{box-shadow:none}
-#coachView .page-title{background:linear-gradient(110deg,#f2f7f5,#fff 75%)}
+:is(#coachView,#compareView) .cbpes-coach-rivalry-card.nemesis{box-shadow:none}
+:is(#coachView,#compareView)>.card{box-shadow:none}
+:is(#coachView,#compareView) .cbpes-coach-kpi{box-shadow:none}
+:is(#coachView,#compareView) .page-title{background:linear-gradient(110deg,#f2f7f5,#fff 75%)}
 
 /* CBPES GLOBAL SQUARE DESIGN EXPERIMENT — reversible */
 /* Teste visual global: cantos retos sem alterar layout, cores ou funcionalidades. */
@@ -2148,54 +2148,54 @@ button,.btn,input,select,textarea,
 [class*="spinner"],[class*="Spinner"]{border-radius:50%!important}
 
 /* Técnico: histórico separado e comparação em barras proporcionais. */
-#coachView .cbpes-coach-history-section{margin-bottom:19px;border:1px solid #e0e8e7;border-radius:4px;overflow:hidden}
-#coachView .cbpes-coach-history-section:last-child{margin-bottom:0}
-#coachView .cbpes-coach-history-section>h3{margin:0;padding:13px 14px;background:#f2f7f4;border-bottom:1px solid #dfe9e3;color:#173c2c;font-size:12px;font-weight:850;letter-spacing:.04em}
-#coachView .cbpes-coach-history-section>.result-row{margin:0 12px}
-#coachView .cbpes-coach-history-section>.result-row[hidden]{display:none!important}
-#coachView .cbpes-coach-history-empty{padding:15px;color:#71828a;font-size:12px;margin:0}
-#coachView .cbpes-coach-history-section .cbpes-coach-history-toggle{width:calc(100% - 24px);margin:12px}
-:is(#coachView,#compareView) .cbpes-compare-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
-:is(#coachView,#compareView) .cbpes-compare-modes button{padding:10px 13px;border:1px solid #d2dfd9;border-radius:4px;background:#f3f6f5;color:#466255;font-size:11px;font-weight:850;cursor:pointer}
-:is(#coachView,#compareView) .cbpes-compare-modes button.active{background:#086b43;border-color:#086b43;color:white}
-:is(#coachView,#compareView) .cbpes-compare-board{padding:18px;border:1px solid #dce7e2;border-radius:4px;background:#fff}
-:is(#coachView,#compareView) .cbpes-compare-names{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:23px;color:#17333d}
-:is(#coachView,#compareView) .cbpes-compare-names strong{font-size:17px;overflow-wrap:anywhere}
-:is(#coachView,#compareView) .cbpes-compare-names strong:last-child{text-align:right}
-:is(#coachView,#compareView) .cbpes-compare-names>span{font-size:10px;font-weight:850;color:#82918b}
-:is(#coachView,#compareView) .cbpes-compare-metric{margin-bottom:19px}
-:is(#coachView,#compareView) .cbpes-compare-metric-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:8px;margin-bottom:8px}
-:is(#coachView,#compareView) .cbpes-compare-metric-head b{font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;color:#086b43}
-:is(#coachView,#compareView) .cbpes-compare-metric-head b:last-child{text-align:right;color:#b88418}
-:is(#coachView,#compareView) .cbpes-compare-metric-head span{font-size:10px;font-weight:850;color:#637881;letter-spacing:.055em}
-:is(#coachView,#compareView) .cbpes-compare-track{display:flex;width:100%;height:13px;overflow:hidden;background:#e7eeeb;border-radius:3px}
-:is(#coachView,#compareView) .cbpes-compare-left{background:#087b4d;height:100%}
-:is(#coachView,#compareView) .cbpes-compare-right{background:#e3aa36;height:100%}
-:is(#coachView,#compareView) .cbpes-compare-legend{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:750;color:#657b79}
-:is(#coachView,#compareView) .cbpes-compare-legend span:first-child{color:#087b4d}
-:is(#coachView,#compareView) .cbpes-compare-legend span:last-child{color:#b88418}
-:is(#coachView,#compareView) .cbpes-compare-achievements{margin-top:16px;padding:17px;border:1px solid #dce7e2;border-radius:4px}
-:is(#coachView,#compareView) .cbpes-compare-achievements h3{margin:0 0 14px;font-size:12px;color:#17333d}
-:is(#coachView,#compareView) .cbpes-compare-achievements-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-:is(#coachView,#compareView) .cbpes-compare-achievements-grid>div{min-width:0}
-:is(#coachView,#compareView) .cbpes-compare-achievements-grid>div>b{display:block;margin-bottom:9px;font-size:12px;color:#23433d}
-:is(#coachView,#compareView) .cbpes-compare-achievement{padding:9px 10px;margin-bottom:7px;background:#f6f9f7;border:1px solid #e2ebe5;border-radius:4px;font-size:12px;overflow-wrap:anywhere}
-@media(max-width:640px){:is(#coachView,#compareView) .cbpes-compare-board{padding:12px}:is(#coachView,#compareView) .cbpes-compare-achievements-grid{gap:9px}:is(#coachView,#compareView) .cbpes-compare-names strong{font-size:14px}#coachView .cbpes-coach-history-section>.result-row{margin:0 6px}}
+:is(#coachView,#compareView) .cbpes-coach-history-section{margin-bottom:19px;border:1px solid #e0e8e7;border-radius:4px;overflow:hidden}
+:is(#coachView,#compareView) .cbpes-coach-history-section:last-child{margin-bottom:0}
+:is(#coachView,#compareView) .cbpes-coach-history-section>h3{margin:0;padding:13px 14px;background:#f2f7f4;border-bottom:1px solid #dfe9e3;color:#173c2c;font-size:12px;font-weight:850;letter-spacing:.04em}
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row{margin:0 12px}
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row[hidden]{display:none!important}
+:is(#coachView,#compareView) .cbpes-coach-history-empty{padding:15px;color:#71828a;font-size:12px;margin:0}
+:is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-history-toggle{width:calc(100% - 24px);margin:12px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-modes button{padding:10px 13px;border:1px solid #d2dfd9;border-radius:4px;background:#f3f6f5;color:#466255;font-size:11px;font-weight:850;cursor:pointer}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-modes button.active{background:#086b43;border-color:#086b43;color:white}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-board{padding:18px;border:1px solid #dce7e2;border-radius:4px;background:#fff}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-names{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:23px;color:#17333d}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-names strong{font-size:17px;overflow-wrap:anywhere}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-names strong:last-child{text-align:right}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-names>span{font-size:10px;font-weight:850;color:#82918b}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric{margin-bottom:19px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:8px;margin-bottom:8px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head b{font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;color:#086b43}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head b:last-child{text-align:right;color:#b88418}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head span{font-size:10px;font-weight:850;color:#637881;letter-spacing:.055em}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track{display:flex;width:100%;height:13px;overflow:hidden;background:#e7eeeb;border-radius:3px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-left{background:#087b4d;height:100%}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-right{background:#e3aa36;height:100%}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-legend{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:750;color:#657b79}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-legend span:first-child{color:#087b4d}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-legend span:last-child{color:#b88418}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements{margin-top:16px;padding:17px;border:1px solid #dce7e2;border-radius:4px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements h3{margin:0 0 14px;font-size:12px;color:#17333d}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements-grid>div{min-width:0}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements-grid>div>b{display:block;margin-bottom:9px;font-size:12px;color:#23433d}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievement{padding:9px 10px;margin-bottom:7px;background:#f6f9f7;border:1px solid #e2ebe5;border-radius:4px;font-size:12px;overflow-wrap:anywhere}
+@media(max-width:640px){:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-board{padding:12px}:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements-grid{gap:9px}:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-names strong{font-size:14px}:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row{margin:0 6px}}
 
 /* Comparação: o valor inferior tem peso visual secundário. */
-:is(#coachView,#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower,
-:is(#coachView,#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower:last-child{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head b.cbpes-compare-lower:last-child{
  font-size:15px;font-weight:650;color:#92a0a3;opacity:.82;
 }
  
 /* CBPES — verde clean apenas na página inicial e no perfil dos técnicos.
    Reverte o experimento global de superfícies e cabeçalhos verdes. */
-#home .card,#coachView>.card{border-color:#d8e5dd;background:#fff}
-#home .card>.cardhead,#coachView>.card>.cardhead{
+#home .card,:is(#coachView,#compareView)>.card{border-color:#d8e5dd;background:#fff}
+#home .card>.cardhead,:is(#coachView,#compareView)>.card>.cardhead{
  background:#f1f8f3;border-top:3px solid #087b4d;border-bottom:1px solid #d8e8dd;
 }
-#home .card>.cardhead h2,#coachView>.card>.cardhead h2{color:#075b3a}
-#home .card>.cardbody,#coachView>.card>.cardbody{background:#fff}
+#home .card>.cardhead h2,:is(#coachView,#compareView)>.card>.cardhead h2{color:#075b3a}
+#home .card>.cardbody,:is(#coachView,#compareView)>.card>.cardbody{background:#fff}
 #home .cardhead .link{color:#087b4d}
 #home .cardhead .link:hover{color:#055c38}
 #home .strip{border-top:3px solid #087b4d;border-color:#d6e7db;background:#fff}
@@ -2204,35 +2204,35 @@ button,.btn,input,select,textarea,
 #home .latest-match{border-left:4px solid #11975b}
 #home #miniTable thead,#home #miniTable th{background:#eff7f1;color:#075b3a}
 #home #numbers .stat b{color:#087b4d}
-#coachView .page-title{background:linear-gradient(90deg,#eff8f2,#fff 78%);border-left:4px solid #087b4d;padding:13px 16px}
-#coachView .page-title h1{color:#075b3a}
-#coachView .cbpes-coach-kpi{border-color:#d6e7dc;background:#f5faf6}
-#coachView .cbpes-coach-kpi b,#coachView .cbpes-coach-kpi strong{color:#086b43}
-#coachView .cbpes-coach-history-section>h3{background:#eaf5ee;color:#075b3a}
-:is(#coachView,#compareView) .cbpes-compare-board{border-color:#cddfd2}
-:is(#coachView,#compareView) .cbpes-compare-achievements{border-color:#d5e6da}
-#coachView .cbpes-coach-history-toggle{background:#087b4d;color:#fff}
+:is(#coachView,#compareView) .page-title{background:linear-gradient(90deg,#eff8f2,#fff 78%);border-left:4px solid #087b4d;padding:13px 16px}
+:is(#coachView,#compareView) .page-title h1{color:#075b3a}
+:is(#coachView,#compareView) .cbpes-coach-kpi{border-color:#d6e7dc;background:#f5faf6}
+:is(#coachView,#compareView) .cbpes-coach-kpi b,:is(#coachView,#compareView) .cbpes-coach-kpi strong{color:#086b43}
+:is(#coachView,#compareView) .cbpes-coach-history-section>h3{background:#eaf5ee;color:#075b3a}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-board{border-color:#cddfd2}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-achievements{border-color:#d5e6da}
+:is(#coachView,#compareView) .cbpes-coach-history-toggle{background:#087b4d;color:#fff}
 
 /* Confronto direto: jogos e empates são iguais para ambos, barra neutra. */
-:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{
  background:#fff;border:1px solid #087b4d;height:13px;
 }
-:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left,
-:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-right{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track-neutral .cbpes-compare-left,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track-neutral .cbpes-compare-right{
  background:transparent!important;
 }
-:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{
  border-right:1px solid #087b4d;
 }
 
 /* Jogos e empates no confronto direto: uma única contagem centralizada. */
-:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
-:is(#coachView,#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head-neutral{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head-neutral b{font-size:19px;color:#087b4d}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track-neutral .cbpes-compare-left{border-right:0}
 
 /* Perfil do técnico: empate é neutro, nunca verde. */
-#coachView .cbpes-coach-kpi.draws strong,
-#coachView .cbpes-coach-kpi.draws b{color:#77848c!important}
+:is(#coachView,#compareView) .cbpes-coach-kpi.draws strong,
+:is(#coachView,#compareView) .cbpes-coach-kpi.draws b{color:#77848c!important}
 
 /* Remapeamento do portal padrão: superfície plana, sem blocos de cor
    ou "sombra sólida" atrás de elementos. Exclui home, técnicos e
@@ -2273,235 +2273,235 @@ button,.btn,input,select,textarea,
 #weeklies [class*="liga-pro"]{box-shadow:initial}
 
 /* Técnico: primeiro elemento institucional verde, com time e escudos. */
-#coachView .cbpes-coach-hero{
+:is(#coachView,#compareView) .cbpes-coach-hero{
  background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%);
  color:#fff;padding:23px 26px;margin:4px 0 16px;
  border-left:4px solid #e1bb46;position:relative;overflow:hidden;
 }
-#coachView .cbpes-coach-hero-label{font-size:10px;font-weight:800;letter-spacing:.13em;color:#bce7d0;margin-bottom:8px}
-#coachView .cbpes-coach-hero h1{font-size:clamp(25px,3.2vw,38px);font-weight:850;letter-spacing:.01em;line-height:1.1;margin:0 0 15px;color:#fff}
-#coachView .cbpes-coach-current-team{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:13px}
-#coachView .cbpes-coach-current-team>span:first-child{font-size:10px;font-weight:800;letter-spacing:.09em;color:#bce7d0}
-#coachView .cbpes-coach-team-link{display:inline-flex;align-items:center;gap:9px;font-weight:750}
-#coachView .cbpes-coach-current-team .cbpes-coach-team-link{color:#fff}
-#coachView .cbpes-coach-current-team .cbpes-coach-team-link:hover{text-decoration:underline}
-#coachView .cbpes-coach-current-team .crest,#coachView .cbpes-coach-current-team .cbpes-crest{width:33px;height:33px;flex:none}
-#coachView .cbpes-coach-hero-bio{font-size:12px;color:#d6eee0;margin-top:13px;max-width:650px}
-#coachView .cbpes-coach-team-row .cbpes-coach-team-link{color:#174b38}
-#coachView .cbpes-coach-team-row .crest,#coachView .cbpes-coach-team-row .cbpes-crest{width:31px;height:31px;flex:none}
-#coachView .cbpes-coach-team-row .player{box-shadow:none}
-@media(max-width:640px){#coachView .cbpes-coach-hero{padding:19px 16px}}
+:is(#coachView,#compareView) .cbpes-coach-hero-label{font-size:10px;font-weight:800;letter-spacing:.13em;color:#bce7d0;margin-bottom:8px}
+:is(#coachView,#compareView) .cbpes-coach-hero h1{font-size:clamp(25px,3.2vw,38px);font-weight:850;letter-spacing:.01em;line-height:1.1;margin:0 0 15px;color:#fff}
+:is(#coachView,#compareView) .cbpes-coach-current-team{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:13px}
+:is(#coachView,#compareView) .cbpes-coach-current-team>span:first-child{font-size:10px;font-weight:800;letter-spacing:.09em;color:#bce7d0}
+:is(#coachView,#compareView) .cbpes-coach-team-link{display:inline-flex;align-items:center;gap:9px;font-weight:750}
+:is(#coachView,#compareView) .cbpes-coach-current-team .cbpes-coach-team-link{color:#fff}
+:is(#coachView,#compareView) .cbpes-coach-current-team .cbpes-coach-team-link:hover{text-decoration:underline}
+:is(#coachView,#compareView) .cbpes-coach-current-team .crest,:is(#coachView,#compareView) .cbpes-coach-current-team .cbpes-crest{width:33px;height:33px;flex:none}
+:is(#coachView,#compareView) .cbpes-coach-hero-bio{font-size:12px;color:#d6eee0;margin-top:13px;max-width:650px}
+:is(#coachView,#compareView) .cbpes-coach-team-row .cbpes-coach-team-link{color:#174b38}
+:is(#coachView,#compareView) .cbpes-coach-team-row .crest,:is(#coachView,#compareView) .cbpes-coach-team-row .cbpes-crest{width:31px;height:31px;flex:none}
+:is(#coachView,#compareView) .cbpes-coach-team-row .player{box-shadow:none}
+@media(max-width:640px){:is(#coachView,#compareView) .cbpes-coach-hero{padding:19px 16px}}
 
 /* Perfil técnico compacto: nome e escudos na mesma linha. */
-#coachView .cbpes-coach-hero{padding:13px 18px;margin:0 0 12px;border-left-width:3px}
-#coachView .cbpes-coach-hero-label{margin-bottom:5px;font-size:9px}
-#coachView .cbpes-coach-hero-title{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
-#coachView .cbpes-coach-hero-title h1{font-size:clamp(22px,2.5vw,29px);margin:0;line-height:1.15}
-#coachView .cbpes-coach-career-crests{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-#coachView .cbpes-coach-career-crest{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;flex:none}
-#coachView .cbpes-coach-career-crest img{display:block;width:100%;height:100%;object-fit:contain}
-#coachView .cbpes-coach-crest-fallback{font-size:10px;color:#fff;border:1px solid #a3d5b8}
-#coachView .cbpes-coach-current-team{margin-top:7px;gap:7px;font-size:12px}
-#coachView .cbpes-coach-current-team>a{color:#fff;font-weight:750}
-#coachView .cbpes-coach-hero-bio{margin-top:8px}
+:is(#coachView,#compareView) .cbpes-coach-hero{padding:13px 18px;margin:0 0 12px;border-left-width:3px}
+:is(#coachView,#compareView) .cbpes-coach-hero-label{margin-bottom:5px;font-size:9px}
+:is(#coachView,#compareView) .cbpes-coach-hero-title{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+:is(#coachView,#compareView) .cbpes-coach-hero-title h1{font-size:clamp(22px,2.5vw,29px);margin:0;line-height:1.15}
+:is(#coachView,#compareView) .cbpes-coach-career-crests{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+:is(#coachView,#compareView) .cbpes-coach-career-crest{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;flex:none}
+:is(#coachView,#compareView) .cbpes-coach-career-crest img{display:block;width:100%;height:100%;object-fit:contain}
+:is(#coachView,#compareView) .cbpes-coach-crest-fallback{font-size:10px;color:#fff;border:1px solid #a3d5b8}
+:is(#coachView,#compareView) .cbpes-coach-current-team{margin-top:7px;gap:7px;font-size:12px}
+:is(#coachView,#compareView) .cbpes-coach-current-team>a{color:#fff;font-weight:750}
+:is(#coachView,#compareView) .cbpes-coach-hero-bio{margin-top:8px}
 
 /* Histórico compacto, confronto e placar centralizados. */
-#coachView .cbpes-coach-history-section>.cbpes-coach-match-row{
+:is(#coachView,#compareView) .cbpes-coach-history-section>.cbpes-coach-match-row{
  display:grid;grid-template-columns:45px minmax(0,1fr) 45px;align-items:center;
  min-height:45px;padding:5px 3px;margin:0 10px;
  border-bottom:1px solid #e8edeb;gap:3px;
 }
-#coachView .cbpes-coach-match-meta{font-size:9px;color:#85928d;font-weight:700;letter-spacing:.04em}
-#coachView .cbpes-coach-match-line{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;max-width:610px;width:100%;margin:0 auto;text-align:center}
-#coachView .cbpes-coach-match-line>span:first-child{text-align:right;justify-self:end}
-#coachView .cbpes-coach-match-line>span:last-child{text-align:left;justify-self:start}
-#coachView .cbpes-coach-match-side{display:flex;align-items:center;gap:3px;flex-direction:column;min-width:0}
-#coachView .cbpes-coach-match-side:first-child{justify-self:end;align-items:flex-end;text-align:right}
-#coachView .cbpes-coach-match-side:last-child{justify-self:start;align-items:flex-start;text-align:left}
-#coachView .cbpes-coach-match-club{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:750}
-#coachView .cbpes-coach-match-club .crest,#coachView .cbpes-coach-match-club .cbpes-crest{width:23px;height:23px;flex:none}
-#coachView .cbpes-coach-match-side small{font-size:10px;color:#7b8a84;line-height:1.1}
-#coachView .cbpes-coach-match-score{font-size:15px;color:#253d34;white-space:nowrap;font-variant-numeric:tabular-nums}
-#coachView .cbpes-coach-match-score.win{color:#087b4d}
-#coachView .cbpes-coach-match-score.loss{color:#b54c4c}
-#coachView .cbpes-coach-match-score.draw{color:#77848c}
+:is(#coachView,#compareView) .cbpes-coach-match-meta{font-size:9px;color:#85928d;font-weight:700;letter-spacing:.04em}
+:is(#coachView,#compareView) .cbpes-coach-match-line{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;max-width:610px;width:100%;margin:0 auto;text-align:center}
+:is(#coachView,#compareView) .cbpes-coach-match-line>span:first-child{text-align:right;justify-self:end}
+:is(#coachView,#compareView) .cbpes-coach-match-line>span:last-child{text-align:left;justify-self:start}
+:is(#coachView,#compareView) .cbpes-coach-match-side{display:flex;align-items:center;gap:3px;flex-direction:column;min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-match-side:first-child{justify-self:end;align-items:flex-end;text-align:right}
+:is(#coachView,#compareView) .cbpes-coach-match-side:last-child{justify-self:start;align-items:flex-start;text-align:left}
+:is(#coachView,#compareView) .cbpes-coach-match-club{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:750}
+:is(#coachView,#compareView) .cbpes-coach-match-club .crest,:is(#coachView,#compareView) .cbpes-coach-match-club .cbpes-crest{width:23px;height:23px;flex:none}
+:is(#coachView,#compareView) .cbpes-coach-match-side small{font-size:10px;color:#7b8a84;line-height:1.1}
+:is(#coachView,#compareView) .cbpes-coach-match-score{font-size:15px;color:#253d34;white-space:nowrap;font-variant-numeric:tabular-nums}
+:is(#coachView,#compareView) .cbpes-coach-match-score.win{color:#087b4d}
+:is(#coachView,#compareView) .cbpes-coach-match-score.loss{color:#b54c4c}
+:is(#coachView,#compareView) .cbpes-coach-match-score.draw{color:#77848c}
 @media(max-width:640px){
- #coachView .cbpes-coach-hero{padding:12px}
- #coachView .cbpes-coach-match-line{gap:7px}
- #coachView .cbpes-coach-history-section>.cbpes-coach-match-row{grid-template-columns:30px minmax(0,1fr) 0px;margin:0 5px}
- #coachView .cbpes-coach-match-club{font-size:11px}
- #coachView .cbpes-coach-match-club .crest,#coachView .cbpes-coach-match-club .cbpes-crest{width:19px;height:19px}
+ :is(#coachView,#compareView) .cbpes-coach-hero{padding:12px}
+ :is(#coachView,#compareView) .cbpes-coach-match-line{gap:7px}
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.cbpes-coach-match-row{grid-template-columns:30px minmax(0,1fr) 0px;margin:0 5px}
+ :is(#coachView,#compareView) .cbpes-coach-match-club{font-size:11px}
+ :is(#coachView,#compareView) .cbpes-coach-match-club .crest,:is(#coachView,#compareView) .cbpes-coach-match-club .cbpes-crest{width:19px;height:19px}
 }
 
 /* Histórico do técnico v2 — placar rigidamente centralizado, independentemente
    do comprimento dos nomes, com miniaturas dos temas das partidas. */
-#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px!important;
  align-items:center!important;min-height:49px!important;
  padding:5px 8px!important;margin:0 8px!important;gap:0!important;
  width:auto!important;max-width:none!important;transform:none!important;
  border:0;border-bottom:1px solid #e7edeb;box-shadow:none!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  grid-column:2!important;display:grid!important;
  grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)!important;
  width:100%!important;max-width:660px!important;margin:0 auto!important;
  align-items:center!important;justify-content:stretch!important;
  gap:0!important;text-align:initial!important;min-width:0;
 }
-#coachView .cbpes-coach-match-line>span:first-child,
-#coachView .cbpes-coach-match-side:first-child{
+:is(#coachView,#compareView) .cbpes-coach-match-line>span:first-child,
+:is(#coachView,#compareView) .cbpes-coach-match-side:first-child{
  justify-self:stretch!important;align-items:flex-end!important;
  text-align:right!important;min-width:0;
 }
-#coachView .cbpes-coach-match-line>span:last-child,
-#coachView .cbpes-coach-match-side:last-child{
+:is(#coachView,#compareView) .cbpes-coach-match-line>span:last-child,
+:is(#coachView,#compareView) .cbpes-coach-match-side:last-child{
  justify-self:stretch!important;align-items:flex-start!important;
  text-align:left!important;min-width:0;
 }
-#coachView .cbpes-coach-match-line>span:not(.cbpes-coach-match-side){
+:is(#coachView,#compareView) .cbpes-coach-match-line>span:not(.cbpes-coach-match-side){
  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
  grid-column:2!important;justify-self:center!important;align-self:center!important;
  width:60px;min-width:60px;text-align:center!important;
  font-size:15px!important;line-height:24px!important;letter-spacing:0;
  font-variant-numeric:tabular-nums;font-weight:850!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side{display:flex!important;gap:2px!important}
-#coachView .cbpes-coach-match-row .cbpes-coach-match-club{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side{display:flex!important;gap:2px!important}
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club{
  display:inline-flex;max-width:100%;min-width:0;gap:5px;
  align-items:center;white-space:nowrap;font-size:12px;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-club img{width:21px!important;height:21px!important;object-fit:contain}
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side small{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club img{width:21px!important;height:21px!important;object-fit:contain}
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side small{
  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{justify-self:start;font-size:9px}
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{justify-self:start;font-size:9px}
 /* Mini tema oficial: azul escuro e detalhes frios, sem efeitos pesados. */
-#coachView .cbpes-coach-match-row.cbpes-coach-match-official{
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-official{
  background:linear-gradient(90deg,#112c4b,#183c65 50%,#112c4b)!important;
  border-bottom-color:#335372!important;color:#f5f9ff;
 }
-#coachView .cbpes-coach-match-official .cbpes-coach-match-club,
-#coachView .cbpes-coach-match-official .cbpes-coach-match-score{color:#fff!important}
-#coachView .cbpes-coach-match-official .cbpes-coach-match-side small,
-#coachView .cbpes-coach-match-official .cbpes-coach-match-meta{color:#c5d7eb!important}
+:is(#coachView,#compareView) .cbpes-coach-match-official .cbpes-coach-match-club,
+:is(#coachView,#compareView) .cbpes-coach-match-official .cbpes-coach-match-score{color:#fff!important}
+:is(#coachView,#compareView) .cbpes-coach-match-official .cbpes-coach-match-side small,
+:is(#coachView,#compareView) .cbpes-coach-match-official .cbpes-coach-match-meta{color:#c5d7eb!important}
 /* Mini tema semanal: verde CBPES e acento amarelo. */
-#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-weekly{
  background:linear-gradient(90deg,#074932,#086343 50%,#074932)!important;
  border-bottom-color:#2a7755!important;color:#fff;
 }
-#coachView .cbpes-coach-match-weekly .cbpes-coach-match-club,
-#coachView .cbpes-coach-match-weekly .cbpes-coach-match-score{color:#fff!important}
-#coachView .cbpes-coach-match-weekly .cbpes-coach-match-side small,
-#coachView .cbpes-coach-match-weekly .cbpes-coach-match-meta{color:#d4eadb!important}
-#coachView .cbpes-coach-match-weekly .cbpes-coach-match-score{border-bottom:2px solid #e7bc48}
+:is(#coachView,#compareView) .cbpes-coach-match-weekly .cbpes-coach-match-club,
+:is(#coachView,#compareView) .cbpes-coach-match-weekly .cbpes-coach-match-score{color:#fff!important}
+:is(#coachView,#compareView) .cbpes-coach-match-weekly .cbpes-coach-match-side small,
+:is(#coachView,#compareView) .cbpes-coach-match-weekly .cbpes-coach-match-meta{color:#d4eadb!important}
+:is(#coachView,#compareView) .cbpes-coach-match-weekly .cbpes-coach-match-score{border-bottom:2px solid #e7bc48}
 /* Amistosos seguem neutros e leves. */
-#coachView .cbpes-coach-match-row.cbpes-coach-match-friendly{background:#fff!important}
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-friendly{background:#fff!important}
 @media(max-width:640px){
- #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  grid-template-columns:28px minmax(0,1fr) 0px!important;
  padding:5px 3px!important;margin:0 3px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
  width:46px;min-width:46px;font-size:13px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-club{font-size:10px;gap:3px}
- #coachView .cbpes-coach-match-row .cbpes-coach-match-club img{width:17px!important;height:17px!important}
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club{font-size:10px;gap:3px}
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club img{width:17px!important;height:17px!important}
 }
 
 /* Histórico técnico v3: linhas retas, competição à esquerda, placar estável. */
-#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  grid-template-columns:minmax(110px,190px) minmax(0,1fr)!important;
  border-radius:0!important;margin:0!important;padding:6px 12px!important;
  min-height:51px!important;column-gap:12px!important;
  box-shadow:none!important;overflow:hidden;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{
  grid-column:1;display:block;min-width:0;max-width:100%;
  font-size:10px!important;font-weight:750;line-height:1.25;
  letter-spacing:0!important;white-space:normal;overflow-wrap:break-word;
  text-align:left!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  grid-column:2!important;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;
  max-width:none!important;min-width:0!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-line>span:first-child{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line>span:first-child{
  justify-self:stretch!important;text-align:right!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-line>span:last-child{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line>span:last-child{
  justify-self:stretch!important;text-align:left!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
  grid-column:2!important;justify-self:center!important;
  width:62px!important;min-width:62px!important;
  border-radius:0!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-club,
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side,
-#coachView .cbpes-coach-match-row .cbpes-coach-match-club img{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club,
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side,
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-club img{
  border-radius:0!important;box-shadow:none!important;
 }
-#coachView .cbpes-coach-match-row.cbpes-coach-match-official,
-#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-official,
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-weekly{
  border-left:3px solid #a5c5d9!important;
 }
-#coachView .cbpes-coach-match-row.cbpes-coach-match-weekly{border-left-color:#e0b947!important}
-#coachView .cbpes-coach-match-row.cbpes-coach-match-friendly{
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-weekly{border-left-color:#e0b947!important}
+:is(#coachView,#compareView) .cbpes-coach-match-row.cbpes-coach-match-friendly{
  grid-template-columns:minmax(110px,190px) minmax(0,1fr)!important;
  border-left:0!important;
 }
-#coachView .cbpes-coach-match-friendly .cbpes-coach-match-meta:empty{display:block}
+:is(#coachView,#compareView) .cbpes-coach-match-friendly .cbpes-coach-match-meta:empty{display:block}
 @media(max-width:640px){
- #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  grid-template-columns:minmax(65px,90px) minmax(0,1fr)!important;
  column-gap:5px!important;padding:6px 5px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-meta{font-size:8px!important}
- #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{font-size:8px!important}
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr)!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
  width:43px!important;min-width:43px!important;
  }
 }
 
 /* Histórico v4: placar centralizado no card inteiro, não na área
    restante depois do nome da competição. */
-#coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  position:relative!important;
  display:flex!important;align-items:center!important;
  justify-content:center!important;
  padding:6px 12px!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{
  position:absolute!important;left:12px;top:50%;
  transform:translateY(-50%);width:clamp(75px,18%,170px);
  grid-column:auto!important;z-index:1;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  flex:0 1 660px!important;width:min(100%,660px)!important;
  margin:0 auto!important;grid-column:auto!important;
  grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)!important;
  padding:0!important;box-sizing:border-box!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
  border:0!important;border-bottom:0!important;
  box-shadow:none!important;
 }
 @media(max-width:640px){
- #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
  padding:6px 5px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{
  left:5px;width:65px;font-size:8px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
  width:100%!important;grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr)!important;
  padding-left:65px!important;
  }
@@ -2509,31 +2509,31 @@ button,.btn,input,select,textarea,
 
 /* Histórico v5: escudos do mandante em coluna fixa junto ao placar.
    O tamanho do nome não altera a posição horizontal do escudo. */
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child{
  width:100%!important;min-width:0!important;
  display:flex!important;align-items:flex-end!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
  display:flex!important;flex-direction:row-reverse!important;
  justify-content:flex-start!important;align-items:center!important;
  gap:7px!important;width:100%!important;min-width:0!important;
  text-align:right!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img{
  display:block!important;flex:0 0 23px!important;
  width:23px!important;height:23px!important;
  max-width:23px!important;max-height:23px!important;
  object-fit:contain!important;margin:0!important;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
-#coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
  flex:0 0 23px!important;width:23px!important;height:23px!important;
 }
 @media(max-width:640px){
- #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{gap:4px!important}
- #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
- #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
- #coachView .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club{gap:4px!important}
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
  flex-basis:18px!important;width:18px!important;height:18px!important;
  max-width:18px!important;max-height:18px!important;
  }
@@ -2582,20 +2582,20 @@ body>header #navCompetitionMenu{
 /* Mobile: o rótulo fica na própria linha superior e não empurra
    o confronto nem o placar para a direita. */
 @media(max-width:640px){
- #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
   display:flex!important;flex-direction:column!important;
   align-items:stretch!important;justify-content:center!important;
   gap:3px!important;padding:6px 7px!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{
   position:static!important;transform:none!important;
   width:100%!important;max-width:none!important;
   text-align:left!important;line-height:1.1!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-meta:empty{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta:empty{
   display:none!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-line{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-line{
   display:grid!important;flex:none!important;
   width:100%!important;max-width:none!important;
   margin:0!important;padding:0!important;
@@ -2603,7 +2603,7 @@ body>header #navCompetitionMenu{
   justify-content:stretch!important;align-items:center!important;
   gap:0!important;
  }
- #coachView .cbpes-coach-match-row .cbpes-coach-match-score{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-score{
   grid-column:2!important;width:48px!important;
   min-width:48px!important;justify-self:center!important;
   text-align:center!important;
@@ -2644,14 +2644,14 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
    o placar é ancorado ao centro geométrico da largura total do card,
    independente da largura dos escudos, nomes ou etiqueta da competição. */
 @media(max-width:640px){
- #coachView .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
+ :is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-coach-match-row{
   box-sizing:border-box!important;width:100%!important;
   min-width:0!important;max-width:100%!important;
   padding:7px 8px!important;
   display:flex!important;flex-direction:column!important;
   align-items:stretch!important;gap:5px!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line{
   position:relative!important;display:grid!important;
   grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important;
   width:100%!important;max-width:100%!important;
@@ -2660,17 +2660,17 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
   justify-content:stretch!important;align-items:center!important;
   column-gap:0!important;transform:none!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-side:first-child{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-side:first-child{
   grid-column:1!important;grid-row:1!important;
   justify-self:stretch!important;align-items:flex-end!important;
   min-width:0!important;width:100%!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-side:last-child{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-side:last-child{
   grid-column:3!important;grid-row:1!important;
   justify-self:stretch!important;align-items:flex-start!important;
   min-width:0!important;width:100%!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-score{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-row .cbpes-coach-match-line>.cbpes-coach-match-score{
   grid-column:2!important;grid-row:1!important;
   position:static!important;left:auto!important;right:auto!important;
   transform:none!important;margin:0!important;
@@ -2682,136 +2682,136 @@ body>#navCompetitionMenu.nav-competition-menu a:focus-visible{
 
 /* Histórico do técnico: a classe de recolhimento prevalece sobre
    qualquer display:flex/grid definido nos temas ou breakpoints. */
-#coachView .cbpes-coach-history-section>.result-row.cbpes-history-collapsed{
+:is(#coachView,#compareView) .cbpes-coach-history-section>.result-row.cbpes-history-collapsed{
  display:none!important;
 }
 /* Alinhamento consistente do escudo mandante em todas as partidas. */
 @media(min-width:641px){
- #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-side:first-child{
   width:100%!important;min-width:0!important;align-items:stretch!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club{
   width:100%!important;display:flex!important;flex-direction:row-reverse!important;
   align-items:center!important;justify-content:flex-start!important;
   text-align:right!important;gap:7px!important;
  }
- #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
- #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
- #coachView .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club img,
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .crest,
+ :is(#coachView,#compareView) .cbpes-coach-history-section .cbpes-coach-match-side:first-child .cbpes-coach-match-club .cbpes-crest{
   flex:0 0 23px!important;width:23px!important;height:23px!important;
   max-width:23px!important;object-fit:contain!important;
  }
 }
 /* Comparador: manter o seletor e sua lista acima dos demais cards,
    sem recorte pelo contêiner do perfil. */
-:is(#coachView,#compareView) .cbpes-coach-compare,
-:is(#coachView,#compareView) .cbpes-coach-compare .cardbody,
-:is(#coachView,#compareView) .cbpes-coach-compare .field{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .cardbody,
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field{
  overflow:visible!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare{position:relative!important;z-index:5!important}
-:is(#coachView,#compareView) .cbpes-coach-compare .field{position:relative!important;z-index:6!important}
-:is(#coachView,#compareView) #coachCompareWith{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare{position:relative!important;z-index:5!important}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field{position:relative!important;z-index:6!important}
+:is(:is(#coachView,#compareView),#compareView) #coachCompareWith{
  position:relative!important;z-index:7!important;
  appearance:auto!important;-webkit-appearance:menulist!important;
  background:#f9fbfa!important;color:#1a3942!important;
 }
-:is(#coachView,#compareView) #coachCompareWith option{
+:is(:is(#coachView,#compareView),#compareView) #coachCompareWith option{
  background:#fff!important;color:#14232b!important;
 }
 
 /* Comparação de técnicos: layout compacto sem espaço reservado para ajuda. */
-:is(#coachView,#compareView) .cbpes-coach-compare>.cardbody{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare>.cardbody{
  padding:12px 16px!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare .field{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field{
  margin:0!important;display:flex!important;flex-direction:column!important;
  gap:6px!important;max-width:440px!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare .field label{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .field label{
  margin:0!important;line-height:1.25!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareWith{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareWith{
  margin:0!important;min-height:38px!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult:empty{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult:empty{
  display:none!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare #coachCompareResult:not(:empty){
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare #coachCompareResult:not(:empty){
  margin-top:12px!important;
 }
 
 /* Data da partida abaixo da competição, sem deslocar o placar. */
-#coachView .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
  display:block!important;margin-top:3px!important;
  font-size:10px!important;font-weight:500!important;
  line-height:1.25!important;letter-spacing:0!important;
  color:inherit!important;opacity:.82;
 }
-#coachView .cbpes-coach-match-row .cbpes-coach-match-meta{
+:is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta{
  white-space:normal!important;overflow-wrap:anywhere!important;
 }
 @media(max-width:640px){
- #coachView .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
+ :is(#coachView,#compareView) .cbpes-coach-match-row .cbpes-coach-match-meta .cbpes-coach-match-date{
   font-size:10px!important;margin-top:2px!important;
  }
 }
 
 /* Card do clube atual no canto superior direito do perfil do técnico. */
-#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest{display:flex!important;width:96px!important;height:96px!important;align-items:center;justify-content:center;background:transparent;border:0;}
-#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest img{display:block!important;width:94px!important;height:94px!important;max-width:100%;object-fit:contain;}
-#coachView .cbpes-coach-hero-club .cbpes-coach-previous summary{color:#246c51;font-weight:600;}
-@media(max-width:520px){#coachView .cbpes-coach-hero-club{position:relative!important;top:auto!important;right:auto!important;margin-top:18px;width:155px!important}#coachView .cbpes-coach-hero-title{padding-right:0!important}}
+:is(#coachView,#compareView) .cbpes-coach-hero-club .cbpes-coach-career-crest{display:flex!important;width:96px!important;height:96px!important;align-items:center;justify-content:center;background:transparent;border:0;}
+:is(#coachView,#compareView) .cbpes-coach-hero-club .cbpes-coach-career-crest img{display:block!important;width:94px!important;height:94px!important;max-width:100%;object-fit:contain;}
+:is(#coachView,#compareView) .cbpes-coach-hero-club .cbpes-coach-previous summary{color:#246c51;font-weight:600;}
+@media(max-width:520px){:is(#coachView,#compareView) .cbpes-coach-hero-club{position:relative!important;top:auto!important;right:auto!important;margin-top:18px;width:155px!important}:is(#coachView,#compareView) .cbpes-coach-hero-title{padding-right:0!important}}
 
 /* Técnico — painel horizontal de clube inspirado na referência enviada. */
-#coachView .cbpes-coach-hero-club{
+:is(#coachView,#compareView) .cbpes-coach-hero-club{
  position:absolute;top:20px;right:24px;display:flex;flex-direction:row;
  align-items:center;gap:15px;width:310px;min-height:126px;
  padding:13px 16px;background:linear-gradient(110deg,#fff 40%,#e7f4eb 100%);
  color:#173e2c;border:1px solid #d6e5dc;border-radius:3px;
  box-shadow:0 4px 14px rgba(0,0,0,.1);text-align:left;
 }
-#coachView .cbpes-coach-hero-club-crest{flex:0 0 100px;display:flex;align-items:center;justify-content:center}
-#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest{display:flex!important;width:100px!important;height:100px!important;align-items:center;justify-content:center}
-#coachView .cbpes-coach-hero-club .cbpes-coach-career-crest img{width:100px!important;height:100px!important;object-fit:contain}
-#coachView .cbpes-coach-hero-club-info{flex:1;min-width:0}
-#coachView .cbpes-coach-hero-club-name{font-size:16px;font-weight:800;color:#087047;line-height:1.2}
-#coachView .cbpes-coach-hero-club-role{font-size:12px;font-weight:650;color:#254a37;margin-top:5px}
-#coachView .cbpes-coach-previous{position:relative;margin-top:13px;font-size:11px}
-#coachView .cbpes-coach-previous summary{cursor:pointer;color:#287453;font-weight:650}
-#coachView .cbpes-coach-previous-list{position:absolute;z-index:10;top:100%;right:0;min-width:180px;background:#fff;color:#263b30;padding:10px;border:1px solid #d9e4dc;box-shadow:0 8px 20px rgba(0,0,0,.12);border-radius:4px}
-#coachView .cbpes-coach-previous-list>div{padding:5px 0}
-@media(min-width:521px){#coachView .cbpes-coach-hero-title{padding-right:340px!important}#coachView .cbpes-coach-current-team{max-width:calc(100% - 340px)}}
-@media(max-width:520px){#coachView .cbpes-coach-hero-club{position:relative;top:auto;right:auto;margin-top:18px;width:100%;max-width:330px;min-height:116px}#coachView .cbpes-coach-hero-title{padding-right:0!important}#coachView .cbpes-coach-current-team{max-width:none}}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-crest{flex:0 0 100px;display:flex;align-items:center;justify-content:center}
+:is(#coachView,#compareView) .cbpes-coach-hero-club .cbpes-coach-career-crest{display:flex!important;width:100px!important;height:100px!important;align-items:center;justify-content:center}
+:is(#coachView,#compareView) .cbpes-coach-hero-club .cbpes-coach-career-crest img{width:100px!important;height:100px!important;object-fit:contain}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-info{flex:1;min-width:0}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-name{font-size:16px;font-weight:800;color:#087047;line-height:1.2}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-role{font-size:12px;font-weight:650;color:#254a37;margin-top:5px}
+:is(#coachView,#compareView) .cbpes-coach-previous{position:relative;margin-top:13px;font-size:11px}
+:is(#coachView,#compareView) .cbpes-coach-previous summary{cursor:pointer;color:#287453;font-weight:650}
+:is(#coachView,#compareView) .cbpes-coach-previous-list{position:absolute;z-index:10;top:100%;right:0;min-width:180px;background:#fff;color:#263b30;padding:10px;border:1px solid #d9e4dc;box-shadow:0 8px 20px rgba(0,0,0,.12);border-radius:4px}
+:is(#coachView,#compareView) .cbpes-coach-previous-list>div{padding:5px 0}
+@media(min-width:521px){:is(#coachView,#compareView) .cbpes-coach-hero-title{padding-right:340px!important}:is(#coachView,#compareView) .cbpes-coach-current-team{max-width:calc(100% - 340px)}}
+@media(max-width:520px){:is(#coachView,#compareView) .cbpes-coach-hero-club{position:relative;top:auto;right:auto;margin-top:18px;width:100%;max-width:330px;min-height:116px}:is(#coachView,#compareView) .cbpes-coach-hero-title{padding-right:0!important}:is(#coachView,#compareView) .cbpes-coach-current-team{max-width:none}}
 
 /* Refinamento visual do cartão do clube: alinhamento superior e identidade CBPES. */
-#coachView .cbpes-coach-hero-club{
+:is(#coachView,#compareView) .cbpes-coach-hero-club{
  align-items:flex-start;gap:14px;min-height:136px;padding:15px 17px;
  background:linear-gradient(120deg,#fff 0%,#f6fbf7 53%,#dcefe3 100%);
  border:1px solid rgba(20,111,70,.23);border-top:3px solid #168c58;
  border-radius:8px;box-shadow:0 9px 24px rgba(0,37,22,.16);
 }
-#coachView .cbpes-coach-hero-club-crest{align-self:center}
-#coachView .cbpes-coach-hero-club-info{padding-top:1px;align-self:flex-start}
-#coachView .cbpes-coach-hero-club-name{
+:is(#coachView,#compareView) .cbpes-coach-hero-club-crest{align-self:center}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-info{padding-top:1px;align-self:flex-start}
+:is(#coachView,#compareView) .cbpes-coach-hero-club-name{
  font-size:18px;line-height:1.15;font-weight:800;letter-spacing:-.025em;
  color:#08643e;margin:0 0 3px;
 }
-#coachView .cbpes-coach-hero-club-role{
+:is(#coachView,#compareView) .cbpes-coach-hero-club-role{
  font-size:12px;line-height:1.15;font-weight:650;margin:0;color:#426555;
 }
-#coachView .cbpes-coach-previous{margin-top:18px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
-#coachView .cbpes-coach-previous summary{font-size:11px;letter-spacing:.01em}
-@media(max-width:520px){#coachView .cbpes-coach-hero-club{width:100%!important;max-width:330px!important;min-height:136px}}
+:is(#coachView,#compareView) .cbpes-coach-previous{margin-top:18px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
+:is(#coachView,#compareView) .cbpes-coach-previous summary{font-size:11px;letter-spacing:.01em}
+@media(max-width:520px){:is(#coachView,#compareView) .cbpes-coach-hero-club{width:100%!important;max-width:330px!important;min-height:136px}}
 
 /* Exibir clubes anteriores diretamente no cartão do técnico, com escudos pequenos. */
-#coachView .cbpes-coach-previous{margin-top:12px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
-#coachView .cbpes-coach-previous-heading{font-size:11px;font-weight:650;color:#287453;margin-bottom:8px}
-#coachView .cbpes-coach-previous-list{position:static;display:flex;flex-direction:column;gap:7px;min-width:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;text-align:left}
-#coachView .cbpes-coach-previous-team{display:flex;align-items:center;gap:8px;color:#214d38;text-decoration:none;font-size:12px;font-weight:650;line-height:1.25}
-#coachView .cbpes-coach-previous-team:hover{color:#087047;text-decoration:underline}
-#coachView .cbpes-coach-previous-team .cbpes-coach-career-crest{flex:0 0 28px;display:flex!important;width:28px!important;height:28px!important;align-items:center;justify-content:center}
-#coachView .cbpes-coach-previous-team .cbpes-coach-career-crest img{width:28px!important;height:28px!important;object-fit:contain}
+:is(#coachView,#compareView) .cbpes-coach-previous{margin-top:12px;padding-top:9px;border-top:1px solid rgba(16,103,65,.15)}
+:is(#coachView,#compareView) .cbpes-coach-previous-heading{font-size:11px;font-weight:650;color:#287453;margin-bottom:8px}
+:is(#coachView,#compareView) .cbpes-coach-previous-list{position:static;display:flex;flex-direction:column;gap:7px;min-width:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;text-align:left}
+:is(#coachView,#compareView) .cbpes-coach-previous-team{display:flex;align-items:center;gap:8px;color:#214d38;text-decoration:none;font-size:12px;font-weight:650;line-height:1.25}
+:is(#coachView,#compareView) .cbpes-coach-previous-team:hover{color:#087047;text-decoration:underline}
+:is(#coachView,#compareView) .cbpes-coach-previous-team .cbpes-coach-career-crest{flex:0 0 28px;display:flex!important;width:28px!important;height:28px!important;align-items:center;justify-content:center}
+:is(#coachView,#compareView) .cbpes-coach-previous-team .cbpes-coach-career-crest img{width:28px!important;height:28px!important;object-fit:contain}
 
 
 /* Copa Master — identidade oficial: amarelo sólido, branco e preto.
@@ -3873,7 +3873,7 @@ html body #table[data-copa-master="true"] .cbpes-competition-heading > #tableCom
 }
 
 /* Confronto direto: totais neutros de jogos e empates em preto. */
-:is(#coachView,#compareView) .cbpes-compare-metric-head-neutral > b{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-metric-head-neutral > b{
  color:#111111!important;
 }
 
@@ -4014,119 +4014,119 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
  font-size:10px!important;letter-spacing:0!important;
 }
 /* Perfil do técnico: escudos soltos, junto ao nome, sem o cartão branco anterior. */
-#coachView .cbpes-coach-hero{
+:is(#coachView,#compareView) .cbpes-coach-hero{
  min-height:0!important;padding:28px 32px!important;
 }
-#coachView .cbpes-coach-hero-identity{
+:is(#coachView,#compareView) .cbpes-coach-hero-identity{
  display:flex!important;align-items:center!important;justify-content:flex-start!important;
  flex-wrap:wrap!important;gap:14px!important;margin-top:12px!important;
  padding:0!important;max-width:100%!important;min-width:0!important;
 }
-#coachView .cbpes-coach-hero-identity h1{
+:is(#coachView,#compareView) .cbpes-coach-hero-identity h1{
  margin:0!important;font-size:clamp(32px,4vw,48px)!important;
  line-height:1.12!important;flex:0 1 auto!important;min-width:0!important;
 }
-#coachView .cbpes-coach-hero-crest-line{
+:is(#coachView,#compareView) .cbpes-coach-hero-crest-line{
  display:flex!important;align-items:center!important;flex-wrap:wrap!important;
  gap:12px!important;min-width:0!important;
 }
-#coachView .cbpes-coach-hero-current-crest,
-#coachView .cbpes-coach-hero-past-crest{
+:is(#coachView,#compareView) .cbpes-coach-hero-current-crest,
+:is(#coachView,#compareView) .cbpes-coach-hero-past-crest{
  display:inline-flex!important;align-items:center!important;justify-content:center!important;
  background:none!important;border:0!important;box-shadow:none!important;padding:0!important;
 }
-#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest{
+:is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest{
  display:flex!important;align-items:center!important;justify-content:center!important;
  width:100px!important;height:100px!important;background:none!important;
  border:0!important;box-shadow:none!important;padding:0!important;
 }
-#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+:is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
  display:block!important;width:100px!important;height:100px!important;object-fit:contain!important;
 }
-#coachView .cbpes-coach-hero-past-crests{
+:is(#coachView,#compareView) .cbpes-coach-hero-past-crests{
  display:inline-flex!important;align-items:center!important;flex-wrap:wrap!important;gap:9px!important;
 }
-#coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest{
+:is(#coachView,#compareView) .cbpes-coach-hero-past-crest .cbpes-coach-career-crest{
  display:flex!important;align-items:center!important;justify-content:center!important;
  width:46px!important;height:46px!important;background:none!important;
  border:0!important;box-shadow:none!important;padding:0!important;
 }
-#coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
+:is(#coachView,#compareView) .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
  display:block!important;width:46px!important;height:46px!important;object-fit:contain!important;
 }
-#coachView .cbpes-coach-hero .cbpes-coach-current-team{
+:is(#coachView,#compareView) .cbpes-coach-hero .cbpes-coach-current-team{
  margin-top:12px!important;max-width:100%!important;
 }
-#coachView .cbpes-coach-rivalry-label,
-#coachView .cbpes-coach-kpi-label{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-label,
+:is(#coachView,#compareView) .cbpes-coach-kpi-label{
  display:block!important;width:100%!important;text-align:center!important;
  font-weight:850!important;letter-spacing:.075em!important;
 }
-#coachView .cbpes-coach-rivalry-info{min-width:0!important}
-#coachView .cbpes-coach-filter > span{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-info{min-width:0!important}
+:is(#coachView,#compareView) .cbpes-coach-filter > span{
  font-weight:850!important;text-align:center!important;
 }
 @media(max-width:620px){
- #coachView .cbpes-coach-hero{padding:22px 18px!important}
- #coachView .cbpes-coach-hero-identity{gap:10px!important}
- #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
- #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+ :is(#coachView,#compareView) .cbpes-coach-hero{padding:22px 18px!important}
+ :is(#coachView,#compareView) .cbpes-coach-hero-identity{gap:10px!important}
+ :is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+ :is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
   width:76px!important;height:76px!important;
  }
- #coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest,
- #coachView .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
+ :is(#coachView,#compareView) .cbpes-coach-hero-past-crest .cbpes-coach-career-crest,
+ :is(#coachView,#compareView) .cbpes-coach-hero-past-crest .cbpes-coach-career-crest img{
   width:36px!important;height:36px!important;
  }
 }
 
 /* Perfil do técnico: escudo atual proporcional ao nome; categorias alinhadas à esquerda. */
-#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
-#coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+:is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+:is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
  width:66px!important;height:66px!important;
 }
-#coachView .cbpes-coach-rivalry-label,
-#coachView .cbpes-coach-kpi-label{
+:is(#coachView,#compareView) .cbpes-coach-rivalry-label,
+:is(#coachView,#compareView) .cbpes-coach-kpi-label{
  text-align:left!important;
 }
-#coachView .cbpes-coach-filter > span{
+:is(#coachView,#compareView) .cbpes-coach-filter > span{
  text-align:left!important;
 }
 @media(max-width:620px){
- #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
- #coachView .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
+ :is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest,
+ :is(#coachView,#compareView) .cbpes-coach-hero-current-crest .cbpes-coach-career-crest img{
   width:58px!important;height:58px!important;
  }
 }
 
 /* Técnico: vínculo atual em destaque e escudos do cabeçalho mais próximos. */
-#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current{
+:is(#coachView,#compareView) .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current{
  background:#e3f4e9!important;
  border:1px solid #91c8a5!important;
  border-left:4px solid #11824c!important;
  box-shadow:none!important;
 }
-#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .pill{
+:is(#coachView,#compareView) .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .pill{
  background:#11824c!important;color:#fff!important;border-color:#11824c!important;
  font-weight:800!important;
 }
-#coachView .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .cbpes-coach-team-link{
+:is(#coachView,#compareView) .cbpes-coach-teams .cbpes-coach-team-row.cbpes-coach-team-current .cbpes-coach-team-link{
  color:#075a35!important;font-weight:800!important;
 }
-#coachView .cbpes-coach-hero-crest-line{gap:3px!important}
-#coachView .cbpes-coach-hero-past-crests{gap:5px!important}
+:is(#coachView,#compareView) .cbpes-coach-hero-crest-line{gap:3px!important}
+:is(#coachView,#compareView) .cbpes-coach-hero-past-crests{gap:5px!important}
 @media(max-width:620px){
- #coachView .cbpes-coach-hero-crest-line{gap:2px!important}
- #coachView .cbpes-coach-hero-past-crests{gap:4px!important}
+ :is(#coachView,#compareView) .cbpes-coach-hero-crest-line{gap:2px!important}
+ :is(#coachView,#compareView) .cbpes-coach-hero-past-crests{gap:4px!important}
 }
 
 /* Forma recente do técnico: últimos cinco resultados centralizados. */
-#coachView .cbpes-coach-recent-form{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding:16px 0 3px;text-align:center}
-#coachView .cbpes-coach-recent-form>span{font-size:11px;font-weight:800;letter-spacing:.08em;color:#66737d}
-#coachView .cbpes-coach-recent-form-dots{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-height:31px}
-#coachView .cbpes-coach-form-dot{width:31px;height:31px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800}
-#coachView .cbpes-coach-form-dot.win{background:#159354}
-#coachView .cbpes-coach-form-dot.draw{background:#89949c}
-#coachView .cbpes-coach-form-dot.loss{background:#d64d4d}
+:is(#coachView,#compareView) .cbpes-coach-recent-form{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding:16px 0 3px;text-align:center}
+:is(#coachView,#compareView) .cbpes-coach-recent-form>span{font-size:11px;font-weight:800;letter-spacing:.08em;color:#66737d}
+:is(#coachView,#compareView) .cbpes-coach-recent-form-dots{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-height:31px}
+:is(#coachView,#compareView) .cbpes-coach-form-dot{width:31px;height:31px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800}
+:is(#coachView,#compareView) .cbpes-coach-form-dot.win{background:#159354}
+:is(#coachView,#compareView) .cbpes-coach-form-dot.draw{background:#89949c}
+:is(#coachView,#compareView) .cbpes-coach-form-dot.loss{background:#d64d4d}
 
 /* Estatísticas — mesma linguagem visual, fonte e cartões da página inicial. */
 #stats,#stats-detail{font-family:var(--font,inherit)}
@@ -4170,41 +4170,41 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 #records .cbpes-record-person small .cbpes-record-streak-label:first-child{margin-top:0}
 
 /* Confronto direto dos técnicos: barras compactas em formato de pílula. */
-:is(#coachView,#compareView) .cbpes-compare-track{height:7px;border-radius:999px;overflow:hidden}
-:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{height:7px;border-radius:999px}
-:is(#coachView,#compareView) .cbpes-compare-left,:is(#coachView,#compareView) .cbpes-compare-right{height:100%}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track{height:7px;border-radius:999px;overflow:hidden}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{height:7px;border-radius:999px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-left,:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-right{height:100%}
 
 /* Barras do confronto direto com pontas totalmente circulares. */
-:is(#coachView,#compareView) .cbpes-compare-track,:is(#coachView,#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{border-radius:9999px!important;overflow:hidden}
-:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
-:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
-:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-left:only-child,:is(#coachView,#compareView) .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track,:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track.cbpes-compare-track-neutral{border-radius:9999px!important;overflow:hidden}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track .cbpes-compare-left{border-radius:9999px 0 0 9999px}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track .cbpes-compare-right{border-radius:0 9999px 9999px 0}
+:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track .cbpes-compare-left:only-child,:is(:is(#coachView,#compareView),#compareView) .cbpes-compare-track .cbpes-compare-right:only-child{border-radius:9999px}
 
 /* Histórico de confrontos diretos entre técnicos */
-#coachView .cbpes-direct-fixtures{margin-top:20px;border-top:1px solid #dce5e0}
-#coachView .cbpes-direct-fixtures h3{font-family:inherit;font-size:13px;letter-spacing:.02em;margin:18px 0 10px;color:#253f34}
-#coachView .cbpes-direct-fixtures h3 span{color:#82958b;font-weight:500}
-#coachView .cbpes-direct-fixture{display:grid;grid-template-columns:120px minmax(0,1fr) 150px;gap:14px;align-items:center;padding:13px 4px;border-bottom:1px solid #e6ece8}
-#coachView .cbpes-direct-fixture-info{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:#567467}
-#coachView .cbpes-direct-fixture-info small{font-size:11px;font-weight:400;color:#85948b}
-#coachView .cbpes-direct-fixture-score{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);align-items:center;gap:8px;font-size:13px}
-#coachView .cbpes-direct-fixture-score span:first-child{text-align:right}
-#coachView .cbpes-direct-fixture-score span:last-child{text-align:left}
-#coachView .cbpes-direct-fixture-score strong{text-align:center;font-size:17px;white-space:nowrap;color:#203e30}
-#coachView .cbpes-direct-fixture-result{text-align:right;color:#62786d;font-size:11px}
-@media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:1fr;gap:7px}#coachView .cbpes-direct-fixture-info{flex-direction:row;gap:10px}#coachView .cbpes-direct-fixture-result{text-align:center}#coachView .cbpes-direct-fixture-score{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr)}}
+:is(#coachView,#compareView) .cbpes-direct-fixtures{margin-top:20px;border-top:1px solid #dce5e0}
+:is(#coachView,#compareView) .cbpes-direct-fixtures h3{font-family:inherit;font-size:13px;letter-spacing:.02em;margin:18px 0 10px;color:#253f34}
+:is(#coachView,#compareView) .cbpes-direct-fixtures h3 span{color:#82958b;font-weight:500}
+:is(#coachView,#compareView) .cbpes-direct-fixture{display:grid;grid-template-columns:120px minmax(0,1fr) 150px;gap:14px;align-items:center;padding:13px 4px;border-bottom:1px solid #e6ece8}
+:is(#coachView,#compareView) .cbpes-direct-fixture-info{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:#567467}
+:is(#coachView,#compareView) .cbpes-direct-fixture-info small{font-size:11px;font-weight:400;color:#85948b}
+:is(#coachView,#compareView) .cbpes-direct-fixture-score{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);align-items:center;gap:8px;font-size:13px}
+:is(#coachView,#compareView) .cbpes-direct-fixture-score span:first-child{text-align:right}
+:is(#coachView,#compareView) .cbpes-direct-fixture-score span:last-child{text-align:left}
+:is(#coachView,#compareView) .cbpes-direct-fixture-score strong{text-align:center;font-size:17px;white-space:nowrap;color:#203e30}
+:is(#coachView,#compareView) .cbpes-direct-fixture-result{text-align:right;color:#62786d;font-size:11px}
+@media(max-width:700px){:is(#coachView,#compareView) .cbpes-direct-fixture{grid-template-columns:1fr;gap:7px}:is(#coachView,#compareView) .cbpes-direct-fixture-info{flex-direction:row;gap:10px}:is(#coachView,#compareView) .cbpes-direct-fixture-result{text-align:center}:is(#coachView,#compareView) .cbpes-direct-fixture-score{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr)}}
 
 /* Resultado do confronto direto, sob a perspectiva do técnico do perfil. */
-#coachView .cbpes-direct-fixture-result{display:flex;justify-content:flex-end;align-items:center}
-#coachView .cbpes-direct-result-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:12px;font-weight:800;line-height:1}
-#coachView .cbpes-direct-result-v{background:#e0f3e8;color:#087c47}
-#coachView .cbpes-direct-result-d{background:#fde7e7;color:#bd3131}
-#coachView .cbpes-direct-result-e{background:#e9ecef;color:#64717b}
-@media(max-width:700px){#coachView .cbpes-direct-fixture-result{justify-content:center}}
+:is(#coachView,#compareView) .cbpes-direct-fixture-result{display:flex;justify-content:flex-end;align-items:center}
+:is(#coachView,#compareView) .cbpes-direct-result-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:12px;font-weight:800;line-height:1}
+:is(#coachView,#compareView) .cbpes-direct-result-v{background:#e0f3e8;color:#087c47}
+:is(#coachView,#compareView) .cbpes-direct-result-d{background:#fde7e7;color:#bd3131}
+:is(#coachView,#compareView) .cbpes-direct-result-e{background:#e9ecef;color:#64717b}
+@media(max-width:700px){:is(#coachView,#compareView) .cbpes-direct-fixture-result{justify-content:center}}
 
 /* Resultado V/D/E sempre alinhado à extremidade direita, inclusive no celular. */
-#coachView .cbpes-direct-fixture-result{justify-content:flex-end!important;justify-self:end;width:100%}
-@media(max-width:700px){#coachView .cbpes-direct-fixture{grid-template-columns:minmax(0,1fr) 32px!important;column-gap:10px}#coachView .cbpes-direct-fixture-info{grid-column:1/-1}#coachView .cbpes-direct-fixture-score{grid-column:1;min-width:0}#coachView .cbpes-direct-fixture-result{grid-column:2;grid-row:2;justify-content:flex-end!important;align-self:center}}
+:is(#coachView,#compareView) .cbpes-direct-fixture-result{justify-content:flex-end!important;justify-self:end;width:100%}
+@media(max-width:700px){:is(#coachView,#compareView) .cbpes-direct-fixture{grid-template-columns:minmax(0,1fr) 32px!important;column-gap:10px}:is(#coachView,#compareView) .cbpes-direct-fixture-info{grid-column:1/-1}:is(#coachView,#compareView) .cbpes-direct-fixture-score{grid-column:1;min-width:0}:is(#coachView,#compareView) .cbpes-direct-fixture-result{grid-column:2;grid-row:2;justify-content:flex-end!important;align-self:center}}
 
 /* Filtro de competição nas estatísticas oficiais. */
 #statsGrid .cbpes-stats-competition-filter{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:2px 0 8px}
@@ -4213,7 +4213,7 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 @media(max-width:600px){#statsGrid .cbpes-stats-competition-filter{align-items:stretch;flex-direction:column;gap:6px}#statsGrid .cbpes-stats-competition-filter select{width:100%}}
 
 /* Aproxima o seletor do rótulo na comparação de técnicos. */
-:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .cardbody>.field{
   display:grid!important;
   grid-template-columns:minmax(0,1fr)!important;
   grid-template-rows:auto auto!important;
@@ -4224,14 +4224,14 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   min-height:0!important;
   padding:0!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field>label{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .cardbody>.field>label{
   display:block!important;
   height:auto!important;
   min-height:0!important;
   padding:0!important;
   margin:0!important;
 }
-:is(#coachView,#compareView) .cbpes-coach-compare .cardbody>.field>#coachCompareWith{
+:is(:is(#coachView,#compareView),#compareView) .cbpes-coach-compare .cardbody>.field>#coachCompareWith{
   display:block!important;
   margin:0!important;
   align-self:start!important;
@@ -4513,7 +4513,7 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
 
 
 /* Torneio de Abertura: card branco, neutro e simples no histórico oficial */
-#coachView .cbpes-coach-history .cbpes-coach-match-row.cbpes-coach-opening-match{
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row.cbpes-coach-opening-match{
   background:#fff!important;
   background-image:none!important;
   border:1px solid #e4e8ec!important;
@@ -4521,10 +4521,10 @@ body.cbpes-copa-master-page #table .cbpes-master-round-layout .cbpes-master-roun
   box-shadow:none!important;
   color:#222b33!important;
 }
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-meta,
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{color:#222b33!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small{color:#77818a!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#222b33!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-meta,
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{color:#222b33!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small{color:#77818a!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#222b33!important}
 
 
 
@@ -5741,16 +5741,16 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 #table .cbpes-round-clean-identity small{opacity:.72!important}
 
 /* Opening tournament: consistent neutral cards for native and reclassified matches. */
-#coachView .cbpes-coach-history .cbpes-coach-match-row.cbpes-coach-opening-match{background:#f5f6f7!important;border:1px solid #dce1e5!important;color:#26313b!important;box-shadow:none!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{display:grid!important;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;align-items:center!important;gap:12px!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side{display:flex!important;flex-direction:column!important;min-width:0!important;width:100%!important;gap:3px!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:first-child{align-items:flex-end!important;text-align:right!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:last-child{align-items:flex-start!important;text-align:left!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{display:inline-flex!important;align-items:center!important;gap:6px!important;width:auto!important;max-width:100%!important;color:#26313b!important;font-weight:650!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club a{color:inherit!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small,#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small a,#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-meta small{color:#69747e!important;font-weight:400!important}
-#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#26313b!important;text-align:center!important;justify-self:center!important}
-@media(max-width:600px){#coachView .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr)!important;gap:5px!important}}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row.cbpes-coach-opening-match{background:#f5f6f7!important;border:1px solid #dce1e5!important;color:#26313b!important;box-shadow:none!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{display:grid!important;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;align-items:center!important;gap:12px!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side{display:flex!important;flex-direction:column!important;min-width:0!important;width:100%!important;gap:3px!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:first-child{align-items:flex-end!important;text-align:right!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side:last-child{align-items:flex-start!important;text-align:left!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club{display:inline-flex!important;align-items:center!important;gap:6px!important;width:auto!important;max-width:100%!important;color:#26313b!important;font-weight:650!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-club a{color:inherit!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small,:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-side small a,:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-meta small{color:#69747e!important;font-weight:400!important}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-score{color:#26313b!important;text-align:center!important;justify-self:center!important}
+@media(max-width:600px){:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-opening-match .cbpes-coach-match-line{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr)!important;gap:5px!important}}
 
 #table .cbpes-round-clean-goals input[data-sim-id]{width:100%;min-width:0;max-width:38px;height:34px;box-sizing:border-box;text-align:center;font-size:16px;font-weight:700;color:#201a0a!important;background:#fff0b2!important;border:1px solid #c9a64a;border-radius:5px;pointer-events:auto!important;appearance:textfield}
 
@@ -5783,13 +5783,13 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 @media(min-width:901px){body.cbpes-liga-pro-page #table .cbpes-competition-layout{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table{width:100%!important;table-layout:auto!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table th,body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table td{padding-left:6px!important;padding-right:6px!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table td{font-size:14px!important;}body.cbpes-liga-pro-page #table .cbpes-standings-panel .cbpes-liga-pro-table th:first-child{width:auto!important;}}
 
 /* Compact official and weekly coach history cards. */
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly){padding:7px 10px!important;min-height:0!important;gap:4px!important;}
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:0 0 3px!important;line-height:1.2!important;min-height:0!important;}
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date{display:inline!important;margin:0!important;padding:0!important;font-size:inherit!important;line-height:inherit!important;white-space:nowrap;}
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date::before{content:"•";margin-right:5px;}
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-line{min-height:0!important;padding:0!important;margin:0!important;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly){padding:7px 10px!important;min-height:0!important;gap:4px!important;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:0 0 3px!important;line-height:1.2!important;min-height:0!important;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date{display:inline!important;margin:0!important;padding:0!important;font-size:inherit!important;line-height:inherit!important;white-space:nowrap;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-date::before{content:"•";margin-right:5px;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-line{min-height:0!important;padding:0!important;margin:0!important;}
 
-#coachView .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{justify-content:flex-start!important;text-align:left!important;align-self:stretch!important;width:100%!important;}
+:is(#coachView,#compareView) .cbpes-coach-history .cbpes-coach-match-row:is(.cbpes-coach-match-official,.cbpes-coach-match-weekly) .cbpes-coach-match-meta{justify-content:flex-start!important;text-align:left!important;align-self:stretch!important;width:100%!important;}
 
 /* Weekly champion labels remain in the normal layout, including narrow cards. */
 :is(#weeklies,#weeklyList) .cbpes-match .cbpes-match-club:has(.featured-juventus-champion){min-width:0!important;max-width:100%!important;}
@@ -5798,45 +5798,45 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 :is(#weeklies,#weeklyList) .cbpes-match .cbpes-match-club-text{min-width:0!important;max-width:100%!important;}
 :is(#weeklies,#weeklyList) .cbpes-match .featured-juventus-name-row .cbpes-team-name{min-width:0!important;white-space:normal!important;overflow-wrap:anywhere;}
 
-#coachView .cbpes-trophy-gallery{background:#087644;color:white;display:flex;flex-wrap:wrap;gap:16px;padding:18px!important;}#coachView .cbpes-trophy-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;width:140px;max-width:100%;color:white;}#coachView .cbpes-trophy-item img{width:110px;height:110px;object-fit:contain;}#coachView .cbpes-trophy-item b{font-size:12px;text-transform:uppercase;color:white;}#coachView .cbpes-trophy-item small{color:#e1f1e7;font-size:11px;}#coachView .cbpes-trophy-placeholder{height:110px;display:grid;place-items:center;font-size:52px;}
+:is(#coachView,#compareView) .cbpes-trophy-gallery{background:#087644;color:white;display:flex;flex-wrap:wrap;gap:16px;padding:18px!important;}:is(#coachView,#compareView) .cbpes-trophy-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;width:140px;max-width:100%;color:white;}:is(#coachView,#compareView) .cbpes-trophy-item img{width:110px;height:110px;object-fit:contain;}:is(#coachView,#compareView) .cbpes-trophy-item b{font-size:12px;text-transform:uppercase;color:white;}:is(#coachView,#compareView) .cbpes-trophy-item small{color:#e1f1e7;font-size:11px;}:is(#coachView,#compareView) .cbpes-trophy-placeholder{height:110px;display:grid;place-items:center;font-size:52px;}
 
 /* Clean trophy display using the CBPES brand green. */
-#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;color:#fff!important;padding:24px 20px!important;gap:20px;align-items:flex-start;box-shadow:none!important;border:0!important;font-family:var(--f);}
-#coachView .cbpes-trophy-item{width:156px;gap:7px;font-family:var(--f);}
-#coachView .cbpes-trophy-item img{width:124px;height:124px;object-fit:contain;filter:drop-shadow(0 6px 5px rgba(0,0,0,.30));background:transparent!important;}
-#coachView .cbpes-trophy-item b{font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.25px;line-height:1.3;color:#fff!important;}
-#coachView .cbpes-trophy-item small{font-family:var(--f);font-size:11px;font-weight:400;color:#e3f4e9!important;line-height:1.3;}
-@media(max-width:600px){#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{padding:18px 12px!important;gap:12px;}#coachView .cbpes-trophy-item{width:calc((100% - 12px)/2);}#coachView .cbpes-trophy-item img{width:108px;height:108px;max-width:100%;}}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-trophy-gallery{background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;color:#fff!important;padding:24px 20px!important;gap:20px;align-items:flex-start;box-shadow:none!important;border:0!important;font-family:var(--f);}
+:is(#coachView,#compareView) .cbpes-trophy-item{width:156px;gap:7px;font-family:var(--f);}
+:is(#coachView,#compareView) .cbpes-trophy-item img{width:124px;height:124px;object-fit:contain;filter:drop-shadow(0 6px 5px rgba(0,0,0,.30));background:transparent!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item b{font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.25px;line-height:1.3;color:#fff!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item small{font-family:var(--f);font-size:11px;font-weight:400;color:#e3f4e9!important;line-height:1.3;}
+@media(max-width:600px){:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-trophy-gallery{padding:18px 12px!important;gap:12px;}:is(#coachView,#compareView) .cbpes-trophy-item{width:calc((100% - 12px)/2);}:is(#coachView,#compareView) .cbpes-trophy-item img{width:108px;height:108px;max-width:100%;}}
 
 
 /* Restore original compact full-width trophy gallery with straight corners. */
-#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{width:100%;aspect-ratio:auto!important;height:auto!important;min-height:0!important;border-radius:0!important;margin:0!important;background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;padding:18px!important;gap:16px;align-items:flex-start;justify-content:flex-start;}
-#coachView .cbpes-trophy-item{width:140px;aspect-ratio:auto;background:transparent!important;padding:0;gap:5px;}
-#coachView .cbpes-trophy-item img{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25)) drop-shadow(0 0 7px rgba(255,205,74,.65));}
-#coachView .cbpes-trophy-item b,#coachView .cbpes-trophy-item small{font-family:'Lato',var(--f)!important;}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-trophy-gallery{width:100%;aspect-ratio:auto!important;height:auto!important;min-height:0!important;border-radius:0!important;margin:0!important;background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;padding:18px!important;gap:16px;align-items:flex-start;justify-content:flex-start;}
+:is(#coachView,#compareView) .cbpes-trophy-item{width:140px;aspect-ratio:auto;background:transparent!important;padding:0;gap:5px;}
+:is(#coachView,#compareView) .cbpes-trophy-item img{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25)) drop-shadow(0 0 7px rgba(255,205,74,.65));}
+:is(#coachView,#compareView) .cbpes-trophy-item b,:is(#coachView,#compareView) .cbpes-trophy-item small{font-family:'Lato',var(--f)!important;}
 
-#coachView .cbpes-trophy-item img{filter:drop-shadow(0 3px 4px rgba(0,0,0,.22)) drop-shadow(0 0 5px rgba(255,205,74,.28));}
-#coachView .cbpes-trophy-item b{font-family:'Lato',var(--f)!important;font-weight:700!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item img{filter:drop-shadow(0 3px 4px rgba(0,0,0,.22)) drop-shadow(0 0 5px rgba(255,205,74,.28));}
+:is(#coachView,#compareView) .cbpes-trophy-item b{font-family:'Lato',var(--f)!important;font-weight:700!important;}
 
 /* Trophy room: subtle overhead lighting and continuous display shelf. */
-#coachView .cbpes-coach-trophies .cbpes-trophy-gallery{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;}
-#coachView .cbpes-trophy-item{position:relative;isolation:isolate;}
-#coachView .cbpes-trophy-item::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-18px;left:50%;transform:translateX(-50%);width:160px;height:130px;background:radial-gradient(ellipse at 50% 0%,rgba(255,235,167,.23),rgba(255,235,167,.07) 48%,transparent 74%);}
-#coachView .cbpes-trophy-item::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:108px;left:-8px;right:-8px;height:6px;background:linear-gradient(180deg,rgba(224,190,112,.55) 0 1px,#064a32 1px,#053d2b 100%);box-shadow:0 3px 5px rgba(0,0,0,.16);}
-#coachView .cbpes-trophy-item img{position:relative;z-index:1;}
-#coachView .cbpes-trophy-item b{margin-top:4px;}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-trophy-gallery{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(115deg,#075b3c 0%,#087b4d 72%,#0b8955 100%)!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item{position:relative;isolation:isolate;}
+:is(#coachView,#compareView) .cbpes-trophy-item::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-18px;left:50%;transform:translateX(-50%);width:160px;height:130px;background:radial-gradient(ellipse at 50% 0%,rgba(255,235,167,.23),rgba(255,235,167,.07) 48%,transparent 74%);}
+:is(#coachView,#compareView) .cbpes-trophy-item::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:108px;left:-8px;right:-8px;height:6px;background:linear-gradient(180deg,rgba(224,190,112,.55) 0 1px,#064a32 1px,#053d2b 100%);box-shadow:0 3px 5px rgba(0,0,0,.16);}
+:is(#coachView,#compareView) .cbpes-trophy-item img{position:relative;z-index:1;}
+:is(#coachView,#compareView) .cbpes-trophy-item b{margin-top:4px;}
 
 /* Trophy typography: high contrast, no shelf. */
-#coachView .cbpes-trophy-item::after{content:none!important;display:none!important;}
-#coachView .cbpes-trophy-item b{font-family:'Inter',system-ui,sans-serif!important;font-size:14px!important;font-weight:800!important;letter-spacing:.15px;color:#fff!important;line-height:1.2;margin-top:0!important;}
-#coachView .cbpes-trophy-item small{font-family:'Inter',system-ui,sans-serif!important;font-size:12px!important;font-weight:600!important;color:#fff!important;opacity:1!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item::after{content:none!important;display:none!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item b{font-family:'Inter',system-ui,sans-serif!important;font-size:14px!important;font-weight:800!important;letter-spacing:.15px;color:#fff!important;line-height:1.2;margin-top:0!important;}
+:is(#coachView,#compareView) .cbpes-trophy-item small{font-family:'Inter',system-ui,sans-serif!important;font-size:12px!important;font-weight:600!important;color:#fff!important;opacity:1!important;}
 
 /* Medalhas semanais: mesmo alinhamento da sala de troféus, sem iluminação. */
-#coachView .cbpes-weekly-medal::before,#coachView .cbpes-weekly-medal::after{content:none!important;display:none!important}
-#coachView .cbpes-weekly-medal img{filter:none!important;box-shadow:none!important}
-#coachView .cbpes-coach-achievements .cardhead h2{margin:0}
+:is(#coachView,#compareView) .cbpes-weekly-medal::before,:is(#coachView,#compareView) .cbpes-weekly-medal::after{content:none!important;display:none!important}
+:is(#coachView,#compareView) .cbpes-weekly-medal img{filter:none!important;box-shadow:none!important}
+:is(#coachView,#compareView) .cbpes-coach-achievements .cardhead h2{margin:0}
 
 /* Divisória interna entre títulos e conquistas */
-#coachView .cbpes-coach-trophies .cbpes-coach-achievements{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important}
-#coachView .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:#eff6f2!important;padding:18px 19px!important;box-shadow:none!important}
-#coachView .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead h2{font-family:var(--f)!important;font-size:14px!important;font-weight:700!important;color:#075b3c!important;margin:0!important}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:#eff6f2!important;padding:18px 19px!important;box-shadow:none!important}
+:is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead h2{font-family:var(--f)!important;font-size:14px!important;font-weight:700!important;color:#075b3c!important;margin:0!important}
