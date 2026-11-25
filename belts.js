@@ -56,7 +56,7 @@ function defenseCards(belts,data){
  const groups=new Map(),pending=[];
  for(const b of belts){
  const allowed=b.type==='general'?['official','weekly','friendly']: [b.type];
- const candidates=(data.matches||[]).filter(m=>m.home_score==null&&m.away_score==null&&allowed.includes(m.category||'official')&&validDate(m.date)&&m.date>=now()&&m.home&&m.away&&[m.home_coach_name||m.home.coach_name,m.away_coach_name||m.away.coach_name].some(n=>norm(n)===norm(b.holder))).sort((a,c)=>a.date.localeCompare(c.date)||Number(a.round?.number||0)-Number(c.round?.number||0));
+ const candidates=(data.matches||[]).filter(m=>m.home_score==null&&m.away_score==null&&allowed.includes(m.category||'official')&&!m.is_liga_evo&&m.home&&m.away&&[m.home_coach_name||m.home.coach_name,m.away_coach_name||m.away.coach_name].some(n=>norm(n)===norm(b.holder))).sort((a,c)=>Number(!validDate(a.date))-Number(!validDate(c.date))||String(a.date||'').localeCompare(String(c.date||''))||Number(a.round?.number||0)-Number(c.round?.number||0));
  const m=candidates[0];if(!m){pending.push(b);continue;}const key=String(m.id);if(!groups.has(key))groups.set(key,{m,belts:[]});groups.get(key).belts.push(b);
  }
  const head='<h3 class="defense-heading">PRÓXIMA DEFESA</h3>';
@@ -65,9 +65,9 @@ function defenseCards(belts,data){
  const side=(club,n)=>'<div class="defense-side">'+(club.crest_url?'<img src="'+clean(club.crest_url)+'" alt="">':'')+'<strong>'+clean(String(n||club.name).toUpperCase())+'</strong><small>'+ (bs.some(b=>norm(b.holder)===norm(n))?'DETENTOR':'DESAFIANTE')+'</small></div>';
  const edition=(data.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id)),comp=(data.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id||edition?.official_competition_id));
  const label=comp?.name||edition?.name||m.weekly?.name||({official:'OFICIAL',weekly:'SEMANAL',friendly:'AMISTOSO'}[m.category]||'OFICIAL');
- return '<article class="defense-card" data-gem="'+bs[0].type+'">'+head+'<div class="defense-tags">'+bs.map(b=>'<span data-gem="'+b.type+'">'+types[b.type]+' EM JOGO</span>').join('')+'</div><div class="defense-versus">'+side(m.home,hn)+'<b>VS</b>'+side(m.away,an)+'</div><div class="defense-meta">'+clean(label.toUpperCase())+(m.round?.name?' • '+clean(m.round.name.toUpperCase()):'')+' • '+day(m.date)+'</div></article>';
+ return '<article class="defense-card" data-gem="'+bs[0].type+'">'+head+'<div class="defense-tags">'+bs.map(b=>'<span data-gem="'+b.type+'">'+types[b.type]+' EM JOGO</span>').join('')+'</div><div class="defense-versus">'+side(m.home,hn)+'<b>VS</b>'+side(m.away,an)+'</div><div class="defense-meta">'+clean(label.toUpperCase())+(m.round?.number?' • RODADA '+clean(m.round.number):'')+(validDate(m.date)?' • '+day(m.date):' • DATA A DEFINIR')+'</div></article>';
  }).join('');
- return '<section class="defense-section">'+cards+pending.map(b=>'<article class="defense-card defense-pending" data-gem="'+b.type+'">'+head+'<div class="defense-tags"><span data-gem="'+b.type+'">'+types[b.type]+'</span></div><p>AGUARDANDO DESAFIANTE</p><small>Sem confronto futuro com data definida</small></article>').join('')+'</section>';
+ return '<section class="defense-section">'+cards+pending.map(b=>'<article class="defense-card defense-pending" data-gem="'+b.type+'">'+head+'<div class="defense-tags"><span data-gem="'+b.type+'">'+types[b.type]+'</span></div><p>AGUARDANDO DESAFIANTE</p><small>Sem confronto oficial pendente</small></article>').join('')+'</section>';
 }
 function view(belts,data){
  const boxes=['official','weekly','general'].map(t=>{
