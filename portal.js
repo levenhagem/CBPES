@@ -130,7 +130,7 @@ if(navCompetitionWrap&&navCompetitionButton){
   navCompetitionButton.onclick=e=>{e.stopPropagation();if(menu.hidden){renderNavCompetitions();openNavCompetitionMenu();}else closeNavCompetitionMenu();};
   navCompetitionWrap.addEventListener('mouseenter',()=>{if(D&&window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavCompetitionMenu();});
   navCompetitionWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavCompetitionMenu();});
-  navCompetitionWrap.addEventListener('focusout',e=>{if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
+  navCompetitionWrap.addEventListener('focusout',e=>{if(window.matchMedia('(max-width:700px)').matches)return;if(!navCompetitionWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavCompetitionMenu();});
   menu.addEventListener('click',e=>{
     const link=e.target.closest('a[href^="#table/"],a[href="#weeklies"]');
     if(!link)return;
@@ -163,7 +163,7 @@ if(navStatsWrap&&navStatsButton){
   navStatsButton.onclick=e=>{e.stopPropagation();if(menu.hidden){closeNavCompetitionMenu();openNavStatsMenu();}else closeNavStatsMenu();};
   navStatsWrap.addEventListener('mouseenter',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)openNavStatsMenu();});
   navStatsWrap.addEventListener('mouseleave',()=>{if(window.matchMedia('(hover:hover) and (min-width:701px)').matches)closeNavStatsMenu();});
-  navStatsWrap.addEventListener('focusout',e=>{if(!navStatsWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavStatsMenu();});
+  navStatsWrap.addEventListener('focusout',e=>{if(window.matchMedia('(max-width:700px)').matches)return;if(!navStatsWrap.contains(e.relatedTarget)&&!menu.contains(e.relatedTarget))closeNavStatsMenu();});
   menu.addEventListener('click',e=>{if(e.target.closest('a'))closeNavStatsMenu();});
   document.addEventListener('click',e=>{if(!navStatsWrap.contains(e.target)&&!menu.contains(e.target))closeNavStatsMenu();});
   window.addEventListener('resize',closeNavStatsMenu);
