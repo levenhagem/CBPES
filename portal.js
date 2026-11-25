@@ -546,11 +546,11 @@ function renderTable() {
     const placeholderHtml=ligaProKnockoutHtml||masterKnockoutHtml||(isMasterKnockout&&window.CBPESSimulator?.isActive?.()?'<div class="cbpes-master-ko-pending">Preparando projeção do mata-mata…</div>':null)||(['playoff','knockout','final'].includes(active.phase_type)&&!phaseMatches.length&&configuredSlots.length?
       '<div class="cbpes-playoff-template">'+configuredSlots.map((pair,i)=>`<div class="cbpes-match ${isLigaProTable?'cbpes-match-liga-pro':''}" style="--match-color:#bfcbd3">
         ${active.phase_type==='final'?'':`<div class="cbpes-match-top"><span class="cbpes-match-category">${esc(active.name).toUpperCase()} • CHAVE ${i+1}</span></div>`}
-        <div class="cbpes-match-main">
+        ${isMasterKnockout?`<div class="master-future-fixture"><div class="master-future-row"><span>${esc(String(pair[0]||'A definir'))}</span><b>–</b></div><div class="master-future-row"><span>${esc(String(pair[1]||'A definir'))}</span><b>–</b></div></div>`:`<div class="cbpes-match-main">
           <div class="cbpes-match-team home"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[0]||'A definir'))}</span></div></div></div>
           <div class="cbpes-match-score">– : –</div>
           <div class="cbpes-match-team away"><div class="cbpes-match-club"><div class="cbpes-match-club-text"><span class="cbpes-team-name">${esc(String(pair[1]||'A definir'))}</span></div></div></div>
-        </div>
+        </div>`}
       </div>`).join('')+'</div>':'');
     const roundGames=placeholderHtml||(active.counts_in_standings?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):window.CBPESSimulator?.isActive()?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):active.phase_type==='final'?currentGames.map(m=>matchRow(m,true,false,'details')).join(''):tieRows(tiesOf(currentGames)));
     const editionCompetition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition.competition_id));
