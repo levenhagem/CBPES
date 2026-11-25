@@ -249,13 +249,14 @@ function renderHome() {
   const cr = currentRound(rounds, matches);
   $('hRound').textContent = cr ? roundLabel(cr).toUpperCase() : 'SEM RODADAS';
 
+  const homeCategoryIcon=kind=>'<svg class="home-category-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(kind==='weekly'?'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>':kind==='friendly'?'<path d="M3 12h18M7 8l-4 4 4 4m10-8 4 4-4 4"/>':'<path d="M8 3h8v8a4 4 0 0 1-8 0V3ZM8 5H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4M12 15v5m-4 1h8"/>')+'</svg>';
   const sc = m => {
     const edition=(D.officialEditions||[]).find(e=>String(e.id)===String(m.official_edition_id||m.round?.official_edition_id));
     const competition=(D.officialCompetitions||[]).find(c=>String(c.id)===String(edition?.competition_id));
     const isPro=(m.category||'official')==='official' && /liga\s*pro/i.test([competition?.name,edition?.name].filter(Boolean).join(' '));
     const kind=m.category==='weekly'?'weekly':m.category==='friendly'?'friendly':isPro?'liga-pro':'official';
     const title=m.category==='weekly'?'SEMANAL':m.category==='friendly'?'AMISTOSO':competition?.name||edition?.name||SET.name;
-    return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
+    return `<div class="sc sc-themed sc-${kind}" style="--strip-match-color:${matchColor(m)}"><div class="sc-meta"><a href="#games">${homeCategoryIcon(kind)}${esc(title)} • ${m.date?fd(m.date).slice(0,5):'a definir'}</a></div><div class="sc-row"><span><a href="#team/${m.home_id}">${esc(m.home.name)}</a></span><b>${m.played?m.home_score:''}</b></div><div class="sc-row"><span><a href="#team/${m.away_id}">${esc(m.away.name)}</a></span><b>${m.played?m.away_score:''}</b></div></div>`;
   };
 
   const m = played.find(x=>x.category==='official') || played[0];
