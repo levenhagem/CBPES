@@ -5840,3 +5840,6 @@ body.cbpes-copa-master-page #table .cbpes-playoff-template .cbpes-match-copa-mas
 :is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important}
 :is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:#eff6f2!important;padding:18px 19px!important;box-shadow:none!important}
 :is(#coachView,#compareView) .cbpes-coach-trophies .cbpes-coach-achievements > .cardhead h2{font-family:var(--f)!important;font-size:14px!important;font-weight:700!important;color:#075b3c!important;margin:0!important}
+
+/* Stronger portal page headings; competition-specific typography stays intact. */
+main .section:not(#table):not(#match) .page-title h1, #stats-detail .page-title h1{font-family:'Lato',sans-serif;font-weight:900;letter-spacing:-.025em;line-height:1.12}
