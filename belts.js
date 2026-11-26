@@ -48,7 +48,7 @@ function reigns(b){
 }
 function metrics(b,rs){
  const map=new Map(),get=n=>{const k=norm(n);if(!map.has(k))map.set(k,{name:n,wins:0,defenses:0,longest:0,streak:0,days:0,victories:0,losses:0,opponents:new Set(),shortest:Infinity,gap:0,lastEnd:null});return map.get(k);};
- for(const r of rs){const p=get(r.name);if(!r.initial)p.wins++;p.defenses+=r.defenses;p.longest=Math.max(p.longest,r.days);p.streak=Math.max(p.streak,r.defenses);p.days+=r.days;if(p.lastEnd)p.gap=Math.max(p.gap,days(p.lastEnd,r.start));if(r.end){p.losses++;p.shortest=Math.min(p.shortest,r.days);p.lastEnd=r.end;}for(const e of r.events){if(e.kind==='defense')p.victories++;if(e.kind!=='transfer')p.opponents.add(norm(e.home)===norm(r.name)?norm(e.away):norm(e.home));}if(r.won)p.victories++;}
+ for(const r of rs){const p=get(r.name);if(!r.initial)p.wins++;p.defenses+=r.defenses;if(r.days>=2)p.longest=Math.max(p.longest,r.days);p.streak=Math.max(p.streak,r.defenses);p.days+=r.days;if(p.lastEnd)p.gap=Math.max(p.gap,days(p.lastEnd,r.start));if(r.end){p.losses++;if(r.days>=2)p.shortest=Math.min(p.shortest,r.days);p.lastEnd=r.end;}for(const e of r.events){if(e.kind==='defense')p.victories++;if(e.kind!=='transfer')p.opponents.add(norm(e.home)===norm(r.name)?norm(e.away):norm(e.home));}if(r.won)p.victories++;}
  return [...map.values()].map(p=>({...p,opponents:p.opponents.size}));
 }
 function eventRow(e){return '<div class="belt-event"><small>'+day(e.date)+' · '+clean(e.competition||({official:'OFICIAL',weekly:'SEMANAL',friendly:'AMISTOSO'}[e.category]||e.category))+'</small><b>'+clean(e.home)+' '+e.hs+' × '+e.as+' '+clean(e.away)+'</b><span>'+ (e.kind==='transfer'?clean(e.current.toLocaleUpperCase('pt-BR'))+' CONQUISTA O CINTURÃO':e.kind==='draw'?'CINTURÃO MANTIDO — EMPATE':'DEFESA BEM-SUCEDIDA')+'</span></div>';}
@@ -85,7 +85,7 @@ function view(belts,data){
 function detail(b,data){
  const rs=reigns(b), es=b.events, people=new Map();
  const get=n=>{const k=norm(n);if(!people.has(k))people.set(k,{name:n,wins:0,defenses:0,days:0,disputes:0,victories:0,losses:0,beltLosses:0,streak:0,longest:0,shortest:Infinity,gap:0,opponents:new Set(),lastEnd:null});return people.get(k)};
- for(const r of rs){const p=get(r.name);if(!r.initial)p.wins++;p.days+=r.days;p.defenses+=r.defenses;p.streak=Math.max(p.streak,r.defenses);p.longest=Math.max(p.longest,r.days);if(p.lastEnd)p.gap=Math.max(p.gap,days(p.lastEnd,r.start));if(r.end){p.beltLosses++;p.shortest=Math.min(p.shortest,r.days);p.lastEnd=r.end;}}
+ for(const r of rs){const p=get(r.name);if(!r.initial)p.wins++;p.days+=r.days;p.defenses+=r.defenses;p.streak=Math.max(p.streak,r.defenses);if(r.days>=2)p.longest=Math.max(p.longest,r.days);if(p.lastEnd)p.gap=Math.max(p.gap,days(p.lastEnd,r.start));if(r.end){p.beltLosses++;if(r.days>=2)p.shortest=Math.min(p.shortest,r.days);p.lastEnd=r.end;}}
  for(const e of es){const h=get(e.home),a=get(e.away);h.disputes++;a.disputes++;h.opponents.add(norm(e.away));a.opponents.add(norm(e.home));const hp=e.hs===e.as&&e.hp!=null&&e.ap!=null?Number(e.hp):e.hs,ap=e.hs===e.as&&e.hp!=null&&e.ap!=null?Number(e.ap):e.as;if(hp>ap){h.victories++;a.losses++;}if(ap>hp){a.victories++;h.losses++;}}
  const ps=[...people.values()], goals=es.reduce((n,e)=>n+e.hs+e.as,0), retained=es.filter(e=>e.kind!=='transfer').length;
  const stats=[['DISPUTAS',es.length],['TRANSFERÊNCIAS',b.transfers],['DEFESAS',retained],['DETENTORES',new Set(rs.map(r=>norm(r.name))).size]];
