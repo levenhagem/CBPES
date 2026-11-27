@@ -265,7 +265,7 @@ function renderHome() {
   // por importação simultânea para não esconder o próximo resultado
   // registrado separadamente (oficial ou amistoso).
   const recentBatchCounts=new Map();
-  const recentHome=played.filter(m=>{
+  const recentHome=played.slice().sort((a,b)=>{const stamp=m=>Date.parse(m.result_registered_at||m.created_at||m.played_on||m.date||'')||0;return stamp(b)-stamp(a)||matchResultOrder(a,b)}).filter(m=>{
     const registered=String(m.result_registered_at||m.created_at||'');
     if(m.category!=='weekly'||!registered)return true;
     const key='weekly-batch:'+registered;
