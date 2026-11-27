@@ -39,6 +39,9 @@ async function load() {
   const T = ['participants', 'rounds', 'matches', 'settings', 'players', 'match_events', 'team_coach_history', 'weekly_editions', 'weekly_participants', 'weekly_rounds', 'competition_phases', 'coach_profiles', 'coach_trophies', 'standings_zones', 'official_competitions', 'official_editions', 'stadiums', 'match_statistics'];
   const res = await Promise.all(T.map(t => sb.from(t).select('*')));
   const groupRes = await sb.from('official_group_teams').select('*');
+  const orderRes=await sb.from('match_public_order').select('match_id,sort_rank');
+  if(orderRes.error)throw orderRes.error;
+  const publicRanks=new Map((orderRes.data||[]).map(x=>[x.match_id,Number(x.sort_rank)]));
   if(groupRes.error && !/does not exist|schema cache|could not find/i.test(groupRes.error.message||''))throw groupRes.error;
   const err = res.map(x => x.error).find(Boolean); if (err) throw err;
   const [p, r, m, s, pl, ev, coachHistory, weeklies, weeklyParticipants, weeklyRounds, phases, coachProfiles, coachTrophies, standingsZones, officialCompetitions, officialEditions, stadiums, matchStatistics] = res.map(x => x.data);
@@ -49,7 +52,7 @@ async function load() {
   const evoEditionIds = new Set((officialEditions||[]).filter(e=>/liga\s*evo/i.test(String(e.name||'')+' '+String((officialCompetitions||[]).find(c=>String(c.id)===String(e.competition_id))?.name||''))).map(e=>String(e.id)));
   const evoRoundIds = new Set(r.filter(round=>evoEditionIds.has(String(round.official_edition_id||''))).map(round=>String(round.id)));
   const matches = m.map(x => ({
-    ...x, is_liga_evo: (x.category||'official')==='official' && (evoEditionIds.has(String(x.official_edition_id||'')) || evoRoundIds.has(String(x.round_id||''))), home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
+    ...x, public_sort_rank:publicRanks.get(x.id), is_liga_evo: (x.category||'official')==='official' && (evoEditionIds.has(String(x.official_edition_id||'')) || evoRoundIds.has(String(x.round_id||''))), home: P[x.home_id], away: P[x.away_id], round: (x.category === 'weekly' ? WR[x.weekly_round_id] : R[x.round_id]) || null,
     category: x.category || 'official', weeklyRound: WR[x.weekly_round_id] || null, weekly: (weeklies || []).find(w => w.id === x.weekly_id) || null,
     played: x.home_score !== null && x.away_score !== null,
     date: x.played_on || (x.category === 'weekly' && WR[x.weekly_round_id] ? WR[x.weekly_round_id].date : null) || (R[x.round_id] && R[x.round_id].date) || ((weeklies || []).find(w => w.id === x.weekly_id)?.event_date) || null
@@ -108,8 +111,9 @@ function matchRegistrationTime(m){
  return String(m.played_on||m.date||m.result_registered_at||m.created_at||'').slice(0,10);
 }
 function matchResultOrder(a,b){
+ if(a.public_sort_rank!=null&&b.public_sort_rank!=null)return a.public_sort_rank-b.public_sort_rank;
  return matchRegistrationTime(b).localeCompare(matchRegistrationTime(a))
-   ||String(b.created_at||'').localeCompare(String(a.created_at||''))
+   ||String(b.result_registered_at||b.created_at||'').localeCompare(String(a.result_registered_at||a.created_at||''))
    ||(Number(b.seq)||0)-(Number(a.seq)||0)
    ||String(b.id||'').localeCompare(String(a.id||''));
 }
