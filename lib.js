@@ -159,7 +159,7 @@ function matchRow(m, hideDate = false, showOfficialRound = false, reportLinkMode
   const details = [];
   if(m.went_to_extra_time)details.push('PRORROGAÇÃO');
   if(m.golden_goal)details.push('GOL DE OURO');
-  const penaltyTag=side=>{if(!m.played||m.home_pen==null||m.away_pen==null)return '';const own=Number(m[side+'_pen']),opp=Number(m[(side==='home'?'away':'home')+'_pen']);return own>opp?`<span class="cbpes-penalty-score">pên. ${own}-${opp}</span>`:'';};
+  const penaltyTag=side=>{if(!m.played||m.home_pen==null||m.away_pen==null)return '';const own=Number(m[side+'_pen']),opp=Number(m[(side==='home'?'away':'home')+'_pen']);return own>opp?`<span class="cbpes-penalty-score">pên. ${m.home_pen}-${m.away_pen}</span>`:'';};
   const hasPens=!!(penaltyTag('home')||penaltyTag('away'));
   const detailHTML=details.length?`<div class="cbpes-match-details">${details.map(t=>`<span${t.startsWith("pên.")?' class="cbpes-penalty-score"':""}>${t}</span>`).join('')}</div>`:'';
   const winnerByPens=m.played&&m.home_score===m.away_score&&m.home_pen!=null&&m.away_pen!=null;
