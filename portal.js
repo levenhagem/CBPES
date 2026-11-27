@@ -264,16 +264,7 @@ function renderHome() {
   // Manter os jogos semanais recentes, mas limitar a quatro partidas
   // por importação simultânea para não esconder o próximo resultado
   // registrado separadamente (oficial ou amistoso).
-  const recentBatchCounts=new Map();
-  const recentHome=played.slice().sort((a,b)=>{const stamp=m=>Date.parse(m.result_registered_at||m.created_at||m.played_on||m.date||'')||0;return stamp(b)-stamp(a)||matchResultOrder(a,b)}).filter(m=>{
-    const registered=String(m.result_registered_at||m.created_at||'');
-    if(m.category!=='weekly'||!registered)return true;
-    const key='weekly-batch:'+registered;
-    const count=recentBatchCounts.get(key)||0;
-    if(count>=4)return false;
-    recentBatchCounts.set(key,count+1);
-    return true;
-  }).slice(0,5);
+  const recentHome=played.slice().sort(matchResultOrder).slice(0,5);
   // A faixa superior e o painel Últimos Resultados usam exatamente
   // a mesma seleção de cinco partidas, na mesma ordem cronológica.
   const sl = recentHome;
