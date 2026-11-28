@@ -487,7 +487,7 @@ function renderTable() {
   if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();return;}
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
-    const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>(roster.length?roster.includes(p.id):ids.has(p.id))),ms,{ptsW:3,ptsD:1});
+    const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>(roster.length?roster.includes(p.id):ids.has(p.id))),ms,{ptsW:3,ptsD:1,includeOutsideRoster:true});
     $('tblTitle').textContent=w?.name||'CAMPEONATO SEMANAL'; $('tblPill').textContent=''; $('tblPill').hidden=true; 
     const champion=w?.champion_id?D.participants.find(p=>p.id===w.champion_id):null;
     const info='';
@@ -690,7 +690,7 @@ function renderTable() {
 }
 function weeklyGroupTables(teams,ms,zones,roundCount){
  const groups=[...new Set(ms.map(m=>String(m.group_name||'').trim().toUpperCase()).filter(Boolean))].sort();
- if(!groups.length)return fullTbl(standings(teams,ms,{ptsW:3,ptsD:1}),zones,ms,'',roundCount);
+ if(!groups.length)return fullTbl(standings(teams,ms,{ptsW:3,ptsD:1,includeOutsideRoster:true}),zones,ms,'',roundCount);
  return groups.map(g=>{const gm=ms.filter(m=>String(m.group_name||'').trim().toUpperCase()===g),ids=new Set(gm.flatMap(m=>[m.home_id,m.away_id]));return heading('GRUPO '+esc(g))+'<div class="scroll">'+fullTbl(standings(teams.filter(p=>ids.has(p.id)),gm,{ptsW:3,ptsD:1}),zones,gm,'',roundCount)+'</div>';}).join('');
 }
 function weeklyLinkedCards(phase,phases){
@@ -720,7 +720,7 @@ function renderWeeklies() {
     const roster = (D.weeklyParticipants||[]).filter(x=>x.weekly_id===w.id).map(x=>x.participant_id);
     const teams = D.participants.filter(p=>(roster.length?roster.includes(p.id):ids.has(p.id)));
     const tableMatches = active.counts_in_standings ? ms : [];
-    const table = standings(teams, tableMatches, {ptsW:3,ptsD:1});
+    const table = standings(teams, tableMatches, {ptsW:3,ptsD:1,includeOutsideRoster:true});
     const roundKey=String(w.id)+'|'+String(activeId);
     selectedRoundByEdition[roundKey]=defaultRound(rounds,ms,selectedRoundByEdition[roundKey]);
     const chosen=rounds.find(r=>String(r.id)===String(selectedRoundByEdition[roundKey]));
