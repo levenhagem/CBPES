@@ -491,8 +491,8 @@ function renderTable() {
     $('tblTitle').textContent=w?.name||'CAMPEONATO SEMANAL'; $('tblPill').textContent=''; $('tblPill').hidden=true; 
     const champion=w?.champion_id?D.participants.find(p=>p.id===w.champion_id):null;
     const info='';
-    const rounds=(D.weeklyRounds||[]).filter(r=>r.weekly_id===selectedWeeklyTable).sort((a,b)=>a.number-b.number);const results=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+allMs.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')+(!allMs.some(m=>m.weekly_round_id===r.id)&&['final','third_place'].includes(r.phase?.phase_type)?`<div class="weekly-future-match" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border:1px solid var(--line);background:var(--card);font-weight:800"><span>${ms.length&&ms.every(m=>m.played)&&st[r.phase.phase_type==='final'?0:2]?esc(st[r.phase.phase_type==='final'?0:2].p.coach_name):r.phase.phase_type==='final'?'1º COLOCADO':'3º COLOCADO'}</span><span>– × –</span><span>${ms.length&&ms.every(m=>m.played)&&st[r.phase.phase_type==='final'?1:3]?esc(st[r.phase.phase_type==='final'?1:3].p.coach_name):r.phase.phase_type==='final'?'2º COLOCADO':'4º COLOCADO'}</span></div>`:'')).join('')+(allMs.some(m=>!m.weekly_round_id)?heading('PARTIDAS SEM RODADA')+allMs.filter(m=>!m.weekly_round_id).map(matchRow).join(''):'');
-    $('fullTable').innerHTML=info+``+(st.length?`${weeklyGroupTables(st.map(x=>x.p),ms,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id),Math.max(1,Math.min(5,(D.weeklyRounds||[]).filter(r=>r.weekly_id===selectedWeeklyTable&&phases.some(p=>p.id===r.phase_id&&p.counts_in_standings)).length)))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||empty('Nenhuma partida cadastrada.'));
+    const rounds=(D.weeklyRounds||[]).filter(r=>r.weekly_id===selectedWeeklyTable).sort((a,b)=>a.number-b.number);const results=rounds.map(r=>heading(`${esc(roundLabel(r).toUpperCase())}${r.date?' • '+fd(r.date):''}`)+allMs.filter(m=>m.weekly_round_id===r.id).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(matchRow).join('')+(!allMs.some(m=>m.weekly_round_id===r.id)&&r.phase?.playoff_config?.weekly_link?weeklyLinkedCards(r.phase,phases):!allMs.some(m=>m.weekly_round_id===r.id)&&['final','third_place'].includes(r.phase?.phase_type)?`<div class="weekly-future-match" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border:1px solid var(--line);background:var(--card);font-weight:800"><span>${ms.length&&ms.every(m=>m.played)&&st[r.phase.phase_type==='final'?0:2]?esc(st[r.phase.phase_type==='final'?0:2].p.coach_name):r.phase.phase_type==='final'?'1º COLOCADO':'3º COLOCADO'}</span><span>– × –</span><span>${ms.length&&ms.every(m=>m.played)&&st[r.phase.phase_type==='final'?1:3]?esc(st[r.phase.phase_type==='final'?1:3].p.coach_name):r.phase.phase_type==='final'?'2º COLOCADO':'4º COLOCADO'}</span></div>`:'')).join('')+(allMs.some(m=>!m.weekly_round_id)?heading('PARTIDAS SEM RODADA')+allMs.filter(m=>!m.weekly_round_id).map(matchRow).join(''):'');
+    $('fullTable').innerHTML=info+``+(st.length?`${weeklyGroupTables(st.map(x=>x.p),ms,zonesFor('weekly',selectedWeeklyTable,phases.find(p=>p.counts_in_standings)?.id),Math.max(1,Math.min(5,(D.weeklyRounds||[]).filter(r=>r.weekly_id===selectedWeeklyTable&&phases.some(p=>p.id===r.phase_id&&p.counts_in_standings)).length)))}`:empty('Ainda não há partidas nesta edição.'))+heading('PARTIDAS DA EDIÇÃO')+(results||'')+phases.filter(p=>p.playoff_config?.weekly_link&&!rounds.some(r=>r.phase_id===p.id)).map(p=>heading(esc(p.name.toUpperCase()))+weeklyLinkedCards(p,phases)).join('')+(!results&&!phases.some(p=>p.playoff_config?.weekly_link)?empty('Nenhuma partida cadastrada.'):'');
     $('fullTable').insertAdjacentHTML('afterbegin',simulatorButton('weekly',selectedWeeklyTable));
     return;
   }
@@ -693,6 +693,12 @@ function weeklyGroupTables(teams,ms,zones,roundCount){
  if(!groups.length)return fullTbl(standings(teams,ms,{ptsW:3,ptsD:1}),zones,ms,'',roundCount);
  return groups.map(g=>{const gm=ms.filter(m=>String(m.group_name||'').trim().toUpperCase()===g),ids=new Set(gm.flatMap(m=>[m.home_id,m.away_id]));return heading('GRUPO '+esc(g))+'<div class="scroll">'+fullTbl(standings(teams.filter(p=>ids.has(p.id)),gm,{ptsW:3,ptsD:1}),zones,gm,'',roundCount)+'</div>';}).join('');
 }
+function weeklyLinkedCards(phase,phases){
+ const cfg=phase?.playoff_config?.weekly_link;if(!Array.isArray(cfg?.pairs))return '';
+ const source=phases.find(p=>p.id===cfg.source);if(!source)return '';
+ const label=x=>{const rank=/^(\d+)([A-Z]?)$/.exec(x);if(rank)return rank[1]+'º lugar '+(rank[2]?'do Grupo '+rank[2]:'da classificação');const tie=/^([VP])(\d+)$/.exec(x);return tie?(tie[1]==='V'?'Vencedor':'Perdedor')+' da '+source.name+' '+tie[2]:x;};
+ return cfg.pairs.map(pair=>'<div class="weekly-future-match cbpes-linked-fixture" style="display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:8px 0">'+pair.map(x=>'<div style="display:flex;align-items:center;gap:10px;font-weight:700"><iconify-icon icon="lucide:shield" style="font-size:24px;opacity:.55;flex:none"></iconify-icon><span style="flex:1;min-width:0">'+esc(label(x))+'</span><strong>–</strong></div>').join('')+'</div>').join('');
+}
 function renderWeeklies() {
   const root = $('weeklyList');
   const editions = [...(D.weeklies || [])].sort((a,b)=>String(b.event_date||'').localeCompare(String(a.event_date||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')));
@@ -729,9 +735,11 @@ function renderWeeklies() {
       const slot=(n)=>complete&&!gm.some(m=>m.group_name)&&!active.playoff_config?.weekly_link&&ranking[n-1]?participantLink(ranking[n-1].p):n+'º COLOCADO';
       const placeholder=(n,k)=>'<div class="weekly-future-match" style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px;border:1px solid var(--line);font-weight:800"><span>'+slot(n)+'</span><span>– × –</span><span>'+slot(k)+'</span></div>';
       const has=(type)=>selectedGames.some(m=>(D.weeklyRounds||[]).some(r=>r.id===m.weekly_round_id&&phases.some(p=>p.id===r.phase_id&&p.phase_type===type)));
-      if(active.phase_type==='final'&&!has('final'))rows=placeholder(1,2)+rows;
-      if(phases.some(p=>p.phase_type==='third_place')&&!has('third_place'))rows+='<div class="cbpes-weekly-third-label">DISPUTA DE 3º LUGAR</div>'+placeholder(3,4);
+      if(active.phase_type==='final'&&!has('final'))rows=(weeklyLinkedCards(active,phases)||placeholder(1,2))+rows;
+      if(phases.some(p=>p.phase_type==='third_place')&&!has('third_place'))rows+='<div class="cbpes-weekly-third-label">DISPUTA DE 3º LUGAR</div>'+(weeklyLinkedCards(phases.find(p=>p.phase_type==='third_place'),phases)||placeholder(3,4));
     }
+    if(!ms.length&&active.phase_type!=='final'&&active.phase_type!=='third_place')rows=weeklyLinkedCards(active,phases)||rows;
+    if(active.phase_type==='third_place'&&!ms.length&&active.playoff_config?.weekly_link)rows=weeklyLinkedCards(active,phases);
     if(active.counts_in_standings&&chosen&&teams.length%2===1&&selectedGames.length===Math.floor(teams.length/2)){
       const playing=new Set(selectedGames.flatMap(m=>[m.home_id,m.away_id]));
       const resting=teams.filter(p=>!playing.has(p.id));
