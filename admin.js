@@ -102,7 +102,7 @@ async function syncWeeklyPhaseLinks(){
    const ids=new Set(ms.flatMap(m=>[m.home_id,m.away_id]));
    const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===p.weekly_id);
    if(roster.some(x=>!ids.has(x.participant_id)))continue;
-   const table=standings(D.participants.filter(t=>roster.length?roster.some(x=>x.participant_id===t.id):ids.has(t.id)),ms,{ptsW:3,ptsD:1});
+   const table=standings(D.participants.filter(t=>roster.length?roster.some(x=>x.participant_id===t.id):ids.has(t.id)),ms,{ptsW:3,ptsD:1,includeOutsideRoster:true});
    const grouped=ms.some(m=>m.group_name);
    const tables={};if(grouped){if(ms.some(m=>!m.group_name))continue;const assigned=new Map();let invalid=false;for(const m of ms){const g=String(m.group_name).toUpperCase();for(const id of [m.home_id,m.away_id]){if(assigned.has(id)&&assigned.get(id)!==g)invalid=true;assigned.set(id,g);}}if(invalid)continue;for(const g of new Set(assigned.values())){const gm=ms.filter(m=>String(m.group_name).toUpperCase()===g);tables[g]=standings(D.participants.filter(t=>assigned.get(t.id)===g),gm,{ptsW:3,ptsD:1});}}
    resolve=x=>{const m=/^(\d+)([A-Z]?)$/.exec(x);if(!m)return null;return (grouped?tables[m[2]]:m[2]?null:table)?.[Number(m[1])-1]?.p.id;};
