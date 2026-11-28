@@ -487,7 +487,7 @@ function renderTable() {
   if(/torneio\s*de\s*abertura/i.test(String(selectedCompetition?.name||''))){renderOpeningArchive();return;}
   if ((D.weeklies||[]).some(w=>w.id===selectedWeeklyTable)) {
     const w=D.weeklies.find(x=>x.id===selectedWeeklyTable), allMs=D.matches.filter(m=>m.category==='weekly'&&m.weekly_id===selectedWeeklyTable), phases=(D.phases||[]).filter(p=>p.competition_type==='weekly'&&p.weekly_id===selectedWeeklyTable).sort((a,b)=>a.sort_order-b.sort_order), ms=allMs.filter(m=>{const r=(D.weeklyRounds||[]).find(x=>x.id===m.weekly_round_id);return r?.phase?.counts_in_standings || (!r?.phase_id && (!phases.length || phases[0].phase_type==='groups'));}), ids=new Set(allMs.flatMap(m=>[m.home_id,m.away_id]));
-    const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id)),ms,{ptsW:3,ptsD:1});
+    const roster=(D.weeklyParticipants||[]).filter(x=>x.weekly_id===selectedWeeklyTable).map(x=>x.participant_id);const st=standings(D.participants.filter(p=>(roster.length?roster.includes(p.id):ids.has(p.id))),ms,{ptsW:3,ptsD:1});
     $('tblTitle').textContent=w?.name||'CAMPEONATO SEMANAL'; $('tblPill').textContent=''; $('tblPill').hidden=true; 
     const champion=w?.champion_id?D.participants.find(p=>p.id===w.champion_id):null;
     const info='';
@@ -718,7 +718,7 @@ function renderWeeklies() {
     const ms = all.filter(m=>rounds.some(r=>r.id===m.weekly_round_id));
     const ids = new Set(all.flatMap(m=>[m.home_id,m.away_id]));
     const roster = (D.weeklyParticipants||[]).filter(x=>x.weekly_id===w.id).map(x=>x.participant_id);
-    const teams = D.participants.filter(p=>ids.has(p.id)||roster.includes(p.id));
+    const teams = D.participants.filter(p=>(roster.length?roster.includes(p.id):ids.has(p.id)));
     const tableMatches = active.counts_in_standings ? ms : [];
     const table = standings(teams, tableMatches, {ptsW:3,ptsD:1});
     const roundKey=String(w.id)+'|'+String(activeId);
