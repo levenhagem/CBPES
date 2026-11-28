@@ -168,6 +168,18 @@ html body #weeklies .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match
 html body #weeklies .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-team small{display:flex!important;line-height:1.15!important}
 html body #weeklies .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-team.away small{justify-content:flex-end!important}
 </style>
+<style id="weekly-full-width-axis">
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) > .cbpes-match-main{display:grid!important;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr)!important;grid-template-rows:auto!important;grid-template-areas:"home score away"!important;width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;margin:0!important;padding:8px 14px!important;align-items:center!important;justify-items:stretch!important;gap:8px!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-main > :is(.cbpes-match-team,.cbpes-match-score){width:100%!important;max-width:none!important;min-width:0!important;align-self:center!important;position:static!important;transform:none!important;translate:none!important;margin:0!important;padding:0!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-main > .home{grid-area:home!important;display:flex!important;justify-content:flex-start!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-main > .away{grid-area:away!important;display:flex!important;justify-content:flex-end!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-main > .cbpes-match-score{grid-area:score!important;display:flex!important;justify-content:center!important;align-items:center!important;text-align:center!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-club{display:flex!important;align-items:center!important;position:static!important;margin:0!important;transform:none!important;translate:none!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .away .cbpes-match-club{flex-direction:row-reverse!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match-club-text{display:flex!important;flex-direction:column!important;justify-content:center!important;align-self:center!important;position:static!important;margin:0!important;transform:none!important;translate:none!important}
+html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) .away .cbpes-match-club-text{align-items:flex-end!important;text-align:right!important}
+@media(max-width:620px){html body :is(#weeklies,#fullTable) .cbpes-match-semanal:not(.cbpes-linked-fixture) > .cbpes-match-main{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important;padding:6px!important;gap:4px!important}}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -237,9 +249,9 @@ html body #weeklies .cbpes-match-semanal:not(.cbpes-linked-fixture) .cbpes-match
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="lib.js?v=6b042b3"></script>
+<script src="lib.js?v=8ebf0c1"></script>
 <script src="belts.js?v=5d5559b"></script>
-<script src="portal.js?v=896156c"></script>
+<script src="portal.js?v=3ae952a"></script>
 <script src="simulator.js?v=sim-refresh-20261124"></script>
 
 <script>
