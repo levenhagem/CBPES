@@ -65,11 +65,15 @@ async function load() {
 function standings(ps, ms, cfg = cfgOf()) {
   const t = Object.fromEntries(ps.map(p => [p.id, { p, pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }]));
   ms.filter(m => m.played).forEach(m => {
-    const h = t[m.home_id], a = t[m.away_id]; if (!h || !a) return;
-    h.j++; a.j++; h.gp += m.home_score; h.gc += m.away_score; a.gp += m.away_score; a.gc += m.home_score;
-    if (m.home_score > m.away_score) { h.v++; a.d++; h.pts += cfg.ptsW; }
-    else if (m.home_score < m.away_score) { a.v++; h.d++; a.pts += cfg.ptsW; }
-    else { h.e++; a.e++; h.pts += cfg.ptsD; a.pts += cfg.ptsD; }
+    const h = t[m.home_id], a = t[m.away_id];
+    if ((!h || !a) && !cfg.includeOutsideRoster) return;
+    for (const [side,gf,ga] of [[h,m.home_score,m.away_score],[a,m.away_score,m.home_score]]) {
+      if (!side) continue;
+      side.j++; side.gp+=gf; side.gc+=ga;
+      if(gf>ga){side.v++;side.pts+=cfg.ptsW;}
+      else if(gf<ga)side.d++;
+      else{side.e++;side.pts+=cfg.ptsD;}
+    }
   });
   return Object.values(t).map(x => ({ ...x, sg: x.gp - x.gc, ap: x.j ? Math.round(x.pts / (x.j * cfg.ptsW) * 100) : 0 }))
     .sort((a, b) => b.pts - a.pts || b.v - a.v || b.sg - a.sg || b.gp - a.gp || a.p.name.localeCompare(b.p.name));
